@@ -1,26 +1,27 @@
-<!-- ProjectGY-test-console v216 · 갱신 2026-10-03 11:08 KST -->
+<!-- ProjectGY-test-console v257 · 갱신 2026-10-06 16:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ProjectGY 테스트 콘솔</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{/* 전투 로그 창 크기: 여기 숫자만 고치면 된다 */--log-w-console:1000px;--log-w-tab:1000px;--log-pad-tab:16px;/* 상태표 게이지 폭 비율(칸 폭 대비) */--gauge-ratio:.667;--bg:#f4efe6;--card:#fffdf8;--tx:#2a2118;--mu:#7a6b5a;--ac:#8a4b2a;--bd:#d8cbb8;--ok:#2e7d4f;--bad:#b3352b;--cv:#12908a;--pry:#2c5aa8;--prc:#7b3fb0;--psn:#4d7a1c;--bld:#b3264a}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130f;--card:#221c16;--tx:#eadfcf;--mu:#a09080;--ac:#e0935a;--bd:#3d3327;--ok:#5fc48a;--bad:#e5695f;--cv:#4fd1c5;--pry:#7fb2ff;--prc:#c792ea;--psn:#a5d46a;--bld:#f0718f}}
-:root[data-theme="dark"]{--bg:#17130f;--card:#221c16;--tx:#eadfcf;--mu:#a09080;--ac:#e0935a;--bd:#3d3327;--ok:#5fc48a;--bad:#e5695f;--cv:#4fd1c5;--pry:#7fb2ff;--prc:#c792ea;--psn:#a5d46a;--bld:#f0718f}
+:root{/* 전투 로그 창 크기: 여기 숫자만 고치면 된다 */--log-w-console:1000px;--log-w-tab:1000px;--log-pad-tab:16px;/* 상태표 게이지 폭 비율(칸 폭 대비) */--gauge-ratio:.667;--bg:#f4efe6;--card:#fffdf8;--tx:#2a2118;--mu:#7a6b5a;--ac:#8a4b2a;--bd:#d8cbb8;--ok:#2e7d4f;--bad:#b3352b;--cv:#12908a;--pry:#2c5aa8;--prc:#7b3fb0;--psn:#4d7a1c;--bld:#b3264a;--onac:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130f;--card:#221c16;--tx:#eadfcf;--mu:#a09080;--ac:#e0935a;--bd:#3d3327;--ok:#5fc48a;--bad:#e5695f;--cv:#4fd1c5;--pry:#7fb2ff;--prc:#c792ea;--psn:#a5d46a;--bld:#f0718f;--onac:#1d150e}}
+:root[data-theme="dark"]{--bg:#17130f;--card:#221c16;--tx:#eadfcf;--mu:#a09080;--ac:#e0935a;--bd:#3d3327;--ok:#5fc48a;--bad:#e5695f;--cv:#4fd1c5;--pry:#7fb2ff;--prc:#c792ea;--psn:#a5d46a;--bld:#f0718f;--onac:#1d150e}
 body{word-break:keep-all;overflow-wrap:break-word;text-wrap:pretty;margin:0;background:var(--bg);color:var(--tx);font:14px/1.5 system-ui,"Noto Sans KR",sans-serif}
 main{max-width:860px;margin:0 auto;padding:14px}
 h1{font-size:18px;margin:0 0 10px}h2{font-size:14px;margin:0 0 8px;color:var(--ac)}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:12px}
 input,select,button,textarea{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:6px 10px}
 select{-webkit-appearance:none;appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5 6 8l3.5-3.5' fill='none' stroke='%23a09080' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:12px 12px}
-button{cursor:pointer}button.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
+button{cursor:pointer}button.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
 .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:10px}
 .st{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--mu)}.st b{color:var(--tx)}
-.k{font-weight:700;font-size:14px}.karma-red{color:#e53935}.ks-BLESSED{color:#f5c518}.ks-NEUTRAL{color:var(--tx)}.ks-BURDENED{color:#9c1c1c}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ks-NEUTRAL{color:#fff}}:root[data-theme="dark"] .ks-NEUTRAL{color:#fff}.char-title{display:flex;align-items:center;gap:10px;margin-top:10px}.char-title .nm{font-size:24px;font-weight:700;color:var(--ac)}.mini-btn{padding:2px 8px;font-size:12px}
+.k{font-weight:700;font-size:14px}.karma-red{color:#e53935}.ks-BLESSED{color:#8a6500}.ks-NEUTRAL{color:var(--tx)}.ks-BURDENED{color:#9c1c1c}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ks-NEUTRAL{color:#fff}}:root[data-theme="dark"] .ks-NEUTRAL{color:#fff}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ks-BURDENED{color:var(--bad)}}:root[data-theme="dark"] .ks-BURDENED{color:var(--bad)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ks-BLESSED{color:#f5c518}}:root[data-theme="dark"] .ks-BLESSED{color:#f5c518}.char-title{display:flex;flex-wrap:wrap;align-items:center;gap:18px 10px;margin-top:10px}.char-title .nm{min-width:0;font-size:24px;font-weight:700;line-height:1.25;color:var(--ac);overflow-wrap:anywhere}@media(max-width:520px){.char-title .nm{font-size:17px}}.mini-btn{padding:2px 8px;font-size:12px}
 textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .pw-wrap{position:relative;display:inline-block}.pw-wrap input{padding-right:42px;box-sizing:border-box}.pw-toggle{position:absolute;right:5px;top:50%;transform:translateY(-50%);border:0;background:transparent;padding:3px;width:30px;height:30px;display:grid;place-items:center;color:var(--mu);border-radius:50%}.pw-toggle:hover{background:color-mix(in srgb,var(--bd) 45%,transparent)}.pw-toggle svg{width:21px;height:21px;display:block;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.pw-error{color:#e53935;font-size:12px;margin-top:5px}
+.guest-start{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}.guest-note{font-size:13px;color:var(--mu)}.login-or{margin:18px 0 8px;padding-top:14px;border-top:1px solid var(--bd);font-size:13px;color:var(--mu)}
 .save-opts{display:flex;flex-wrap:wrap;align-items:center;gap:10px 28px;margin-top:14px}input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,input:-webkit-autofill:active{-webkit-box-shadow:0 0 0 1000px var(--card) inset!important;box-shadow:0 0 0 1000px var(--card) inset!important;-webkit-text-fill-color:var(--tx)!important;caret-color:var(--tx);transition:background-color 9999s ease-in-out 0s}.save-opt{display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;width:fit-content}.save-opt input[type=checkbox]{width:18px;height:18px;padding:0;margin:0;accent-color:var(--ac);cursor:pointer}.save-warn{display:none;flex-basis:100%;font-size:12px;color:var(--bad);margin:0;line-height:1.5}.save-opts button{padding:4px 12px}
 
 
@@ -63,7 +64,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-elem{color:var(--ac);font-weight:700}.bl-scan{color:var(--mu)}.bl-scan b{font-weight:700}
 .tag-active{color:var(--tag-active)}.tag-passive{color:var(--tag-passive)}.tag-link{color:var(--tag-link)}.tag-valid{color:var(--tag-valid)}.tag-invalid{color:var(--tag-invalid)}.tag-frontattack{color:var(--tag-frontattack)}.tag-backattack{color:var(--tag-backattack)}.tag-multi{color:var(--tag-multi)}.tag-personal{color:var(--tag-personal)}.tag-others{color:var(--tag-others)}.tag-everyone{color:var(--tag-everyone)}.tag-all{color:var(--tag-all)}.tag-self{color:var(--tag-self)}.tag-ally{color:var(--tag-ally)}.tag-enemy{color:var(--tag-enemy)}.tag-delaypush{color:var(--tag-delaypush)}.tag-delaypull{color:var(--tag-delaypull)}
 .equip-row{min-height:52px;box-sizing:border-box}.equip-row .slot-label{flex:0 0 96px;color:var(--mu);font-size:12px}.equip-row .slot-item{flex:1;min-width:0}.equip-row.empty-slot .slot-item{color:var(--mu)}
-.stat-add{color:var(--mu);font-weight:400;margin-left:1px}.main-st>span{white-space:nowrap}
+.main-st>span{white-space:nowrap}
 .item-core,.item-extra,.item-note{font-size:12px;color:var(--mu);margin-top:2px}.item-core{display:flex;flex-wrap:wrap;gap:2px 12px}.item-core b{color:var(--tx)}
 .equip-row:has(.item-core,.item-note){align-items:flex-start}.equip-row:has(.item-core,.item-note)>button{align-self:center}.equip-row:has(.item-core,.item-note) .slot-label{line-height:21px;padding-top:0}
 .slot-item .item-name{line-height:21px}
@@ -97,7 +98,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .mon-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px 10px;padding:8px 0 4px}
 .mon-card{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;text-align:center;width:calc((100% - 40px)/5);min-width:0;padding:6px 4px 8px;border-radius:10px}
 .mon-card.boss .unit-name{color:var(--bad)}.boss-tag{color:var(--mu);font-weight:400}
-@media(max-width:520px){.mon-grid{gap:16px 2px}.mon-card{width:calc((100% - 8px)/5);padding:4px 0 6px}}
+@media(max-width:520px){.mon-grid{gap:16px 2px}.mon-card{width:calc((100% - 8px)/5);padding:4px 0 6px}.mon-card .unit-name{font-size:11px}}
 .dg-auto{display:flex;align-items:baseline;gap:8px;border-top:1px solid var(--bd);padding-top:8px;font-size:13px}.dg-auto-k{font-size:11.2px;font-weight:700;color:var(--mu)}
 .idle-card{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .idle-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
@@ -113,7 +114,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-sum{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 10px;padding:12px 0;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd);font-size:13.5px;line-height:1.7}
 .bl-sum-side b{font-weight:700}
 .bl-result .bl-rw{margin:0 0 4px}
-.bl-open{display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:18px}
+.bl-open{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;font-size:14px;line-height:1;margin-top:18px}
 .bl-open-chev{width:14px;height:14px;transition:transform .15s}.bl-open[aria-expanded="true"] .bl-open-chev{transform:rotate(180deg)}
 .bl-logbody{margin-top:14px;text-align:left}.bl-logbody[hidden]{display:none}.help-box.wide{position:relative}.help-box.wide .bl-newtab{position:absolute;top:19px;right:58px}
 .bl-meta{color:var(--mu);font-size:13px}
@@ -131,6 +132,9 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-hp{color:var(--mu);font-size:inherit;margin-left:2px}.bl-arr{position:relative;top:-1px}.bl-log .boss-tag,.bl-log b.bl-ally,.bl-log b.bl-foe{white-space:nowrap}.bl-dl,.bl-dl .bl-hp,.bl-dlk,.bl-dlk .bl-hp{color:var(--dly)}.bl-dl .bl-hp,.bl-dlk .bl-hp{margin-left:0}.bl-hp.hpv{color:var(--bad)}
 .bl-log.show-turns .bl-n{display:inline-block}.bl-toggles{display:flex;gap:14px}
 .bl-calc{display:none;color:var(--mu);font-size:11.5px;line-height:1.4}.bl-log.show-calc .bl-calc{display:block}
+.bl-tk{position:relative;display:inline-block;cursor:pointer;border-bottom:1px dashed currentColor;outline:0}.bl-pop{display:none;position:absolute;left:0;top:100%;z-index:6;margin-top:4px;min-width:150px;max-width:calc(100vw - 32px);padding:7px 10px;background:var(--card);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.25);font-size:12px;font-weight:400;line-height:1.5;cursor:default;color:var(--tx)}
+.bl-r .bl-pop{left:auto;right:0}.bl-tk:hover .bl-pop,.bl-tk:focus .bl-pop,.bl-tk.on .bl-pop{display:block}.bl-pop-r{display:flex;justify-content:space-between;gap:14px}.bl-pop-n{color:var(--mu)}.bl-pop-sum{margin-top:4px;padding-top:4px;border-top:1px solid var(--bd);font-weight:700}
+.bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
 .bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-item{color:var(--ac)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
 
@@ -213,9 +217,9 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 #log{white-space:pre-wrap;font:12px monospace;max-height:220px;overflow:auto}
 .bad{color:var(--bad)}.ok{color:var(--ok)}
 
-.camp-nav{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:12px}.camp-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:9px 18px 6px;font-weight:700;line-height:21px}.camp-tab.active{color:var(--ac);border-bottom-color:var(--ac)}.supply-tab{position:relative;margin-left:auto;display:inline-flex;align-items:baseline;justify-content:center;gap:6px;border-bottom:3px solid transparent;padding:9px 12px 6px;font-size:14px;line-height:21px;white-space:nowrap;cursor:default}.supply-tab .sp-k{font-size:inherit;font-weight:700;color:var(--mu)}.supply-tab b{font-weight:700}.theme-tab{color:var(--mu)}.theme-tab svg{width:15px;height:15px;flex:0 0 15px}.theme-tab:hover{color:var(--tx)}@media(max-width:520px){.camp-tab{padding:9px 5px 6px;font-size:13px}.theme-tab span{display:none}.supply-tab{padding:9px 5px 6px;font-size:13px;gap:4px}}
+.camp-nav{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:12px}.camp-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:9px 18px 6px;font-weight:700;line-height:21px}.camp-tab.active{color:var(--ac);border-bottom-color:var(--ac)}.supply-tab{position:relative;margin-left:auto;display:inline-flex;align-items:baseline;justify-content:center;gap:6px;border-bottom:3px solid transparent;padding:9px 12px 6px;font-size:14px;line-height:21px;white-space:nowrap;cursor:default}.supply-tab .sp-k{font-size:inherit;font-weight:700;color:var(--mu)}.supply-tab b{font-weight:700}.theme-tab{color:var(--mu)}.theme-tab svg{width:15px;height:15px;flex:0 0 15px}.theme-tab span{display:inline-block;min-width:35px;text-align:left}.theme-tab:hover{color:var(--tx)}@media(max-width:520px){.camp-tab{padding:9px 5px 6px;font-size:13px}.theme-tab span{display:none}.supply-tab{padding:9px 5px 6px;font-size:13px;gap:4px}}
 .supply-tab .sp-tip{display:none;position:absolute;top:100%;right:0;margin-top:6px;z-index:30;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:400;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none}.supply-tab:hover .sp-tip{display:block}
-@media(max-width:400px){.camp-tab{padding:9px 3px 6px;font-size:11px}.supply-tab{padding:9px 3px 6px;font-size:11px}.supply-tab .sp-k{display:none}}
+@media(max-width:400px){.camp-tab{padding:9px 3px 6px;font-size:11px}.supply-tab{padding:9px 3px 6px;font-size:11px}}@media(max-width:374px){.supply-tab .sp-k{display:none}}
 .view{display:none}.view.active{display:block}.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}.char-card{cursor:pointer;transition:transform .12s,border-color .12s;padding:8px!important;margin:0!important}.char-card:hover{transform:translateY(-1px);border-color:var(--ac)}.char-card.selected{border:2px solid var(--ac)}
 .char-portrait{display:none}.char-name{font-size:14px;font-weight:700;word-break:keep-all;overflow-wrap:anywhere}.char-meta{color:var(--mu);margin-top:2px;font-size:12px}.detail-grid{display:grid;grid-template-columns:1fr;gap:12px}.detail-side{align-self:start}.section-title{font-size:15px;font-weight:700;color:var(--ac);margin-bottom:8px}.equip-row{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);padding:8px 0;flex-wrap:wrap}.item-card{border:1px solid var(--bd);border-radius:8px;padding:9px;margin-bottom:7px}.empty{color:var(--mu);padding:12px 0}.back-btn{margin-bottom:10px}
 @media(max-width:700px){.detail-grid{grid-template-columns:1fr}.detail-side{position:static}.char-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -269,7 +273,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .job-unit.selected .job-label{background:color-mix(in srgb,var(--ac) 30%,transparent)}
 .inn-form{margin-top:4px}
 @media(max-width:520px){.job-label{font-size:12px}.job-cost{font-size:11px}}
-.sec-line{padding-bottom:8px;margin-bottom:16px;border-bottom:1px solid var(--bd)}.sec-gap{margin-top:44px}.pattern-save{margin-top:18px}.detail-grid .empty{padding:12px 0 6px}
+.sec-line{padding-bottom:8px;margin-bottom:16px;border-bottom:1px solid var(--bd)}.sec-gap{margin-top:44px}.pattern-save{margin-top:18px}.pat-hide{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;background:var(--card);cursor:pointer;user-select:none}.pat-hide input[type=checkbox]{width:14px;height:14px;padding:0;margin:0;accent-color:var(--ac);cursor:pointer}.pattern-list.hide-off .pattern-row.pattern-off{display:none}.detail-grid .empty{padding:12px 0 6px}
 .status-body{display:flex;align-items:center;gap:20px}
 .status-sprite{flex:0 0 150px;width:150px;max-width:150px;margin-bottom:0}
 .status-info{flex:1 1 auto;min-width:0}
@@ -284,9 +288,9 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .seg-btn span,.fm-btn span{display:block;line-height:1}
 .seg-btn{border:0;border-radius:0;background:transparent;color:var(--mu)}
 .seg-btn+.seg-btn{box-shadow:inset 1px 0 0 var(--bd)}
-.seg-btn.on{background:var(--ac);color:#fff}
+.seg-btn.on{background:var(--ac);color:var(--onac)}
 .fm-save{margin-top:18px}.cover-edit{border:1px solid var(--bd);border-radius:8px;padding:10px;margin:4px 0 8px;background:color-mix(in srgb,var(--card) 92%,var(--ac))}
-@media(max-width:520px){.fm-label{flex-basis:100%}}
+@media(max-width:520px){.fm-row{gap:18px 10px;margin:18px 0}.fm-label{flex-basis:100%}}
 .title-help{display:flex;align-items:center;gap:7px}
 .help-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;padding:0;border-radius:50%;border:1px solid var(--mu);background:transparent;color:var(--mu);font-size:11px;font-weight:700;line-height:1}
 .help-btn span{display:block;line-height:1}
@@ -302,7 +306,12 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .help-body h4{margin:12px 0 4px;font-size:14px}
 .help-body ul{margin:0;padding-left:18px}.help-body li{margin:2px 0}
 .help-note{margin:12px 0 0;font-size:12.5px;color:var(--mu)}
-.help-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.help-actions[hidden]{display:none}
+.help-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+/* 한 줄 알림: 폭은 글 길이에 맞추고 글과 버튼은 가운데, 닫기는 오른쪽 위 */
+.help-box.fit{width:fit-content}
+.help-box.notice{width:auto;min-width:0;position:relative;padding:22px 44px 18px;text-align:center}
+.help-box.notice .help-head{justify-content:center;margin:0}.help-box.notice .help-close{position:absolute;top:10px;right:10px}
+.help-box.notice .help-actions{justify-content:flex-end;margin-top:18px}.help-actions[hidden]{display:none}
 .help-body p{margin:6px 0}
 .skill-list{display:flex;flex-direction:column;gap:6px}
 .skill-row{border:1px solid var(--bd);border-radius:8px;padding:8px 10px}
@@ -315,15 +324,15 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .skill-group::after{content:"";flex:1;border-top:1px solid var(--bd)}
 .skill-group.known-g{color:var(--ac)}
 .skill-group b{font-weight:400}
-.skill-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px}
+.skill-head{display:flex;align-items:baseline;gap:6px}.skill-left{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0}
 .skill-name{font-size:14px}
-.skill-right{margin-left:auto;display:inline-flex;align-items:center}
+.skill-right{margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center}
 .skill-state{font-size:12px;color:var(--card);background:var(--ac);font-weight:700;border-radius:999px;padding:1px 9px;line-height:1.5}.skill-state.dim{color:var(--mu);background:transparent;font-weight:400;padding:0}
 .skill-desc{font-size:13px;margin-top:3px}
 .skill-meta{font-size:12px;color:var(--mu);margin-top:3px}
 .sp-box{font-size:13px;font-weight:400;color:var(--mu)}.sp-box b{color:var(--tx)}
 .mini-btn{display:inline-flex;align-items:center;justify-content:center;line-height:1;height:24px}
-.adm-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}.adm-tabs button{height:28px;padding:0 12px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center}.adm-tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.adm-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}.adm-tabs button{height:28px;padding:0 12px;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center}.adm-tabs button.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
 .av-head{display:flex;align-items:center;gap:12px;margin:26px 0 0;font-size:15px;font-weight:700;color:var(--mu)}.av-head::after{content:"";flex:1;height:1px;background:var(--bd)}.av-head:first-child{margin-top:10px}.eq-list{margin-top:-16px}#items .av-head{margin-bottom:12px}#items .av-head:first-child{margin-top:4px}
 .item-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px}.item-top .item-head{margin-bottom:0}.item-top .item-core{margin-top:0}.item-top+.item-note{margin-top:2px}
 .equip-row{padding:13px 0;min-height:68px;align-items:center}
@@ -335,17 +344,32 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .item-tags .tag-dot{margin:0 3px}
 .item-core{column-gap:6px}.item-top{column-gap:6px}.opt-wrap{display:inline-flex;align-items:baseline;gap:6px;min-width:0}.opt-wrap .item-core{margin-top:0}.opt-dot{font-size:19px;font-weight:900;line-height:1;color:var(--mu);display:inline-flex;align-items:center;align-self:center;position:relative;top:-1px}
 @media(max-width:520px){.opt-dot{display:none}}
-.mini-btn.pri{background:var(--ac);color:#fff;border-color:var(--ac)}
-.main-st{margin-top:8px}.stat-pt{color:var(--ac)}.stat-pt b{color:var(--ac)}
+.mini-btn.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.main-st{margin-top:8px;align-items:center}.title-help .mini-btn{font-weight:400}.stat-pt{color:var(--ac)}.stat-pt b{color:var(--ac)}
 .alloc-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
 .alloc-f{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700}
 .alloc-f input{width:64px}
-.alloc-left{font-size:12px;color:var(--mu)}.alloc-left.over{color:#e53935}
-@media(max-width:520px){.alloc-f input{width:52px}}
+.alloc-left{font-size:12px;color:var(--mu);margin-top:6px}.alloc-left .over{color:#e53935}.alloc-unit{font-weight:400;color:var(--mu);font-size:12px}
+@media(max-width:520px){.alloc-row{flex-direction:column;flex-wrap:nowrap;align-items:stretch}.alloc-f{display:grid;grid-template-columns:90px max-content 1fr;align-items:center;gap:6px}.alloc-f input{width:52px}.alloc-row>.fm-btn{align-self:flex-start;margin-top:10px}}
 .item-card{padding:6px 10px;margin-bottom:5px}.item-card .item-head{margin-bottom:0;line-height:1.35}.item-card .item-core,.item-card .item-extra,.item-card .item-note{margin-top:1px;line-height:1.4}
+/* 튜토리얼: 짚은 곳만 밝게, 나머지는 막는다. 테두리 두께는 짚는 테두리와 말풍선이 같다 */
+.tut-blk{position:fixed;z-index:90;background:transparent}
+.tut-ring{position:fixed;z-index:91;box-sizing:border-box;pointer-events:none;border:2px solid var(--ac);border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.55)}
+.tut-ring.none{border:0}
+.tut-bubble{position:fixed;z-index:92;box-sizing:border-box;width:max-content;max-width:min(480px,calc(100vw - 24px));padding:12px 18px;background:var(--card);color:var(--tx);border:2px solid var(--ac);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.45);font-size:14px;line-height:1.6;text-align:center}
+.tut-s{display:inline-block;max-width:100%}
+.tut-act{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:18px}.tut-act button{display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 14px;line-height:1;min-width:76px}
+/* 임시: 구석 버튼 묶음(튜토리얼 종료하기, 관리자용 처음부터 다시) */
+.tut-exit{position:fixed;z-index:93;left:12px;bottom:12px;gap:6px;flex-wrap:wrap;max-width:calc(100vw - 24px);box-sizing:border-box;opacity:.85}.tut-exit button{font-size:12px;padding:5px 10px;background:var(--card);color:var(--mu);border:1px solid var(--bd);border-radius:8px}
+/* 짚는 동안에는 브라우저의 초점 테두리를 숨긴다(짚는 테두리와 겹쳐 이중으로 보인다) */
+.tut-on button:focus,.tut-on button:focus-visible,.tut-on select:focus-visible,.tut-on [role=button]:focus-visible{outline:none}
+/* 독 표시(해골): 그림의 무게가 위쪽에 있어 1px 내려 글자와 눈높이를 맞춘다 */
+.psn-ico{position:relative;top:1px}
+/* 숫자 칸의 올림·내림 화살표: 브라우저 기본 모양 대신 강조색 화살표(누르는 동작은 그대로) */
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;width:14px;height:22px;margin-left:4px;cursor:pointer;background:var(--ac);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v216 · 2026-10-03 11:08</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v257 · 2026-10-06 16:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -367,6 +391,10 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
     <input id="adminLevel" type="number" min="1" max="70" step="1" placeholder="레벨" style="width:90px">
     <button class="pri" onclick="setAdminLevel()">레벨 설정</button>
     <button id="adminPromoteBtn" onclick="openPromote($('adminChar').value)">전직</button></div>
+    <div class="pattern-help" style="margin-top:12px">대상 계정을 가입 직후 상태로 되돌립니다(튜토리얼을 처음부터 다시 볼 때). 캐릭터, 아이템, 골드, 전투 기록이 모두 지워집니다. 관리자 계정은 점검용으로 표시된 계정만 되돌릴 수 있습니다.</div>
+    <div class="row"><input id="adminResetEmail" placeholder="대상 이메일" style="flex:1;min-width:220px">
+    <button class="pri" onclick="confirmAdminReset()">가입 직후로 되돌리기</button></div>
+    <div id="adminResetStatus" style="color:var(--mu)"></div>
     <div class="pattern-help" style="margin-top:12px">테스트 자산(코드가 test_로 시작). 관리자에게만 보입니다.</div>
     <div id="adminTestList" class="pattern-help"></div>
   </details>
@@ -379,6 +407,8 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 <div id="loginView" class="view active">
   <div class="card">
     <div id="loginForm">
+      <div class="guest-start"><button id="btnGuest" type="button" class="fm-btn pri" onclick="startGuest()"><span>바로 시작</span></button><span class="guest-note">가입 없이 손님 계정으로 시작합니다.</span></div>
+      <div class="login-or">이메일 계정이 있으면 아래에서 로그인하세요.</div>
       <form id="loginFormEl" novalidate onsubmit="event.preventDefault();signIn()"><div class="row"><input id="loginEmail" name="email" type="email" inputmode="email" placeholder="이메일" autocomplete="username" autocapitalize="off" spellcheck="false" style="flex:1;min-width:180px"><span class="pw-wrap"><input id="loginPw" name="password" type="password" placeholder="비밀번호" autocomplete="current-password"><button type="button" class="pw-toggle" id="pwToggle" onclick="togglePassword()" aria-label="비밀번호 보기"><svg id="pwEye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle></svg></button></span>
       <button id="btnSignIn" type="submit" class="pri">로그인</button></div></form>
       <div class="save-opts"><button id="btnGoSignUp" type="button" onclick="showView('signup')">회원가입</button><label class="save-opt"><input type="checkbox" id="saveEmail"><span>이메일 저장</span></label><label class="save-opt"><input type="checkbox" id="savePw"><span>비밀번호 저장</span></label><div class="save-warn" id="savePwWarn">⚠ 비밀번호가 이 브라우저에 그대로 저장됩니다. 이 기기를 함께 쓰는 사람이 볼 수 있으니 본인 기기에서만 사용하세요. 체크를 해제하면 저장된 비밀번호가 바로 지워집니다.</div></div>
@@ -427,7 +457,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 
 <div id="logView" class="view">
   <div class="card">
-    <div class="pattern-help roster-help">최근 전투 20판의 기록입니다. 누르면 전투 로그를 다시 볼 수 있습니다. 모의전도 함께 남습니다.</div>
+    <div class="pattern-help roster-help">최근 전투 10판의 기록입니다. 전투 로그는 끝난 뒤 30분 동안만 다시 볼 수 있고, 그 뒤에는 결과와 보상만 남습니다. 모의전도 함께 남습니다.</div>
     <div id="battleLogList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
@@ -449,16 +479,16 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 
 <div id="appraiseView" class="view">
   <div class="card">
-    <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Appraisal Clan</span></div>
-    <div class="npc"><span class="sprite-slot" aria-hidden="true"></span><div class="npc-talk"><p>흠, 짐 속에 정체 모를 물건이 섞여 있군.</p><p><b>Unknown</b>이라… 우리 감정사 일족에게 맡겨 보게.</p><p>겉보기엔 평범해도 숨은 힘이 깃든 물건이 적지 않거든.</p><p>물론 아무것도 없는 평범한 물건일 수도 있지. 그건 열어 봐야 아는 법이야.</p><div class="npc-note"><p>※ Unknown 장비를 감정하면 랜덤 옵션이 붙습니다. 하나도 안 붙으면 일반 장비가 됩니다.</p><p>※ 감정에는 골드가 듭니다. 그 장비가 나오는 던전이 깊을수록 비쌉니다.</p><p>※ Unknown 장비는 감정하기 전에는 장착도, 다른 일도 할 수 없습니다.</p></div></div></div>
+    <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Appraisal Clan</span><button type="button" class="help-btn" onclick="openMaterialHelp()" aria-label="재료 도움말">?</button></div>
+    <div class="npc"><span class="sprite-slot" aria-hidden="true"></span><div class="npc-talk"><p>흠, 짐 속에 정체 모를 물건이 섞여 있군.</p><p><b>Unknown</b>이라… 우리 감정사 일족에게 맡겨 보게.</p><p>겉보기엔 평범해도 숨은 힘이 깃든 물건이 적지 않거든.</p><p>물론 아무것도 없는 평범한 물건일 수도 있지. 그건 열어 봐야 아는 법이야.</p><div class="npc-note"><p>※ Unknown 장비를 감정하면 랜덤 옵션이 붙습니다. 하나도 안 붙으면 일반 장비가 됩니다.</p><p>※ 감정에는 골드가 듭니다. 그 장비가 나오는 던전이 깊을수록 비쌉니다.</p><p>※ Unknown 장비는 감정하기 전에는 장착도, 다른 일도 할 수 없습니다.</p><p>※ 재료마다 더 잘 붙는 랜덤 옵션이 있습니다(이름 옆 ?).</p></div></div></div>
     <div id="appraiseList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
 
 <div id="craftView" class="view">
   <div class="card">
-    <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Smithy</span></div>
-    <div class="npc"><span class="sprite-slot" aria-hidden="true"></span><div class="npc-talk"><p>어서 오게. 망치 소리가 좀 시끄러워도 참게나.</p><p><b>재료</b>만 가져오면 뭐든 두드려 주지.</p><p><b>레시피</b>가 있으면 적힌 대로 만들어 주고,</p><p>옵션 하나 없는 <b>일반 장비</b>를 가져오면 새로 다듬어 줄 수도 있네.</p><p>뭘 만들 수 있는지는 내가 보여 주지. 재료가 모자라면 말도 안 꺼내네.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p></div></div></div>
+    <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Smithy</span><button type="button" class="help-btn" onclick="openMaterialHelp()" aria-label="재료 도움말">?</button></div>
+    <div class="npc"><span class="sprite-slot" aria-hidden="true"></span><div class="npc-talk"><p>어서 오게. 망치 소리가 좀 시끄러워도 참게나.</p><p><b>재료</b>만 가져오면 뭐든 두드려 주지.</p><p><b>레시피</b>가 있으면 적힌 대로 만들어 주고,</p><p>옵션 하나 없는 <b>일반 장비</b>를 가져오면 새로 다듬어 줄 수도 있네.</p><p>뭘 만들 수 있는지는 내가 보여 주지. 재료가 모자라면 말도 안 꺼내네.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p><p>※ 재료마다 더 잘 붙는 랜덤 옵션이 있습니다(이름 옆 ?).</p></div></div></div>
     <div id="craftList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
@@ -478,6 +508,11 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
   <div class="card">
     <div class="row"><span style="font-weight:700">접속 계정</span><span id="currentEmail" style="color:var(--mu)">-</span></div>
     <div class="row" style="margin-top:18px"><button id="btnSignOut" onclick="signOut()">로그아웃</button></div>
+  </div>
+  <div class="card" id="tutReplayCard" style="display:none">
+    <div class="section-title">튜토리얼 다시 보기</div>
+    <div class="pattern-help">끝낸 챕터를 연습 계정으로 다시 봅니다. 실제 계정에는 반영되지 않습니다.</div>
+    <div class="row" id="tutReplayBtns" style="margin-top:18px;margin-bottom:0"></div>
   </div>
 </div>
 
@@ -538,6 +573,18 @@ function flashEmpty(el){el.classList.remove("flash-empty");void el.offsetWidth;e
 function setSuMsg(t,ok){const e=$("signupMsg");e.textContent=t;e.style.color=ok?"var(--ok)":"";e.style.display=t?"block":"none"}
 ["suPw","suPw2"].forEach(id=>{const el=$(id);const clean=()=>{const v=el.value,c=v.replace(/[^\x21-\x7E]/g,"");if(c!==v){el.value=c;setSuMsg(PW_ALLOWED_MSG);return}setSuMsg("")};el.addEventListener("compositionend",clean);el.addEventListener("input",e=>{if(!e.isComposing)clean()});el.addEventListener("animationend",e=>e.target.classList.remove("flash-empty"))});
 $("suEmail").addEventListener("animationend",e=>e.target.classList.remove("flash-empty"));
+// 가입 서버가 돌려준 오류를 한글 안내로 바꾼다(모르는 오류만 원문을 붙인다).
+function signUpErrText(error){
+ const m=String(error&&error.message||""),c=String(error&&error.code||""),sec=m.match(/after (\d+) second/i);
+ if(sec)return "방금 가입을 요청했습니다. "+sec[1]+"초 뒤에 다시 시도해 주세요.";
+ if(c==="over_email_send_rate_limit"||/email rate limit/i.test(m))return "지금은 확인 메일을 더 보낼 수 없습니다. 한 시간쯤 뒤에 다시 시도해 주세요.";
+ if(c==="over_request_rate_limit"||(error&&error.status===429)||/rate limit/i.test(m))return "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.";
+ if(c==="user_already_exists"||c==="email_exists"||/already registered/i.test(m))return "이미 가입된 이메일입니다.";
+ if(c==="email_address_invalid"||c==="validation_failed"||/invalid.*email|email.*invalid|validate email/i.test(m))return "이메일 주소를 다시 확인해 주세요.";
+ if(c==="weak_password"||/password should/i.test(m))return "비밀번호가 너무 쉽습니다. 다른 비밀번호를 입력하세요.";
+ if(c==="signup_disabled"||/signups? (are |is )?(not allowed|disabled)/i.test(m))return "지금은 가입할 수 없습니다.";
+ return "가입에 실패했습니다: "+m;
+}
 async function signUp(){
  const email=$("suEmail").value.trim(),pw=$("suPw").value,pw2=$("suPw2").value;
  const noEmail=!email,noPw=!pw;
@@ -552,7 +599,7 @@ async function signUp(){
  setSuMsg("");
  const {error}=await sb.auth.signUp({email,password:pw});
  log(error?"가입 실패: "+error.message:"가입 요청 완료 (이메일 확인이 켜져 있으면 메일을 확인하세요)",error?"bad":"ok");
- if(error)return setSuMsg("가입에 실패했습니다: "+error.message);
+ if(error)return setSuMsg(signUpErrText(error));
  $("suPw").value="";$("suPw2").value="";setSuMsg("");
  $("loginEmail").value=email;showView("login");init()}
 async function signIn(){
@@ -580,11 +627,25 @@ function persistLoginOpts(email,pw){
 $("saveEmail").addEventListener("change",()=>{if(!$("saveEmail").checked){LS.del("pgy_save_email");LS.del("pgy_email")}});
 $("savePw").addEventListener("change",()=>{const on=$("savePw").checked;$("savePwWarn").style.display=on?"block":"none";if(!on){LS.del("pgy_save_pw");LS.del("pgy_pw")}});
 applySaveOpts();
-async function signOut(){await sb.auth.signOut();init()}
-async function init(){const {data:{user}}=await sb.auth.getUser();const now=!!user;
+// 바로 시작: 이 브라우저에 손님 계정을 만들어 바로 들어간다(이메일·비밀번호 없음). 이미 손님으로 들어와 있으면 그 계정을 그대로 쓴다.
+let isGuest=false,guestBusy=false;
+async function startGuest(){
+ if(guestBusy)return;guestBusy=true;$("btnGuest").disabled=true;setPwError("");
+ try{const {error}=await sb.auth.signInAnonymously();
+  if(error){log("바로 시작 실패: "+error.message,"bad");setPwError(error.code==="anonymous_provider_disabled"?"지금은 바로 시작을 쓸 수 없습니다.":(error.status===429||/rate limit/i.test(error.message||""))?"요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.":"바로 시작에 실패했습니다. 잠시 뒤에 다시 시도해 주세요.")}
+  else log("바로 시작 성공","ok")}
+ finally{guestBusy=false;$("btnGuest").disabled=false}
+ init();
+}
+// 손님 계정은 로그아웃하면 다시 들어올 방법이 없어서 먼저 묻는다
+async function signOut(){
+ if(isGuest)return openConfirm("로그아웃",`<p>손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.</p>`,[["취소",null,false],["로그아웃",async()=>{await sb.auth.signOut();init()},true]]);
+ await sb.auth.signOut();init()}
+async function init(){await practiceResume();const {data:{user}}=await sb.auth.getUser();const now=!!user;
  setTabsForLogin(now);
  $("loginForm").style.display=now?"none":"block";$("alreadyLogged").style.display=now?"block":"none";
- if(now){$("currentEmail").textContent=user.email||"-";showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
+ isGuest=!!(user&&user.is_anonymous);
+ if(now){$("currentEmail").textContent=isGuest?"손님 계정":(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
  loggedIn=now;
@@ -621,7 +682,7 @@ async function loadTestAssets(){
 const ADM_TABS=[["weapon","무기",["WEAPON","SHIELD"]],["armor","방어구",["HEAD","SHOULDER","TOP","BOTTOM","BELT","SHOES","CAPE"]],["acc","장신구",["EARRING","NECKLACE","RING"]],["cons","소모품",["CONSUMABLE"]],["mat","재료",["MATERIAL"]]];
 let adminItemDefs=[],adminItemTab="weapon";
 async function loadAdminItems(){
- const {data}=await sb.from("item_defs").select("id,name,slot").order("name");
+ const {data}=await sb.from("item_defs").select("id,name,slot").order("name").order("id");
  adminItemDefs=data||[];renderAdminItems();
 }
 function renderAdminItems(){
@@ -650,9 +711,20 @@ async function setAdminLevel(){
  run();
 }
 async function setAdminGold(){const email=$("adminEmail").value.trim();const gold=Number($("adminGold").value);if(!email||!Number.isInteger(gold)||gold<0){return log("골드는 0 이상의 정수로 입력하세요.","bad")}const {data,error}=await sb.rpc("admin_set_gold",{p_email:email,p_gold:gold});if(error){$("adminStatus").textContent="실패: "+error.message;log("admin_set_gold 실패: "+error.message,"bad");return}$("adminStatus").textContent=`${email} 골드가 ${data}로 설정되었습니다.`;log("골드 설정 성공: "+data,"ok");load()}
+// 대상 계정을 가입 직후 상태로 되돌린다(튜토리얼 다시 보기용). 되돌릴 수 없는 동작이라 확인을 거친다
+const ADMIN_RESET_ERR={USER_NOT_FOUND:"그 이메일의 계정이 없습니다.",CANNOT_RESET_ADMIN:"이 관리자 계정은 되돌릴 수 없습니다. 점검용으로 표시된 관리자 계정만 됩니다.",FORBIDDEN:"관리자만 쓸 수 있습니다."};
+function confirmAdminReset(){
+ const email=$("adminResetEmail").value.trim();if(!email){$("adminResetStatus").textContent="대상 이메일을 입력하세요.";return}
+ openConfirm("가입 직후로 되돌리기",`<p><b>${esc(email)}</b> 계정을 가입 직후 상태로 되돌립니다.</p><ul><li>캐릭터, 아이템, 골드, 전투 기록, 던전 진행이 <b>모두 지워집니다</b>.</li><li>시작 캐릭터와 시작 장비를 새로 받고, 튜토리얼이 처음부터 시작됩니다.</li></ul><p class="help-note">되돌릴 수 없습니다.</p>`,
+  [["취소",null,false],["되돌리기",async()=>{
+   const {data,error}=await sb.rpc("admin_reset_account",{p_email:email});
+   if(error){const k=Object.keys(ADMIN_RESET_ERR).find(x=>error.message.includes(x));$("adminResetStatus").textContent="실패: "+(k?ADMIN_RESET_ERR[k]:error.message);log("admin_reset_account 실패: "+error.message,"bad");return}
+   if(data.self){location.reload();return} // 지금 로그인한 계정을 되돌렸으면 화면을 처음부터 다시 받는다
+   $("adminResetStatus").textContent=`${email} 계정을 되돌렸습니다. 캐릭터 ${data.characters}명으로 다시 시작합니다.`;log("admin_reset_account 성공","ok")},true]]);
+}
 let innJobs=[],selectedJob=null,charLimit=null;
 async function loadInn(){
- const {data,error}=await sb.from("character_templates").select("job,name_ko,recruit_cost,sort_order").eq("tier","BASE").order("sort_order");
+ const {data,error}=await sb.from("character_templates").select("job,name_ko,recruit_cost,sort_order").eq("tier","BASE").order("sort_order").order("job");
  if(error){log("직업 목록 불러오기 실패: "+error.message,"bad");innJobs=[]}else innJobs=data||[];
  if(!innJobs.some(j=>j.job===selectedJob))selectedJob=innJobs[0]?.job||null;
  // 공개 설정값(is_public=true)만 읽을 수 있음
@@ -672,7 +744,7 @@ function renderInn(){
 function selectJob(job){selectedJob=job;renderInn()}
 let templates=[],pubCfg={},skillsByChar={},promoteByChar={};
 async function loadMeta(){
- const t=await sb.from("character_templates").select("job,name_ko,tier,promotes_from,main_stat,sort_order").order("sort_order");
+ const t=await sb.from("character_templates").select("job,name_ko,tier,promotes_from,main_stat,sort_order").order("sort_order").order("job");
  templates=t.error?[]:(t.data||[]);
  const g=await sb.from("game_config").select("key,value");
  pubCfg={};(g.data||[]).forEach(r=>pubCfg[r.key]=r.value);
@@ -686,6 +758,7 @@ async function loadSkills(id){
 }
 async function load(){
  if(!templates.length)await loadMeta();
+ if(tut.step==null||tut.step<tut.last)loadTutorial();
  chars=await rpc("get_my_characters")||[];
  if(selectedCharId&&chars.some(c=>c.id===selectedCharId))await loadSkills(selectedCharId);
  renderAdminChars();
@@ -839,33 +912,436 @@ const HELP={
   <li>여기에 <b>Back Attack</b>(후방 우선)이나 <b>Front Attack</b>(전방 우선)이 붙을 수 있습니다. 둘 다 없는 공격은 무작위로 대상을 고릅니다.</li></ul>
   <p class="help-note">엄호 설정은 위치와 상관없이 적용되며, 전투 중 위치가 바뀌어도 그대로 유지됩니다.</p>`}
 };
-function openHelp(key){const h=HELP[key];if(!h)return;$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=h.title;$("helpBody").innerHTML=h.html;$("helpOverlay").hidden=false;document.querySelector(".help-close").focus()}
-function closeHelp(){$("helpOverlay").hidden=true;document.querySelector(".help-box").classList.remove("wide")}
+function openHelp(key){const h=HELP[key];if(!h)return;{const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width=""}$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=h.title;$("helpBody").innerHTML=h.html;$("helpOverlay").hidden=false;document.querySelector(".help-close").focus()}
+function closeHelp(){$("helpOverlay").hidden=true;const bx=document.querySelector(".help-box");bx.classList.remove("wide","notice","fit");bx.style.width=""}
+// 확인 창 상자를 글의 실제 오른쪽 끝에 맞춘다(줄이 바뀐 글은 가장 긴 줄 기준). 제목 줄과 버튼 줄보다 좁아지지는 않는다
+function fitHelpBox(){const bx=document.querySelector(".help-box");bx.style.width="";if(!bx.classList.contains("fit")||bx.classList.contains("notice"))return;
+ const cs=getComputedStyle(bx),left=bx.getBoundingClientRect().left+parseFloat(cs.borderLeftWidth)+parseFloat(cs.paddingLeft),cur=bx.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+ let need=0;const rg=document.createRange(),tw=document.createTreeWalker($("helpBody"),NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);
+ for(let n=tw.nextNode();n;n=tw.nextNode()){if(n.nodeType===3){rg.selectNodeContents(n);for(const r of rg.getClientRects())need=Math.max(need,r.right-left)}
+  else if(n.matches("input,select,textarea,img,svg,button")||parseFloat(getComputedStyle(n).borderRightWidth)>0)return}
+ const bs=[...$("helpActions").children];if(bs.length&&!$("helpActions").hidden)need=Math.max(need,getComputedStyle($("helpActions")).flexDirection.startsWith("column")?Math.max(...bs.map(b=>b.scrollWidth+2)):bs[bs.length-1].getBoundingClientRect().right-bs[0].getBoundingClientRect().left);
+ const tr=document.createRange();tr.selectNodeContents($("helpTitle"));need=Math.max(need,tr.getBoundingClientRect().width+12+document.querySelector(".help-close").offsetWidth);
+ if(need>0&&need<cur-0.5)bx.style.width=Math.ceil(need)+"px"}
 // 확인 팝업: buttons=[[라벨, 함수, 강조여부]]
 function openConfirm(title,html,buttons){
+ {const bx=document.querySelector(".help-box");bx.classList.remove("notice");bx.classList.add("fit");bx.style.width=""}
  $("helpTitle").textContent=title;$("helpBody").innerHTML=html;
  const box=$("helpActions");box.innerHTML="";box.hidden=false;box.classList.toggle("many",buttons.length>=3);
  buttons.forEach(([label,fn,pri])=>{const b=document.createElement("button");b.type="button";b.className="fm-btn"+(pri?" pri":"");b.innerHTML=`<span>${esc(label)}</span>`;b.onclick=async()=>{closeHelp();if(fn)await fn()};box.appendChild(b)});
- $("helpOverlay").hidden=false;box.lastChild?.focus();
+ $("helpOverlay").hidden=false;fitHelpBox();box.lastChild?.focus();
 }
+// 한 줄 알림: 글 한 줄과 확인 버튼만. 상자 폭은 글 길이에 맞추고 글과 버튼은 가운데(스타일의 notice)
+function openNotice(text){openConfirm(text,"",[["확인",null,true]]);const bx=document.querySelector(".help-box");bx.classList.add("notice");bx.style.width=""}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpOverlay").hidden)closeHelp()});
+// ===== 튜토리얼(강제 과제) =====
+// 단계는 서버가 정한다(get_tutorial). 화면은 지금 상태를 보고 눌러야 할 곳 하나만 밝게 짚고, 그 밖은 눌리지 않게 막는다.
+// 패턴 줄은 유저가 직접 고른다(목록에서 고를 줄만 남기고 나머지는 잠깐 선택 불가로 흐리게 한다). 편집 중인 다른 줄은 건드리지 않는다.
+// 임시: 과제 중에 구석에 항상 떠 있는 "튜토리얼 종료하기" 버튼. 뺄 때는 이 값을 false로 바꾼다(서버의 tutorial_skip과 스타일의 tut-exit도 같이 지우면 된다)
+const TUT_EXIT_BUTTON=true;
+// 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 끝
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6을 마침)
+let tut={step:null,last:7},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false;
+const tutSeen=new Set();
+// 챕터: 단계 묶음(to = 그 챕터가 끝나는 단계). 끝낸 챕터는 연습 계정으로 다시 볼 수 있다. 서버의 챕터 시작·끝 단계와 같이 고친다
+const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:7}];
+// tutPractice: 연습 계정으로 챕터를 다시 보는 중이면 {ch, end(끝나는 단계)}. tutAskOpen: 챕터 다시 보기 확인 창이 떠 있는 동안 짚기를 멈춘다
+let tutPractice=null,tutAskOpen=false,practiceBusy=false;
+const PRACTICE_KEY="pgy_practice";
+function practiceSaved(){try{return JSON.parse(localStorage.getItem(PRACTICE_KEY)||"null")}catch(e){return null}}
+function tutChapterAsk(ch){
+ if(!guardLeave(()=>tutChapterAsk(ch)))return;
+ tutAskOpen=true;tutHide();
+ openConfirm(`챕터 ${ch} 다시 보기`,`<p>챕터 ${ch}${"013678".includes(String(ch).slice(-1))?"을":"를"} 연습 계정으로 처음부터 다시 봅니다.</p><p><b>실제 계정에는 반영되지 않습니다.</b> 끝나면 원래 계정으로 돌아옵니다.</p>`,[["취소",null,false],["시작",()=>practiceStart(ch),true]]);
+}
+// 연습 시작: 지금 로그인을 기억해 두고, 새 손님 계정을 받아 서버가 그 챕터를 시작할 때의 상태로 맞춘다
+async function practiceStart(ch){
+ if(practiceBusy)return;practiceBusy=true;
+ const fail=async m=>{await practiceBack();practiceBusy=false;await init();showBattleError(m,"튜토리얼")};
+ const {data:{session}}=await sb.auth.getSession();if(!session){practiceBusy=false;return}
+ try{localStorage.setItem(PRACTICE_KEY,JSON.stringify({ch,at:session.access_token,rt:session.refresh_token}));sessionStorage.setItem(PRACTICE_KEY,"1")}catch(e){practiceBusy=false;return showBattleError("이 브라우저에서는 연습을 시작할 수 없습니다.","튜토리얼")}
+ const a=await sb.auth.signInAnonymously();
+ if(a.error){log("연습 계정 만들기 실패: "+a.error.message,"bad");return fail("연습을 시작하지 못했습니다. 잠시 뒤에 다시 시도해 주세요.")}
+ const r=await sb.rpc("tutorial_practice_start",{p_chapter:ch});
+ if(r.error){log("tutorial_practice_start 실패: "+r.error.message,"bad");return fail("연습을 시작하지 못했습니다. 잠시 뒤에 다시 시도해 주세요.")}
+ location.reload();
+}
+// 기억해 둔 원래 로그인으로 돌아온다
+async function practiceBack(){
+ const s=practiceSaved();try{localStorage.removeItem(PRACTICE_KEY);sessionStorage.removeItem(PRACTICE_KEY)}catch(e){}
+ if(!s)return;
+ const {error}=await sb.auth.setSession({access_token:s.at,refresh_token:s.rt});
+ if(error){log("원래 계정으로 돌아오기 실패: "+error.message,"bad");await sb.auth.signOut({scope:"local"})}
+}
+// 연습 끝: 연습 계정을 서버에서 지우고 원래 계정으로 돌아온다
+async function practiceEnd(){
+ if(practiceBusy)return;practiceBusy=true;
+ const {error}=await sb.rpc("tutorial_practice_end");if(error)log("tutorial_practice_end 실패: "+error.message,"bad");
+ await practiceBack();location.reload();
+}
+// 콘솔을 열 때: 연습 중에 창을 닫았다 다시 연 것이면(같은 탭에서 새로 고친 것은 이어서 본다) 연습 계정을 지우고 원래 계정으로 돌아온다
+async function practiceResume(){
+ const s=practiceSaved();if(!s||practiceBusy)return;
+ let live=false;try{live=!!sessionStorage.getItem(PRACTICE_KEY)}catch(e){}
+ if(live){const {data:{user}}=await sb.auth.getUser();if(user&&user.is_anonymous)return}
+ else{const {error}=await sb.rpc("tutorial_practice_end");if(error)log("tutorial_practice_end 실패: "+error.message,"bad")}
+ await practiceBack();
+}
+// Setting의 "튜토리얼 다시 보기": 끝낸 챕터만 버튼이 나온다
+function renderTutReplay(){
+ const card=$("tutReplayCard");if(!card)return;
+ const done=tutPractice||tut.step==null?[]:TUT_CHAPTERS.filter(c=>tut.step>=c.to);
+ card.style.display=done.length?"":"none";
+ $("tutReplayBtns").innerHTML=done.map(c=>`<button type="button" class="fm-btn" onclick="tutChapterAsk(${c.n})"><span>챕터 ${c.n} 다시 보기</span></button>`).join("");
+}
+async function loadTutorial(){
+ const {data,error}=await sb.rpc("get_tutorial");
+ if(error){log("get_tutorial 실패: "+error.message,"bad");return}
+ const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
+ tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
+ if(prev===2&&tut.step>=3)tutCongrats="mend";else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";
+}
+async function tutAck(key){
+ if(tutAcking)return;tutAcking=true;
+ const {data,error}=await sb.rpc("tutorial_ack",{p_key:key});tutAcking=false;
+ if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
+ tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
+}
+function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice)}
+function tutVisible(el){return !!el&&el.isConnected&&el.getClientRects().length>0}
+// 목록에서 고를 줄 하나만 남기고 나머지는 선택 불가(브라우저가 흐리게 그린다). 단계가 끝나면 바로 푼다
+function tutLimit(sel,keep){if(!sel||sel.dataset.tutLim===keep)return;[...sel.options].forEach(o=>o.disabled=o.value!==keep);sel.dataset.tutLim=keep}
+function tutUnlimit(except){document.querySelectorAll("select[data-tut-lim]").forEach(x=>{if(x===except)return;[...x.options].forEach(o=>o.disabled=false);delete x.dataset.tutLim})}
+const TUT_MEND={c:"allyHpLtePct",v:70,a:"cleric_mend"};
+// 둘째 던전을 처음 이기면 받는 장비 중 직접 끼워 보는 것(나머지는 서버가 끼워 준다)
+const TUT_GEAR={job:"ARCHER",def:"scrap_bow"};
+// 단계 3에서 직업마다 패턴에 넣는 공격 스킬. full = 설명을 자세히(첫 캐릭터), resheaf = 그 위 줄에 넣는 화살 채우는 스킬
+const TUT_SKILLS=[{job:"FOOTMAN",a:"footman_shield_slam",full:true},{job:"ARCHER",a:"archer_double_shot",resheaf:"archer_resheaf"},{job:"THIEF",a:"thief_backstab"},{job:"MAGE",a:"mage_stone_spike"}];
+// 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
+function tutRefresh(fn){if(Date.now()-tutPoll>2500){tutPoll=Date.now();(fn||loadTutorial)()}}
+// 지금 짚을 곳: {id, el, msg(문장은 줄바꿈으로 나눔, 빈 줄은 강제 줄바꿈), btn(말풍선 버튼 글자), fn, prev(이전 버튼), hole(버튼이 있어도 짚은 곳을 누를 수 있음), limit(목록에서 남길 값), above, nohold, holdId(누른 뒤 버튼이 새로 그려져도 잠깐 막는다), wait, center}. null이면 못 찾은 것(막지 않는다)
+function tutResolve(){
+ const q=s=>document.querySelector(s),modal=!$("helpOverlay").hidden;
+ const say=(id,el,msg,o)=>({id,el,msg,...(o||{})});
+ const mid=(id,msg,o)=>({id,el:null,center:true,msg,...(o||{})});
+ // 설명만 하는 장: 다음을 누르면 넘어가고, 이전을 누르면 앞 장으로 돌아간다
+ const page=(id,el,msg,o)=>{o=o||{};return say(id,el,msg,{btn:o.btn||"다음",fn:()=>{tutSeen.add(id);if(o.fn)o.fn()},prev:o.back?()=>tutSeen.delete(o.back):null})};
+ const wait=()=>mid("wait","잠시만 기다려 주세요.");
+ const okBtn=modal?q("#helpActions:not([hidden]) button"):null;
+ const savedOk=()=>say("savedok",okBtn,"확인을 눌러 주세요.");
+ const sec=k=>q(`#charDetail .sec-wrap[data-sec="${k}"]`);
+ if(tutCongrats){
+  if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
+  if(!dungeons.length&&!tutDgAsked){tutDgAsked=true;sb.rpc("get_dungeons").then(r=>{if(!r.error&&!dungeons.length)dungeons=r.data||[]})}
+  const door=i=>{const n=dungeons[i]?.name;return n?`다음 던전 ${n}의 문이 열렸습니다.`:"다음 던전이 열렸습니다."};
+  if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.\n${door(2)}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  if(tutCongrats==="skills")return mid("done2",`잘하셨습니다!\n이제 네 명이 공격 스킬을 씁니다.\n${door(1)}`,{btn:"확인",fn:()=>{tutCongrats=null}});
+  return mid("done","잘하셨습니다!\n이제 Cleric이 다친 아군을 회복합니다.",{btn:"확인",fn:()=>{tutCongrats=null}});
+ }
+ // 연습 계정: 그 챕터가 끝나는 단계에 닿으면 마친다
+ if(tutPractice&&tut.step>=tutPractice.end){
+  if(practiceBusy)return wait();
+  if(modal)return okBtn?savedOk():say("pclose",q(".help-close"),"닫기를 눌러 주세요.");
+  return mid("pend",`챕터 ${tutPractice.ch} 연습이 끝났습니다.\n원래 계정으로 돌아갑니다.`,{btn:"확인",fn:()=>{practiceEnd()}});
+ }
+ const s=tut.step,logOpen=modal&&!!q("#helpBody .bl-result"),openBtn=q("#helpBody .bl-open");
+ const expandMsg="전투가 끝났습니다.\n어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.";
+ const expandMsg2="이겼습니다!\n이번에는 스킬이 어떻게 쓰였는지 봅시다.\n로그 보기를 눌러 주세요.";
+ // 던전 목록에서 그 던전의 방까지 들어가 전투를 누르게 한다(단계 0과 4가 같이 쓴다)
+ const toFight=(d,k,tabMsg,openMsg)=>{
+  if(currentView!=="adventure")return say(k+"tab",$("tabAdventure"),tabMsg);
+  if(!d)return null;
+  if(!d.unlocked){tutRefresh(loadAdventure);return wait()}
+  if(advRoom!==d.id){
+   if(advRoom)return say(k+"list",$("tabAdventure"),"Adventure를 눌러 던전 목록으로 돌아가 주세요.");
+   if(!openDungeons.has(d.id))return say(k+"open",q(`.dg-card[data-dg="${d.id}"] .dg-head`),openMsg);
+   return say(k+"enter",q(`.dg-card[data-dg="${d.id}"] .dg-enter button`),"여기에 나오는 몬스터가 보입니다.\n입장을 눌러 주세요.");
+  }
+  const need=Math.min(partyMax,chars.length),have=party.filter(id=>chars.some(c=>c.id===id)).length;
+  if(have<need)return say(k+"party",q("#partyPick .roster-unit:not(.in-party):not([disabled])"),`함께 싸울 캐릭터를 파티에 넣어야 합니다.\n\n밝게 표시된 캐릭터를 눌러 주세요. (${have}/${need})`);
+  return say(k+"fight",q("#roomActs .pill.pri:not([disabled])"),"준비가 끝났습니다.\n전투!를 눌러 주세요.");
+ };
+ // Log 탭에서 방금 전투를 여는 데까지(단계 1과 5가 같이 쓴다)
+ const toLog=k=>{
+  if(modal)return say(k+"close",q(".help-close"),"닫기를 눌러 주세요.");
+  if(currentView!=="log")return say(k+"tab",$("tabLog"),"방금 전투를 다시 봅시다.\nLog를 눌러 주세요.");
+  return say(k+"row",q("#battleLogList .blog-row"),"맨 위가 방금 전투입니다.\n눌러 주세요.");
+ };
+ if(s===0){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s1expand",openBtn,expandMsg,{wait:true});
+  if(modal)return say("s0close",q(".help-close"),"닫기를 눌러 주세요.");
+  const d=dungeons[0];
+  return toFight(d,"s0","첫 모험을 떠나 봅시다.\nAdventure를 눌러 주세요.",`첫 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
+ }
+ if(s===1){
+  if(!logOpen)return toLog("s1");
+  if(!openBtn){tutAck("log");return mid("s1wait","잠시만 기다려 주세요.")} // 로그가 지워진 판은 건너뛴다
+  if(openBtn.getAttribute("aria-expanded")!=="true")return say("s1expand",openBtn,expandMsg);
+  const acts=[...document.querySelectorAll("#battleLog .bl-row:not(.bl-srow)")];
+  const mine=acts.map(x=>x.querySelector(".bl-r")).find(x=>x?.querySelector(".bl-turn")&&x.querySelector(".bl-hit"));
+  const foe=acts.map(x=>x.querySelector(".bl-l")).find(x=>x?.querySelector(".bl-turn")&&x.querySelector(".bl-hit"));
+  if(!tutSeen.has("l1"))return page("l1",mine||q("#battleLog"),"오른쪽은 우리 편, 왼쪽은 적입니다.\n한 묶음이 한 번의 행동입니다.\n누가 어떤 스킬로 누구에게 대미지를 얼마나 줬는지 적혀 있습니다.");
+  if(!tutSeen.has("l2"))return page("l2",foe||q("#battleLog"),"적이 공격하면 우리 편의 HP가 깎입니다.\n괄호 안은 맞기 전과 맞은 뒤의 HP입니다.\n깎인 HP는 누군가 회복해 줘야 합니다.",{back:"l1"});
+  if(!tutSeen.has("l3"))return page("l3",q("#helpBody .bl-rw"),"이기면 골드와 EXP(경험치)를 받습니다.\nEXP가 차면 레벨이 오릅니다.\n레벨이 오르면 스킬을 배울 SP(스킬 포인트)를 받습니다.",{back:"l2",fn:()=>tutAck("log")});
+  return mid("s1wait","잠시만 기다려 주세요.");
+ }
+ if(s===2){
+  if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"이제 닫기를 눌러 주세요.");
+  const cl=chars.find(c=>c.job==="CLERIC");if(!cl)return null;
+  if(currentView!=="camp")return say("s2tab",$("tabCamp"),"다친 아군을 회복할 방법을 배울 차례입니다.\nCamp를 눌러 주세요.");
+  if(selectedCharId!==cl.id){
+   if(selectedCharId)return say("s2back",$("tabCamp"),"Camp를 눌러 목록으로 돌아가 주세요.");
+   return say("s2pick",q(`#chars .roster-unit[data-id="${cl.id}"]`),"회복은 Cleric이 맡습니다.\nCleric을 눌러 주세요.");
+  }
+  const mend=(skillsByChar[cl.id]?.skills||[]).find(x=>x.id===TUT_MEND.a);if(!mend)return null;
+  if(!mend.known){
+   const w=sec("skill");if(w?.classList.contains("collapsed"))return say("s2skill",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
+   const btn=[...document.querySelectorAll("#charDetail .skill-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`'${TUT_MEND.a}'`));
+   return say("s2learn",btn,"Mend는 다친 아군을 회복하는 스킬입니다.\n레벨이 올라 받은 SP(스킬 포인트)로 배울 수 있습니다.\n배우기를 눌러 주세요.",{holdId:true});
+  }
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say("s2pattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const list=$("pat-"+cl.id),row0=list?.querySelector(".pattern-row");if(!row0)return null;
+  const cond=row0.querySelector(".pattern-cond"),val=row0.querySelector(".pattern-value"),act=row0.querySelector(".pattern-action");
+  const saveBtn=q("#charDetail .pattern-save button.pri");
+  // 이미 저장된 패턴에 들어 있으면(서버 단계가 곧 넘어간다) 저장만 다시 짚는다
+  const savedHas=!patternDraft[cl.id]&&(cl.pattern||[]).some(r=>r.a===TUT_MEND.a);
+  if(!savedHas){
+   if(!tutSeen.has("p1"))return page("p1",list,"배운 스킬은 패턴에 넣어야 전투에서 씁니다.\n패턴은 캐릭터가 싸우는 방법입니다.\n자기 차례가 오면 위에서부터 한 줄씩 읽습니다.");
+   if(!tutSeen.has("p2"))return page("p2",row0,"한 줄은 조건과 스킬로 이루어져 있습니다.\n조건이 맞는 첫 줄의 스킬을 쓰고, 맞지 않으면 아래 줄로 내려갑니다.",{back:"p1"});
+   if(cond.value!==TUT_MEND.c)return say("c1",cond,"왼쪽은 조건입니다.\n조건 칸을 눌러 목록에서 선명하게 보이는 줄을 골라 주세요.\n'아군에 HP가 OO(%) 이하인 캐릭터가 있을 때'입니다.",{limit:TUT_MEND.c,above:true,nohold:true});
+   const wrap=row0.querySelector(".pattern-value-wrap");
+   if(!tutSeen.has("n1"))return page("n1",wrap,"조건에 따라 가운데에 숫자 칸이 나올 때와 안 나올 때가 있습니다.\n이 조건은 0부터 100까지 원하는 숫자를 넣을 수 있습니다.");
+   if(!tutSeen.has("n2"))return say("n2",wrap,"Mend는 70이 적당합니다.\n숫자 칸에 70을 입력하고 다음을 눌러 주세요.",{btn:"다음",hole:true,nohold:true,prev:()=>tutSeen.delete("n1"),
+    fn:()=>{if(Number(val.value)!==TUT_MEND.v){val.value=TUT_MEND.v;capturePatternDraft(cl.id);tutSeen.add("n2fix")}else tutSeen.delete("n2fix");tutSeen.add("n2")}});
+   if(tutSeen.has("n2fix")&&!tutSeen.has("n3"))return page("n3",wrap,"연습이라 70으로 맞춰 두었습니다.\n튜토리얼이 끝나면 원하는 숫자로 바꿀 수 있습니다.");
+   if(Number(val.value)!==TUT_MEND.v){val.value=TUT_MEND.v;capturePatternDraft(cl.id)}
+   if(act.value!==TUT_MEND.a)return say("c3",act,"오른쪽은 조건이 맞을 때 쓸 스킬입니다.\n배운 스킬만 나옵니다.\n스킬 칸을 눌러 Mend를 골라 주세요.",{limit:TUT_MEND.a,above:true,nohold:true});
+   if(!tutSeen.has("p4"))return page("p4",row0,"첫 줄이 바뀌었습니다.\n이제 저장만 하면 됩니다.");
+  }
+  return say("s2save",saveBtn,"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 3: 공격 직업 넷에게 공격 스킬을 배우게 하고 패턴에 넣는다. 첫 캐릭터만 자세히 설명하고 나머지는 누를 곳만 짚는다
+ if(s===3){
+  if(modal)return okBtn?savedOk():say("s3close",q(".help-close"),"닫기를 눌러 주세요.");
+  if(!tutSeen.has("a0"))return mid("a0","회복만으로는 다음 던전을 이길 수 없습니다.\n공격 스킬을 배워 패턴에 넣어 봅시다.",{btn:"다음",fn:()=>tutSeen.add("a0")});
+  const done=(c,t)=>!patternDraft[c.id]&&[t.a,t.resheaf].filter(Boolean).every(a=>(c.pattern||[]).some(r=>r.a===a));
+  const todo=TUT_SKILLS.map(t=>({t,c:chars.find(c=>c.job===t.job)})).filter(x=>x.c&&!done(x.c,x.t))[0];
+  if(!todo){tutRefresh();return wait()}
+  const {t,c}=todo,k=t.job[0].toLowerCase(),jn=c.job_name||c.job;
+  if(currentView!=="camp")return say("s3tab",$("tabCamp"),"Camp를 눌러 주세요.");
+  if(selectedCharId!==c.id){
+   // 다른 캐릭터를 보고 있으면 Camp로 돌아가지 않고 위쪽 Characters 줄에서 바로 넘어간다. 처음 한 번은 그 줄을 설명한다
+   if(selectedCharId){
+    const bar=q("#charDetail .quick-switch"),head=bar?.querySelector(".quick-head");
+    if(!bar)return say("s3back",$("tabCamp"),"Camp를 눌러 목록으로 돌아가 주세요.");
+    if(!tutSeen.has("q1"))return page("q1",bar,"위쪽의 Characters 줄에는 내 캐릭터가 모두 모여 있습니다.\n이름을 누르면 Camp로 돌아가지 않고 바로 그 캐릭터로 넘어갑니다.");
+    if(!tutSeen.has("q2"))return page("q2",head,"Characters라고 적힌 줄을 누르면 목록을 접거나 펼 수 있습니다.\n화면이 좁을 때 접어 두면 됩니다.",{back:"q1"});
+    if(!bar.classList.contains("open"))return say("s3qopen",head,"Characters를 눌러 목록을 펼쳐 주세요.");
+    return say("s3chip-"+k,bar.querySelector(`.quick-chip[onclick*="'${c.id}'"]`),`${t.full?"먼저":"다음은"} ${jn} 차례입니다.\n밝게 표시된 이름을 눌러 주세요.`);
+   }
+   return say("s3pick-"+k,q(`#chars .roster-unit[data-id="${c.id}"]`),`${t.full?"먼저":"다음은"} ${jn} 차례입니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);
+  }
+  const sk=(skillsByChar[c.id]?.skills||[]).find(x=>x.id===t.a);if(!sk)return null;
+  if(!sk.known){
+   const w=sec("skill");if(w?.classList.contains("collapsed"))return say("s3skill",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
+   const btn=[...document.querySelectorAll("#charDetail .skill-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`'${t.a}'`));
+   return say("s3learn-"+k,btn,t.full?`배울 스킬은 ${sk.name}입니다.\n기본 공격보다 훨씬 센 공격 스킬입니다.\n배우기를 눌러 주세요.`:`배울 스킬은 ${sk.name}입니다.\n배우기를 눌러 주세요.`,{holdId:true});
+  }
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say("s3pattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const list=$("pat-"+c.id),rows=list?[...list.querySelectorAll(".pattern-row")]:[];if(rows.length<2)return null;
+  const mp=Number(sk.mp_cost)||0,rs=t.resheaf?(skillsByChar[c.id]?.skills||[]).find(x=>x.id===t.resheaf):null;
+  // 넣을 줄: Archer는 맨 위에 화살 채우는 줄, 그 아래에 공격 스킬 줄
+  const wants=[...(t.resheaf?[{i:0,c:"arrowEq",v:0,a:t.resheaf,nm:rs?.name||"Resheaf",kind:"arrow"}]:[]),{i:t.resheaf?1:0,c:"selfMpGte",v:mp,a:t.a,nm:sk.name,kind:"mp"}];
+  for(const x of wants){
+   const row=rows[x.i],cond=row.querySelector(".pattern-cond"),val=row.querySelector(".pattern-value"),act=row.querySelector(".pattern-action"),wrap=row.querySelector(".pattern-value-wrap"),id=k+x.i;
+   const set=()=>{if(Number(val.value)!==x.v){val.value=x.v;capturePatternDraft(c.id)}};
+   if(x.kind==="arrow"){
+    if(!tutSeen.has("r1"))return page("r1",row,`${jn}는 공격할 때마다 화살을 씁니다.\n화살이 다 떨어지면 공격이 발동하지 않고 차례만 지나갑니다.\n화살을 채우는 줄을 맨 위에 넣어 둡시다.`);
+    if(cond.value!==x.c)return say("c-"+id,cond,"조건 칸에서 '자신의 화살 수가 OO일 때'를 골라 주세요.\n목록 맨 아래의 직업 전용에 있습니다.",{limit:x.c,above:true,nohold:true});
+    if(!tutSeen.has("v-"+id))return say("v-"+id,wrap,"화살이 0일 때라는 뜻으로 숫자는 0으로 둡니다.\n0인지 확인하고 다음을 눌러 주세요.",{btn:"다음",hole:true,nohold:true,fn:()=>{set();tutSeen.add("v-"+id)}});
+    set();
+    if(act.value!==x.a)return say("x-"+id,act,`화살을 가득 채우는 스킬은 ${x.nm}입니다.\n스킬 칸에서 골라 주세요.`,{limit:x.a,above:true,nohold:true});
+    continue;
+   }
+   if(t.full&&!tutSeen.has("f1"))return page("f1",row,`공격 스킬은 MP를 씁니다.\nMP가 모자라면 스킬이 발동하지 않고 차례만 지나갑니다.\n그래서 MP가 충분할 때만 쓰도록 조건을 겁니다.`);
+   if(cond.value!==x.c)return say("c-"+id,cond,(t.resheaf?"이제 둘째 줄입니다.\n":"")+"조건 칸에서 '자신의 MP가 OO 이상'을 골라 주세요.",{limit:x.c,above:true,nohold:true});
+   if(!tutSeen.has("v-"+id))return say("v-"+id,wrap,`${x.nm}의 MP 소모는 ${x.v}입니다.\n숫자 칸에 ${x.v}${"013678".includes(String(x.v).slice(-1))?"을":"를"} 입력하고 다음을 눌러 주세요.`,{btn:"다음",hole:true,nohold:true,fn:()=>{set();tutSeen.add("v-"+id)}});
+   set();
+   if(act.value!==x.a)return say("x-"+id,act,`스킬 칸에서 ${x.nm} 줄을 골라 주세요.`,{limit:x.a,above:true,nohold:true});
+  }
+  if(t.full&&!tutSeen.has("f2"))return page("f2",list,"조건이 맞지 않으면 아래 줄로 내려갑니다.\nMP가 모자라면 둘째 줄의 기본 공격을 씁니다.");
+  return say("s3save-"+k,q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 4: 둘째 던전을 이길 때까지 전투로 데려간다
+ if(s===4){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s5expand",openBtn,expandMsg2,{wait:true});
+  if(modal)return okBtn?savedOk():say("s4close",q(".help-close"),logOpen&&openedBattle&&openedBattle.result!=="WIN"?"아쉽게 이기지 못했습니다.\n닫기를 누르고 다시 도전해 봅시다.":"닫기를 눌러 주세요.");
+  const d=dungeons[1];
+  return toFight(d,"s4","새 던전에 도전해 봅시다.\nAdventure를 눌러 주세요.",`둘째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
+ }
+ // 단계 5: 둘째 던전의 로그에서 Mend와 공격 스킬이 쓰인 줄을 짚으며 Front Delay·Back Delay를 가르친다
+ if(s===5){
+  if(!logOpen)return toLog("s5");
+  if(!openBtn){tutAck("log2");return wait()} // 로그가 지워진 판은 건너뛴다
+  if(openBtn.getAttribute("aria-expanded")!=="true")return say("s5expand",openBtn,expandMsg2);
+  const cl=chars.find(c=>c.job==="CLERIC"),fm=chars.find(c=>c.job===TUT_SKILLS[0].job);
+  // 스킬 수치(Delay)는 캐릭터를 열어 본 적이 있어야 받아져 있다. 없으면 받아 온다
+  const miss=[cl,fm].filter(c=>c&&!skillsByChar[c.id]);
+  if(miss.length){if(!tutSkAsk){tutSkAsk=true;Promise.all(miss.map(c=>loadSkills(c.id))).finally(()=>{tutSkAsk=false})}return wait()}
+  const skOf=(c,id)=>c?(skillsByChar[c.id]?.skills||[]).find(x=>x.id===id):null;
+  const mend=skOf(cl,TUT_MEND.a),slam=skOf(fm,TUT_SKILLS[0].a),basic=fm?skOf(fm,basicSkill(fm.id)):null;
+  const mine=[...document.querySelectorAll("#battleLog .bl-row:not(.bl-srow)")].map(x=>x.querySelector(".bl-r")).filter(Boolean);
+  const turnOf=(name,cls)=>name?mine.find(x=>x.querySelector(".bl-turn .bl-sk")?.textContent===name&&x.querySelector(cls)):null;
+  const mT=turnOf(mend?.name,".bl-heal"),sT=turnOf(slam?.name,".bl-hit"),bT=turnOf(basic?.name,".bl-hit");
+  // 그 Mend를 쓰려고 캐스팅을 시작한 줄: 같은 캐릭터의 바로 앞 캐스팅 줄
+  const who=mT?.querySelector(".bl-turn b")?.textContent,mi=mine.indexOf(mT);
+  const mW=mT?mine.slice(0,mi).reverse().find(x=>x.querySelector(".bl-wind b")?.textContent===who):null;
+  const hpv=Number((cl?.pattern||[]).find(r=>r.a===TUT_MEND.a)?.v??TUT_MEND.v);
+  const pages=[];
+  if(mW)pages.push(["k1",mW,`Cleric이 ${mend.name} 캐스팅을 시작한 줄입니다.\n스킬을 고른 뒤 실제로 쓸 때까지 기다리는 시간이 Front Delay입니다.\n${mend.name}의 Front Delay는 ${mend.pre_delay}입니다.`],
+   ["k2",mW,"기다리는 동안을 회복과 마법 스킬은 캐스팅, 물리 스킬은 차징이라고 부릅니다.\nFront Delay가 길수록 스킬이 늦게 나갑니다."]);
+  if(mT)pages.push(["k3",mT,`기다림이 끝나 ${mend.name} 스킬이 발동했습니다.\n패턴에 넣은 대로 HP가 ${hpv}% 이하인 아군이 있어서 쓴 것입니다.\n괄호 안은 회복하기 전과 후의 HP입니다.`],
+   ["k4",mT.querySelector(".bl-dl")||mT,`스킬을 쓴 뒤 쉬는 시간이 Back Delay입니다.\nBack Delay가 끝나야 다음 차례가 옵니다.\n${mend.name}의 Back Delay는 ${mend.post_delay}입니다.`]);
+  if(sT)pages.push(["k5",sT,`공격 스킬도 같습니다.\n${slam.name}의 Front Delay는 ${slam.pre_delay}, Back Delay는 ${slam.post_delay}입니다.\n한 방이 센 대신 다음 차례가 늦게 옵니다.`]);
+  if(bT)pages.push(["k6",bT,"기본 공격은 Front Delay와 Back Delay가 없습니다.\n약하지만 차례가 빨리 돌아옵니다."]);
+  pages.push(["k7",null,`Delay는 Camp의 Skill 목록에 'Delay ${slam?`${slam.pre_delay}:${slam.post_delay}`:"40:120"}'처럼 적혀 있습니다.\n앞이 Front Delay, 뒤가 Back Delay입니다.\nSPD가 높으면 모든 Delay가 짧아집니다.`]);
+  for(let i=0;i<pages.length;i++){const [id,el,msg]=pages[i];if(tutSeen.has(id))continue;
+   const o={back:i?pages[i-1][0]:null,fn:i===pages.length-1?()=>tutAck("log2"):null};
+   return el?page(id,el,msg,o):{...page(id,null,msg,o),center:true}}
+  return wait();
+ }
+ // 단계 6: 받은 장비 중 활 하나만 직접 끼운다
+ if(s===6){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  const d1=dungeons[1]?.name||"둘째 던전";
+  if(modal){
+   const rwBox=logOpen?q("#helpBody .bl-rw"):null;
+   if(rwBox&&!tutSeen.has("g0"))return page("g0",rwBox,"이 던전을 처음 클리어했습니다.\n보상으로 새 장비를 받았습니다.");
+   return okBtn?savedOk():say("s6close",q(".help-close"),"닫기를 눌러 주세요.");
+  }
+  const ar=chars.find(c=>c.job===TUT_GEAR.job),bow=itemsData.find(i=>i.def_id===TUT_GEAR.def&&!i.equipped_character&&!i.unknown);
+  // 끼울 활이 안 보이면(이미 끼웠거나 아직 못 받아 옴) 서버 단계를 다시 묻는다
+  if(!ar||!bow){tutRefresh();return wait()}
+  if(!tutSeen.has("g1"))return mid("g1",`${d1} 첫 클리어 보상으로 새 장비를 받았습니다.\n대부분은 바로 장착해 두었습니다.\n활 하나만 직접 장착해 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("g1")});
+  if(currentView!=="camp")return say("s6tab",$("tabCamp"),"Camp를 눌러 주세요.");
+  if(selectedCharId!==ar.id){
+   if(selectedCharId)return say("s6back",$("tabCamp"),"Camp를 눌러 목록으로 돌아가 주세요.");
+   return say("s6pick",q(`#chars .roster-unit[data-id="${ar.id}"]`),"새 활은 Archer가 씁니다.\nArcher를 눌러 주세요.");
+  }
+  const w=sec("owned");if(w?.classList.contains("collapsed"))return say("s6owned",w.querySelector(".sec-toggle"),"가진 장비 중 이 캐릭터가 낄 수 있는 것은 Allowed to Equip에 나옵니다.\n눌러서 펼쳐 주세요.");
+  const btn=[...document.querySelectorAll("#charDetail .equip-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`equipTo('${bow.id}'`));
+  if(!tutSeen.has("g2"))return page("g2",btn?.closest(".equip-row"),"새로 받은 활입니다.\n이름 옆에 장비의 능력치가 보입니다.\nATK(공격력)가 지금 낀 활보다 높습니다.");
+  return say("s6equip",btn,"장착을 눌러 주세요.\n끼고 있던 활은 Bag으로 돌아갑니다.",{holdId:true});
+ }
+ return null;
+}
+function tutEnsure(){
+ if(tutUi)return tutUi;
+ const mk=cls=>{const d=document.createElement("div");d.className=cls;d.style.display="none";document.body.appendChild(d);return d};
+ tutUi={b:[0,1,2,3].map(()=>mk("tut-blk")),ring:mk("tut-ring"),bubble:mk("tut-bubble"),cur:null,key:null,html:"",shown:false};
+ if(TUT_EXIT_BUTTON){
+  // 구석 버튼 묶음: 종료하기(모두), 처음부터 다시(관리자만. 점검용으로 표시된 관리자 계정만 서버가 받아 준다). 잘못 누르는 걸 막으려고 두 번 눌러야 한다
+  const box=document.createElement("div");box.className="tut-exit";box.style.display="none";document.body.appendChild(box);tutUi.exit=box;
+  const mkBtn=(label,armed,fn)=>{const x=document.createElement("button");x.type="button";x.textContent=label;box.appendChild(x);
+   x.addEventListener("click",async()=>{if(!x.dataset.arm){x.dataset.arm="1";x.textContent=armed;setTimeout(()=>{delete x.dataset.arm;x.textContent=label},3000);return}await fn()});return x};
+  tutUi.skip=mkBtn("튜토리얼 종료하기","한 번 더 누르면 종료됩니다",async()=>{
+   const {data,error}=await sb.rpc("tutorial_skip");if(error){log("tutorial_skip 실패: "+error.message,"bad");return}
+   tut={step:data?.step??tut.last,last:data?.last??tut.last};renderTutReplay();tutCongrats=null;tutSeen.clear();tutHold=null;tutHide();
+   if(currentView==="adventure")loadAdventure();
+  });
+  tutUi.again=mkBtn("처음부터 다시","한 번 더 누르면 계정을 되돌립니다",async()=>{
+   const {data:{user}}=await sb.auth.getUser();if(!user)return;
+   const {error}=await sb.rpc("admin_reset_account",{p_email:user.email});if(error){log("admin_reset_account 실패: "+error.message,"bad");return}
+   location.reload();
+  });
+  // 챕터 다시 보기(끝낸 챕터만 보인다)와, 연습 중에만 보이는 연습 끝내기
+  tutUi.chap=TUT_CHAPTERS.map(c=>{const x=document.createElement("button");x.type="button";x.textContent=`챕터 ${c.n} 다시 보기`;x.addEventListener("click",()=>tutChapterAsk(c.n));box.appendChild(x);return x});
+  tutUi.pend=mkBtn("연습 끝내기","한 번 더 누르면 원래 계정으로 돌아갑니다",async()=>{await practiceEnd()});
+ }
+ tutUi.bubble.addEventListener("click",e=>{const b=e.target.closest("button"),c=tutUi.cur;if(!b||!c)return;const fn=b.dataset.k==="prev"?c.prev:c.fn;if(!fn)return;tutUi.cur=null;fn();tutTick()});
+ return tutUi;
+}
+function tutHide(){tutUnlimit(null);if(!tutUi||!tutUi.shown)return;document.documentElement.classList.remove("tut-on");[...tutUi.b,tutUi.ring,tutUi.bubble,...(tutUi.exit?[tutUi.exit]:[])].forEach(d=>d.style.display="none");tutUi.shown=false;tutUi.cur=null;tutUi.key=null}
+function tutRender(st){
+ const ui=tutEnsure(),W=document.documentElement.clientWidth,H=innerHeight;
+ if(st.el&&ui.key!==st.id){try{st.el.scrollIntoView({block:"center",inline:"nearest"})}catch(e){}}
+ let r=null;if(st.el){const b=st.el.getBoundingClientRect(),p=6;r={l:b.left-p,t:b.top-p,w:b.width+p*2,h:b.height+p*2}}
+ const set=(d,l,t,w,h)=>{d.style.display=w>0&&h>0?"block":"none";d.style.left=l+"px";d.style.top=t+"px";d.style.width=w+"px";d.style.height=h+"px"};
+ // 눌러야 하는 곳만 구멍을 낸다. 설명만 하는 장과 기다리는 동안은 전부 막는다
+ if(r&&(!st.btn||st.hole)&&!st.wait){set(ui.b[0],0,0,W,Math.max(0,r.t));set(ui.b[1],0,r.t,Math.max(0,r.l),r.h);set(ui.b[2],r.l+r.w,r.t,Math.max(0,W-r.l-r.w),r.h);set(ui.b[3],0,r.t+r.h,W,Math.max(0,H-r.t-r.h))}
+ else{set(ui.b[0],0,0,W,H);for(let i=1;i<4;i++)ui.b[i].style.display="none"}
+ ui.ring.style.display="block";ui.ring.classList.toggle("none",!r);
+ if(r){ui.ring.style.left=r.l+"px";ui.ring.style.top=r.t+"px";ui.ring.style.width=r.w+"px";ui.ring.style.height=r.h+"px"}else{ui.ring.style.left="50%";ui.ring.style.top="50%";ui.ring.style.width="0";ui.ring.style.height="0"}
+ // 문장은 통째로 다음 줄로 넘어간다(한 줄에 다 들어가면 한 줄). 빈 줄로 나눈 곳은 항상 줄을 바꾼다
+ const html=`<div class="tut-msg">${String(st.msg).split("\n\n").map(bl=>bl.split("\n").map(x=>`<span class="tut-s">${esc(x)}</span>`).join(" ")).join("<br>")}</div>${st.btn?`<div class="tut-act">${st.prev?`<button type="button" data-k="prev">이전</button>`:""}<button type="button" class="pri" data-k="next">${esc(st.btn)}</button></div>`:""}`;
+ ui.bubble.style.display="block";
+ // 말풍선 폭을 글의 가장 긴 줄에 맞춘다(버튼 줄보다 좁아지지는 않는다)
+ if(ui.html!==html||ui.fitW!==W){ui.bubble.innerHTML=html;ui.html=html;ui.fitW=W;ui.bubble.style.width="";
+  const rg=document.createRange(),a=ui.bubble.querySelector(".tut-act");let lo=1e9,hi=-1e9;
+  for(const s of ui.bubble.querySelectorAll(".tut-s")){rg.selectNodeContents(s);for(const q of rg.getClientRects()){lo=Math.min(lo,q.left);hi=Math.max(hi,q.right)}}
+  let need=hi-lo;if(a&&a.children.length)need=Math.max(need,a.lastElementChild.getBoundingClientRect().right-a.firstElementChild.getBoundingClientRect().left);
+  const cs=getComputedStyle(ui.bubble),pad=parseFloat(cs.paddingLeft)+parseFloat(cs.paddingRight)+parseFloat(cs.borderLeftWidth)+parseFloat(cs.borderRightWidth);
+  if(need>0&&need+pad<ui.bubble.offsetWidth-0.5)ui.bubble.style.width=Math.ceil(need+pad)+"px"}
+ const bw=ui.bubble.offsetWidth,bh=ui.bubble.offsetHeight;let top,left;
+ if(!r){top=(H-bh)/2;left=(W-bw)/2}
+ else{
+  const below=r.t+r.h+10,above=r.t-bh-10;
+  top=st.above&&above>=8?above:below;
+  if(top+bh>H-8){top=above;if(top<8)top=H-bh-12}
+  left=Math.max(12,Math.min(W-bw-12,r.l+r.w/2-bw/2));
+ }
+ ui.bubble.style.top=top+"px";ui.bubble.style.left=left+"px";
+ // 구석 버튼: 왼쪽 아래 → 오른쪽 아래 → 왼쪽 위 → 오른쪽 위 순서로, 말풍선이나 짚는 곳과 겹치지 않는 첫 자리에 둔다
+ if(ui.exit){const x=ui.exit,pr=!!tutPractice;ui.skip.style.display=pr?"none":"";ui.again.style.display=isAdminUser&&!pr?"":"none";ui.chap.forEach((b,i)=>b.style.display=!pr&&tut.step>=TUT_CHAPTERS[i].to?"":"none");ui.pend.style.display=pr?"":"none";x.style.display="flex";const xw=x.offsetWidth,xh=x.offsetHeight;
+  const hit=(xl,xt,l,t,w,h)=>l<xl+xw+8&&l+w>xl-8&&t<xt+xh+8&&t+h>xt-8;
+  const spots=[[12,H-12-xh],[W-12-xw,H-12-xh],[12,12],[W-12-xw,12]];
+  const [xl,xt]=spots.find(([a,b])=>!hit(a,b,left,top,bw,bh)&&!(r&&hit(a,b,r.l,r.t,r.w,r.h)))||spots[0];
+  x.style.left=xl+"px";x.style.top=xt+"px";x.style.right="auto";x.style.bottom="auto"}
+ ui.cur=st;ui.key=st.id;ui.shown=true;document.documentElement.classList.add("tut-on");
+}
+function tutTick(){
+ if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;renderTutReplay()}tutHide();return}
+ if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
+ if(!tutActive()){tutHide();return}
+ let st=null;try{st=tutResolve()}catch(e){st=null}
+ tutUnlimit(st?.limit?st.el:null);
+ if(!st||(!st.center&&!tutVisible(st.el))){
+  // 화면을 다시 그리는 잠깐은 그대로 막아 두고, 오래 못 찾으면 풀어 준다
+  if(!tutLost)tutLost=Date.now();
+  if(tutUi?.shown&&tutUi.cur&&Date.now()-tutLost<1200){const c=tutUi.cur;tutRender({...c,el:tutVisible(c.el)?c.el:null,wait:true});tutUi.cur=c;return}
+  tutHide();return;
+ }
+ tutLost=0;
+ if(st.limit)tutLimit(st.el,st.limit);
+ if(tutHold){if(st.id===tutHold.id&&(tutHold.byId||st.el===tutHold.el)&&Date.now()<tutHold.until){tutRender({...st,wait:true});return}tutHold=null}
+ tutRender(st);
+}
+// 짚은 곳을 누른 뒤 화면이 바뀔 때까지는 다시 눌리지 않게 잠깐 막는다(목록과 숫자 칸은 예외)
+document.addEventListener("click",e=>{const c=tutUi?.shown?tutUi.cur:null;if(c&&c.el&&!c.btn&&!c.wait&&!c.nohold&&c.el.contains(e.target))tutHold={id:c.id,el:c.el,byId:!!c.holdId,until:Date.now()+4000}},true);
+// 과제 중에는 키보드로 다른 곳을 누르거나 모달을 닫지 못하게 한다
+document.addEventListener("keydown",e=>{
+ if(!tutUi?.shown)return;const c=tutUi.cur,k=e.key;
+ if(k==="Escape"||k==="Tab"){e.preventDefault();e.stopImmediatePropagation();return}
+ if(k==="Enter"||k===" "){const a=document.activeElement;if(!(a&&((c?.el&&(!c.btn||c.hole)&&!c.wait&&c.el.contains(a))||tutUi.bubble.contains(a)))){e.preventDefault();e.stopImmediatePropagation()}}
+},true);
+setInterval(tutTick,150);
 const EQUIP_SLOTS=[["WEAPON","무기"],["SHIELD","방패/보조무기"],["HEAD","투구"],["SHOULDER","견갑"],["TOP","상의"],["BOTTOM","하의"],["BELT","벨트"],["SHOES","신발"],["CAPE","망토"],["EARRING","귀걸이"],["NECKLACE","목걸이"],["RING","반지"]];
 // 유저에게 보이는 글에는 밑줄(_)을 쓰지 않는다: 코드 이름은 띄어쓰기로 바꿔 보인다(sub_pistol → sub pistol)
 const vis=x=>String(x??"").replace(/_/g," ");
 function itemCat(d){return vis(d?.item_type||d?.slot||"").toLowerCase()}
 // 아이템 옵션: 기본 옵션 + 랜덤 옵션 합산
 // 옵션 색: 물공 · 마공 · 물방 · 마방 · HP · MP · SPD · 퍼센트(증폭, 경감)
-function optClass(k){if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD"||k==="SPD_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
+function optClass(k){if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
 function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i.rolled_bonuses])for(const [k,v] of Object.entries(src||{}))o[k]=(o[k]||0)+Number(v);return o}
-const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B"]);
+const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"]);
 const PCT_BONUS=new Set(["MIT","MMIT","SUPPORT_AMP","DMG_AMP","PARRY","PIERCE","FINAL_AMP","FINAL_REDUCE"]);
-function bonusLabel(k){return STAT_LABEL[k]||k}
 // 아이템 옵션 표기(영어)
-const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD:"SPD",SPD_PCT:"SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",STR:"STR",DEX:"DEX",INT:"INT",STR_PCT:"STR",DEX_PCT:"DEX",INT_PCT:"INT",RSTR:"Real STR",RDEX:"Real DEX",RINT:"Real INT",RALL:"Real ALL",PATTERN:"Pattern"};
-// 앞방+뒷방 표기: 뒷방이 음수면 DEF 5-3
-function fbText(f,b){f=Number(f)||0;b=Number(b)||0;return `${f}${b<0?"":"+"}${b}`}
+const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD_B:"Back SPD",SPD_B_PCT:"Back SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",KARMA_LIMIT:"Karma Limit",SPD_F:"Front SPD",PATTERN:"Pattern"};
+// 앞+뒤 표기(DEF, MDEF, SPD): 뒤가 음수면 DEF 5-3. 소수는 둘째 자리까지
+function fbText(f,b){f=Number((Number(f)||0).toFixed(2));b=Number((Number(b)||0).toFixed(2));return `${f}${b<0?"":"+"}${b}`}
 function itemTagsHtml(d){const t=[itemCat(d),String(d?.material||"").toLowerCase()].filter(Boolean);return t.length?`<span class="item-cat item-tags">(${t.map(esc).join(`<span class="tag-dot">·</span>`)})</span>`:""}
-function itemBodyHtml(i){return itemBodyParts(i).join("")}
 // 첫 줄: 이름·범주 + 옵션, 둘째 줄: 설명
 function itemTop(head,i){const [c,n]=itemBodyParts(i);// 범주 괄호와 옵션 사이에 점(·)을 넣는다(범주 괄호 속 점보다 크고 굵게, 세로 가운데)
  return `<div class="item-top">${head}${c?`<span class="opt-wrap"><span class="opt-dot">·</span>${c}</span>`:""}</div>${n}`}
@@ -876,7 +1352,7 @@ function itemBodyParts(i){
  const val=(cls,label,txt)=>`<b class="${cls}">${label}${String(txt).startsWith("+")?"":" "}${txt}</b>`;
  // 없는 옵션(0)은 표시하지 않는다
  const sg=x=>x>0?`+${x}`:`${x}`;
- const parts=[n("ATK")?val("o-atk","ATK",sg(n("ATK"))):"",n("MATK")?val("o-matk","MATK",sg(n("MATK"))):"",(n("DEF_F")||n("DEF_B"))?val("o-def","DEF",fbText(n("DEF_F"),n("DEF_B"))):"",(n("MDEF_F")||n("MDEF_B"))?val("o-mdef","MDEF",fbText(n("MDEF_F"),n("MDEF_B"))):""].filter(Boolean);
+ const parts=[n("ATK")?val("o-atk","ATK",sg(n("ATK"))):"",n("MATK")?val("o-matk","MATK",sg(n("MATK"))):"",(n("DEF_F")||n("DEF_B"))?val("o-def","DEF",fbText(n("DEF_F"),n("DEF_B"))):"",(n("MDEF_F")||n("MDEF_B"))?val("o-mdef","MDEF",fbText(n("MDEF_F"),n("MDEF_B"))):"",(n("SPD_F")||n("SPD_B"))?val("o-spd","SPD",fbText(n("SPD_F"),n("SPD_B"))):""].filter(Boolean);
  // 기본 옵션과 그 밖의 옵션을 순서대로 한 줄(가로)에 나열
  const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(vis(ITEM_OPT_LABEL[k]||k))}${v>0?"+":" "}${esc(v)}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}</b>`);
  const all=[...parts,...extra].join("");
@@ -891,30 +1367,47 @@ function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="
 function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from||(j==="GUNNER"?"ARCHER":null)}return out}
 // 퍼센트 표시: 소수 둘째 자리까지, 끝의 0은 지움 (예: 74.07%, 0%)
 function pctText(v){const n=Number(v)||0;return `${Number(n.toFixed(2))}%`}
-const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",RSTR:"리얼 STR",RDEX:"리얼 DEX",RINT:"리얼 INT",RALL:"리얼 올스탯",PATTERN:"패턴 줄",STR:"STR",DEX:"DEX",INT:"INT",STR_PCT:"STR",DEX_PCT:"DEX",INT_PCT:"INT",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_PCT:"SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD:"SPD"};
+const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",KARMA_LIMIT:"Karma Limit",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
 const DOT_LABEL={POISON:"독",BLEED:"출혈"};
-const BUFF_LABEL={ATK:"ATK",MATK:"MATK",STR:"STR",DEX:"DEX",INT:"INT",SPD:"SPD",DEF_F:"DEF(앞)",MDEF_F:"MDEF(앞)",MIT:"물리 경감",MMIT:"마법 경감",HEAL:"회복량",DMG_TAKEN:"받는 피해",DEF_B:"DEF(뒤)",MDEF_B:"MDEF(뒤)"};
+const BUFF_LABEL={ATK:"ATK",MATK:"MATK",SPD_F:"Front SPD",SPD_B:"Back SPD",DEF_F:"Front DEF",MDEF_F:"Front MDEF",DEF_B:"Back DEF",MDEF_B:"Back MDEF",SUPPORT_TAKEN:"SUPPORT TAKEN"};
 function buffLabel(k){return BUFF_LABEL[k]||k}
-function buffUnit(k){return k==="DEF_F"||k==="MDEF_F"||k==="DEF_B"||k==="MDEF_B"?"":"%"}
-// 받는 피해 증가는 디버프지만 수치가 커지는 효과라 +로 보여 준다
-function buffSign(k){return k==="DMG_TAKEN"?-1:1}
+// 버프·디버프는 전부 수치다. 받는 지원만 %
+function buffUnit(k){return k==="SUPPORT_TAKEN"?"%":""}
+// 재료별로 더 잘 붙는 랜덤 옵션: 어떤 옵션인지만 서버에서 받아 보여 준다(얼마나 더 잘 붙는지는 서버 비공개)
+let materialBias=null;
+const MATERIAL_ORDER=["IRON","WOOD","CLOTH","LEATHER","COPPER","BONE","PAPER"];
+async function openMaterialHelp(){
+ if(!materialBias){const {data,error}=await sb.from("item_material_bias").select("material,option_id").order("material").order("option_id");if(error){log("item_material_bias 실패: "+error.message,"bad");return}materialBias=data||[]}
+ const by={};materialBias.forEach(r=>(by[r.material]=by[r.material]||[]).push(r.option_id));
+ const rank=m=>{const i=MATERIAL_ORDER.indexOf(m);return i<0?99:i};
+ const mats=Object.keys(by).sort((a,b)=>rank(a)-rank(b)||a.localeCompare(b));
+ const rows=mats.map(m=>`<li><b>${esc(vis(m).toLowerCase())}</b> ${by[m].map(o=>esc(vis(ITEM_OPT_LABEL[o]||o))).join(" · ")}</li>`).join("");
+ HELP.material={title:"Material",html:`<p>장비의 재료마다 더 잘 붙는 랜덤 옵션이 있습니다. 감정과 제작 모두 같습니다.</p><ul>${rows}</ul><p class="help-note">얼마나 더 잘 붙는지는 알려져 있지 않습니다. 다른 옵션도 그대로 붙을 수 있습니다.</p>`};
+ openHelp("material");
+}
 function skillEffectText(s,ak){
  const e=s.effect||{},out=[];
  // 계수 표기: 스탯 계수%×타수 (예: ATK 160×1)
- const coef=(o,hits)=>`${s.base_stat||o.stat} ${Math.round(Number(o.mult)*100)}×${hits??1}`;
+ const coef=(o,hits)=>`${o.stat} ${Math.round(Number(o.mult)*100)}×${hits??1}`;
  if(e.power)out.push(coef(e.power,s.hits||1));
  if(e.heal_self_pct)out.push(`자신의 최대 HP ${e.heal_self_pct}% 회복`);
  if(e.heal_lost_pct)out.push(`자신의 잃은 HP ${e.heal_lost_pct}% 회복`);
  if(e.sure_parry)out.push(`다음 ${e.sure_parry.hits}회 피격 확정 패링`);
  if(e.bonuses)Object.entries(e.bonuses).forEach(([k,v])=>out.push(`${STAT_LABEL[k]||k} ${v>0?"+":""}${v}${k.endsWith("_PCT")||["MIT","MMIT","SUPPORT_AMP","PARRY","PIERCE"].includes(k)?"%":""}`));
- if(e.heal)out.push(`${s.hit_type==="ALL"?"모든 아군":"가장 다친 아군"} ${coef(e.heal,1)} 회복`);
- if(e.regen)out.push(`재생 ${e.regen.turns}턴 (턴마다 ${coef(e.regen,1)})`);
- if(e.dot)out.push(`${DOT_LABEL[e.dot.kind]||e.dot.kind} ${e.dot.turns}턴 (턴마다 ${e.dot.kind==="POISON"?`${s.base_stat||e.dot.stat} ${Math.round(Number(e.dot.mult)*100)}×중첩`:coef(e.dot,1)})`);
+ if(e.heal)out.push(`${s.hit_type==="ALL"?"모든 아군":"가장 다친 아군"} ${coef(e.heal,s.hit_type==="ALL"?1:(s.hits||1))} 회복`);
+ if(e.mp_restore)out.push(s.target==="SELF"?`자신의 MP를 최대 MP의 ${e.mp_restore.pct}% 회복`:`${s.hit_type==="ALL"?"모든 아군":"MP가 가장 적은 아군"}의 MP를 각자 최대 MP의 ${e.mp_restore.pct}% 회복`);
+ if(e.regen)out.push(`${s.hit_type==="ALL"?"모든 아군 ":""}재생 ${e.regen.turns}턴 (턴마다 ${coef(e.regen,1)})`);
+ if(e.dot)out.push(`${DOT_LABEL[e.dot.kind]||e.dot.kind} ${e.dot.turns}턴 (턴마다 ${coef(e.dot,1)})`);
  if(e.delay_push)out.push(`Delay Push ${e.delay_push}`);
- if(e.buff)e.buff.forEach(b=>out.push(`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`));
- if(e.debuff)e.debuff.forEach(b=>out.push(`${buffLabel(b.k)} ${buffSign(b.k)<0?"+":"-"}${b.v}${buffUnit(b.k)}`));
+ // 버프 크기: 고정 수치, 또는 시전자 수치의 몇 %
+ const bufSize=b=>b.stat!=null&&b.mult!=null?`시전자 ${b.stat}의 ${+(Number(b.mult)*100).toFixed(2)}%`:`${b.v}${buffUnit(b.k)}`;
+ if(e.bleed_scale)out.push(`대상에 남은 출혈량의 ${e.bleed_scale.pct}% 추가${e.bleed_scale.max_mult!=null?` (합계 ${e.power?.stat||"ATK"} ${Math.round(Number(e.bleed_scale.max_mult)*100)}까지)`:""}`);
+ if(e.buff)e.buff.forEach(b=>out.push(`${buffLabel(b.k)} +${bufSize(b)}`));
+ if(e.debuff)e.debuff.forEach(b=>out.push(`${buffLabel(b.k)} -${bufSize(b)}`));
+ if(e.bleed_hit_amp)out.push(`출혈이 걸린 적을 때릴 때 피해 증폭 +${e.bleed_hit_amp}%`);
+ if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%p`);
  if(e.delay_pull)out.push(`Delay Pull ${e.delay_pull}`);
- if(e.revive)out.push(`쓰러진 아군을 HP ${e.revive.hp_pct}%로 부활`);
+ if(e.revive)out.push(e.revive.mult!=null?`쓰러진 아군을 ${coef(e.revive,1)} HP로 부활`:`쓰러진 아군을 HP ${e.revive.hp_pct}%로 부활`);
  if(e.first_action_no_pre)out.push("전투 첫 행동 Front Delay 0");
  if(e.gold_bonus_pct)out.push(`전투 보상 골드 +${e.gold_bonus_pct}%`);
  if(e.element_scan)out.push("적 전체의 원소 파악");
@@ -938,9 +1431,9 @@ function renderSkills(c){
  const d=skillsByChar[c.id];
  if(!d)return `<div class="section-title sec-line sec-gap">Skill</div><div class="empty">스킬 정보를 불러오는 중입니다.</div>`;
  const row=s=>{
-  if(s.masked)return `<div class="skill-row unlearned locked"><div class="skill-head"><b class="skill-name">${esc(s.name)}</b></div><div class="skill-desc">${esc(s.description)}</div><div class="skill-meta">Lv ??? · SP ??? · ???</div></div>`;
+  if(s.masked)return `<div class="skill-row unlearned locked"><div class="skill-head"><b class="skill-name">${esc(s.name)}</b></div><div class="skill-desc">${esc(s.description)}</div><div class="skill-meta">SP ??? · ???</div></div>`;
   const meta=[];
-  if(!s.auto)meta.push(`Lv ${s.min_level}`,`SP ${s.sp_cost}`);
+  if(!s.auto)meta.push(`SP ${s.sp_cost}`);
   if(s.kind==="ACTIVE"&&s.mp_cost)meta.push(`MP ${s.mp_cost}`);
   if(s.kind==="ACTIVE"&&s.ammo_cost)meta.push(`${d.ammo_kind==="AMMO"?"탄약":"화살"} ${s.ammo_cost}`);
   if(s.kind==="ACTIVE"&&s.pre_delay!=null)meta.push(`Delay ${s.pre_delay}:${s.post_delay}`);
@@ -949,22 +1442,27 @@ function renderSkills(c){
   const eff=skillEffectText(s,d.ammo_kind);
   const state=s.known?`<span class="skill-state">${s.auto?"기본":"습득"}</span>`
    :(d.sp_free>=s.sp_cost?`<button class="mini-btn pri" onclick="learnSkill('${c.id}','${esc(s.id)}')">배우기</button>`:`<span class="skill-state dim">SP 부족</span>`);
-  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><b class="skill-name">${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}<span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
+  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
  };
  const known=d.skills.filter(s=>s.known),rest=d.skills.filter(s=>!s.known);
  const rows=`<div class="skill-group known-g">배운 스킬 <b>${known.length}</b></div>${known.map(row).join("")}`
   +(rest.length?`<div class="skill-group">배우지 않은 스킬 <b>${rest.length}</b></div>${rest.map(row).join("")}`:"");
  const maxLv=Number(pubCfg.MAX_LEVEL||70);
- const resetBtn=c.level>=maxLv&&!d.free_reset_used&&d.sp_spent>0?`<button class="mini-btn" onclick="confirmFreeReset('${c.id}')">무료 초기화</button>`:"";
- return `<div class="section-title sec-line sec-gap title-help"><span>Skill</span><span class="sp-box">SP <b>${d.sp_free}</b> / ${d.sp_total}</span>${resetBtn}</div>
+ const resetBtn=c.level>=maxLv&&!d.free_reset_used&&d.sp_spent>0?`<button class="mini-btn pri" onclick="confirmFreeReset('${c.id}')">무료 초기화</button>`:"";
+ const draughtBtn=d.sp_spent>0&&itemsData.some(i=>i.def_id==="reset_draught"&&!i.equipped_character)?`<button class="mini-btn pri" onclick="confirmSkillReset('${c.id}')">스킬 초기화</button>`:"";
+ return `<div class="section-title sec-line sec-gap title-help"><span>Skill</span><span class="sp-box">SP <b>${d.sp_free}</b> / ${d.sp_total}</span>${resetBtn}${draughtBtn}</div>
  <div class="skill-list">${rows}</div>`;
 }
 async function learnSkill(charId,sid){if(await rpc("learn_skill",{p_char:charId,p_skill:sid}))load()}
 // 서버가 패턴을 바꾸는 동작(전직, 스킬 초기화, 관리자 레벨 조정) 앞에서 저장 안 한 패턴 초안이 있으면 경고
 function draftWarnHtml(charId){return patternDraft[charId]?`<p class="draft-warn">저장하지 않은 패턴 변경이 있습니다. 계속하면 사라집니다.</p>`:""}
 function confirmFreeReset(charId){
- openConfirm("스킬 초기화",`<p>배운 스킬을 모두 초기화하고 SP를 전부 돌려받습니다. 레벨 ${esc(pubCfg.MAX_LEVEL||70)} 달성 보상인 <b>무료 초기화는 캐릭터마다 1번</b>뿐입니다.</p><p class="help-note">초기화된 스킬을 쓰던 패턴 줄은 조건은 그대로 두고 행동만 기본 공격으로 바뀝니다.</p>${draftWarnHtml(charId)}`,
+ openConfirm("스킬 초기화",`<p>배운 스킬을 모두 초기화하고 SP를 전부 돌려받습니다. 레벨 ${esc(pubCfg.MAX_LEVEL||70)} 달성 보상인 <b>무료 초기화는 캐릭터마다 1번</b>뿐입니다. 그 뒤에 다시 초기화하려면 <b>Unwinding Draught</b> 1개가 필요합니다.</p><p class="help-note">초기화된 스킬을 쓰던 패턴 줄은 조건은 그대로 두고 행동만 기본 공격으로 바뀝니다.</p>${draftWarnHtml(charId)}`,
   [["취소",null,false],["초기화",async()=>{if(await rpc("reset_character_skills",{p_char:charId})){delete patternDraft[charId];load()}},true]]);
+}
+function confirmSkillReset(charId){
+ openConfirm("스킬 초기화",`<p><b>Unwinding Draught</b> 1개를 마셔 배운 스킬을 모두 초기화하고 SP를 전부 돌려받습니다.</p><p class="help-note">초기화된 스킬을 쓰던 패턴 줄은 조건은 그대로 두고 행동만 기본 공격으로 바뀝니다.</p>${draftWarnHtml(charId)}`,
+  [["취소",null,false],["마시기",async()=>{if(await rpc("use_skill_reset",{p_char:charId})){delete patternDraft[charId];load()}},true]]);
 }
 // 전직 선택지는 서버(get_promote_options)가 준다. 숨겨진 조건을 못 채운 직업은 이름이 가려져(masked) 온다.
 function renderPromoteCards(c){
@@ -983,7 +1481,6 @@ function renderPromoteCards(c){
 function promoteCondText(x){
  if(x.type==="level")return `Lv ${x.v} 이상`;
  if(x.type==="skill")return `${x.name} 습득`;
- if(x.type==="main")return `리얼 ${x.stat} ${x.v} 이상`;
  return "???";
 }
 function condListHtml(items){return `<div class="cond-title">조건</div><ul class="cond-list">${items.join("")}</ul>`}
@@ -1003,30 +1500,49 @@ async function openPromote(charId,job){
   <p class="help-note">되돌릴 수 없습니다.</p>${draftWarnHtml(charId)}`,
   [["취소",null,false],...opts.map(t=>[`${t.name} 전직`,async()=>{if(await rpc("promote_character",{p_char:charId,p_job:t.job})){delete promoteByChar[charId];delete patternDraft[charId];await load()}},true])]);
 }
-// 스탯(리얼+추가) + 스탯 포인트 배분(되돌리기 없음)
-function allocatedPoints(c){return (Number(c.level)-1)*Number(pubCfg.STAT_POINTS_PER_LEVEL||5)-Number(c.stat_points||0)}
-function renderMainStats(c){
- const st=c.stats?.STATS||{},pts=Number(c.stat_points||0);
- const sv=k=>`${k} <b>${st[k]?.REAL??"-"}</b><span class="stat-add">+${st[k]?.ADD??0}</span>`;
- const canReset=allocatedPoints(c)>0&&itemsData.some(i=>i.def_id==="stat_reset_draught"&&!i.equipped_character);
- const row=`<div class="st main-st"><span>${sv("STR")}</span><span>${sv("DEX")}</span><span>${sv("INT")}</span>${pts>0?`<span class="stat-pt">Stat Point <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn" onclick="confirmStatReset('${c.id}')">스탯 초기화</button>`:""}</div>`;
+// TP(Talent Point): Front SPD(1포인트 단위), Pattern(한 줄씩), Karma Limit(1점씩). 비용 표는 공개 설정에서 읽는다. 되돌리기는 Unwinding Draught
+const tpNum=v=>{const n=Math.floor(Number(v));return Number.isFinite(n)&&n>0?n:0};
+function tpBandSum(b,n){let s=0,prev=0;for(const [cnt,v] of b||[]){s+=Math.min(Math.max(n-prev,0),Number(cnt))*Number(v);prev+=Number(cnt)}return s}
+function tpBandMax(b){return (b||[]).reduce((a,x)=>a+Number(x[0]),0)}
+function tpPatternCost(n){return (pubCfg.TP_PATTERN_COSTS||[]).slice(0,n).reduce((a,x)=>a+Number(x),0)}
+function tpSpentOf(h,p,k){return h+tpPatternCost(p)+tpBandSum(pubCfg.TP_KARMA_BANDS,k)}
+function tpCur(c){const t=c.stats?.TP||{};return {h:tpNum(t.SPD_F),p:tpNum(t.PATTERN),k:tpNum(t.KARMA)}}
+function tpMax(){return {h:tpBandMax(pubCfg.TP_SPD_F_BANDS),p:(pubCfg.TP_PATTERN_COSTS||[]).length,k:tpBandMax(pubCfg.TP_KARMA_BANDS)}}
+function tpUsed(c){const t=tpCur(c);return tpSpentOf(t.h,t.p,t.k)}
+const hasteText=v=>`${Number(v)<0?"":"+"}${Number((Number(v)||0).toFixed(2))}`;
+function renderTalent(c){
+ const s=c.stats||{},pts=Number(c.tp||0),t=tpCur(c),mx=tpMax();
+ const canReset=tpUsed(c)>0&&itemsData.some(i=>i.def_id==="reset_draught"&&!i.equipped_character);
+ const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
  if(pts<=0)return row;
- return row+`<div class="alloc-row" id="alloc-${c.id}">${["STR","DEX","INT"].map(k=>`<label class="alloc-f"><span>${k}</span><input type="number" min="0" max="${pts}" step="1" value="0" data-stat="${k}" oninput="allocPreview('${c.id}')"></label>`).join("")}<button type="button" class="fm-btn pri" onclick="confirmAllocate('${c.id}')"><span>배분</span></button><span class="alloc-left" id="allocLeft-${c.id}">남은 포인트 ${pts}</span></div>`;
+ const f=(key,label,unit,left)=>`<label class="alloc-f"><span>${label}</span><input type="number" min="0" max="${left}" step="1" value="0" data-tp="${key}" ${left<=0?"disabled":""} oninput="tpPreview('${c.id}')"><span class="alloc-unit">${unit}</span></label>`;
+ return row+`<div class="alloc-row" id="alloc-${c.id}">${f("h","Front SPD","포인트",mx.h-t.h)}${f("p","Pattern","줄",mx.p-t.p)}${f("k","Karma Limit","점",mx.k-t.k)}<button type="button" class="fm-btn pri" onclick="confirmTp('${c.id}')"><span>배분</span></button></div><div class="alloc-left" id="allocLeft-${c.id}">${tpHint(c,{h:0,p:0,k:0})}</div>`;
 }
-function allocValues(id){const o={STR:0,DEX:0,INT:0};document.querySelectorAll(`#alloc-${id} input`).forEach(i=>{let v=Math.floor(Number(i.value));o[i.dataset.stat]=Number.isFinite(v)&&v>0?v:0});return o}
-function allocPreview(id){const c=chars.find(x=>x.id===id),v=allocValues(id),left=Number(c?.stat_points||0)-(v.STR+v.DEX+v.INT);const e=$("allocLeft-"+id);e.textContent=`남은 포인트 ${left}`;e.classList.toggle("over",left<0)}
-function confirmStatReset(id){
+function tpValues(id){const o={h:0,p:0,k:0};document.querySelectorAll(`#alloc-${id} input`).forEach(i=>{o[i.dataset.tp]=tpNum(i.value)});return o}
+function tpCost(c,v){const t=tpCur(c);return tpSpentOf(t.h+v.h,t.p+v.p,t.k+v.k)-tpSpentOf(t.h,t.p,t.k)}
+// 미리 보기: 남은 TP와, 한 단계 더 올릴 때 드는 TP
+function tpHint(c,v){
+ const t=tpCur(c),mx=tpMax(),n={h:t.h+v.h,p:t.p+v.p,k:t.k+v.k},left=Number(c.tp||0)-tpCost(c,v);
+ const step=(a,b)=>+(tpBandSum(pubCfg.TP_SPD_F_BANDS,b)-tpBandSum(pubCfg.TP_SPD_F_BANDS,a)).toFixed(2);
+ const nx=[n.h<mx.h?`Front SPD 1포인트에 +${step(n.h,n.h+1)}`:"Front SPD 최대",n.p<mx.p?`Pattern 1줄에 ${tpPatternCost(n.p+1)-tpPatternCost(n.p)} TP`:"Pattern 최대",n.k<mx.k?`Karma Limit 1점에 ${tpBandSum(pubCfg.TP_KARMA_BANDS,n.k+1)-tpBandSum(pubCfg.TP_KARMA_BANDS,n.k)} TP`:"Karma Limit 최대"];
+ return `<span class="${left<0?"over":""}">남은 TP ${left}</span> · 다음: ${nx.join(", ")}`;
+}
+function tpPreview(id){const c=chars.find(x=>x.id===id);if(!c)return;$("allocLeft-"+id).innerHTML=tpHint(c,tpValues(id))}
+function confirmTpReset(id){
  const c=chars.find(x=>x.id===id);if(!c)return;
- openConfirm("스탯 초기화",`<p><b>Unwinding Draught</b> 1개를 마셔 배분한 STR, DEX, INT를 모두 되돌립니다. 돌려받는 스탯 포인트: <b>${allocatedPoints(c)}</b></p><p class="help-note">배분한 스탯이 줄면 KARMA 한도도 줄어서, 장착한 장비에 따라 과업 상태가 될 수 있습니다.</p>`,
-  [["취소",null,false],["마시기",async()=>{if(await rpc("use_stat_reset",{p_char:id}))load()},true]]);
+ openConfirm("TP 초기화",`<p><b>Unwinding Draught</b> 1개를 마셔 Front SPD, Pattern, Karma Limit에 쓴 TP를 모두 되돌립니다. 돌려받는 TP: <b>${tpUsed(c)}</b></p><p class="help-note">Karma Limit이 줄면 장착한 장비에 따라 과업 상태가 될 수 있습니다. Pattern이 줄면 패턴 줄 수가 줄고, 넘는 줄은 비활성이 됩니다.</p>`,
+  [["취소",null,false],["마시기",async()=>{if(await rpc("use_tp_reset",{p_char:id}))load()},true]]);
 }
-function confirmAllocate(id){
- const c=chars.find(x=>x.id===id),v=allocValues(id),sum=v.STR+v.DEX+v.INT,pts=Number(c?.stat_points||0);
- if(sum<=0)return log("배분할 포인트를 입력하세요.","bad");
- if(sum>pts)return log(`남은 포인트(${pts})보다 많이 배분할 수 없습니다.`,"bad");
- const parts=["STR","DEX","INT"].filter(k=>v[k]>0).map(k=>`${k} +${v[k]}`).join(", ");
- openConfirm("스탯 배분",`<p>스탯을 배분합니다: <b>${esc(parts)}</b></p><p class="help-note">배분한 스탯은 되돌릴 수 없습니다.</p>`,
-  [["취소",null,false],["배분",async()=>{if(await rpc("allocate_stats",{p_char:id,p_str:v.STR,p_dex:v.DEX,p_int:v.INT}))load()},true]]);
+function confirmTp(id){
+ const c=chars.find(x=>x.id===id);if(!c)return;
+ const v=tpValues(id),t=tpCur(c),mx=tpMax(),pts=Number(c.tp||0),cost=tpCost(c,v);
+ if(v.h+v.p+v.k<=0)return log("배분할 수를 입력하세요.","bad");
+ if(t.h+v.h>mx.h||t.p+v.p>mx.p||t.k+v.k>mx.k)return log("최대치를 넘겨 배분할 수 없습니다.","bad");
+ if(cost>pts)return log(`남은 TP(${pts})보다 많이 쓸 수 없습니다. 필요한 TP: ${cost}`,"bad");
+ const s=c.stats||{},h0=tpBandSum(pubCfg.TP_SPD_F_BANDS,t.h),h1=tpBandSum(pubCfg.TP_SPD_F_BANDS,t.h+v.h),base=Number(s.SPD?.F||0);
+ const parts=[v.h>0?`Front SPD ${hasteText(base)} → ${hasteText(+(base+h1-h0).toFixed(2))}`:"",v.p>0?`Pattern ${s.PATTERN_LINES}줄 → ${Number(s.PATTERN_LINES)+v.p}줄`:"",v.k>0?`Karma Limit ${s.KARMA?.LIMIT} → ${Number(s.KARMA?.LIMIT)+v.k}`:""].filter(Boolean);
+ openConfirm("TP 배분",`<p>쓰는 TP: <b>${cost}</b></p>${parts.map(x=>`<p><b class="nw">${esc(x)}</b></p>`).join("")}<p class="help-note">쓴 TP는 Unwinding Draught로만 되돌릴 수 있습니다.</p>`,
+  [["취소",null,false],["배분",async()=>{if(await rpc("allocate_tp",{p_char:id,p_spd_f:v.h,p_pattern:v.p,p_karma:v.k}))load()},true]]);
 }
 let coverOpenFor=null;
 const pendingPos={};
@@ -1119,7 +1635,7 @@ function guardLeave(next){
  const go=()=>{discardDrafts(id);leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}};
  openConfirm("저장하지 않은 변경",`<p><b>${parts.join(", ")}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.</p>`,
   [["계속 편집",null,false],["저장하지 않고 나가기",go,false],["저장하고 나가기",async()=>{
-   if(parts.includes("Pattern")&&!await pattern(id))return;
+   if(parts.includes("Pattern")&&!await pattern(id,true))return;
    if(parts.includes("Formation")&&!await saveFormation(id))return;
    leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}},true]]);
  return false;
@@ -1143,7 +1659,7 @@ function renderCharacterDetail(){
  const hasIdentificationTag=itemsData.some(i=>i.def_id==="identification_tag");
  const equipped=itemsData.filter(i=>i.equipped_character===c.id);
  const line=jobLine(c.job);
- // 착용 계열: STR/DEX/INT 범주는 현재 직업의 주 스탯과 같아야 한다(ALL은 공용)
+ // 착용 계열: STR/DEX/INT 범주는 현재 직업의 계열과 같아야 한다(ALL은 공용)
  const mainStat=templates.find(t=>t.job===c.job)?.main_stat;
  const wearOk=d=>{const g=d?.item_categories?.wear_group,o=d?.item_categories?.only_jobs;return (!g||g==="ALL"||g===mainStat)&&(!o||o.includes(c.job))};
  const canEquip=d=>d&&d.slot!=="CONSUMABLE"&&d.slot!=="MATERIAL"&&(!d.jobs||d.jobs.some(j=>line.includes(j)))&&wearOk(d);
@@ -1169,20 +1685,20 @@ function renderCharacterDetail(){
    <div class="status-info">
    <div class="char-title"><span class="nm">${esc(c.display_name)}</span>${hasIdentificationTag?`<button class="mini-btn" onclick="renamePrompt('${c.id}')">이름 변경</button>`:""}</div>
    <div class="char-meta">${esc(c.job_name||c.job)} · Lv.${c.level} · ${Number(c.exp_next)>0?`EXP ${c.exp??0}/${c.exp_next}`:"EXP MAX"}</div>
-   <div class="st" style="margin-top:10px"><span>HP <b>${s.HP??"-"}</b></span><span>MP <b>${s.MP??"-"}</b></span><span>ATK <b>${s.ATK??"-"}</b></span><span>MATK <b>${s.MATK??"-"}</b></span><span>DEF <b>${fbText(s.DEF?.F,s.DEF?.B)}</b></span><span>MDEF <b>${fbText(s.MDEF?.F,s.MDEF?.B)}</b></span><span>SPD <b>${s.SPD??"-"}</b></span></div>
-   <div class="st" style="margin-top:4px"><span>피해 증폭 <b>${Number(s.DMG_AMP)<0?"":"+"}${pctText(s.DMG_AMP)}</b></span><span>패링 <b>${pctText(s.PARRY)}</b></span><span>관통 <b>${pctText(s.PIERCE)}</b></span>${Number(s.SUPPORT_AMP)>0?`<span>지원 증폭 <b>+${pctText(s.SUPPORT_AMP)}</b></span>`:""}<span>물리 경감 <b>${pctText(s.MIT)}</b></span><span>마법 경감 <b>${pctText(s.MMIT)}</b></span>${Number(s.FINAL_AMP)>0?`<span>최종 증폭 <b>+${pctText(s.FINAL_AMP)}</b></span>`:""}${Number(s.FINAL_REDUCE)>0?`<span>최종 경감 <b>${pctText(s.FINAL_REDUCE)}</b></span>`:""}</div>
-   <div class="k" style="margin-top:8px"><span class="karma-red">KARMA ${k.TOTAL}/${k.LIMIT}</span> — <span class="ks-${k.STATE}">${LB[k.STATE]}</span> (x${(+k.MULT).toFixed(2)})</div>
-   ${renderMainStats(c)}
+   <div class="st" style="margin-top:10px"><span>HP <b>${s.HP??"-"}</b></span><span>MP <b>${s.MP??"-"}</b></span><span>ATK <b>${s.ATK??"-"}</b></span><span>MATK <b>${s.MATK??"-"}</b></span><span>DEF <b>${fbText(s.DEF?.F,s.DEF?.B)}</b></span><span>MDEF <b>${fbText(s.MDEF?.F,s.MDEF?.B)}</b></span><span>SPD <b>${fbText(s.SPD?.F,s.SPD?.B)}</b></span></div>
+   <div class="st" style="margin-top:4px"><span>피해 증폭 <b>${Number(s.DMG_AMP)<0?"":"+"}${pctText(s.DMG_AMP)}</b></span><span>패링 <b>${pctText(s.PARRY)}</b></span><span>관통 <b>${pctText(s.PIERCE)}</b></span>${Number(s.SUPPORT_AMP)>0?`<span>지원 증폭 <b>+${pctText(s.SUPPORT_AMP)}</b></span>`:""}${Number(s.SUPPORT_TAKEN)?`<span>받는 지원 <b>${Number(s.SUPPORT_TAKEN)<0?"":"+"}${pctText(s.SUPPORT_TAKEN)}</b></span>`:""}<span>물리 경감 <b>${pctText(s.MIT)}</b></span><span>마법 경감 <b>${pctText(s.MMIT)}</b></span>${Number(s.FINAL_AMP)>0?`<span>최종 증폭 <b>+${pctText(s.FINAL_AMP)}</b></span>`:""}${Number(s.FINAL_REDUCE)>0?`<span>최종 경감 <b>${pctText(s.FINAL_REDUCE)}</b></span>`:""}</div>
+   <div class="k" style="margin-top:8px"><span class="karma-red">KARMA ${k.TOTAL}/${k.LIMIT}</span> — <span class="ks-${k.STATE}">${LB[k.STATE]}</span>${+k.MULT!==1?` <span class="nw">(최종 대미지와 속도 x${(+k.MULT).toFixed(2)})</span>`:""}</div>
+   ${renderTalent(c)}
    </div>
    </div>
    ${renderPromoteCards(c)}
   </div>
   <div>
    <div class="section-title sec-line sec-gap">Pattern</div>
-   <div class="pattern-help">기본 패턴은 4줄이고 장비 옵션(Pattern)으로 늘거나 줄어듭니다. 줄어든 줄은 지워지지 않고 비활성(실행 안 함)으로 남습니다. 각 줄은 리셋할 수 있고, 임의로 추가하거나 삭제할 수 없습니다. 행동에는 배운 스킬, AND, Use Item(소모품 칸의 소모품 사용)을 쓸 수 있습니다.</div>
+   <div class="pattern-help">기본 패턴은 3줄이고 TP를 Pattern에 쓰면 늘어나며, 장비 옵션(Pattern)으로 늘거나 줄어듭니다. 줄어든 줄은 지워지지 않고 비활성(실행 안 함)으로 남습니다. 각 줄은 리셋할 수 있고, 임의로 추가하거나 삭제할 수 없습니다. 행동에는 배운 스킬, AND, Use Item(소모품 칸의 소모품 사용)을 쓸 수 있습니다.</div>
    <div class="pattern-count">총 패턴 <b>${patLines(c.id)}</b>줄${patShown(c.id)>patLines(c.id)?` · 비활성 <b>${patShown(c.id)-patLines(c.id)}</b>줄`:""}</div>
-   <div class="pattern-list" id="pat-${c.id}">${renderPatternRows(patternRowsFor(c),c.job,c.id)}</div>
-   <div class="row pattern-save"><button class="pri" onclick="pattern('${c.id}')">패턴 저장</button></div>
+   <div class="pattern-list${hideOffPatterns?" hide-off":""}" id="pat-${c.id}">${renderPatternRows(patternRowsFor(c),c.job,c.id)}</div>
+   <div class="row pattern-save"><button class="pri" onclick="pattern('${c.id}')">패턴 저장</button>${patShown(c.id)>patLines(c.id)?`<label class="pat-hide"><input type="checkbox"${hideOffPatterns?" checked":""} onchange="toggleHideOff(this,'${c.id}')"><span>비활성 패턴 숨기기</span></label>`:""}</div>
    ${renderFormation(c)}
    <div class="section-title sec-line sec-gap title-help"><span>Equipment</span><button type="button" class="help-btn" aria-label="Equipment 도움말" onclick="openHelp('equipment')"><span>?</span></button></div>
    <div class="eq-list">${equippedHtml}${conHtml}</div>
@@ -1193,6 +1709,9 @@ function renderCharacterDetail(){
  </div>`;
  wrapSections(box);
 }
+// 비활성 패턴 숨기기: 화면에서만 가린다(줄은 그대로 남아 저장에도 포함). 다시 그리지 않아 편집 중인 내용이 유지된다.
+let hideOffPatterns=false;
+function toggleHideOff(box,charId){hideOffPatterns=box.checked;$("pat-"+charId)?.classList.toggle("hide-off",hideOffPatterns)}
 // 캐릭터 상세의 각 섹션을 접었다 펼 수 있게(아코디언). 접기는 화면에서 숨기기만 해서 편집 중인 패턴 등이 사라지지 않는다.
 const SEC_KEYS=[["Status","status"],["Pattern","pattern"],["Formation","formation"],["Equipment","equipment"],["Allowed to Equip","owned"],["Skill","skill"]];
 let collapsedSecs=new Set();
@@ -1240,7 +1759,7 @@ function renderBag(){
 }
 
 const CONDITION_GROUPS=[
-  {label:"기본", options:[["always","반드시",false],["everyNTurns","OO턴마다 반드시",true]]},
+  {label:"기본", options:[["always","반드시",false],["everyNTurns","OO턴마다 반드시",true],["chancePct","OO(%) 확률로",true]]},
   {label:"HP", options:[
     ["selfHpGtePct","자신의 HP가 OO(%) 이상",true],["selfHpLtePct","자신의 HP가 OO(%) 이하",true],
     ["selfHpGte","자신의 HP가 OO 이상",true],["selfHpLte","자신의 HP가 OO 이하",true],
@@ -1272,9 +1791,9 @@ const CONDITION_GROUPS=[
   {label:"스탯", options:[
     ["selfAtkGte","자신의 ATK가 OO 이상",true],["selfAtkLte","자신의 ATK가 OO 이하",true],["allyAtkGte","아군에 ATK가 OO 이상인 캐릭터가 있을 때",true],["allyAtkLte","아군에 ATK가 OO 이하인 캐릭터가 있을 때",true],
     ["selfMatkGte","자신의 MATK가 OO 이상",true],["selfMatkLte","자신의 MATK가 OO 이하",true],["allyMatkGte","아군에 MATK가 OO 이상인 캐릭터가 있을 때",true],["allyMatkLte","아군에 MATK가 OO 이하인 캐릭터가 있을 때",true],
-    ["selfSpdGte","자신의 SPD가 OO 이상",true],["selfSpdLte","자신의 SPD가 OO 이하",true],["allySpdGte","아군에 SPD가 OO 이상인 캐릭터가 있을 때",true],["allySpdLte","아군에 SPD가 OO 이하인 캐릭터가 있을 때",true],
-    ["selfDefFGte","자신의 DEF 앞 수치가 OO 이상",true],["selfDefFLte","자신의 DEF 앞 수치가 OO 이하",true],["allyDefFGte","아군에 DEF 앞 수치가 OO 이상인 캐릭터가 있을 때",true],["allyDefFLte","아군에 DEF 앞 수치가 OO 이하인 캐릭터가 있을 때",true],
-    ["selfMDefFGte","자신의 MDEF 앞 수치가 OO 이상",true],["selfMDefFLte","자신의 MDEF 앞 수치가 OO 이하",true],["allyMDefFGte","아군에 MDEF 앞 수치가 OO 이상인 캐릭터가 있을 때",true],["allyMDefFLte","아군에 MDEF 앞 수치가 OO 이하인 캐릭터가 있을 때",true]
+    ["selfSpdBGte","자신의 Back SPD가 OO 이상",true],["selfSpdBLte","자신의 Back SPD가 OO 이하",true],["allySpdBGte","아군에 Back SPD가 OO 이상인 캐릭터가 있을 때",true],["allySpdBLte","아군에 Back SPD가 OO 이하인 캐릭터가 있을 때",true],
+    ["selfDefFGte","자신의 Front DEF가 OO 이상",true],["selfDefFLte","자신의 Front DEF가 OO 이하",true],["allyDefFGte","아군에 Front DEF가 OO 이상인 캐릭터가 있을 때",true],["allyDefFLte","아군에 Front DEF가 OO 이하인 캐릭터가 있을 때",true],
+    ["selfMDefFGte","자신의 Front MDEF가 OO 이상",true],["selfMDefFLte","자신의 Front MDEF가 OO 이하",true],["allyMDefFGte","아군에 Front MDEF가 OO 이상인 캐릭터가 있을 때",true],["allyMDefFLte","아군에 Front MDEF가 OO 이하인 캐릭터가 있을 때",true]
   ]},
   {label:"차징·캐스팅(적)", options:[
     ["enemyWindupGte","차징이나 캐스팅 중인 적이 OO명 이상",true],["enemyWindupLte","차징이나 캐스팅 중인 적이 OO명 이하",true],
@@ -1287,8 +1806,15 @@ const CONDITION_GROUPS=[
     ["itemGte","장착한 소모품이 OO개 이상",true],["itemLte","장착한 소모품이 OO개 이하",true]
   ]},
   {label:"상태(적)", options:[
-    ["enemyPoisonGte","적군에 독이 OO중첩 이상인 캐릭터가 있을 때",true],["enemyPoisonLte","적군에 독이 OO중첩 이하인 캐릭터가 있을 때",true],
-    ["enemyBleed","적군에 출혈이 있는 캐릭터가 있을 때",false],["enemyNoBleed","적군에 출혈이 없는 캐릭터가 있을 때",false]
+    ["enemyPoisonGte","적군에 독이 OO건 이상 걸린 캐릭터가 있을 때",true],["enemyPoisonLte","적군에 독이 OO건 이하로 걸린 캐릭터가 있을 때",true],
+    ["enemyBleed","적군에 출혈이 있는 캐릭터가 있을 때",false],["enemyNoBleed","적군에 출혈이 없는 캐릭터가 있을 때",false],
+    ["enemyBleedGte","적군에 출혈이 OO건 이상 걸린 캐릭터가 있을 때",true],["enemyBleedLte","적군에 출혈이 OO건 이하로 걸린 캐릭터가 있을 때",true],
+    ["enemyBleedAmtGte","적군에 남은 출혈량이 자신의 ATK의 OO(%) 이상인 캐릭터가 있을 때",true],["enemyBleedAmtLte","적군에 남은 출혈량이 자신의 ATK의 OO(%) 이하인 캐릭터가 있을 때",true]
+  ]},
+  {label:"버프", options:[
+    ["skillBuffRoom","이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때",false],
+    ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false],
+    ["allySpdFBuffRoom","아군에 Front SPD 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
   ]}
 ];
 const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄의 스킬 쿨타임이 아닐 때",false],["skillCooldown","이 줄의 스킬 쿨타임일 때",false]]};
@@ -1313,14 +1839,17 @@ const VALUE_CONDS=new Set([
   "allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpLte","enemyHpGtePct","enemyHpGte",
   "selfMpGtePct","selfMpLtePct","selfMpGte","selfMpLte","maxMpGte","maxMpLte","allyMpLtePct","allyMpGtePct",
   "allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpLte","enemyMpGtePct","enemyMpGte",
-  "arrowEq","arrowGte","arrowLte","ammoEq","ammoGte","ammoLte","enemyPoisonGte","enemyPoisonLte","everyNTurns","enemyWindupGte","enemyWindupLte","itemGte","itemLte",
-  "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdGte","selfSpdLte","allySpdGte","allySpdLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte"
+  "arrowEq","arrowGte","arrowLte","ammoEq","ammoGte","ammoLte","enemyPoisonGte","enemyPoisonLte","enemyBleedGte","enemyBleedLte","enemyBleedAmtGte","enemyBleedAmtLte","chancePct","everyNTurns","enemyWindupGte","enemyWindupLte","itemGte","itemLte",
+  "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte"
 ]);
-// 조건별 기본 수치: 퍼센트 조건 30, OO턴마다 2, 차징·캐스팅 인원 1, 나머지 0
-function condDefault(c){return PERCENT_CONDS.has(c)?30:(c==="everyNTurns"?2:(c==="enemyWindupGte"||c==="enemyWindupLte"?1:0))}
+// 조건별 기본 수치: 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 차징·캐스팅 인원과 출혈 건수 1, 나머지 0
+function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyWindupGte","enemyWindupLte","enemyBleedGte","enemyBleedLte"].includes(c)?1:0}
+// 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
+const pctUnit=c=>PERCENT_CONDS.has(c)||c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte";
+const condMin=c=>c==="everyNTurns"||c==="chancePct"?1:0;
 const PERCENT_CONDS=new Set([
   "selfHpGtePct","selfHpLtePct","allyHpLtePct","allyHpGtePct","allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpGtePct",
-  "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct"
+  "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct","chancePct"
 ]);
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
@@ -1332,8 +1861,8 @@ function conditionSelectOptions(job,current,actName){
     + ((JOB_CONDITION_OPTIONS[job]||[]).length?`<optgroup label="직업 전용">${options(JOB_CONDITION_OPTIONS[job],current)}</optgroup>`:"");
 }
 function options(list,current){return list.map(([v,n])=>`<option value="${v}" ${current===v?"selected":""}>${n}</option>`).join("")}
-// 패턴 줄: 활성 줄 = 스탯의 PATTERN_LINES(기본 4 + 장비 옵션, 최소 1). 저장된 줄이 더 많으면 넘는 줄은 비활성으로 보관
-function patLines(charId){const c=chars.find(x=>x.id===charId);return Math.max(1,Number(c?.stats?.PATTERN_LINES)||4)}
+// 패턴 줄: 활성 줄 = 스탯의 PATTERN_LINES(기본 3 + TP의 Pattern + 장비 옵션, 최소 1). 저장된 줄이 더 많으면 넘는 줄은 비활성으로 보관
+function patLines(charId){const c=chars.find(x=>x.id===charId);return Math.max(1,Number(c?.stats?.PATTERN_LINES)||3)}
 function patShown(charId){const c=chars.find(x=>x.id===charId);return Math.max(patLines(charId),Array.isArray(c?.pattern)?c.pattern.length:0)}
 function renderPatternRows(pattern,job,charId){
   const n=patShown(charId);
@@ -1341,20 +1870,21 @@ function renderPatternRows(pattern,job,charId){
   while(rows.length<n)rows.push({c:"always",a:basicSkill(charId)});
   return rows.map((p,i)=>renderPatternRow(p,i,job,charId)).join("");
 }
+// data-ctl-row: 줄 안에서 쓰는 조작 버튼 묶음 표시(버튼 위 간격 18 규칙의 예외. 화면 점검 스크립트가 이 표시만 건너뛴다)
 function renderPatternRow(p,i,job,charId){
   const acts=actionSkills(charId), basic=basicSkill(charId);
   const c=p?.c||"always", a=acts.some(s=>s.id===p?.a)?p.a:basic, has=VALUE_CONDS.has(c);
   const v=Number.isFinite(Number(p?.v))?Number(p.v):condDefault(c);
-  const suffix=PERCENT_CONDS.has(c)?" %":"";
+  const suffix=pctUnit(c)?" %":"";
   const off=i>=patLines(charId);
   return `<div class="pattern-row${off?" pattern-off":""}" data-index="${i}">
     <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span><span class="pattern-off-tag"${off?"":" hidden"}>비활성</span></div>
     <div class="pattern-controls">
       <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(job,c,skillName(charId,a))}</select>
-      <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${c==="everyNTurns"?1:0}" max="${PERCENT_CONDS.has(c)?100:999999}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
+      <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${PERCENT_CONDS.has(c)?100:999999}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
       <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
     </div>
-    <div class="pattern-order"><button onclick="movePattern(this,-1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg><span>위로</span></button><button onclick="movePattern(this,1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg><span>아래로</span></button><button onclick="resetPatternRow(this)"><span>리셋</span></button></div>
+    <div class="pattern-order" data-ctl-row><button onclick="movePattern(this,-1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg><span>위로</span></button><button onclick="movePattern(this,1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg><span>아래로</span></button><button onclick="resetPatternRow(this)"><span>리셋</span></button></div>
   </div>`;
 }
 function conditionChanged(sel){
@@ -1363,9 +1893,9 @@ function conditionChanged(sel){
   wrap.style.display=show?"inline-flex":"none";
   const input=row.querySelector(".pattern-value");
   const suffix=wrap.querySelector("span");
-  input.max=PERCENT_CONDS.has(c)?"100":"999999";input.min=c==="everyNTurns"?"1":"0";
+  input.max=PERCENT_CONDS.has(c)?"100":"999999";input.min=String(condMin(c));
   if(c==="everyNTurns"&&!(Number(input.value)>=1))input.value="2";
-  suffix.textContent=PERCENT_CONDS.has(c)?" %":"";
+  suffix.textContent=pctUnit(c)?" %":"";
 }
 // 행동을 바꾸면 쿨타임 조건 문구의 스킬 이름도 함께 바뀜
 function actionChanged(sel){
@@ -1401,23 +1931,28 @@ function collectPattern(id){
     if(VALUE_CONDS.has(cond)){
       let v=Number(row.querySelector(".pattern-value").value);
       if(!Number.isFinite(v))v=0;
-      if(PERCENT_CONDS.has(cond))v=Math.max(0,Math.min(100,Math.round(v)));
-      else v=Math.max(cond==="everyNTurns"?1:0,Math.min(999999,Math.round(v)));
+      if(PERCENT_CONDS.has(cond))v=Math.max(condMin(cond),Math.min(100,Math.round(v)));
+      else v=Math.max(condMin(cond),Math.min(999999,Math.round(v)));
       out.v=v;
     }
     return out;
   });
 }
-async function pattern(id){
+// quiet: 저장하고 나가기처럼 곧바로 다른 화면으로 넘어갈 때는 저장 팝업을 띄우지 않는다
+async function pattern(id,quiet){
   let j;
   try{j=collectPattern(id)}catch(e){log(e.message,"bad");return false}
   if(j.length<patLines(id)){log(`패턴은 ${patLines(id)}줄 이상이어야 합니다.`,"bad");return false}
-  if(await rpc("set_character_pattern",{p_char:id,p_pattern:j})){delete patternDraft[id];await load();return true}
+  if(await rpc("set_character_pattern",{p_char:id,p_pattern:j})){
+    delete patternDraft[id];
+    if(tut.step!=null&&tut.step<tut.last)await loadTutorial();
+    if(!quiet)openNotice("패턴이 저장되었습니다.");
+    await load();return true}
   return false;
 }
 
 async function loadItems(){
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs))").order("created_at");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
@@ -1518,7 +2053,7 @@ function renderDungeons(){
  box.innerHTML=dungeons.map(d=>{
   const open=d.unlocked&&openDungeons.has(d.id);
   const tag=d.cleared?`<span class="dg-tag clear">clear</span>`:!d.unlocked?`<span class="dg-tag">locked</span>`:"";
-  const meta=d.unlocked?`권장 Lv.${d.rec_level} · SUPPLY ${d.supply_cost??10}`:`권장 Lv.${d.rec_level} · 앞 던전을 클리어하면 열립니다`;
+  const meta=d.unlocked?`권장 Lv.${d.rec_level} · SUPPLY ${d.supply_cost??10}`:`권장 Lv.${d.rec_level} · ${d.locked_by==="TUTORIAL"?"과제를 마치면 열립니다":"앞 던전을 클리어하면 열립니다"}`;
   return `<div class="dg-card${open?" open":""}${d.unlocked?"":" locked"}" data-dg="${esc(d.id)}">
    <button type="button" class="dg-head"${d.unlocked?` onclick="toggleDungeon('${esc(d.id)}')" aria-expanded="${open}"`:` disabled`}><span><span class="dg-name">${esc(d.name)}</span>${tag}<br><span class="dg-meta">${meta}</span></span>${d.unlocked?CHEV:""}</button>
    ${d.unlocked?`<div class="dg-body"><div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters)}${autoLineHtml(d)}
@@ -1561,23 +2096,26 @@ async function startBattle(dungeonId,mode){
  else{log("battle 성공","ok");let tl=null;try{const g=await sb.rpc("get_battle_log",{p_battle:data.battle_id});tl=g.data?.turn_limit??null}catch(e){}openBattleLog({...data,mode,turn_limit:tl,dungeon:dungeons.find(x=>x.id===dungeonId)?.name||dungeonId});}
  await load();loadAdventure();
 }
-function showBattleError(msg,title){$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=title||"전투";$("helpBody").innerHTML=`<p>${esc(msg)}</p>`;$("helpOverlay").hidden=false}
+function showBattleError(msg,title){openConfirm(title||"전투",`<p>${esc(msg)}</p>`,[["확인",null,true]])}
 const RESULT_KO={WIN:"승리",LOSE:"패배",DRAW:"무승부"};
-// 원소 이름(전투 로그). 원소는 원소 파악을 쓴 뒤에만 로그에 실려 온다
+// 원소 이름(전투 로그의 원소 파악 줄)
 const EL_KO={EARTH:"흙",WATER:"물",FIRE:"불",ELECTRIC:"전기",WIND:"바람"};
 function calcText(c,kind,tick){
- const q=v=>v===-1?"?":String(+(+v).toFixed(2));const mag=kind==="MAGIC";
+ const q=v=>String(+(+v).toFixed(2)),sg=v=>`${v<0?"":"+"}${q(v)}`;const mag=kind==="MAGIC";
  const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${q(c.mult*100/(c.elem>0?c.elem:1))}%`];
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
- if(c.amp===-1)parts.push("증폭 ?");else if(c.amp)parts.push(`증폭 +${q(c.amp)}%`);
+ if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
+ // 증폭 − 경감 = 결과(한계 적용 뒤). 기본 피해 × (1 + 결과) = 원래 피해
+ if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
- parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);if(c.taken!=null)parts.push(c.taken===-1?"받는 피해 ?":`받는 피해 +${q(c.taken)}%`);parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
+ parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
  if(c.floored)parts.push(`바닥 ${q(c.floor)} 적용`);
  if(c.finalAmp>0)parts.push(`최종 +${q(c.finalAmp)}%`);
  if(c.finalReduce>0)parts.push(`최종 -${q(c.finalReduce)}%`);
- if(tick){if(c.res===null)parts.push("독 저항 ?");else if(c.res)parts.push(`독 저항 ${q(c.res)}%`)}
- else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct===-1||c.piercePct===-1)parts.push("패링·관통 ?");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
+ if(tick){if(c.res)parts.push(`독 저항 ${q(c.res)}%`)}
+ else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
  if(!tick&&c.pierce>1)parts.push(`관통 ×${q(c.pierce)}`);
+ if(c.karma!=null&&c.karma!==1)parts.push(`KARMA ×${q(c.karma)}`);
  // 한 항목은 줄바꿈으로 쪼개지지 않게
  return parts.map(x=>`<span class="nw">${esc(x)}</span>`).join(" → ");
 }
@@ -1608,12 +2146,13 @@ function sceneHtml(n,stList,info,nameOf){
   return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":p.u.side!=="E"&&sprOf(p.u.job)&&sprOf(p.u.job).sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:p.u.side!=="E"&&sprOf(p.u.job)?`<img class="sc-spr" src="${sprOf(p.u.job).idle}" alt="">`:SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
  return `<div class="bl-scene" aria-label="${n}턴 전투 장면">${units}</div>`;
 }
-function pubCfgSafe(k,d){try{return pubCfg&&pubCfg[k]!=null?pubCfg[k]:d}catch(e){return d}}
 // 드랍 옵션 한 줄: 앞방+뒷방은 DEF 3+87처럼 묶는다
-function dropOptText(r){const out=[];for(const [k,v] of Object.entries(r)){if(k==="DEF_B"||k==="MDEF_B")continue;
+function dropOptText(r){const out=[];for(const [k,v] of Object.entries(r)){if(k==="DEF_B"||k==="MDEF_B"||k==="SPD_B")continue;
  if(k==="DEF_F"||k==="MDEF_F"){const bk=k.replace("_F","_B");out.push(`${k==="DEF_F"?"DEF":"MDEF"} ${fbText(v,r[bk])}`);continue}
+ if(k==="SPD_F"){out.push(`SPD ${fbText(v,r.SPD_B)}`);continue}
  out.push(`${vis(ITEM_OPT_LABEL[k]||k)}${v>0?"+":" "}${v}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}`)}
  if((r.DEF_B||r.MDEF_B)&&!r.DEF_F&&!r.MDEF_F){if(r.DEF_B)out.push(`DEF ${fbText(0,r.DEF_B)}`);if(r.MDEF_B)out.push(`MDEF ${fbText(0,r.MDEF_B)}`)}
+ if(r.SPD_B&&!r.SPD_F)out.push(`SPD ${fbText(0,r.SPD_B)}`);
  return esc(out.join(" "))}
 function battleLogHtml(b){
  // 계산 내역과 턴 번호 켜기는 관리자만(서버도 관리자에게만 calc를 보낸다). 일반 유저는 10턴마다와 끝의 턴 표시만 본다
@@ -1631,57 +2170,77 @@ function battleLogHtml(b){
  const eulReul=id=>josa(id,"을","를");
  const who=id=>`${info[id]?.boss?BOSS_TAG+" ":""}<b class="bl-${side[id]==="A"?"ally":"foe"}">${esc(nm[id]||id)}</b>`;
  const WIND={CHARGE:["⟡","차징 중","차징"],CAST:["✧","캐스팅 중","캐스팅"]};
- const CANCEL_TEXT={REQ:"조건이 부족했다!",NO_ITEM:"소모품이 없다!",NO_TARGET:"대상이 없다!",MP:"MP가 부족했다!",COOLDOWN:"아직 쿨타임이다!",USES:"더 이상 쓸 수 없다!",ARROW:"화살이 없다!",AMMO:"장전이 필요하다!"};
+ const CANCEL_TEXT={NO_ITEM:"소모품이 없다!",NO_TARGET:"대상이 없다!",MP:"MP가 부족했다!",COOLDOWN:"아직 쿨타임이다!",USES:"더 이상 쓸 수 없다!",ARROW:"화살이 없다!",AMMO:"장전이 필요하다!"};
  const AK={ARROW:"화살",AMMO:"탄약"};
+ // 상성 줄: 때린 스킬의 원소에 따라(배율은 적지 않는다)
+ const ELEM_LINE={FIRE:"불타오른다!",EARTH:"굳어간다!",WATER:"꺼져간다!",ELECTRIC:"튀겨진다!",WIND:"깎여나간다!"};
  // 한 줄(row) = 왼쪽(적) | 가운데 선 | 오른쪽(아군). 행동은 행동한 쪽에 놓는다
  const rows=[];let cur=null;
  const flush=()=>{if(cur){rows.push(row(cur.side,cur.html.join("")));cur=null}};
  const row=(sd,html,mid="")=>`<div class="bl-row"><div class="bl-side bl-l">${sd==="E"?html:""}</div><div class="bl-mid">${mid}</div><div class="bl-side bl-r">${sd==="A"?html:""}</div></div>`;
+ // 독 표시: 머리가 위쪽에 몰린 그림이라 글자와 눈높이가 맞게 살짝 내린다(스타일의 psn-ico)
+ const PSN_ICO=`<span class="psn-ico">☠</span>`;
  const BLEED_ICO=`<svg class="bld-ico" viewBox="0 0 14 16" shape-rendering="crispEdges" aria-hidden="true"><path class="bld-blade" d="M6 7h1v1h-1zM7 6h1v1h-1zM7 7h1v1h-1zM8 5h1v1h-1zM8 6h1v1h-1zM9 0h1v1h-1zM9 4h1v1h-1zM9 5h1v1h-1zM10 1h1v1h-1zM10 3h1v1h-1zM10 4h1v1h-1zM11 2h1v1h-1zM12 1h1v1h-1zM12 3h1v1h-1zM13 0h1v1h-1zM13 4h1v1h-1z"/><path d="M0 15h1v1h-1zM1 12h1v1h-1zM1 14h1v1h-1zM1 15h1v1h-1zM2 11h1v1h-1zM3 10h1v1h-1zM3 11h1v1h-1zM3 13h1v1h-1zM4 9h1v1h-1zM4 10h1v1h-1zM5 8h1v1h-1zM5 9h1v1h-1zM6 8h1v1h-1z"/></svg>`;
- const CROWN=`<svg class="cs-crown" viewBox="0 0 11 8" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 1h1v1h1v1h1V1h1v1h1V0h1v2h1V1h1v2h1V2h1V1h1v7H0z"/></svg>`;
  // 상태표 한 명(안 A): 이름 줄, HP 줄, MP 줄, 차징/캐스팅 또는 쓰러졌다!. 적·아군 모두 왼쪽에서 시작(좌우 뒤집기 없음). 차징/캐스팅은 이름 오른쪽
  const entry=(st)=>{const u=info[st.u]||{};const dead=st.st==="DEAD";const w=WIND[st.st];
   const line=(k,v,m,cls)=>`<div class="cs-line"><span class="cs-k">${k}</span><span class="cs-bar ${cls}"><i style="width:${m>0?Math.max(0,Math.min(100,v/m*100)):0}%"></i></span><span class="cs-v">${Math.max(0,v)}/${m}</span></div>`;
   const meta=u.boss?"":(u.job||"");
   return `<div class="cs-u${dead?" dead":""}${u.boss?" boss":""}"><div class="cs-name"><span class="cs-id">${who(st.u)}</span>${dead?"":w?`<span class="cs-st">${w[1]}...</span>`:""}${meta?`<span class="cs-meta">${esc(meta)}</span>`:""}</div>
   ${line("HP",st.hp,mhp[st.u],"hp")}${mmp[st.u]>0?line("MP",st.mp,mmp[st.u],"mp"):""}${dead?"":`<div class="cs-line"><span class="cs-k"></span><span class="cs-bar fd"><i style="width:${w?Math.max(0,Math.min(100,+st.fp||0)):0}%"></i></span><span class="cs-v"></span></div>`}
-  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw">☠ 독 ${st.ps}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw">${BLEED_ICO}출혈 ${st.bl}턴</span>`:""}</div>`:""}</div>`};
+  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw"><span class="psn-ico">☠</span> 독 ${st.ps}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw">${BLEED_ICO}출혈 ${st.bl}턴</span>`:""}</div>`:""}</div>`};
  // 한쪽 = 전방/후방 두 줄. 전방 줄이 가운데 선 쪽(적: back | front, 아군: front | back). 사람이 적은 줄은 세로 가운데에 선다
  const statusSide=(sd,list)=>{const order=sd==="E"?["BACK","FRONT"]:["FRONT","BACK"];
   return `<div class="cs-side ${sd==="E"?"l":"r"}">${order.map(pos=>{const us=list.filter(x=>(info[x.u]?.pos||"BACK")===pos);
    return `<div class="cs-col ${pos.toLowerCase()}">${us.map(entry).join("")||`<div class="cs-empty">-</div>`}</div>`}).join("")}</div>`};
  const lastStatus=[...(b.log||[])].reverse().find(x=>x.t==="status");
- // Front/Back Delay: 로그 숫자는 스킬 자체 딜레이만(글로벌·속도는 숨김). fr/bk = 지금 페이즈의 값(딜밀·딜땡 반영), pend = 새 페이즈에 넘어온 딜땡(기본 줄 뒤에 표시)
+ // Front/Back Delay: 로그 숫자는 스킬 자체 딜레이만(글로벌·속도는 숨김). fr/bk = 지금 페이즈의 값(딜밀·딜땡 반영), pend = 새 페이즈에 넘어온 딜땡(기본 줄 뒤에 표시, 엔진 0.9.0까지의 로그에만 있음)
  const LOG=b.log||[],fr={},bk={},pend={};
  const fmt=x=>+(+x).toFixed(1);
  const DL=ph=>ph==="PRE"?"Front Delay":"Back Delay";
  const dlLine=(ph,a,c)=>`<div class="bl-dl">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></div>`;
  const dlk=(ph,a,c)=>`<span class="bl-dlk">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></span>`;
  const delayHtml=e=>{const ar=e.kind==="PUSH"?"⇥":"⇤";
+  // 헛방(엔진 0.10.0부터): 딜밀은 차징·캐스팅 중이 아닐 때, 딜땡은 글로벌 쿨타임 중일 때
+  if(e.miss)return `<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(${e.kind==="PUSH"?"차징·캐스팅 중이 아님":"글로벌 쿨타임 중"})</span></div>`;
   if(!e.ph)return e.item?`<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`:`<div class="bl-delay">${ar} ${who(e.tg)} Delay <b>${e.kind==="PUSH"?"+":"-"}${e.amt}</b>${e.res>0?` <span class="bl-sub nw">(저항 ${e.res}%)</span>`:""}</div>`;
   if(e.item)return `<div class="bl-delay">${ar} ${who(e.tg)} <span class="bl-dlk">${DL(e.ph)}</span> 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`;
   const m=e.ph==="PRE"?fr:bk,a=m[e.tg]||0,c=e.kind==="PUSH"?a+e.amt:Math.max(0,a-e.amt);m[e.tg]=c;
   return `<div class="bl-delay">${ar} ${who(e.tg)} ${dlk(e.ph,a,c)}${e.res>0?` <span class="bl-sub nw">(저항 ${e.res}%)</span>`:""}</div>`};
  const takePend=u=>{const l=pend[u]||[];delete pend[u];return l.map(delayHtml).join("")};
+ // 독·출혈·재생 틱(엔진 0.8.0부터): 종류별 한 줄에 합계, 누르거나 대면 내역. 값과 남은 턴이 같은 건은 ×N으로 묶는다
+ const tkPop=(parts,lab,unit,total)=>{const g=[];for(const p of parts||[]){const x=g.find(y=>y.d===p.d&&y.t===p.t);if(x)x.n+=p.n;else g.push({d:p.d,t:p.t,n:p.n})}
+  g.sort((a,b)=>b.t-a.t||b.d-a.d);
+  return `<span class="bl-pop">${g.map(x=>`<span class="bl-pop-r"><span class="nw">${lab} ${unit} ${x.d} (${x.t}턴)</span><span class="bl-pop-n nw">${x.n>1?`×${x.n}`:""}</span></span>`).join("")}<span class="bl-pop-r bl-pop-sum"><span class="nw">합계</span><span class="nw">${total}</span></span></span>`};
+ const tkCnt=parts=>(parts||[]).reduce((s,p)=>s+p.n,0);
+ const tkOpen=`tabindex="0" onclick="this.classList.toggle('on')"`;
  LOG.forEach((e,li)=>{
-  if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">글로벌 ${e.pre} + Front Delay ${e.add} → 실제 ${e.real<0?"?":Math.round(e.real)}</div>${takePend(e.u)}`))}
+  if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">${e.pre>0?`글로벌 ${e.pre} + `:""}Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>${takePend(e.u)}`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt)+takePend(e.u);if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
   else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${esc(e.name)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.el?`<div class="bl-elem">약점을 찔렀다!</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>`);
+  else if(e.t==="hit"&&cur)cur.html.push(`${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>`);
   else if(e.t==="cancel"&&cur)cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`);
   else if(e.t==="item"&&cur)cur.html.push(`<div class="bl-item">◈ <span class="nw">${esc(e.name)} 사용</span> <span class="bl-sub nw">(남은 ${e.left})</span></div>`);
+  else if(e.t==="short"&&cur)cur.html.push(`<div class="bl-cancel">${AK[e.kind]||"화살"}이 부족하다!</div>`);
   else if(e.t==="hesitate"&&cur)cur.html.push(`<div class="bl-cancel">망설이다 기회를 놓쳤다!</div>`);
+  else if(e.t==="heal"&&cur&&e.regen&&e.parts)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal bl-tk" ${tkOpen}>재생(${tkCnt(e.parts)}건) <b>${e.amt}</b> 회복${tkPop(e.parts,"재생","회복",e.amt)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
+  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">MP <b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
-  else if(e.t==="regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} 재생 ${e.turns}턴 (턴마다 ${e.amt})</div>`);
+  else if(e.t==="regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} 재생 ${e.turns}턴 (턴마다 ${e.amt})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
   else if(e.t==="revive"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">✚ ${who(e.tg)} 되살아났다!</span><span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
-  else if(e.t==="dot"&&cur)cur.html.push(e.kind==="POISON"?`<div class="bl-psn">☠ ${who(e.tg)} 독 ${e.n}중첩 (${e.turns}턴)</div>`:`<div class="bl-bld">${BLEED_ICO} ${who(e.tg)} 출혈 (${e.turns}턴)</div>`);
-  else if(e.t==="resist"&&cur)cur.html.push(`<div class="bl-psn">☠ ${who(e.tg)} 독에 저항했다!</div>`);
+  else if(e.t==="offset"&&cur){const L={POISON:"독",BLEED:"출혈",REGEN:"재생"},cls=e.a==="REGEN"?"bl-heal":e.a==="POISON"?"bl-psn":"bl-bld",ico=e.a==="REGEN"?"⟳":e.a==="POISON"?PSN_ICO:BLEED_ICO;
+   cur.html.push(`<div class="${cls}">${ico} ${who(e.tg)} ${L[e.a]}이 ${L[e.b]}을 <b>${e.amt}</b> 덜어냈다!${e.n>0?` <span class="bl-sub nw">(${e.n}건 사라짐)</span>`:""}</div>`)}
+  else if(e.t==="dot"&&cur&&e.tick!=null)cur.html.push(`<div class="${e.kind==="POISON"?"bl-psn":"bl-bld"}">${e.kind==="POISON"?PSN_ICO:BLEED_ICO} ${who(e.tg)} ${e.kind==="POISON"?"독":"출혈"} ${e.turns}턴 (턴마다 ${e.tick})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.k||"PHYS",true)}</div>`:""}</div>`);
+  else if(e.t==="dot"&&cur&&e.c!=null)cur.html.push(`<div class="${e.kind==="POISON"?"bl-psn":"bl-bld"}">${e.kind==="POISON"?PSN_ICO:BLEED_ICO} ${who(e.tg)} ${e.kind==="POISON"?"독":"출혈"} (${e.turns}턴)${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
+  else if(e.t==="dot"&&cur)cur.html.push(e.kind==="POISON"?`<div class="bl-psn"><span class="psn-ico">☠</span> ${who(e.tg)} 독 ${e.n}중첩 (${e.turns}턴)</div>`:`<div class="bl-bld">${BLEED_ICO} ${who(e.tg)} 출혈 (${e.turns}턴)</div>`);
+  else if(e.t==="resist"&&cur)cur.html.push(`<div class="bl-psn"><span class="psn-ico">☠</span> ${who(e.tg)} 독에 저항했다!</div>`);
+  else if(e.t==="tick"&&e.parts){const lab=e.kind==="POISON"?"독":"출혈",cs=Array.isArray(e.calc)?e.calc:[];
+   const h=`<div class="bl-hit"><span class="nw ${e.kind==="POISON"?"bl-psn":"bl-bld"} bl-tk" ${tkOpen}>${lab}(${tkCnt(e.parts)}건) <b>${e.dmg}</b> 대미지${tkPop(e.parts,lab,"대미지",e.dmg)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc?e.parts.map((p,i)=>cs[i]?`<div class="bl-calc"><span class="nw">${p.d}${p.n>1?` ×${p.n}`:""} (${p.t}턴)</span> = ${calcText(cs[i],p.k||"PHYS",true)}</div>`:"").join(""):""}</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="tick"){const h=`<div class="bl-hit"><span class="nw ${e.kind==="POISON"?"bl-psn":"bl-bld"}">${e.kind==="POISON"?`독(${e.n})`:"출혈"} <b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.dmgKind,true)}</div>`:""}</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
   else if(e.t==="delay"){if(e.carry&&e.ph){(pend[e.tg]=pend[e.tg]||[]).push(e);return}const h=delayHtml(e);if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
-  else if(e.t==="buff"){const up=e.v>0,lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=e.total===-1?"?":`${tv>0?"+":""}${tv}${u}`,d=e.v===-1?"?":`${dv>0?"+":""}${dv}${u}`;const h=`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(누적 ${tot}${e.cap?" · 한계":""})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
+  else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),tot=`${e.total>0?"+":""}${e.total}${u}`,d=`${e.v>0||(e.v===0&&up)?"+":e.v===0?"-":""}${e.v}${u}`;const h=`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(누적 ${tot}${e.cap?" · 한계":""})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="death"){if(cur)cur.html.push(`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>`);else rows.push(row(side[e.u],`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>`))}
   else if(e.t==="status"){flush();
    rows.push(`<div class="bl-scene-row"><span class="sc-turnmark">${e===lastStatus?`${e.n} TURN END`:e.n===0?"BATTLE START!":`${e.n} TURN`}</span>${sceneHtml(e.n,e.units,info,id=>nm[id]||id)}</div>`);
@@ -1696,7 +2255,10 @@ function battleLogHtml(b){
  else{if(b.mode!=="IDLE")rwParts.push(`골드 +${rw.gold||0}`);for(const x of Object.values(rw.exp||{}))rwParts.push(`${esc(x.name||"")} EXP +${x.gain}${x.level_up>0?` · <b>Lv.${x.level}</b>`:""}`)}
  // 드랍: 옵션 없는 같은 아이템은 x2로 묶고, 랜덤 옵션이 붙은 것은 옵션과 함께 따로 보여 준다
  if(b.mode!=="MOCK"&&b.result==="WIN"){const dg=[];for(const x of rw.drops||[]){const r=x.rolled||{},plain=!Object.keys(r).length,unk=!!x.unknown;const g=plain&&dg.find(y=>y.plain&&y.def===x.def&&y.unk===unk);if(g)g.n++;else dg.push({def:x.def,name:x.name||x.def,r,plain,unk,n:1})}
-  if(dg.length){rwParts.push(`<b class="bl-loot-h">전리품</b>`);dg.forEach(x=>rwParts.push(`<b>${esc(x.name)}${x.unk?` <span class="item-unk">(Unknown)</span>`:""}</b>${x.n>1?` x${x.n}`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`))}}
+  if(dg.length){rwParts.push(`<b class="bl-loot-h">전리품</b>`);dg.forEach(x=>rwParts.push(`<b>${esc(x.name)}${x.unk?` <span class="item-unk">(Unknown)</span>`:""}</b>${x.n>1?` x${x.n}`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`))}
+  // 던전을 처음 이겼을 때만 받는 장비: 같은 것은 묶고, 서버가 바로 끼워 준 것은 표시한다
+  const gf=[];for(const x of rw.gifts||[]){const eq=!!x.char,g=gf.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else gf.push({def:x.def,name:x.name||x.def,eq,n:1})}
+  if(gf.length){rwParts.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);gf.forEach(x=>rwParts.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
  // 이번 전투에서 쓴 소모품(모의전·패배 포함 차감됨)
  const used={};for(const e of b.log||[])if(e.t==="item")used[e.name]=(used[e.name]||0)+1;
  const usedTxt=Object.entries(used).map(([n,k])=>`${esc(n)} ${k}개`).join(", ");
@@ -1710,12 +2272,20 @@ function battleLogHtml(b){
  const turnLimit=Number(b.turn_limit)||100;
  const sideHtml=(x,extra)=>`<div class="bl-sum-side"><div>남은 HP <b>${x.hp}/${x.mhp}</b></div><div>생존자 <b>${x.alive}/${x.n}</b></div><div>총 대미지 <b>${x.dmg}</b></div>${extra||""}</div>`;
  const res=String(b.result||"").toLowerCase();
+ // 로그 본문은 끝난 뒤 30분까지만 남는다. 지워진 판은 결과와 보상만 보여 준다
+ if(b.expired||!b.log)return `<div class="bl-result">
+  <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
+  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · 모의전":b.mode==="IDLE"?" · Auto Battle":""}</div>
+  <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
+  <div class="bl-rw">${rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1")}</div>
+  <div class="bl-expired">전투 로그는 30분이 지나 지워졌습니다.</div>
+ </div>`;
  return `<div class="bl-result">
   <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
   <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · 모의전":b.mode==="IDLE"?" · Auto Battle":""}</div>
   <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
   <div class="bl-sum">${sideHtml(sum.E)}${sideHtml(sum.A)}</div>
-  <div class="bl-rw">${rwParts.join("<br>").replace(/(class="bl-loot-h">전리품<\/b>)<br>/,"$1")}</div>
+  <div class="bl-rw">${rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1")}</div>
   <button type="button" class="bl-open" aria-expanded="false" onclick="var o=this.getAttribute('aria-expanded')!=='true';this.setAttribute('aria-expanded',o);this.parentNode.nextElementSibling.hidden=!o">로그 보기 (${b.turns}턴)<svg class="bl-open-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  </div>
  <div class="bl-logbody" hidden>
@@ -1750,7 +2320,7 @@ function renderBattleLogs(){
  const box=$("battleLogList");if(!box)return;
  if(!battleLogItems.length){box.innerHTML=`<div class="empty">아직 전투 기록이 없습니다.</div>`;return}
  box.innerHTML=battleLogItems.map(r=>{const t=new Date(r.created_at);const hh=String(t.getHours()).padStart(2,"0"),mm=String(t.getMinutes()).padStart(2,"0");
-  return `<button type="button" class="blog-row" onclick="openBattleLogItem('${r.id}')"><span class="bl-res bl-${String(r.result).toLowerCase()}">${RESULT_KO[r.result]||r.result}</span><span class="blog-name">${esc(r.dungeon)}${r.mode==="MOCK"?' <span class="blog-mock">mock</span>':""}</span><span class="blog-meta">${r.turns}턴 · ${t.getMonth()+1}/${t.getDate()} ${hh}:${mm}</span></button>`}).join("");
+  return `<button type="button" class="blog-row" onclick="openBattleLogItem('${r.id}')"><span class="bl-res bl-${String(r.result).toLowerCase()}">${RESULT_KO[r.result]||r.result}</span><span class="blog-name">${esc(r.dungeon)}${r.mode==="MOCK"?' <span class="blog-mock">mock</span>':""}</span><span class="blog-meta">${r.has_log===false?"로그 지워짐 · ":""}${r.turns}턴 · ${t.getMonth()+1}/${t.getDate()} ${hh}:${mm}</span></button>`}).join("");
 }
 async function openBattleLogItem(id){const {data,error}=await sb.rpc("get_battle_log",{p_battle:id});if(error){log("get_battle_log 실패: "+error.message,"bad");return}openBattleLog(data)}
 // ===== Auto Battle: 맡기기 · 정산 · 회수 =====
@@ -1927,7 +2497,21 @@ function confirmCraft(id){
   await loadItems();await loadCraft();if(r)showItemResult("제작 결과",r)},true]]);
 }
 async function setConsumable(charId,def){if(await rpc("set_character_consumable",{p_char:charId,p_def:def}))load()}
-async function equipTo(it,charId){if(await rpc("equip_item",{p_char:charId,p_item:it}))load()}
+// 장착하면 KARMA 합계가 한도를 넘게 되는지(지금보다 늘어날 때만). 같은 칸의 장비, 양손 무기와 방패 칸은 서로 빠진다
+function karmaAfterEquip(it,charId){
+ const c=chars.find(x=>x.id===charId),i=itemsData.find(x=>x.id===it),k=c?.stats?.KARMA;if(!c||!i||!k)return null;
+ const d=i.item_defs||{},kv=x=>Number(itemBonuses(x).KARMA||0),two=x=>!!x.item_defs?.item_categories?.two_handed;
+ const out=itemsData.filter(x=>x.equipped_character===charId&&x.id!==it&&(x.item_defs?.slot===d.slot||(two(i)&&x.item_defs?.slot==="SHIELD")||(d.slot==="SHIELD"&&x.item_defs?.slot==="WEAPON"&&two(x))));
+ const cur=Number(k.TOTAL||0),lim=Number(k.LIMIT||0),next=cur-out.reduce((s,x)=>s+kv(x),0)+kv(i);
+ return {cur,lim,next,over:next-lim,name:d.name||i.def_id};
+}
+async function equipTo(it,charId){
+ const go=async()=>{if(await rpc("equip_item",{p_char:charId,p_item:it}))load()};
+ const k=karmaAfterEquip(it,charId);
+ if(!k||k.next<=k.lim||k.next<=k.cur)return go();
+ const pct=Math.min(100-Number(pubCfg.KARMA_BURDEN_MIN_PCT??10),k.over*Number(pubCfg.KARMA_BURDEN_PCT??5));
+ openConfirm("과업 상태가 됩니다",`<p><b>${esc(k.name)}</b> 장착 시 KARMA가 한도를 넘습니다. <b class="nw">KARMA ${k.cur}/${k.lim} → ${k.next}/${k.lim}</b></p><p>한도를 넘은 동안 최종 대미지와 속도가 <b>${+pct.toFixed(1)}%</b> 줄어듭니다. 회복량과 HP, MP, 방어는 그대로입니다.</p>`,[["취소",null],["장착",go,true]]);
+}
 async function unequip(it){if(await rpc("unequip_item",{p_item:it}))load()}
 renderThemeToggle();
 init();
