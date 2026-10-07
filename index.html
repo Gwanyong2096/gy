@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v265 · 갱신 2026-10-06 22:20 KST -->
+<!-- ProjectGY-test-console v273 · 갱신 2026-10-07 14:15 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -105,7 +105,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .idle-line{font-size:13px;line-height:1.6;margin-top:4px}.idle-line.dim{color:var(--mu)}.idle-line b{font-weight:700}
 .idle-warn{color:var(--bad);font-weight:700}
 .idle-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.idle-top{font-size:13px;color:var(--mu);margin:-2px 0 10px}
+.idle-top{font-size:13px;color:var(--mu);margin:-2px 0 10px}.idle-toggle{cursor:pointer;user-select:none}.idle-toggle:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:4px}.idle-brief{display:none;font-size:13px;line-height:1.6;color:var(--mu)}#advIdle.collapsed .idle-brief{display:block}#advIdle.collapsed .section-title{margin-bottom:2px}#advIdle .idle-card:last-child{margin-bottom:0}
 .roster-unit.on-idle{position:relative;cursor:default}.roster-unit.on-idle>:not(.u-idle){opacity:.3}.u-idle{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap;color:var(--mu);opacity:.8;pointer-events:none}@media(max-width:520px){.u-idle{font-size:9px}}
 .help-box.wide{max-width:var(--log-w-console)}
 .bl-result{text-align:center;padding:4px 0 2px}
@@ -115,7 +115,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-sum-side b{font-weight:700}
 .bl-result .bl-rw{margin:0 0 4px}
 .bl-open{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;font-size:14px;line-height:1;margin-top:18px}
-.bl-open-chev{width:14px;height:14px;transition:transform .15s}.bl-open[aria-expanded="true"] .bl-open-chev{transform:rotate(180deg)}
+.bl-open-chev{width:14px;height:14px;transition:transform .15s}.bl-open[aria-expanded="true"] .bl-open-chev{transform:rotate(180deg)}.bl-open[aria-expanded="true"] .bl-open-show,.bl-open[aria-expanded="false"] .bl-open-hide{display:none}.bl-foot{text-align:center;margin-top:18px}.bl-foot .bl-open{margin-top:0}.bl-foot .bl-rw{margin:0 0 4px}
 .bl-logbody{margin-top:14px;text-align:left}.bl-logbody[hidden]{display:none}.help-box.wide{position:relative}.help-box.wide .bl-newtab{position:absolute;top:19px;right:58px}
 .bl-meta{color:var(--mu);font-size:13px}
 .bl-res{display:inline-block;font-size:11.2px;font-weight:700;border:1px solid currentColor;border-radius:999px;padding:0 7px;line-height:17px}
@@ -133,7 +133,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-log.show-turns .bl-n{display:inline-block}.bl-toggles{display:flex;gap:14px}
 .bl-calc{display:none;color:var(--mu);font-size:11.5px;line-height:1.4}.bl-log.show-calc .bl-calc{display:block}
 .bl-tk{position:relative;display:inline-block;cursor:pointer;border-bottom:1px dashed currentColor;outline:0}.bl-pop{display:none;position:absolute;left:0;top:100%;z-index:6;margin-top:4px;min-width:150px;max-width:calc(100vw - 32px);padding:7px 10px;background:var(--card);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.25);font-size:12px;font-weight:400;line-height:1.5;cursor:default;color:var(--tx)}
-.bl-r .bl-pop{left:auto;right:0}.bl-tk:hover .bl-pop,.bl-tk:focus .bl-pop,.bl-tk.on .bl-pop{display:block}.bl-pop-r{display:flex;justify-content:space-between;gap:14px}.bl-pop-n{color:var(--mu)}.bl-pop-sum{margin-top:4px;padding-top:4px;border-top:1px solid var(--bd);font-weight:700}
+.bl-r .bl-pop{left:auto;right:0}.bl-tk.on .bl-pop{display:block}@media(hover:hover){.bl-tk:hover .bl-pop{display:block}}.bl-tk:focus-visible{outline:2px solid var(--ac);outline-offset:2px;border-radius:2px}.bl-pop-r{display:flex;justify-content:space-between;gap:14px}.bl-pop-n{color:var(--mu)}.bl-pop-sum{margin-top:4px;padding-top:4px;border-top:1px solid var(--bd);font-weight:700}
 .bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
 .bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
@@ -188,8 +188,10 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .blog-name{font-weight:700;font-size:14px}.blog-mock{font-size:11.2px;color:var(--mu);font-weight:700}.blog-meta{margin-left:auto;color:var(--mu);font-size:12px;white-space:nowrap}
 .room-meta{color:var(--mu);font-size:12px;margin:-4px 0 10px}.room-party{margin-top:14px;padding-top:18px;border-top:1px solid var(--bd)}
 .room-acts{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;margin:12px 0 0;padding-bottom:18px}
-.pill{border-radius:999px;padding:9px 26px;font-weight:700;font-size:15px;line-height:20px;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;box-sizing:border-box;width:156px;border-width:1px;border-style:solid}
-.pill .pill-sub{font-size:11.2px;font-weight:700;opacity:.8}
+.pill{border-radius:999px;padding:5px 12px;font-weight:700;font-size:15px;line-height:20px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;white-space:nowrap;box-sizing:border-box;width:156px;border-width:1px;border-style:solid}
+.pill .pill-sub{font-size:11.2px;line-height:14px;font-weight:700;opacity:.8}
+.rush-box{display:inline-flex;align-items:center;gap:6px}.rush-n{width:58px;text-align:center;padding-left:4px;padding-right:4px}.rush-max{height:30px;padding:0 10px}
+.bl-rush{color:var(--ac)}.rush-big{color:var(--ac)}.rush-stop{margin:6px 0 2px;font-size:13px;color:var(--bad)}.rush-runs{margin-top:10px;max-height:46vh;overflow:auto;border-top:1px solid var(--bd)}.bl-back{margin-right:6px}
 .pill:disabled{opacity:.45;cursor:not-allowed}
 .room-msg{flex-basis:100%;text-align:center;margin:0}
 .dg-enter{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-top:18px}
@@ -219,7 +221,8 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 
 .camp-nav{display:flex;gap:0;border-bottom:1px solid var(--bd);margin-bottom:12px}.camp-tab{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-bottom:3px solid transparent;border-radius:0;background:transparent;padding:9px 18px 6px;font-weight:700;line-height:21px}.camp-tab.active{color:var(--ac);border-bottom-color:var(--ac)}.supply-tab{position:relative;margin-left:auto;display:inline-flex;align-items:baseline;justify-content:center;gap:6px;border-bottom:3px solid transparent;padding:9px 12px 6px;font-size:14px;line-height:21px;white-space:nowrap;cursor:default}.supply-tab .sp-k{font-size:inherit;font-weight:700;color:var(--mu)}.supply-tab b{font-weight:700}.theme-tab{color:var(--mu)}.theme-tab svg{width:15px;height:15px;flex:0 0 15px}.theme-tab span{display:inline-block;min-width:35px;text-align:left}.theme-tab:hover{color:var(--tx)}@media(max-width:520px){.camp-tab{padding:9px 5px 6px;font-size:13px}.theme-tab span{display:none}.supply-tab{padding:9px 5px 6px;font-size:13px;gap:4px}}
 .supply-tab .sp-tip{display:none;position:absolute;top:100%;right:0;margin-top:6px;z-index:30;background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:400;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.35);pointer-events:none}.supply-tab:hover .sp-tip{display:block}
-@media(max-width:400px){.camp-tab{padding:9px 3px 6px;font-size:11px}.supply-tab{padding:9px 3px 6px;font-size:11px}}@media(max-width:374px){.supply-tab .sp-k{display:none}}
+@media(max-width:400px){.camp-tab{padding:9px 3px 6px;font-size:11px}.supply-tab{padding:9px 3px 6px;font-size:11px}}.gold-tab+.supply-tab{margin-left:0}
+@media(max-width:900px){.camp-nav.in{flex-wrap:wrap;border-bottom:0}.camp-nav.in::after{content:"";order:5;flex:0 0 100%;border-bottom:1px solid var(--bd)}.camp-nav.in .supply-tab{order:6}.camp-nav.in .theme-tab{margin-left:auto}}
 .view{display:none}.view.active{display:block}.char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}.char-card{cursor:pointer;transition:transform .12s,border-color .12s;padding:8px!important;margin:0!important}.char-card:hover{transform:translateY(-1px);border-color:var(--ac)}.char-card.selected{border:2px solid var(--ac)}
 .char-portrait{display:none}.char-name{font-size:14px;font-weight:700;word-break:keep-all;overflow-wrap:anywhere}.char-meta{color:var(--mu);margin-top:2px;font-size:12px}.detail-grid{display:grid;grid-template-columns:1fr;gap:12px}.detail-side{align-self:start}.section-title{font-size:15px;font-weight:700;color:var(--ac);margin-bottom:8px}.equip-row{display:flex;gap:8px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bd);padding:8px 0;flex-wrap:wrap}.item-card{border:1px solid var(--bd);border-radius:8px;padding:9px;margin-bottom:7px}.empty{color:var(--mu);padding:12px 0}.back-btn{margin-bottom:10px}
 @media(max-width:700px){.detail-grid{grid-template-columns:1fr}.detail-side{position:static}.char-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -343,7 +346,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .equip-row:has(.item-core,.item-note) .slot-label{line-height:1.35;padding:0 14px}
 @media(max-width:520px){.equip-row .slot-label{flex-basis:100%;justify-content:flex-start;text-align:left;padding:0;margin:0;line-height:18px}.equip-row .slot-label::after{display:none}.equip-row:has(.item-core,.item-note) .slot-label{padding:0;line-height:18px}.equip-row.empty-slot{min-height:0;padding:10px 0}}
 .item-tags .tag-dot{margin:0 3px}
-.item-core{column-gap:6px}.item-top{column-gap:6px}.opt-wrap{display:inline-flex;align-items:baseline;gap:6px;min-width:0}.opt-wrap .item-core{margin-top:0}.opt-dot{font-size:19px;font-weight:900;line-height:1;color:var(--mu);display:inline-flex;align-items:center;align-self:center;position:relative;top:-1px}
+.item-core{column-gap:6px}.item-top{column-gap:6px}.opt-wrap,.note-wrap{display:inline-flex;align-items:baseline;gap:6px;min-width:0}.opt-wrap .item-core,.item-top .note-wrap .item-note{margin-top:0}.item-core b.karma-red{color:#e53935}.item-rand{opacity:.75;white-space:normal}.opt-dot{font-size:19px;font-weight:900;line-height:1;color:var(--mu);display:inline-flex;align-items:center;align-self:center;position:relative;top:-1px}
 @media(max-width:520px){.opt-dot{display:none}}
 .mini-btn.pri{background:var(--ac);color:var(--onac);border-color:var(--ac)}
 .main-st{margin-top:8px;align-items:center}.title-help .mini-btn{font-weight:400}.stat-pt{color:var(--ac)}.stat-pt b{color:var(--ac)}
@@ -370,13 +373,15 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;width:14px;height:22px;margin-left:4px;cursor:pointer;background:var(--ac);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v265 · 2026-10-06 22:20</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v273 · 2026-10-07 14:15</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
     <summary style="cursor:pointer;font-weight:700;color:var(--ac)">관리자 도구</summary>
     <div class="fm-row"><span class="fm-label">관리자 모드</span><div class="seg" role="radiogroup" aria-label="관리자 모드"><button type="button" class="seg-btn" id="amOn" role="radio" onclick="setAdminMode(true)"><span>켜짐</span></button><button type="button" class="seg-btn" id="amOff" role="radio" onclick="setAdminMode(false)"><span>꺼짐</span></button></div></div>
     <div class="pattern-help" style="margin-top:0">끄면 이 관리자 도구 말고는 일반 유저와 같은 화면으로 보입니다(계산 내역·턴 번호·로그 창 숨김). 테스트 던전·아이템은 계속 보입니다.</div>
+    <div class="row" style="margin-bottom:0"><label class="save-opt" style="font-size:13px"><input type="checkbox" id="hideMockChk" onchange="setHideMock(this.checked)"><span>Mock Battle 버튼 숨기기</span></label></div>
+    <div class="pattern-help" style="margin-top:0">내 화면의 던전 화면에서만 숨깁니다.</div>
     <div class="pattern-help">관리자 계정에서만 표시됩니다. 대상 계정의 골드를 원하는 값으로 설정할 수 있습니다.</div>
     <div class="row"><input id="adminEmail" placeholder="대상 이메일" style="flex:1;min-width:220px">
     <input id="adminGold" type="number" min="0" step="1" placeholder="설정할 골드" style="width:150px">
@@ -403,7 +408,16 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 
 
 
-<div class="camp-nav"><button id="tabLogin" class="camp-tab active" onclick="showView('login')">Login</button><button id="tabCamp" class="camp-tab" style="display:none" onclick="showView('camp')">Camp</button><button id="tabAdventure" class="camp-tab" style="display:none" onclick="showView('adventure')">Adventure</button><button id="tabBag" class="camp-tab" style="display:none" onclick="showView('bag')">Bag</button><button id="tabTown" class="camp-tab" style="display:none" onclick="showView('town')">Town</button><button id="tabLog" class="camp-tab" style="display:none" onclick="showView('log')">Log</button><button id="tabSetting" class="camp-tab" style="display:none" onclick="showView('setting')">Setting</button><div id="tabSupply" class="supply-tab" style="display:none"></div><button type="button" id="themeToggle" class="camp-tab theme-tab" onclick="toggleTheme()"></button></div>
+<div class="camp-nav"><button id="tabLogin" class="camp-tab active" onclick="showView('login')">Login</button><button id="tabCamp" class="camp-tab" style="display:none" onclick="showView('camp')">Camp</button><button id="tabAdventure" class="camp-tab" style="display:none" onclick="showView('adventure')">Adventure</button><button id="tabBag" class="camp-tab" style="display:none" onclick="showView('bag')">Bag</button><button id="tabTown" class="camp-tab" style="display:none" onclick="showView('town')">Town</button><button id="tabLog" class="camp-tab" style="display:none" onclick="showView('log')">Log</button><button id="tabSetting" class="camp-tab" style="display:none" onclick="showView('setting')">Setting</button><div id="tabGold" class="supply-tab gold-tab" style="display:none"></div><div id="tabSupply" class="supply-tab" style="display:none"></div><button type="button" id="themeToggle" class="camp-tab theme-tab" onclick="toggleTheme()"></button></div>
+
+<div class="card sec-wrap" id="advIdle" style="display:none">
+  <div class="section-title adv-title idle-toggle" id="idleToggle" role="button" tabindex="0" aria-expanded="true" onclick="toggleIdleCard(event)" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleIdleCard(event)}">Auto Battle <span class="adv-count" id="idleCount"></span><button type="button" class="help-btn" onclick="openHelp('idle')" aria-label="Auto Battle 도움말">?</button><svg class="sec-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="idle-brief" id="idleBrief"></div>
+  <div class="sec-body">
+    <div class="idle-top" id="idleTop"></div>
+    <div id="idleList"></div>
+  </div>
+</div>
 
 <div id="loginView" class="view active">
   <div class="card">
@@ -436,11 +450,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 </div>
 
 <div id="adventureView" class="view">
-  <div class="card" id="advIdle" style="display:none">
-    <div class="section-title adv-title">Auto Battle <span class="adv-count" id="idleCount"></span><button type="button" class="help-btn" onclick="openHelp('idle')" aria-label="Auto Battle 도움말">?</button></div>
-    <div class="idle-top" id="idleTop"></div>
-    <div id="idleList"></div>
-  </div>
   <div class="card" id="advList">
     <div class="section-title adv-title">Dungeon<button type="button" class="help-btn" onclick="openHelp('dungeon')" aria-label="던전 도움말">?</button></div>
     <div id="dungeonList"><div class="empty">불러오는 중…</div></div>
@@ -458,7 +467,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 
 <div id="logView" class="view">
   <div class="card">
-    <div class="pattern-help roster-help">최근 전투 10판의 기록입니다. 전투 로그는 끝난 뒤 30분 동안만 다시 볼 수 있고, 그 뒤에는 결과와 보상만 남습니다. 모의전도 함께 남습니다.</div>
+    <div class="pattern-help roster-help">최근 전투 10판의 기록입니다. 전투 로그는 끝난 뒤 30분 동안만 다시 볼 수 있고, 그 뒤에는 결과와 보상만 남습니다. Mock Battle도 함께 남습니다. Battle Rush는 한 번을 한 판으로 세고 한 줄로 묶습니다.</div>
     <div id="battleLogList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
@@ -510,6 +519,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="row"><span style="font-weight:700">접속 계정</span><span id="currentEmail" style="color:var(--mu)">-</span></div>
     <div class="row" style="margin-top:18px"><button id="btnSignOut" onclick="signOut()">로그아웃</button></div>
   </div>
+  <div class="card" id="rushSetCard">
+    <div class="section-title">Battle Rush</div>
+    <label class="save-opt"><input type="checkbox" id="rushKeepChk" onchange="setRushKeep(this.checked)"><span>Battle Rush에서 져도 계속 돌리기</span></label>
+    <div class="pattern-help">꺼 두면 이기지 못한 판에서 멈춥니다.</div>
+  </div>
   <div class="card" id="tutReplayCard" style="display:none">
     <div class="section-title">튜토리얼 다시 보기</div>
     <div class="pattern-help">끝낸 챕터를 연습 계정으로 다시 봅니다. 실제 계정에는 반영되지 않습니다.</div>
@@ -549,6 +563,16 @@ function toggleTheme(){
 // 그래서 헤더를 일반 객체로 바꿔서 보냅니다.
 const plainFetch=(url,opts={})=>{const h={};if(opts.headers)new Headers(opts.headers).forEach((v,k)=>{h[k]=v});return fetch(typeof url==="string"?url:String(url),{...opts,headers:h})};
 const sb=supabase.createClient("https://mctrnenqwmwksoockxvz.supabase.co","sb_publishable_rCcz3r5krX298CrbhXMlGg_DqdpRqPc",{global:{fetch:plainFetch}});
+// 값을 바꾸는 요청의 길목: 같은 함수·같은 값의 요청이 아직 돌아오지 않았으면 서버에 다시 보내지 않고 첫 요청의 결과를 함께 받는다
+// (빠르게 두 번 눌러 두 번 처리되는 일을 버튼마다가 아니라 여기 한 곳에서 막는다). 값이 다르면 그대로 나가고, 조회(get_, is_)는 건드리지 않는다
+const rpcRaw=sb.rpc.bind(sb),rpcFlying=new Map(),RPC_READ=/^(get_|is_)|^admin_test_assets$/;
+sb.rpc=function(fn,args,opt){
+ if(RPC_READ.test(fn))return rpcRaw(fn,args,opt);
+ const k=fn+"|"+JSON.stringify(args??{});
+ let p=rpcFlying.get(k);
+ if(!p){p=Promise.resolve(rpcRaw(fn,args,opt)).finally(()=>rpcFlying.delete(k));rpcFlying.set(k,p)}
+ return p;
+};
 const LB={BLESSED:"축복",NEUTRAL:"평온",BURDENED:"과업"};
 let chars=[];
 let loggedIn=null;
@@ -650,7 +674,7 @@ async function init(){await practiceResume();const {data:{user}}=await sb.auth.g
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
  loggedIn=now;
- if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;$("advIdle").style.display="none";openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
+ if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;$("advIdle").style.display="none";openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
 async function saveUiPref(key,value){const {error}=await sb.rpc("set_ui_pref",{p_key:key,p_value:value});if(error)log("화면 설정 저장 실패: "+error.message,"bad")}
@@ -660,7 +684,9 @@ async function loadUiPrefs(){
  if(prefs.theme==="light"||prefs.theme==="dark"){document.documentElement.dataset.theme=prefs.theme;try{localStorage.setItem("pgy_theme",prefs.theme)}catch(e){}renderThemeToggle()}
  else if(document.documentElement.dataset.theme)saveUiPref("theme",document.documentElement.dataset.theme);
  quickOpen=prefs.quick_open!==false;
+ idleOpen=prefs.idle_open!==false;renderIdle();
  adminMode=prefs.admin_mode!==false;applyAdminMode();
+ rushKeepGoing=prefs.rush_keep_going===true;hideMock=prefs.hide_mock===true;applyRushPrefs();
  collapsedSecs=new Set(Array.isArray(prefs.collapsed_sections)?prefs.collapsed_sections:[]);
 
  if(selectedCharId)renderCharacterDetail();
@@ -768,7 +794,8 @@ async function load(){
  renderCamp(); loadItems(); if(currentView==="adventure")loadAdventure();else if(!supplyState)loadSupply()}
 function setTabsForLogin(on){
  $("tabLogin").style.display=on?"none":"";
- $("tabSupply").style.display=on?"":"none";
+ $("tabSupply").style.display=on?"":"none";$("tabGold").style.display=on?"":"none";
+ document.querySelector(".camp-nav").classList.toggle("in",!!on);
  ["tabCamp","tabAdventure","tabBag","tabTown","tabLog","tabSetting"].forEach(id=>$(id).style.display=on?"":"none");
 }
 function showView(view){
@@ -799,6 +826,7 @@ function showView(view){
  if(view==="craft")loadCraft();
  if(view==="adventure"){advRoom=null;loadAdventure();}
  if(view==="log")loadBattleLogs();
+ renderIdle();
 }
 async function selectCharacter(id){
  if(id===selectedCharId)return;
@@ -878,20 +906,21 @@ const COVER_MODES=[["ALWAYS","항상 막아선다",false],["NEVER","막아서지
 function coverText(r){const m=COVER_MODES.find(x=>x[0]===r?.mode)||COVER_MODES[1];return m[1].replace("OO",String(r?.v??0))}
 const HELP={
  party:{title:"Party",html:`<p>던전에 함께 들어갈 캐릭터를 최대 5명까지 고릅니다. 파티는 서버에 바로 저장됩니다.</p><p>전방/후방은 각 캐릭터의 Formation에서 정한 시작 위치를 그대로 씁니다.</p>`},
- dungeon:{title:"Dungeon",html:`<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 전투!나 모의전을 누릅니다. 전투!를 누를 때마다 SUPPLY 10을 씁니다. SUPPLY는 30초마다 1씩 차고 최대 500입니다.</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 맡겨 자동으로 돌릴 수 있습니다(첫 던전 10회, 다음부터 10회씩 늘어 최대 50회). 파티마다 30분에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 절반이고 골드는 받지 않으며, 판마다 파견비(직접 보상 골드의 20%)를 냅니다. 무료는 3파티까지, 접속하지 않은 동안 8시간까지 쌓입니다.</p>`},
- idle:{title:"Auto Battle",html:`<p>Auto Battle이 열린 던전에 입장해 <b>맡기기</b>를 누르면 지금 파티를 그 던전에 보냅니다.</p>
+ dungeon:{title:"Dungeon",html:`<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!이나 Mock Battle을 누릅니다. Battle!을 누를 때마다 SUPPLY 10을 씁니다. SUPPLY는 30초마다 1씩 차고 최대 500입니다.</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다(첫 던전 10회, 다음부터 10회씩 늘어 최대 50회). 파티마다 30분에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 절반이고 골드는 받지 않으며, 판마다 파견비(직접 보상 골드의 20%)를 냅니다. 무료는 3파티까지, 접속하지 않은 동안 8시간까지 쌓입니다.</p>`},
+ idle:{title:"Auto Battle",html:`<p>Auto Battle이 열린 던전에 입장해 <b>Auto Battle!</b>을 누르면 지금 파티를 그 던전에 보냅니다.</p>
   <ul><li>파티마다 30분에 한 판을 실제로 싸웁니다. 질 수도 있습니다.</li>
   <li>이긴 판만 경험치와 아이템을 받습니다. 직접 플레이의 절반이고 골드는 받지 않습니다.</li>
   <li>판마다 파견비를 냅니다(이기든 지든). 골드가 모자라면 멈추고, 골드를 채우면 그때부터 다시 돕니다.</li>
-  <li>접속하지 않은 동안에도 쌓이고, 접속하거나 Adventure를 열 때 한꺼번에 정산합니다. 쌓이는 시간에는 상한이 있습니다.</li>
-  <li>맡긴 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>
-  <li>패턴은 맡길 때의 것으로 싸웁니다. 맡긴 뒤 고친 패턴은 다음 판부터 적용됩니다.</li>
+  <li>접속해 있는 동안에는 시간이 될 때마다 정산합니다. 접속하지 않은 동안에도 쌓이고, 접속할 때 한꺼번에 정산합니다. 쌓이는 시간에는 상한이 있습니다.</li>
+  <li>파견한 파티가 있으면 Auto Battle 카드가 어느 탭에서든 맨 위에 보입니다. 제목 줄을 누르면 접고 펼 수 있습니다.</li>
+  <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>
+  <li>패턴은 파견할 때의 것으로 싸웁니다. 파견한 뒤 고친 패턴은 다음 판부터 적용됩니다.</li>
   <li>기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.</li></ul>`},
  equipment:{title:"Equipment",html:`<p>장비 12칸과 소모품 칸 1개가 있습니다.</p>
   <h4>소모품</h4>
   <ul><li>소모품 칸에는 소모품의 <b>종류</b>를 정합니다. 같은 종류를 여러 캐릭터가 함께 낄 수 있습니다.</li>
   <li>수량은 Bag에 가진 개수를 모두가 함께 씁니다. 누가 하나를 쓰면 모두의 수량이 하나 줄어듭니다.</li>
-  <li>전투에서는 패턴의 행동 <b>Use Item</b>으로 씁니다. 쓰는 즉시 1개가 사라지며, 모의전이어도, 효과가 실패해도(예: 부활할 아군이 없음) 사라집니다.</li>
+  <li>전투에서는 패턴의 행동 <b>Use Item</b>으로 씁니다. 쓰는 즉시 1개가 사라지며, Mock Battle이어도, 효과가 실패해도(예: 부활할 아군이 없음) 사라집니다.</li>
   <li>소모품마다 쿨타임, 캐릭터별 전투당 사용 횟수, Front Delay·Back Delay가 따로 있습니다. 쿨타임이거나 횟수를 다 썼으면 발동 취소되지만 소모품은 1개 사라집니다. 수량이 없으면 발동 취소됩니다.</li>
   <li>소모품을 쓰는 동안(Front Delay·Back Delay)은 딜레이를 늘리거나 줄이는 효과를 받지 않습니다. 일부 보스의 특수 기술만 예외입니다.</li></ul>`},
  formation:{title:"Formation",html:`
@@ -1062,7 +1091,7 @@ function tutResolve(){
   }
   const need=Math.min(partyMax,chars.length),have=party.filter(id=>chars.some(c=>c.id===id)).length;
   if(have<need)return say(k+"party",q("#partyPick .roster-unit:not(.in-party):not([disabled])"),`함께 싸울 캐릭터를 파티에 넣어야 합니다.\n\n밝게 표시된 캐릭터를 눌러 주세요. (${have}/${need})`);
-  return say(k+"fight",q("#roomActs .pill.pri:not([disabled])"),"준비가 끝났습니다.\n전투!를 눌러 주세요.");
+  return say(k+"fight",q("#roomActs .pill.pri:not([disabled])"),"준비가 끝났습니다.\nBattle!을 눌러 주세요.");
  };
  // Log 탭에서 방금 전투를 여는 데까지(단계 1과 5가 같이 쓴다)
  const toLog=k=>{
@@ -1336,20 +1365,30 @@ const vis=x=>String(x??"").replace(/_/g," ");
 function itemCat(d){return vis(d?.item_type||d?.slot||"").toLowerCase()}
 // 아이템 옵션: 기본 옵션 + 랜덤 옵션 합산
 // 옵션 색: 물공 · 마공 · 물방 · 마방 · HP · MP · SPD · 퍼센트(증폭, 경감)
-function optClass(k){if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
+function optClass(k){if(k==="KARMA")return "karma-red";if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
 function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i.rolled_bonuses])for(const [k,v] of Object.entries(src||{}))o[k]=(o[k]||0)+Number(v);return o}
 const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"]);
 const PCT_BONUS=new Set(["MIT","MMIT","SUPPORT_AMP","DMG_AMP","PARRY","PIERCE","FINAL_AMP","FINAL_REDUCE"]);
 // 아이템 옵션 표기(영어)
-const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD_B:"Back SPD",SPD_B_PCT:"Back SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",KARMA_LIMIT:"Karma Limit",SPD_F:"Front SPD",PATTERN:"Pattern"};
+const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD_B:"Back SPD",SPD_B_PCT:"Back SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"Pattern"};
 // 앞+뒤 표기(DEF, MDEF, SPD): 뒤가 음수면 DEF 5-3. 소수는 둘째 자리까지
 function fbText(f,b){f=Number((Number(f)||0).toFixed(2));b=Number((Number(b)||0).toFixed(2));return `${f}${b<0?"":"+"}${b}`}
 function itemTagsHtml(d){const t=[itemCat(d),String(d?.material||"").toLowerCase()].filter(Boolean);return t.length?`<span class="item-cat item-tags">(${t.map(esc).join(`<span class="tag-dot">·</span>`)})</span>`:""}
-// 첫 줄: 이름·범주 + 옵션, 둘째 줄: 설명
-function itemTop(head,i){const [c,n]=itemBodyParts(i);// 범주 괄호와 옵션 사이에 점(·)을 넣는다(범주 괄호 속 점보다 크고 굵게, 세로 가운데)
- return `<div class="item-top">${head}${c?`<span class="opt-wrap"><span class="opt-dot">·</span>${c}</span>`:""}</div>${n}`}
+// 한 줄로 잇는다: 이름·범주 · 옵션 · 설명 (Random 붙은 옵션). 칸이 모자랄 때만 아래 줄로 내려간다
+function itemTop(head,i){const [c,n]=itemBodyParts(i);// 범주 괄호와 옵션, 옵션과 설명 사이에 같은 점(·)을 넣는다(범주 괄호 속 점보다 크고 굵게, 세로 가운데)
+ const dot=(x,cls)=>x?`<span class="${cls}"><span class="opt-dot">·</span>${x}</span>`:"";
+ return `<div class="item-top">${head}${dot(c,"opt-wrap")}${dot(n,"note-wrap")}</div>`}
+// 감정·제작으로 붙은 랜덤 옵션만 따로(영어 표기, 색 없음). 앞의 옵션은 기본 옵션과 합친 값이다
+function itemRandHtml(i){
+ if(!i||i.unknown)return "";
+ const r=i.rolled_bonuses||{},n=k=>Number(r[k]||0),sg=x=>x>0?`+${x}`:` ${x}`;
+ const fb=(label,f,b)=>(n(f)||n(b))?`${label} ${fbText(n(f),n(b))}`:"";
+ const parts=[n("ATK")?`ATK${sg(n("ATK"))}`:"",n("MATK")?`MATK${sg(n("MATK"))}`:"",fb("DEF","DEF_F","DEF_B"),fb("MDEF","MDEF_F","MDEF_B"),fb("SPD","SPD_F","SPD_B"),
+  ...Object.entries(r).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`${vis(ITEM_OPT_LABEL[k]||k)}${sg(Number(v))}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}`)].filter(Boolean);
+ return parts.length?`<span class="item-rand">(Random ${parts.map(esc).join(" ")})</span>`:"";
+}
 function itemBodyParts(i){
- const d=i.item_defs||{};if(d.slot==="CONSUMABLE")return ["",`<div class="item-note">${esc(d.note||"")}</div>`];
+ const d=i.item_defs||{};if(d.slot==="CONSUMABLE")return ["",d.note?`<div class="item-note">${esc(d.note)}</div>`:""];
  const b=itemBonuses(i),n=k=>Number(b[k]||0);
  // +가 붙는 값은 이름에 바로 붙인다(ATK+10, 음수는 ATK -5), 앞방+뒷방은 한 칸 띄운다(DEF 5+3, DEF 5-3)
  const val=(cls,label,txt)=>`<b class="${cls}">${label}${String(txt).startsWith("+")?"":" "}${txt}</b>`;
@@ -1359,10 +1398,11 @@ function itemBodyParts(i){
  // 기본 옵션과 그 밖의 옵션을 순서대로 한 줄(가로)에 나열
  const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(vis(ITEM_OPT_LABEL[k]||k))}${v>0?"+":" "}${esc(v)}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}</b>`);
  const all=[...parts,...extra].join("");
- // 화살·탄약 수는 설명 맨 왼쪽에 붙인다(화살통은 화살, 총기는 장탄수)
+ // 화살·탄약 수는 설명 맨 왼쪽에, 랜덤 옵션은 설명 맨 오른쪽에 붙인다(화살통은 화살, 총기는 장탄수)
  const ammo=d.ammo_cap!=null?`${d.item_type==="QUIVER"?"화살":"장탄수"}(${d.ammo_cap})`:"";
  const note=[ammo,d.note].filter(Boolean).join(" ");
- return [all?`<div class="item-core">${all}</div>`:"",note?`<div class="item-note">${esc(note)}</div>`:""];
+ const rand=itemRandHtml(i);
+ return [all?`<div class="item-core">${all}</div>`:"",(note||rand)?`<div class="item-note">${esc(note)}${note&&rand?" ":""}${rand}</div>`:""];
 }
 function unkTag(i){return i&&i.unknown?` <span class="item-unk">(Unknown)</span>`:""}
 function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="item-head"><b class="item-name">${esc(d.name||i.def_id)}${unkTag(i)}</b>${Number(i.qty)>1&&!i.equipped_character?`<b class="item-count">x${i.qty}</b>`:""}${itemTagsHtml(d)}</span>`,i)}
@@ -1370,7 +1410,7 @@ function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="
 function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from||(j==="GUNNER"?"ARCHER":null)}return out}
 // 퍼센트 표시: 소수 둘째 자리까지, 끝의 0은 지움 (예: 74.07%, 0%)
 function pctText(v){const n=Number(v)||0;return `${Number(n.toFixed(2))}%`}
-const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",KARMA_LIMIT:"Karma Limit",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
+const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
 const DOT_LABEL={POISON:"독",BLEED:"출혈"};
 const BUFF_LABEL={ATK:"ATK",MATK:"MATK",SPD_F:"Front SPD",SPD_B:"Back SPD",DEF_F:"Front DEF",MDEF_F:"Front MDEF",DEF_B:"Back DEF",MDEF_B:"Back MDEF",SUPPORT_TAKEN:"SUPPORT TAKEN"};
 function buffLabel(k){return BUFF_LABEL[k]||k}
@@ -1445,7 +1485,7 @@ function renderSkills(c){
   if(s.uses_per_battle)meta.push(`전투당 ${s.uses_per_battle}회`);
   const eff=skillEffectText(s,d.ammo_kind);
   const state=s.known?`<span class="skill-state">${s.auto?"기본":"습득"}</span>`
-   :(d.sp_free>=s.sp_cost?`<button class="mini-btn pri" onclick="learnSkill('${c.id}','${esc(s.id)}')">배우기</button>`:`<span class="skill-state dim">SP 부족</span>`);
+   :(d.sp_free>=s.sp_cost?`<button class="mini-btn pri" onclick="learnSkill('${c.id}','${esc(s.id)}',this)">배우기</button>`:`<span class="skill-state dim">SP 부족</span>`);
   return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
  };
  const known=d.skills.filter(s=>s.known),rest=d.skills.filter(s=>!s.known);
@@ -1457,7 +1497,13 @@ function renderSkills(c){
  return `<div class="section-title sec-line sec-gap title-help"><span>Skill</span><span class="sp-box">SP <b>${d.sp_free}</b> / ${d.sp_total}</span>${resetBtn}${draughtBtn}</div>
  <div class="skill-list">${rows}</div>`;
 }
-async function learnSkill(charId,sid){if(await rpc("learn_skill",{p_char:charId,p_skill:sid}))load()}
+// 배우기는 응답이 오고 화면을 다시 그릴 때까지 한 번만 받는다(빠르게 두 번 누르면 서버가 "이미 배움"으로 거절하던 것)
+let learnBusy=false;
+async function learnSkill(charId,sid,btn){
+ if(learnBusy)return;learnBusy=true;if(btn)btn.disabled=true;
+ try{if(await rpc("learn_skill",{p_char:charId,p_skill:sid}))await load()}
+ finally{learnBusy=false;if(btn&&btn.isConnected)btn.disabled=false}
+}
 // 서버가 패턴을 바꾸는 동작(전직, 스킬 초기화, 관리자 레벨 조정) 앞에서 저장 안 한 패턴 초안이 있으면 경고
 function draftWarnHtml(charId){return patternDraft[charId]?`<p class="draft-warn">저장하지 않은 패턴 변경이 있습니다. 계속하면 사라집니다.</p>`:""}
 function confirmFreeReset(charId){
@@ -1492,6 +1538,14 @@ function openLockedPromote(tier,count){
  const lines=Array.from({length:Math.max(1,count)},()=>`<li class="cond-hidden">???</li>`);
  openConfirm(`${tier} 조건`,`<p>아직 이 직업의 조건을 채우지 못했습니다. 조건을 모두 채우면 직업과 조건이 밝혀집니다.</p>${condListHtml(lines)}`,[["확인",null,true]]);
 }
+// 전직하면 스킬을 초기화하는지는 직업마다 다르다(서버가 선택지에 resets_skills로 알려 준다). 선택지끼리 다르면 직업 이름을 붙여 나눠 적는다
+function promoteSkillLines(opts){
+ const gs=[true,false].map(v=>opts.filter(t=>!!t.resets_skills===v)).filter(g=>g.length);
+ return gs.map(g=>{const pre=gs.length>1?`<b>${g.map(t=>esc(t.name)).join(", ")}</b> 전직: `:"";
+  return g[0].resets_skills
+   ?`<li>${pre}배운 스킬이 <b>모두 초기화</b>되고 SP는 전부 돌려받습니다.</li><li>${pre}패턴은 그대로 두고, 초기화된 스킬을 쓰던 줄의 행동만 새 직업의 기본 공격으로 바뀝니다.</li>`
+   :`<li>${pre}배운 스킬과 패턴은 <b>그대로 유지</b>됩니다.</li><li>${pre}기본 공격을 쓰던 줄만 새 직업의 기본 공격으로 바뀝니다.</li>`}).join("");
+}
 async function openPromote(charId,job){
  const c=chars.find(x=>x.id===charId);if(!c)return;
  if(!promoteByChar[charId]){const p=await sb.rpc("get_promote_options",{p_char:charId});promoteByChar[charId]=p.error?[]:(p.data||[])}
@@ -1499,8 +1553,7 @@ async function openPromote(charId,job){
  openConfirm("전직",`<p>이 캐릭터(<b>${esc(c.display_name)}</b>)를 전직합니다.</p>${opts.length===1&&opts[0].conditions?condListHtml(opts[0].conditions.map(x=>`<li class="cond-ok">${esc(promoteCondText(x))}</li>`)):""}
   <p style="margin-top:14px">전직하면 다음이 적용됩니다.</p>
   <ul><li>장착 중인 아이템이 <b>모두 해제</b>되어 Bag으로 돌아갑니다.</li>
-  <li>배운 스킬이 <b>모두 초기화</b>되고 SP는 전부 돌려받습니다.</li>
-  <li>패턴의 조건은 유지되고, 행동은 새 직업의 기본 공격으로 바뀝니다(AND는 유지).</li></ul>
+  ${promoteSkillLines(opts)}</ul>
   <p class="help-note">되돌릴 수 없습니다.</p>${draftWarnHtml(charId)}`,
   [["취소",null,false],...opts.map(t=>[`${t.name} 전직`,async()=>{if(await rpc("promote_character",{p_char:charId,p_job:t.job})){delete promoteByChar[charId];delete patternDraft[charId];await load()}},true])]);
 }
@@ -1924,9 +1977,13 @@ function actionChanged(sel){
 function resetPatternRow(btn){
   const row=btn.closest(".pattern-row");
   const cond=row.querySelector(".pattern-cond"), action=row.querySelector(".pattern-action");
-  const charId=row.closest(".pattern-list").id.replace("pat-","");
-  cond.value="always"; action.value=basicSkill(charId);
-  conditionChanged(cond); actionChanged(action);
+  const list=row.closest(".pattern-list"),charId=list.id.replace("pat-",""),basic=basicSkill(charId);
+  // 이미 처음 상태면 묻지 않는다
+  if(cond.value==="always"&&action.value===basic)return;
+  const no=[...list.querySelectorAll(".pattern-row")].indexOf(row)+1;
+  const name=[...action.options].find(o=>o.value===basic)?.textContent.trim()||"기본 공격";
+  openConfirm("패턴 리셋",`<p>패턴 ${no}의 조건과 행동을 처음 상태(<b>반드시 → ${esc(name)}</b>)로 되돌립니다.</p><p class="help-note">패턴 저장을 눌러야 적용됩니다.</p>`,
+   [["취소",null,false],["확인",()=>{cond.value="always"; action.value=basic; conditionChanged(cond); actionChanged(action)},true]]);
 }
 function movePattern(btn,dir){
   const row=btn.closest(".pattern-row"),box=row.parentElement,rows=[...box.querySelectorAll(".pattern-row")],i=rows.indexOf(row),j=i+dir;
@@ -1969,17 +2026,27 @@ async function pattern(id,quiet){
   return false;
 }
 
+// 보유 골드: 탭 줄(SUPPLY 왼쪽)에 항상 보여 준다. 아이템을 다시 불러올 때(전투 보상, 영입, 감정, 제작, 정산 뒤)마다 함께 받는다
+let gold=null;
+async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){log("get_gold 실패: "+error.message,"bad");return}gold=Number(data)||0;renderGold()}
+function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
+ loadGold();
  const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
 function setRecruitMsg(t){$("recruitMsg").textContent=t;$("recruitMsg").style.display=t?"block":"none"}
+// 영입 요청 번호: 영입이 끝날 때까지 같은 번호를 쓴다. 서버가 같은 번호의 영입은 한 번만 처리하므로
+// 두 번 눌리거나 응답이 늦어 다시 눌러도 한 명만 영입되고 골드도 한 번만 나간다
+let recruitReq=null;
 async function recruit(){
  setRecruitMsg("");
  const name=$("nm").value.trim();
  if(!selectedJob)return setRecruitMsg("영입할 직업을 선택하세요.");
- if(await rpc("recruit_character",{p_job:selectedJob,p_name:name||null})){
+ const req=recruitReq||(recruitReq=newRequestId());
+ if(await rpc("recruit_character",{p_job:selectedJob,p_name:name||null,p_request:req})){
+  if(recruitReq===req)recruitReq=null;
   if(!name)setRecruitMsg("이름을 짓지 않아 Dog Tag를 지급합니다.");
   $("nm").value="";load();
  }
@@ -2081,8 +2148,19 @@ function renderDungeons(){
 // ===== 전투 =====
 function supplyNow(){const st=supplyState;if(!st)return null;if(st.next_sec==null||st.supply>=st.max)return st.supply;const el=(Date.now()-st.at)/1000;const g=el<st.next_sec?0:1+Math.floor((el-st.next_sec)/st.regen_sec);return Math.min(st.max,st.supply+g)}
 function enterRowHtml(d){return `<div class="dg-enter"><button class="pri" onclick="enterRoom('${esc(d.id)}')">입장</button></div>`}
-// 던전 화면: 입장을 누르면 그 던전 화면에서 파티를 고르고 배틀!/모의전
+// 던전 화면: 입장을 누르면 그 던전 화면에서 파티를 고르고 Battle! / Auto Battle! / Battle Rush! / Mock Battle
 let advRoom=null;
+// Battle Rush: 판 수(1 ~ RUSH_MAX)와 져도 계속 돌리기(rush_keep_going). Auto Battle이 열린 던전에서만 보인다
+let rushCount=10,rushKeepGoing=false,hideMock=false;
+function rushMaxN(){return Math.max(1,Math.floor(Number(pubCfg.RUSH_MAX)||50))}
+function clampRush(v){const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(rushMaxN(),Math.max(1,n)):1}
+function rushInput(el,commit){rushCount=clampRush(el.value);if(commit)el.value=rushCount;const s=$("rushSub");if(s)s.textContent=`SUPPLY ${Number(el.dataset.cost)*rushCount}`}
+function rushMax(cost){const sup=supplyNow();rushCount=clampRush(sup==null?rushMaxN():Math.floor(sup/cost));renderRoom()}
+function setRushKeep(v){rushKeepGoing=!!v;saveUiPref("rush_keep_going",rushKeepGoing)}
+// Mock Battle 버튼을 보일지는 여기 한 곳에서 정한다(지금은 관리자가 자기 화면에서 숨길 때만 안 보인다)
+function mockVisible(){return !(isAdminUser&&hideMock)}
+function setHideMock(v){hideMock=!!v;saveUiPref("hide_mock",hideMock);renderRoom()}
+function applyRushPrefs(){if($("rushKeepChk"))$("rushKeepChk").checked=rushKeepGoing;if($("hideMockChk"))$("hideMockChk").checked=hideMock}
 function enterRoom(id){advRoom=id;renderRoom();window.scrollTo(0,0)}
 function leaveRoom(){advRoom=null;renderRoom()}
 function renderRoom(){
@@ -2096,10 +2174,16 @@ function renderRoom(){
  const hasParty=party.some(id=>chars.some(c=>c.id===id));
  const cost=d.supply_cost??10,sup=supplyNow(),left=Math.max(0,(d.mock_limit??0)-(d.mock_used??0)),noSupply=sup!=null&&sup<cost;
  const msg=battleBusy?"전투 중…":!hasParty?"파티에 캐릭터를 넣어 주세요.":noSupply?"SUPPLY가 부족합니다.":"";
- $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>전투!<span class="pill-sub">SUPPLY ${cost}</span></button><button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>모의전<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>${d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()?" disabled":""}>맡기기<span class="pill-sub">${idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:""}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
+ // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
+ const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
+ const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()?" disabled":""}>Auto Battle!<span class="pill-sub">${idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:"";
+ const rushBtn=d.auto_unlocked?`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="1" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`:"";
+ const mockBtn=mockVisible()?`<button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>Mock Battle<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>`:"";
+ $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle!<span class="pill-sub">SUPPLY ${cost}</span></button>${autoBtn}${rushBtn}${mockBtn}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
+ if(typing!=null){const el=$("rushCount");if(el&&!el.disabled){el.value=typing;el.focus()}}
 }
 let battleBusy=false;
-const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 모의전을 모두 썼습니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 Mock Battle을 모두 썼습니다.",RUSH_LOCKED:"아직 Battle Rush가 열리지 않은 던전입니다.",INVALID_RUSH:"판 수를 확인해 주세요.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function newRequestId(){try{return crypto.randomUUID()}catch(e){return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,12)}}
 async function startBattle(dungeonId,mode){
  if(battleBusy)return;battleBusy=true;renderRoom();
@@ -2112,6 +2196,25 @@ async function startBattle(dungeonId,mode){
  battleBusy=false;
  if(errMsg){const key=Object.keys(BATTLE_ERR).find(k=>errMsg.includes(k));log("battle 실패: "+errMsg,"bad");showBattleError(key?BATTLE_ERR[key]:"전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.");}
  else{log("battle 성공","ok");let tl=null;try{const g=await sb.rpc("get_battle_log",{p_battle:data.battle_id});tl=g.data?.turn_limit??null}catch(e){}openBattleLog({...data,mode,turn_limit:tl,dungeon:dungeons.find(x=>x.id===dungeonId)?.name||dungeonId});}
+ await load();loadAdventure();
+}
+// Battle Rush: 서버가 판마다 보통 전투와 똑같이 처리한다. 한 번에 다 못 하면 more를 주고, 같은 요청을 다시 보내 이어 간다
+async function startRush(dungeonId){
+ if(battleBusy)return;const n=clampRush(rushCount);battleBusy=true;renderRoom();
+ const body={action:"rush",dungeon_id:dungeonId,count:n,keep_going:rushKeepGoing,request_id:newRequestId()};
+ let data=null,errMsg="";
+ try{
+  for(let i=0;i<=n;i++){
+   const r=await sb.functions.invoke("battle",{body});
+   if(r.error){try{const j=await r.error.context.json();errMsg=j.error||r.error.message}catch(e){errMsg=r.error.message}break}
+   data=r.data;if(!data.more)break;
+  }
+ }catch(e){errMsg=String(e&&e.message||e)}
+ battleBusy=false;
+ const key=errMsg?Object.keys(BATTLE_ERR).find(k=>errMsg.includes(k)):null;
+ if(errMsg)log("battle rush 실패: "+errMsg,"bad");
+ if(data&&(data.runs||[]).length){log(`battle rush 성공: ${data.runs.length}판`,"ok");openRushResult({...data,stopped:data.stopped||(errMsg?(key||"ERROR"):null),dungeon:dungeons.find(x=>x.id===dungeonId)?.name||dungeonId})}
+ else showBattleError(key?BATTLE_ERR[key]:"전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.","Battle Rush");
  await load();loadAdventure();
 }
 function showBattleError(msg,title){openConfirm(title||"전투",`<p>${esc(msg)}</p>`,[["확인",null,true]])}
@@ -2234,7 +2337,7 @@ function battleLogHtml(b){
   g.sort((a,b)=>b.t-a.t||b.d-a.d);
   return `<span class="bl-pop">${g.map(x=>`<span class="bl-pop-r"><span class="nw">${lab} ${unit} ${x.d} (${x.t}턴)</span><span class="bl-pop-n nw">${x.n>1?`×${x.n}`:""}</span></span>`).join("")}<span class="bl-pop-r bl-pop-sum"><span class="nw">합계</span><span class="nw">${total}</span></span></span>`};
  const tkCnt=parts=>(parts||[]).reduce((s,p)=>s+p.n,0);
- const tkOpen=`tabindex="0" onclick="this.classList.toggle('on')"`;
+ const tkOpen=`tabindex="0"`;
  LOG.forEach((e,li)=>{
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
@@ -2270,7 +2373,7 @@ function battleLogHtml(b){
  flush();
  const csv=Math.max(5,...units.flatMap(u=>[`${u.mhp}/${u.mhp}`.length,u.mmp>0?`${u.mmp}/${u.mmp}`.length:0]));
  const rw=b.rewards||{};const rwParts=[];
- if(b.mode==="MOCK")rwParts.push("모의전이라 보상이 없습니다.");
+ if(b.mode==="MOCK")rwParts.push("Mock Battle이라 보상이 없습니다.");
  else if(b.result!=="WIN")rwParts.push("지거나 비기면 보상이 없습니다.");
  else{if(b.mode!=="IDLE")rwParts.push(`골드 +${rw.gold||0}`);for(const x of Object.values(rw.exp||{}))rwParts.push(`${esc(x.name||"")} EXP +${x.gain}${x.level_up>0?` · <b>Lv.${x.level}</b>`:""}`)}
  // 드랍: 옵션 없는 같은 아이템은 x2로 묶고, 랜덤 옵션이 붙은 것은 옵션과 함께 따로 보여 준다
@@ -2279,7 +2382,7 @@ function battleLogHtml(b){
   // 던전을 처음 이겼을 때만 받는 장비: 같은 것은 묶고, 서버가 바로 끼워 준 것은 표시한다
   const gf=[];for(const x of rw.gifts||[]){const eq=!!x.char,g=gf.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else gf.push({def:x.def,name:x.name||x.def,eq,n:1})}
   if(gf.length){rwParts.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);gf.forEach(x=>rwParts.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
- // 이번 전투에서 쓴 소모품(모의전·패배 포함 차감됨)
+ // 이번 전투에서 쓴 소모품(Mock Battle·패배 포함 차감됨)
  const used={};for(const e of b.log||[])if(e.t==="item")used[e.name]=(used[e.name]||0)+1;
  const usedTxt=Object.entries(used).map(([n,k])=>`${esc(n)} ${k}개`).join(", ");
  if(usedTxt)rwParts.push(`소모품 사용: ${usedTxt}`);
@@ -2292,32 +2395,47 @@ function battleLogHtml(b){
  const turnLimit=Number(b.turn_limit)||100;
  const sideHtml=(x,extra)=>`<div class="bl-sum-side"><div>남은 HP <b>${x.hp}/${x.mhp}</b></div><div>생존자 <b>${x.alive}/${x.n}</b></div><div>총 대미지 <b>${x.dmg}</b></div>${extra||""}</div>`;
  const res=String(b.result||"").toLowerCase();
+ // 보상 줄: 위 결과와 로그 맨 아래 요약이 같은 글을 쓴다
+ const rwHtml=rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1");
  // 로그 본문은 끝난 뒤 30분까지만 남는다. 지워진 판은 결과와 보상만 보여 준다
  if(b.expired||!b.log)return `<div class="bl-result">
   <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
-  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · 모의전":b.mode==="IDLE"?" · Auto Battle":""}</div>
+  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":""}</div>
   <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
-  <div class="bl-rw">${rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1")}</div>
+  <div class="bl-rw">${rwHtml}</div>
   <div class="bl-expired">전투 로그는 30분이 지나 지워졌습니다.</div>
  </div>`;
  return `<div class="bl-result">
   <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
-  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · 모의전":b.mode==="IDLE"?" · Auto Battle":""}</div>
+  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":""}</div>
   <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
   <div class="bl-sum">${sideHtml(sum.E)}${sideHtml(sum.A)}</div>
-  <div class="bl-rw">${rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1")}</div>
-  <button type="button" class="bl-open" aria-expanded="false" onclick="var o=this.getAttribute('aria-expanded')!=='true';this.setAttribute('aria-expanded',o);this.parentNode.nextElementSibling.hidden=!o">로그 보기 (${b.turns}턴)<svg class="bl-open-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <div class="bl-rw">${rwHtml}</div>
+  <button type="button" class="bl-open" aria-expanded="false" onclick="var o=this.getAttribute('aria-expanded')!=='true';this.setAttribute('aria-expanded',o);this.parentNode.nextElementSibling.hidden=!o"><span class="bl-open-show">로그 보기 (${b.turns}턴)</span><span class="bl-open-hide">로그 닫기</span><svg class="bl-open-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  </div>
  <div class="bl-logbody" hidden>
   ${showCalc?`<div class="bl-toggles"><label class="bl-toggle"><input type="checkbox" onchange="document.getElementById('battleLog').classList.toggle('show-turns',this.checked)"> 턴 번호</label><label class="bl-toggle"><input type="checkbox" onchange="document.getElementById('battleLog').classList.toggle('show-calc',this.checked)"> 계산 내역</label></div>`:""}
   <div class="bl-log" id="battleLog" style="--csv:${csv}ch">${rows.join("")}</div>
+  <div class="bl-foot">
+   <button type="button" class="bl-open" aria-expanded="true" onclick="var r=this.closest('.bl-logbody'),t=r.previousElementSibling;t.querySelector('.bl-open').setAttribute('aria-expanded','false');r.hidden=true;t.scrollIntoView({block:'start'})"><span>로그 닫기</span><svg class="bl-open-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+   <div class="bl-sum">${sideHtml(sum.E)}${sideHtml(sum.A)}</div>
+   <div class="bl-rw">${rwHtml}</div>
+  </div>
  </div>`;
 }
+// 틱 내역 팝업: 마우스를 대면 뜨고, 누르면 고정된다. 다른 곳을 누르거나 다시 누르면 꺼진다(다른 줄을 누르면 그 줄로 옮겨 간다)
+// 새 탭으로 연 전투 로그 페이지에도 이 함수를 그대로 넣는다
+function tkPinInit(){
+ const off=keep=>document.querySelectorAll(".bl-tk.on").forEach(x=>{if(x!==keep)x.classList.remove("on")});
+ document.addEventListener("click",e=>{const t=e.target.closest?e.target.closest(".bl-tk"):null;off(t);if(t&&!e.target.closest(".bl-pop"))t.classList.toggle("on")});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"){off(null);return}const t=e.target.closest?e.target.closest(".bl-tk"):null;if(t&&e.target===t&&(e.key==="Enter"||e.key===" ")){e.preventDefault();off(t);t.classList.toggle("on")}});
+}
+tkPinInit();
 let openedBattle=null;
 function openBattleLog(b){
  openedBattle=b;
  $("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent="전투 결과";
- $("helpBody").innerHTML=`<button type="button" class="mini-btn bl-newtab" onclick="openBattleLogTab()">새 탭으로 보기</button>`+battleLogHtml(b);document.querySelector(".help-box").classList.add("wide");$("helpOverlay").hidden=false;document.querySelector(".help-close").focus();
+ $("helpBody").innerHTML=`${b._rush&&openedRush?`<button type="button" class="mini-btn bl-back" onclick="openRushResult(openedRush)">← Battle Rush 결과</button>`:""}<button type="button" class="mini-btn bl-newtab" onclick="openBattleLogTab()">새 탭으로 보기</button>`+battleLogHtml(b);document.querySelector(".help-box").classList.add("wide");$("helpOverlay").hidden=false;document.querySelector(".help-close").focus();
 }
 // 전투 로그를 새 탭으로: 콘솔의 스타일과 화면 모드를 그대로 가져가 독립된 페이지로 연다
 function openBattleLogTab(){
@@ -2326,7 +2444,7 @@ function openBattleLogTab(){
  const theme=document.documentElement.dataset.theme||"";
  const title=`전투 로그 · ${b.dungeon||""}`;
  const html=`<!doctype html><html lang="ko"${theme?` data-theme="${theme}"`:""}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title><style>${css}
- body{padding:var(--log-pad-tab)}.bl-page{max-width:var(--log-w-tab);margin:0 auto}.bl-page .bl-newtab{display:none}</style></head><body><div class="bl-page card"><div class="section-title">전투 결과</div>${battleLogHtml(b)}</div></body></html>`;
+ body{padding:var(--log-pad-tab)}.bl-page{max-width:var(--log-w-tab);margin:0 auto}.bl-page .bl-newtab{display:none}</style></head><body><div class="bl-page card"><div class="section-title">전투 결과</div>${battleLogHtml(b)}</div><script>(${tkPinInit})()<\/script></body></html>`;
  const url=URL.createObjectURL(new Blob([html],{type:"text/html"}));
  const w=window.open(url,"_blank");if(!w)showBattleError("팝업이 막혀 새 탭을 열지 못했습니다. 브라우저에서 팝업을 허용해 주세요.");
  setTimeout(()=>URL.revokeObjectURL(url),60000);
@@ -2336,21 +2454,67 @@ async function loadBattleLogs(){
  const {data,error}=await sb.rpc("get_battle_logs");if(error){log("get_battle_logs 실패: "+error.message,"bad");return}
  battleLogItems=data||[];renderBattleLogs();
 }
+// Battle Rush 한 번은 한 줄로 묶는다(누르면 요약과 판 목록)
+function rushRunsOf(id){return battleLogItems.filter(x=>x.rush_id===id).sort((a,b)=>(a.rush_no||0)-(b.rush_no||0))}
 function renderBattleLogs(){
  const box=$("battleLogList");if(!box)return;
  if(!battleLogItems.length){box.innerHTML=`<div class="empty">아직 전투 기록이 없습니다.</div>`;return}
- box.innerHTML=battleLogItems.map(r=>{const t=new Date(r.created_at);const hh=String(t.getHours()).padStart(2,"0"),mm=String(t.getMinutes()).padStart(2,"0");
-  return `<button type="button" class="blog-row" onclick="openBattleLogItem('${r.id}')"><span class="bl-res bl-${String(r.result).toLowerCase()}">${RESULT_KO[r.result]||r.result}</span><span class="blog-name">${esc(r.dungeon)}${r.mode==="MOCK"?' <span class="blog-mock">mock</span>':""}</span><span class="blog-meta">${r.has_log===false?"로그 지워짐 · ":""}${r.turns}턴 · ${t.getMonth()+1}/${t.getDate()} ${hh}:${mm}</span></button>`}).join("");
+ const seen=new Set();
+ box.innerHTML=battleLogItems.map(r=>{const t=new Date(r.created_at);const hh=String(t.getHours()).padStart(2,"0"),mm=String(t.getMinutes()).padStart(2,"0"),when=`${t.getMonth()+1}/${t.getDate()} ${hh}:${mm}`;
+  if(r.rush_id){if(seen.has(r.rush_id))return "";seen.add(r.rush_id);const runs=rushRunsOf(r.rush_id);
+   return `<button type="button" class="blog-row" onclick="openRushGroup('${r.rush_id}')"><span class="bl-res bl-rush">Rush</span><span class="blog-name">${esc(r.dungeon)} <span class="blog-mock">Battle Rush ×${runs.length}</span></span><span class="blog-meta">${winLoseText(rushSummary(runs))} · ${when}</span></button>`}
+  return `<button type="button" class="blog-row" onclick="openBattleLogItem('${r.id}')"><span class="bl-res bl-${String(r.result).toLowerCase()}">${RESULT_KO[r.result]||r.result}</span><span class="blog-name">${esc(r.dungeon)}${r.mode==="MOCK"?' <span class="blog-mock">Mock Battle</span>':""}</span><span class="blog-meta">${r.has_log===false?"로그 지워짐 · ":""}${r.turns}턴 · ${when}</span></button>`}).join("");
 }
-async function openBattleLogItem(id){const {data,error}=await sb.rpc("get_battle_log",{p_battle:id});if(error){log("get_battle_log 실패: "+error.message,"bad");return}openBattleLog(data)}
-// ===== Auto Battle: 맡기기 · 정산 · 회수 =====
-// 정산은 서버(전투 함수)가 한 번에 한다. 접속할 때와 Adventure를 열 때, 다음 판 시간이 됐을 때 부른다.
-let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0;
-const IDLE_ERR={IDLE_SLOTS_FULL:"맡길 수 있는 파티 수를 모두 썼습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+async function openBattleLogItem(id,fromRush){const {data,error}=await sb.rpc("get_battle_log",{p_battle:id});if(error){log("get_battle_log 실패: "+error.message,"bad");return}openBattleLog(fromRush?{...data,_rush:true}:data)}
+// ===== Battle Rush 결과 =====
+// g = {dungeon, requested, stopped, runs:[{battle_id, result, turns, rewards}]}. 로그는 판을 누를 때 따로 받는다
+let openedRush=null;
+function rushSummary(runs){
+ const s={win:0,lose:0,draw:0,turns:0,gold:0,exp:{},drops:[],gifts:[]};
+ for(const r of runs){const k=String(r.result||"").toLowerCase();if(k in s)s[k]++;s.turns+=Number(r.turns)||0;
+  if(r.result!=="WIN")continue;const rw=r.rewards||{};s.gold+=Number(rw.gold)||0;
+  for(const [id,x] of Object.entries(rw.exp||{})){const e=s.exp[id]||(s.exp[id]={name:x.name||"",gain:0,up:0,level:x.level});e.gain+=Number(x.gain)||0;e.up+=Number(x.level_up)||0;e.level=x.level}
+  for(const x of rw.drops||[]){const ro=x.rolled||{},plain=!Object.keys(ro).length,unk=!!x.unknown;const g=plain&&s.drops.find(y=>y.plain&&y.def===x.def&&y.unk===unk);if(g)g.n++;else s.drops.push({def:x.def,name:x.name||x.def,r:ro,plain,unk,n:1})}
+  for(const x of rw.gifts||[]){const eq=!!x.char,g=s.gifts.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else s.gifts.push({def:x.def,name:x.name||x.def,eq,n:1})}}
+ return s;
+}
+function rushStopText(g,n){
+ const of=g.requested?` (${n}/${g.requested}판)`:"";
+ if(g.stopped==="LOSE"||g.stopped==="DRAW")return `${n}판째에서 ${g.stopped==="LOSE"?"져서":"비겨서"} 멈췄습니다${of}. 져도 계속 돌리려면 Setting에서 켤 수 있습니다.`;
+ if(g.stopped==="NOT_ENOUGH_SUPPLY")return `SUPPLY가 부족해 ${n}판에서 멈췄습니다${of}.`;
+ return `${BATTLE_ERR[g.stopped]||"문제가 생겨 더 싸우지 못했습니다."} ${n}판에서 멈췄습니다${of}.`;
+}
+function rushResultHtml(g){
+ const runs=g.runs||[],n=runs.length,s=rushSummary(runs),rw=[];
+ if(!s.win)rw.push("이긴 판이 없어 보상이 없습니다.");
+ else{rw.push(`골드 +${s.gold.toLocaleString()}`);for(const x of Object.values(s.exp))rw.push(`${esc(x.name)} EXP +${x.gain.toLocaleString()}${x.up>0?` · <b>Lv.${x.level}</b>`:""}`);
+  if(s.drops.length){rw.push(`<b class="bl-loot-h">전리품</b>`);s.drops.forEach(x=>rw.push(`<b>${esc(x.name)}${x.unk?` <span class="item-unk">(Unknown)</span>`:""}</b>${x.n>1?` x${x.n}`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`))}
+  if(s.gifts.length){rw.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);s.gifts.forEach(x=>rw.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
+ const rwHtml=rw.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1");
+ return `<div class="bl-result">
+  <div class="bl-big rush-big">Battle Rush ×${n}</div>
+  <div class="bl-meta">${esc(g.dungeon||"")}</div>
+  <div class="bl-sum-turn"><b>${winLoseText(s)}</b> · 평균 <b>${n?Math.round(s.turns/n):0}</b>턴</div>
+  ${g.stopped?`<div class="rush-stop">${esc(rushStopText(g,n))}</div>`:""}
+  <div class="bl-rw">${rwHtml}</div>
+ </div>
+ <div class="rush-runs">${runs.map((r,i)=>`<button type="button" class="blog-row" onclick="openBattleLogItem('${r.battle_id}',true)"><span class="bl-res bl-${String(r.result).toLowerCase()}">${RESULT_KO[r.result]||esc(r.result)}</span><span class="blog-name">${i+1}판</span><span class="blog-meta">${r.has_log===false?"로그 지워짐 · ":""}${r.turns}턴</span></button>`).join("")}</div>`;
+}
+function openRushResult(g){
+ openedRush=g;
+ $("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent="Battle Rush 결과";
+ $("helpBody").innerHTML=rushResultHtml(g);const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width="";bx.classList.add("wide");$("helpOverlay").hidden=false;document.querySelector(".help-close").focus();
+}
+function openRushGroup(id){const runs=rushRunsOf(id);if(!runs.length)return;openRushResult({dungeon:runs[0].dungeon,requested:null,stopped:null,runs:runs.map(r=>({battle_id:r.id,result:r.result,turns:r.turns,rewards:r.rewards,has_log:r.has_log}))})}
+// ===== Auto Battle: 파견 · 정산 · 회수 =====
+// 정산은 서버(전투 함수)가 한 번에 한다. 접속할 때와 Adventure를 열 때, 다음 판 시간이 됐을 때(어느 탭에서든) 부른다.
+// 카드는 파견한 파티가 있으면 어느 화면에서든 탭 바로 아래에 보이고, 제목 줄로 접고 편다(idle_open)
+let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0,idleOpen=true;
+const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
 function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
 function idleFull(){return !!idleInfo&&(idleInfo.parties||[]).length>=Number(idleInfo.slots||0)}
-async function loadIdle(){const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();return true}
+async function loadIdle(){const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();if(data&&data.gold!=null){gold=Number(data.gold)||0;renderGold()}return true}
 // 밀린 판 정산: 서버가 한 번에 다 못 하면 more를 주고, 그동안 이어서 부른다
 async function settleIdle(){
  const total={settled:0,parties:{}};
@@ -2363,7 +2527,8 @@ async function settleIdle(){
  }
  return total;
 }
-async function checkIdle(){
+// quiet: 다른 화면을 보던 중에 시간이 돼서 한 정산은 결과 모달을 띄우지 않는다(카드만 갱신)
+async function checkIdle(quiet){
  if(idleBusy)return;idleBusy=true;
  try{
   if(!await loadIdle())return;
@@ -2375,7 +2540,7 @@ async function checkIdle(){
   await loadIdle();
   if(res&&res.settled>0){const cs=await rpc("get_my_characters");if(cs){chars=cs;renderAdminChars();renderCamp()}loadItems()}
   renderIdle();if(advRoom)renderRoom();
-  if(res&&res.settled>0)showIdleResult(res,names);
+  if(res&&res.settled>0&&!quiet)showIdleResult(res,names);
  }finally{idleBusy=false}
 }
 function winLoseText(s){const a=[];if(s.win)a.push(`${s.win}승`);if(s.lose)a.push(`${s.lose}패`);if(s.draw)a.push(`${s.draw}무`);return a.join(" ")}
@@ -2389,11 +2554,13 @@ function showIdleResult(res,names){
 function renderIdle(){
  const box=$("advIdle");if(!box)return;
  const info=idleInfo,ps=info?.parties||[];
- const show=!!info&&!advRoom&&(ps.length>0||dungeons.some(d=>d.auto_unlocked));
+ // 파견한 파티가 있으면 어느 화면에서든, 없으면 Adventure의 던전 목록에서 Auto Battle이 열린 던전이 있을 때만
+ const show=!!info&&(ps.length>0||(currentView==="adventure"&&!advRoom&&dungeons.some(d=>d.auto_unlocked)));
  box.style.display=show?"":"none";
  if(!show)return;
+ box.classList.toggle("collapsed",!idleOpen);$("idleToggle").setAttribute("aria-expanded",String(idleOpen));
  $("idleCount").textContent=`${ps.length}/${info.slots}`;
- $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · 최대 ${info.cap_hours}시간까지 쌓임 · 보유 골드 ${Number(info.gold||0).toLocaleString()}`;
+ $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · 최대 ${info.cap_hours}시간까지 쌓임`;
  $("idleList").innerHTML=ps.map(p=>{
   const s=p.summary||{};
   const mem=(p.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
@@ -2409,41 +2576,52 @@ function renderIdle(){
    ${drops?`<div class="idle-line">전리품 · ${drops}</div>`:""}
    ${used?`<div class="idle-line">소모품 사용 · ${used}</div>`:""}
    <div class="idle-act">${p.last?`<button type="button" class="fm-btn" onclick="openIdleLog('${esc(p.id)}')"><span>마지막 전투</span></button>`:""}<button type="button" class="fm-btn" onclick="confirmRecall('${esc(p.id)}')"><span>회수</span></button></div>
-  </div>`}).join("")||`<div class="empty">맡긴 파티가 없습니다. Auto Battle이 열린 던전에 입장해 파티를 맡길 수 있습니다.</div>`;
+  </div>`}).join("")||`<div class="empty">파견한 파티가 없습니다. Auto Battle이 열린 던전에 입장해 파티를 파견할 수 있습니다.</div>`;
  tickIdle();
  if(!idleTimer)idleTimer=setInterval(tickIdle,1000);
 }
-// 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 Adventure 목록을 보고 있을 때만 정산을 부른다
+// 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
  if(!idleInfo)return;
- const el=(Date.now()-idleAt)/1000;let due=false;
- for(const p of idleInfo.parties||[]){
-  const node=document.querySelector(`[data-idle-next="${p.id}"]`);if(!node)continue;
+ const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false,soon=null,halted=0;
+ for(const p of ps){
+  if(p.halted){halted++;continue}
   const left=Number(p.next_sec||0)-el;
+  if(left<=0)due=true;
+  if(soon==null||left<soon)soon=left;
+  const node=document.querySelector(`[data-idle-next="${p.id}"]`);if(!node)continue;
   const tx=left>0?`다음 판까지 ${fmtDur(left)}`:"정산을 기다리는 중…";
   if(node.textContent!==tx)node.textContent=tx;
-  if(left<=0)due=true;
  }
- if(due&&!idleBusy&&currentView==="adventure"&&!advRoom&&Date.now()>=idleNextTry){idleNextTry=Date.now()+60000;checkIdle()}
+ // 접었을 때 제목 아래 한 줄: 가장 가까운 다음 판까지 남은 시간, 멈춘 파티
+ const brief=$("idleBrief");
+ if(brief){const a=[];if(soon!=null)a.push(soon>0?`다음 판까지 ${fmtDur(soon)}`:"정산을 기다리는 중…");
+  if(halted)a.push(`<span class="idle-warn">골드 부족으로 멈춤${ps.length>1?` ${halted}`:""}</span>`);
+  const h=ps.length?a.join(" · "):"파견한 파티가 없습니다.";if(brief.dataset.h!==h){brief.dataset.h=h;brief.innerHTML=h}}
+ if(due&&!idleBusy&&!battleBusy&&Date.now()>=idleNextTry){idleNextTry=Date.now()+60000;checkIdle(!(currentView==="adventure"&&!advRoom))}
+}
+function toggleIdleCard(e){
+ if(e&&e.target.closest&&e.target.closest("button"))return;
+ idleOpen=!idleOpen;renderIdle();saveUiPref("idle_open",idleOpen);
 }
 function confirmDispatch(id){
  const d=dungeons.find(x=>x.id===id);if(!d)return;
  const members=party.map(i=>chars.find(c=>c.id===i)).filter(Boolean);if(!members.length)return;
  const mins=idleInfo?.run_minutes??30,pct=idleInfo?.reward_pct??50;
- openConfirm("Auto Battle",`<p>지금 파티(${members.map(c=>esc(c.display_name)).join(", ")})를 <b>${esc(d.name)}</b>에 맡깁니다.</p>
+ openConfirm("Auto Battle",`<p>지금 파티(${members.map(c=>esc(c.display_name)).join(", ")})를 <b>${esc(d.name)}</b>에 파견합니다.</p>
   <ul><li>${mins}분마다 한 판을 싸우고, 판마다 파견비 <b>${d.idle_fee}골드</b>를 냅니다(이기든 지든).</li>
   <li>이긴 판만 경험치와 아이템을 받습니다(직접 플레이의 ${pct}%, 골드 없음).</li>
-  <li>맡긴 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li></ul>`,
-  [["취소",null,false],["맡기기",()=>dispatchIdle(id,members.map(c=>c.id)),true]]);
+  <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li></ul>`,
+  [["취소",null,false],["파견",()=>dispatchIdle(id,members.map(c=>c.id)),true]]);
 }
 async function dispatchIdle(id,ids){
  const {error}=await sb.rpc("idle_dispatch",{p_dungeon:id,p_chars:ids});
- if(error){log("idle_dispatch 실패: "+error.message,"bad");showBattleError(idleErrText(error.message,"맡기지 못했습니다."),"Auto Battle");return}
+ if(error){log("idle_dispatch 실패: "+error.message,"bad");showBattleError(idleErrText(error.message,"파견하지 못했습니다."),"Auto Battle");return}
  log("idle_dispatch 성공","ok");advRoom=null;await loadAdventure();window.scrollTo(0,0);
 }
 function confirmRecall(pid){
  const p=(idleInfo?.parties||[]).find(x=>x.id===pid);if(!p)return;
- openConfirm("회수",`<p><b>${esc(p.dungeon)}</b>에 맡긴 파티를 회수합니다. 밀린 판은 먼저 정산합니다.</p><p class="help-note">이 파티의 요약과 마지막 전투 기록은 사라집니다.</p>`,
+ openConfirm("회수",`<p><b>${esc(p.dungeon)}</b>에 파견한 파티를 회수합니다. 밀린 판은 먼저 정산합니다.</p><p class="help-note">이 파티의 요약과 마지막 전투 기록은 사라집니다.</p>`,
   [["취소",null,false],["회수",()=>recallIdle(pid),true]]);
 }
 async function recallIdle(pid){
