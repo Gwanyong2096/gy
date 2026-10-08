@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v296 · 갱신 2026-10-09 02:05 KST -->
+<!-- ProjectGY-test-console v297 · 갱신 2026-10-09 02:42 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -379,7 +379,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;width:14px;height:22px;margin-left:4px;cursor:pointer;background:var(--ac);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v296 · 2026-10-09 02:05</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v297 · 2026-10-09 02:42</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -914,7 +914,7 @@ const COVER_MODES=[["ALWAYS","항상 막아선다",false],["NEVER","막아서지
 function coverText(r){const m=COVER_MODES.find(x=>x[0]===r?.mode)||COVER_MODES[1];return m[1].replace("OO",String(r?.v??0))}
 const HELP={
  party:{title:"Party",html:`<p>던전에 함께 들어갈 캐릭터를 최대 5명까지 고릅니다. 파티는 서버에 바로 저장됩니다.</p><p>전방/후방은 각 캐릭터의 Formation에서 정한 시작 위치를 그대로 씁니다.</p>`},
- dungeon:{title:"Dungeon",html:`<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!이나 Mock Battle을 누릅니다. Battle!을 누를 때마다 SUPPLY 10을 씁니다. SUPPLY는 30초마다 1씩 차고 최대 500입니다.</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다(첫 던전 10회, 다음부터 10회씩 늘어 최대 50회). 파티마다 30분에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 절반이고 골드는 받지 않으며, 판마다 파견비(직접 보상 골드의 20%)를 냅니다. 무료는 3파티까지, 접속하지 않은 동안 8시간까지 쌓입니다.</p>`},
+ dungeon:{title:"Dungeon",html:`<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!이나 Mock Battle을 누릅니다. Battle!을 누를 때마다 SUPPLY 10을 씁니다. SUPPLY는 30초마다 1씩 차고 최대 500입니다.</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다(첫 던전 10회, 다음부터 10회씩 늘어 최대 50회). 파티마다 30분에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 절반이고 골드는 받지 않으며, 판마다 파견비(직접 보상 골드의 30%)를 냅니다. 무료는 3파티까지, 접속하지 않은 동안 8시간까지 쌓입니다.</p>`},
  idle:{title:"Auto Battle",html:`<p>Auto Battle이 열린 던전에 입장해 <b>Auto Battle!</b>을 누르면 지금 파티를 그 던전에 보냅니다.</p>
   <ul><li>파티마다 30분에 한 판을 실제로 싸웁니다. 질 수도 있습니다.</li>
   <li>이긴 판만 경험치와 아이템을 받습니다. 직접 플레이의 절반이고 골드는 받지 않습니다.</li>
