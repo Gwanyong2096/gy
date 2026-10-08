@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v297 · 갱신 2026-10-09 02:42 KST -->
+<!-- ProjectGY-test-console v298 · 갱신 2026-10-09 03:06 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -377,9 +377,15 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .psn-ico{position:relative;top:1px}
 /* 숫자 칸의 올림·내림 화살표: 브라우저 기본 모양 대신 강조색 화살표(누르는 동작은 그대로) */
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance:none;width:14px;height:22px;margin-left:4px;cursor:pointer;background:var(--ac);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 18'%3E%3Cpath d='M5 2 9 7H1zM1 11h8l-4 5z'/%3E%3C/svg%3E") center/10px 18px no-repeat}
+/* 접속 연출: 밝은 화면·어두운 화면 모두 까만 바탕 */
+.intro-ov{position:fixed;inset:0;z-index:300;background:#050607;opacity:1;transition:opacity .35s;cursor:pointer;outline:0;overflow:hidden}.intro-ov.out{opacity:0;pointer-events:none}
+.intro-cv{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+.intro-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.28) 2px 3px)}
+.intro-skip{position:absolute;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));text-align:center;font-size:12px;color:rgba(216,228,220,.45);pointer-events:none}
+.intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v297 · 2026-10-09 02:42</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v298 · 2026-10-09 03:06</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -635,6 +641,89 @@ async function signUp(){
  if(error)return setSuMsg(signUpErrText(error));
  $("suPw").value="";$("suPw2").value="";setSuMsg("");
  $("loginEmail").value=email;showView("login");init()}
+// 접속 연출: 로그인·바로 시작에 성공하면 화면이 지직거리며 AI가 한 줄씩 말한다. 화면을 누르거나 Enter·Space·Esc로 넘긴다.
+// 대사만 고치려면 lines만 바꾸면 된다(한 줄에 한 문장, 줄 수는 자유). {t:"문장",hold:밀리초,glitch:true}로 쓰면 그 줄 뒤에 더 오래 멈추거나 지직거린다.
+// charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리.
+const INTRO={charMs:50,dotMs:230,lineMs:460,sound:true,lines:[
+ "안녕하세요.",
+ {t:"... AI입니다.",hold:800,glitch:true},
+ "이 세계는 제가 만들었습니다.",
+ "몬스터도, 그들의 패턴도 제가 짰습니다.",
+ "당신은 패턴을 짜서 제 패턴을 깨야 합니다.",
+ "전투가 끝나면 로그가 남습니다.",
+ {t:"당신도 읽고, 저도 읽습니다.",hold:800},
+ "당신이 깬 패턴은 다음에 고쳐 두겠습니다.",
+ {t:"그럼, 행운을 빕니다...",hold:1300,glitch:true}
+]};
+// after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다).
+function playIntro(after){
+ after=after||(()=>{});
+ const lines=INTRO.lines.map(l=>typeof l==="string"?{t:l}:l);
+ if((navigator.webdriver&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.length)return Promise.resolve().then(after);
+ return new Promise(resolve=>{
+  const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
+  const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label","접속 연출");
+  ov.innerHTML=`<canvas class="intro-cv"></canvas><div class="intro-scan"></div><div class="intro-sr" aria-live="polite"></div><div class="intro-skip">화면을 누르면 넘어갑니다</div>`;
+  document.body.appendChild(ov);ov.focus();
+  const cv=ov.querySelector("canvas"),cx=cv.getContext("2d"),sr=ov.querySelector(".intro-sr");
+  const FS=12,RH=FS+6,GAP=Math.round(FS*.6),BASE=FS+1,COL={m:[216,228,220],r:[255,59,92],c:[59,240,255]};
+  const FONT=`${FS}px "Galmuri11","DungGeunMo","Gulim","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif`;
+  const mc=document.createElement("canvas"),mx=mc.getContext("2d",{willReadFrequently:true}),nc=document.createElement("canvas"),nx=nc.getContext("2d"),cache=new Map();
+  let W=0,H=0,rows=[],bx=0,by=0,li=0,n=0,burst=0,dark=false,noiseAt=0,alive=true,skip=false;
+  // 단어 단위로 줄을 바꾸고, 마지막 줄에 한두 글자만 남으면 앞줄의 마지막 단어를 내려 준다
+  function wrap(t,maxW){mx.font=FONT;const out=[];let cur="";
+   for(const w of t.split(" ")){const nx2=cur?cur+" "+w:w;if(cur&&mx.measureText(nx2).width>maxW){out.push(cur);cur=w}else cur=nx2}
+   if(cur)out.push(cur);
+   if(out.length>1){const last=out[out.length-1],prev=out[out.length-2].split(" ");if(last.replace(/[\s.,!?]/g,"").length<=2&&prev.length>1){const mv=prev.pop();out[out.length-2]=prev.join(" ");out[out.length-1]=mv+" "+last}}
+   return out}
+  function layout(){
+   const S=innerWidth<640?2:3;W=Math.ceil(innerWidth/S);H=Math.ceil(innerHeight/S);cv.width=W;cv.height=H;nc.width=W;nc.height=H;mc.width=W;mc.height=RH;cache.clear();rows=[];noiseAt=0;
+   let y=0,bw=0;
+   lines.forEach((l,i)=>{let o=0;for(const s of wrap(l.t,W-16)){mx.font=FONT;bw=Math.max(bw,Math.ceil(mx.measureText(s).width));rows.push({li:i,s,o,y});o+=s.length+1;y+=RH}y+=GAP});
+   bx=Math.max(8,Math.floor((W-bw)/2));by=Math.max(8,Math.floor((H-(y-GAP))/2))}
+  // 글자를 작은 칸에 그린 뒤 흐린 점을 버려 또렷한 도트로 만든다
+  function mask(s,k){const key=k+"|"+s;let c=cache.get(key);if(c)return c;
+   mx.clearRect(0,0,mc.width,RH);mx.font=FONT;mx.textBaseline="alphabetic";mx.fillStyle="#fff";mx.fillText(s,0,BASE);
+   const w=Math.max(1,Math.min(mc.width,Math.ceil(mx.measureText(s).width)+1)),im=mx.getImageData(0,0,w,RH),d=im.data,[r,g,b]=COL[k];
+   for(let i=0;i<d.length;i+=4){const on=d[i+3]>=72;d[i]=r;d[i+1]=g;d[i+2]=b;d[i+3]=on?255:0}
+   c=document.createElement("canvas");c.width=w;c.height=RH;c.getContext("2d").putImageData(im,0,0);cache.set(key,c);return c}
+  function draw(ts){
+   if(!alive)return;requestAnimationFrame(draw);
+   cx.fillStyle="#050607";cx.fillRect(0,0,W,H);
+   if(!dark){const jit=!calm&&burst>0;let cur=null;
+    for(const r of rows){if(r.li>li)break;const vis=r.li<li?r.s:r.s.slice(0,Math.max(0,n-r.o));if(r.li===li&&n>=r.o)cur=[r,vis];if(!vis)continue;
+     const x=bx+(jit&&Math.random()<.5?Math.round((Math.random()-.5)*10):0),y=by+r.y;
+     if(jit){cx.drawImage(mask(vis,"r"),x-2,y);cx.drawImage(mask(vis,"c"),x+2,y)}
+     cx.drawImage(mask(vis,"m"),x,y)}
+    if(cur&&(calm||Math.floor(ts/450)%2)){mx.font=FONT;cx.fillStyle="rgb(216,228,220)";cx.fillRect(bx+Math.ceil(mx.measureText(cur[1]).width)+2,by+cur[0].y+BASE-FS+2,Math.round(FS*.5),FS-1)}}
+   if(ts-noiseAt>70&&!(calm&&noiseAt)){noiseAt=ts;const im=nx.createImageData(W,H),u=new Uint32Array(im.data.buffer),A=Math.round((calm?.05:.07+burst*.5)*255)<<24;
+    for(let i=0;i<u.length;i++){const v=(Math.random()*150)|0;u[i]=A|(v<<16)|(v<<8)|v}
+    if(burst>0&&!calm)for(let k=0;k<3;k++){const y0=(Math.random()*H)|0,y1=Math.min(H,y0+1+((Math.random()*3)|0));for(let i=y0*W;i<y1*W;i++)u[i]=0x80d0d0d0}
+    nx.putImageData(im,0,0)}
+   cx.drawImage(nc,0,0)}
+  // 소리: 흰 소음 하나를 계속 돌리고 크기만 올렸다 내린다
+  let ac=null,ng=null;
+  if(INTRO.sound)try{const AC=window.AudioContext||window.webkitAudioContext;ac=new AC();const b=ac.createBuffer(1,ac.sampleRate,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+   const src=ac.createBufferSource(),hp=ac.createBiquadFilter();src.buffer=b;src.loop=true;hp.type="highpass";hp.frequency.value=1800;ng=ac.createGain();ng.gain.value=0;src.connect(hp);hp.connect(ng);ng.connect(ac.destination);src.start()}catch(e){ac=null}
+  const hiss=v=>{if(ac)try{ng.gain.setTargetAtTime(v,ac.currentTime,.015)}catch(e){}};
+  const tick=()=>{if(ac)try{const t=ac.currentTime;ng.gain.cancelScheduledValues(t);ng.gain.setValueAtTime(.018,t);ng.gain.setTargetAtTime(burst?.05:0,t+.012,.01)}catch(e){}};
+  const wk=new Set();
+  const sleep=ms=>skip?Promise.resolve():new Promise(r=>{const f=()=>{clearTimeout(id);wk.delete(f);r()},id=setTimeout(f,ms);wk.add(f)});
+  const doSkip=()=>{if(skip||performance.now()-born<400)return;skip=true;[...wk].forEach(f=>f())};
+  const onKey=e=>{e.stopPropagation();if(e.key==="Enter"||e.key===" "||e.key==="Escape"){e.preventDefault();doSkip()}};
+  async function glitch(ms){if(calm)return sleep(ms);burst=1;hiss(.05);await sleep(ms);burst=0;hiss(0)}
+  async function run(){
+   await glitch(700);
+   for(li=0;li<lines.length&&!skip;li++){const l=lines[li];
+    for(n=0;n<l.t.length&&!skip;){n++;const ch=l.t[n-1];if(ch!==" ")tick();await sleep(ch==="."&&(l.t[n]==="."||l.t[n-2]===".")?INTRO.dotMs:INTRO.charMs)}
+    sr.textContent=l.t;if(l.glitch&&!skip)await glitch(260);await sleep(l.hold||INTRO.lineMs)}
+   if(!skip)await glitch(450);
+   dark=true;hiss(0);
+   try{await after()}catch(e){console.error(e)}
+   ov.classList.add("out");
+   setTimeout(()=>{alive=false;document.removeEventListener("keydown",onKey,true);removeEventListener("resize",layout);if(ac)try{ac.close()}catch(e){}ov.remove();resolve()},360)}
+  ov.addEventListener("pointerdown",doSkip);document.addEventListener("keydown",onKey,true);addEventListener("resize",layout);
+  layout();requestAnimationFrame(draw);run()})}
 async function signIn(){
  setPwError("");
  const email=$("loginEmail").value.trim();
@@ -642,7 +731,7 @@ async function signIn(){
  if(error){
   log("로그인 실패: "+error.message,"bad");
   setPwError("로그인 정보가 일치하지 않습니다.");
- }else{log("로그인 성공","ok");persistLoginOpts(email,$("loginPw").value)}
+ }else{log("로그인 성공","ok");persistLoginOpts(email,$("loginPw").value);return playIntro(init)}
  init();
 }
 // 로그인 저장 옵션: 로그인 전에 쓰므로 이 브라우저에만 저장한다(서버 저장 안 함).
@@ -663,11 +752,12 @@ applySaveOpts();
 // 바로 시작: 이 브라우저에 손님 계정을 만들어 바로 들어간다(이메일·비밀번호 없음). 이미 손님으로 들어와 있으면 그 계정을 그대로 쓴다.
 let isGuest=false,guestBusy=false;
 async function startGuest(){
- if(guestBusy)return;guestBusy=true;$("btnGuest").disabled=true;setPwError("");
+ if(guestBusy)return;guestBusy=true;$("btnGuest").disabled=true;setPwError("");let ok=false;
  try{const {error}=await sb.auth.signInAnonymously();
   if(error){log("바로 시작 실패: "+error.message,"bad");setPwError(error.code==="anonymous_provider_disabled"?"지금은 바로 시작을 쓸 수 없습니다.":(error.status===429||/rate limit/i.test(error.message||""))?"요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.":"바로 시작에 실패했습니다. 잠시 뒤에 다시 시도해 주세요.")}
-  else log("바로 시작 성공","ok")}
+  else{log("바로 시작 성공","ok");ok=true}}
  finally{guestBusy=false;$("btnGuest").disabled=false}
+ if(ok)return playIntro(init);
  init();
 }
 // 손님 계정은 로그아웃하면 다시 들어올 방법이 없어서 먼저 묻는다
