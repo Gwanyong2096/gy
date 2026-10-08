@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v298 · 갱신 2026-10-09 03:06 KST -->
+<!-- ProjectGY-test-console v299 · 갱신 2026-10-09 03:33 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -385,7 +385,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v298 · 2026-10-09 03:06</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v299 · 2026-10-09 03:33</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -641,10 +641,10 @@ async function signUp(){
  if(error)return setSuMsg(signUpErrText(error));
  $("suPw").value="";$("suPw2").value="";setSuMsg("");
  $("loginEmail").value=email;showView("login");init()}
-// 접속 연출: 로그인·바로 시작에 성공하면 화면이 지직거리며 AI가 한 줄씩 말한다. 화면을 누르거나 Enter·Space·Esc로 넘긴다.
+// 접속 연출: 로그인·바로 시작에 성공하면 화면이 지직거리며 AI가 한 줄씩 말한다. 넘길 수 없다(skippable을 true로 바꾸면 화면을 누르거나 Enter·Space·Esc로 넘긴다).
 // 대사만 고치려면 lines만 바꾸면 된다(한 줄에 한 문장, 줄 수는 자유). {t:"문장",hold:밀리초,glitch:true}로 쓰면 그 줄 뒤에 더 오래 멈추거나 지직거린다.
-// charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리.
-const INTRO={charMs:50,dotMs:230,lineMs:460,sound:true,lines:[
+// charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리, skippable = 넘기기 허용.
+const INTRO={charMs:50,dotMs:230,lineMs:460,sound:true,skippable:false,lines:[
  "안녕하세요.",
  {t:"... AI입니다.",hold:800,glitch:true},
  "이 세계는 제가 만들었습니다.",
@@ -663,7 +663,7 @@ function playIntro(after){
  return new Promise(resolve=>{
   const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
   const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label","접속 연출");
-  ov.innerHTML=`<canvas class="intro-cv"></canvas><div class="intro-scan"></div><div class="intro-sr" aria-live="polite"></div><div class="intro-skip">화면을 누르면 넘어갑니다</div>`;
+  ov.innerHTML=`<canvas class="intro-cv"></canvas><div class="intro-scan"></div><div class="intro-sr" aria-live="polite"></div>${INTRO.skippable?`<div class="intro-skip">화면을 누르면 넘어갑니다</div>`:""}`;if(!INTRO.skippable)ov.style.cursor="default";
   document.body.appendChild(ov);ov.focus();
   const cv=ov.querySelector("canvas"),cx=cv.getContext("2d"),sr=ov.querySelector(".intro-sr");
   const FS=12,RH=FS+6,GAP=Math.round(FS*.6),BASE=FS+1,COL={m:[216,228,220],r:[255,59,92],c:[59,240,255]};
@@ -709,7 +709,7 @@ function playIntro(after){
   const tick=()=>{if(ac)try{const t=ac.currentTime;ng.gain.cancelScheduledValues(t);ng.gain.setValueAtTime(.018,t);ng.gain.setTargetAtTime(burst?.05:0,t+.012,.01)}catch(e){}};
   const wk=new Set();
   const sleep=ms=>skip?Promise.resolve():new Promise(r=>{const f=()=>{clearTimeout(id);wk.delete(f);r()},id=setTimeout(f,ms);wk.add(f)});
-  const doSkip=()=>{if(skip||performance.now()-born<400)return;skip=true;[...wk].forEach(f=>f())};
+  const doSkip=()=>{if(!INTRO.skippable||skip||performance.now()-born<400)return;skip=true;[...wk].forEach(f=>f())};
   const onKey=e=>{e.stopPropagation();if(e.key==="Enter"||e.key===" "||e.key==="Escape"){e.preventDefault();doSkip()}};
   async function glitch(ms){if(calm)return sleep(ms);burst=1;hiss(.05);await sleep(ms);burst=0;hiss(0)}
   async function run(){
