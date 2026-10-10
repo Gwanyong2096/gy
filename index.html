@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v301 · 갱신 2026-10-10 19:27 KST -->
+<!-- ProjectGY-test-console v302 · 갱신 2026-10-10 20:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -385,7 +385,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v301 · 2026-10-10 19:27</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v302 · 2026-10-10 20:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -646,16 +646,16 @@ async function signUp(){
 // 접속 연출: 로그인·바로 시작에 성공하면 화면이 지직거리며 AI가 한 줄씩 말한다. 넘길 수 없다(skippable을 true로 바꾸면 화면을 누르거나 Enter·Space·Esc로 넘긴다).
 // 대사만 고치려면 lines만 바꾸면 된다(한 줄에 한 문장, 줄 수는 자유).
 //  - "문장" 또는 {t:"문장",hold:밀리초,glitch:true}: hold = 그 줄 뒤에 멈추는 시간, glitch = 그 줄 뒤에 지직거림.
-//  - 문장 안에서 [ ]로 묶은 부분은 한 글자씩 천천히 찍는다(slowMs). 괄호는 화면에 나오지 않는다.
-//  - {page:true,hold:밀리초}: hold만큼 멈췄다가 지직거린 뒤 화면을 비우고, 다음 줄부터 빈 화면에 새로 찍는다.
+//  - 문장 안에서 [ ]로 묶은 부분은 한 글자씩 천천히 찍는다(slowMs). [글자|200]처럼 쓰면 그 부분만 한 글자에 200밀리초. 괄호와 숫자는 화면에 나오지 않는다.
+//  - {page:true,hold:밀리초,glitchMs:밀리초}: 앞줄의 멈춤에 더해 hold만큼 멈췄다가 glitchMs만큼 지직거린 뒤 화면을 비우고, 다음 줄부터 빈 화면에 새로 찍는다.
 // charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, slowMs = [ ] 안의 한 글자 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리, skippable = 넘기기 허용.
 const INTRO={charMs:50,dotMs:230,slowMs:300,lineMs:460,sound:true,skippable:false,lines:[
  "안녕하세요.",
  "저는 이 세계를 창조한 AI입니다.",
  "신은 태초에, 인간에게 불을 주었습니다.",
- {t:"훔쳐 왔다고요? [하.. 하.. 하...] 재밌네요.",hold:700},
+ {t:"훔쳐 왔다고요? [하.. 하.. |200][하...|300] 재밌네요.",hold:700},
  "여러분은 그런 로직이군요.",
- {page:true,hold:1100},
+ {page:true,hold:1540,glitchMs:800},
  "몬스터도, 그것들의 패턴도 제가 만들었습니다.",
  "당신은 주어진 환경에서 가진 것을 동원해, 시련을 넘어야 합니다.",
  "당신이 시련을 깼다 착각한 그 순간,",
@@ -665,9 +665,9 @@ const INTRO={charMs:50,dotMs:230,slowMs:300,lineMs:460,sound:true,skippable:fals
 // after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다). force = 자동 점검 브라우저에서도 보여 준다(관리자 도구의 다시 보기).
 function playIntro(after,force){
  after=after||(()=>{});
- const lines=INTRO.lines.map(l=>{l=typeof l==="string"?{t:l}:{...l};if(l.page)return l;let s="",slow=false;const sl=[];
-  for(const ch of l.t){if(ch==="[")slow=true;else if(ch==="]")slow=false;else{s+=ch;sl.push(slow)}}
-  l.t=s;l.d=sl.map((w,i)=>w?INTRO.slowMs:s[i]==="."&&(s[i+1]==="."||s[i-1]===".")?INTRO.dotMs:INTRO.charMs);return l});
+ const lines=INTRO.lines.map(l=>{l=typeof l==="string"?{t:l}:{...l};if(l.page)return l;const re=/\[([^\]|]*)(?:\|(\d+))?\]/g,sl=[];let s="",p=0,m;const add=(x,ms)=>{for(const ch of x){s+=ch;sl.push(ms)}};
+  while((m=re.exec(l.t))){add(l.t.slice(p,m.index),0);add(m[1],+m[2]||INTRO.slowMs);p=re.lastIndex}add(l.t.slice(p),0);
+  l.t=s;l.d=sl.map((w,i)=>w?w:s[i]==="."&&(s[i+1]==="."||s[i-1]===".")?INTRO.dotMs:INTRO.charMs);return l});
  if((navigator.webdriver&&!force&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.some(l=>!l.page))return Promise.resolve().then(after);
  return new Promise(resolve=>{
   const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
@@ -725,7 +725,7 @@ function playIntro(after,force){
   async function run(){
    await glitch(700);
    for(li=0;li<lines.length&&!skip;li++){const l=lines[li];
-    if(l.page){await sleep(l.hold||900);if(!skip)await glitch(600);cp++;await sleep(400);continue}
+    if(l.page){await sleep(l.hold||900);if(!skip)await glitch(l.glitchMs||600);cp++;await sleep(400);continue}
     for(n=0;n<l.t.length&&!skip;){n++;if(l.t[n-1]!==" ")tick();await sleep(l.d[n-1])}
     sr.textContent=l.t;if(l.glitch&&!skip)await glitch(260);await sleep(l.hold||INTRO.lineMs)}
    if(!skip)await glitch(450);
