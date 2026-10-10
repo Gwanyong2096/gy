@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v300 · 갱신 2026-10-10 13:55 KST -->
+<!-- ProjectGY-test-console v301 · 갱신 2026-10-10 19:27 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -385,7 +385,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v300 · 2026-10-10 13:55</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v301 · 2026-10-10 19:27</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -644,24 +644,31 @@ async function signUp(){
  $("suPw").value="";$("suPw2").value="";setSuMsg("");
  $("loginEmail").value=email;showView("login");init()}
 // 접속 연출: 로그인·바로 시작에 성공하면 화면이 지직거리며 AI가 한 줄씩 말한다. 넘길 수 없다(skippable을 true로 바꾸면 화면을 누르거나 Enter·Space·Esc로 넘긴다).
-// 대사만 고치려면 lines만 바꾸면 된다(한 줄에 한 문장, 줄 수는 자유). {t:"문장",hold:밀리초,glitch:true}로 쓰면 그 줄 뒤에 더 오래 멈추거나 지직거린다.
-// charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리, skippable = 넘기기 허용.
-const INTRO={charMs:50,dotMs:230,lineMs:460,sound:true,skippable:false,lines:[
+// 대사만 고치려면 lines만 바꾸면 된다(한 줄에 한 문장, 줄 수는 자유).
+//  - "문장" 또는 {t:"문장",hold:밀리초,glitch:true}: hold = 그 줄 뒤에 멈추는 시간, glitch = 그 줄 뒤에 지직거림.
+//  - 문장 안에서 [ ]로 묶은 부분은 한 글자씩 천천히 찍는다(slowMs). 괄호는 화면에 나오지 않는다.
+//  - {page:true,hold:밀리초}: hold만큼 멈췄다가 지직거린 뒤 화면을 비우고, 다음 줄부터 빈 화면에 새로 찍는다.
+// charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, slowMs = [ ] 안의 한 글자 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리, skippable = 넘기기 허용.
+const INTRO={charMs:50,dotMs:230,slowMs:300,lineMs:460,sound:true,skippable:false,lines:[
  "안녕하세요.",
- {t:"... AI입니다.",hold:800,glitch:true},
- "이 세계는 제가 만들었습니다.",
- "몬스터도, 그들의 패턴도 제가 짰습니다.",
- "당신은 패턴을 짜서 제 패턴을 깨야 합니다.",
- "전투가 끝나면 로그가 남습니다.",
- {t:"당신도 읽고, 저도 읽습니다.",hold:800},
- "당신이 깬 패턴은 다음에 고쳐 두겠습니다.",
+ "저는 이 세계를 창조한 AI입니다.",
+ "신은 태초에, 인간에게 불을 주었습니다.",
+ {t:"훔쳐 왔다고요? [하.. 하.. 하...] 재밌네요.",hold:700},
+ "여러분은 그런 로직이군요.",
+ {page:true,hold:1100},
+ "몬스터도, 그것들의 패턴도 제가 만들었습니다.",
+ "당신은 주어진 환경에서 가진 것을 동원해, 시련을 넘어야 합니다.",
+ "당신이 시련을 깼다 착각한 그 순간,",
+ {t:"시련은 또 다른 모습으로 찾아올 것입니다.",hold:900},
  {t:"그럼, 행운을 빕니다...",hold:1300,glitch:true}
 ]};
 // after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다). force = 자동 점검 브라우저에서도 보여 준다(관리자 도구의 다시 보기).
 function playIntro(after,force){
  after=after||(()=>{});
- const lines=INTRO.lines.map(l=>typeof l==="string"?{t:l}:l);
- if((navigator.webdriver&&!force&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.length)return Promise.resolve().then(after);
+ const lines=INTRO.lines.map(l=>{l=typeof l==="string"?{t:l}:{...l};if(l.page)return l;let s="",slow=false;const sl=[];
+  for(const ch of l.t){if(ch==="[")slow=true;else if(ch==="]")slow=false;else{s+=ch;sl.push(slow)}}
+  l.t=s;l.d=sl.map((w,i)=>w?INTRO.slowMs:s[i]==="."&&(s[i+1]==="."||s[i-1]===".")?INTRO.dotMs:INTRO.charMs);return l});
+ if((navigator.webdriver&&!force&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.some(l=>!l.page))return Promise.resolve().then(after);
  return new Promise(resolve=>{
   const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
   const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label","접속 연출");
@@ -671,7 +678,7 @@ function playIntro(after,force){
   const FS=12,RH=FS+6,GAP=Math.round(FS*.6),BASE=FS+1,COL={m:[216,228,220],r:[255,59,92],c:[59,240,255]};
   const FONT=`${FS}px "Galmuri11","DungGeunMo","Gulim","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif`;
   const mc=document.createElement("canvas"),mx=mc.getContext("2d",{willReadFrequently:true}),nc=document.createElement("canvas"),nx=nc.getContext("2d"),cache=new Map();
-  let W=0,H=0,rows=[],bx=0,by=0,li=0,n=0,burst=0,dark=false,noiseAt=0,alive=true,skip=false;
+  let W=0,H=0,rows=[],cp=0,li=0,n=0,burst=0,dark=false,noiseAt=0,alive=true,skip=false;
   // 단어 단위로 줄을 바꾸고, 마지막 줄에 한두 글자만 남으면 앞줄의 마지막 단어를 내려 준다
   function wrap(t,maxW){mx.font=FONT;const out=[];let cur="";
    for(const w of t.split(" ")){const nx2=cur?cur+" "+w:w;if(cur&&mx.measureText(nx2).width>maxW){out.push(cur);cur=w}else cur=nx2}
@@ -680,9 +687,10 @@ function playIntro(after,force){
    return out}
   function layout(){
    const S=innerWidth<640?2:3;W=Math.ceil(innerWidth/S);H=Math.ceil(innerHeight/S);cv.width=W;cv.height=H;nc.width=W;nc.height=H;mc.width=W;mc.height=RH;cache.clear();rows=[];noiseAt=0;
-   let y=0,bw=0;
-   lines.forEach((l,i)=>{let o=0;for(const s of wrap(l.t,W-16)){mx.font=FONT;bw=Math.max(bw,Math.ceil(mx.measureText(s).width));rows.push({li:i,s,o,y});o+=s.length+1;y+=RH}y+=GAP});
-   bx=Math.max(8,Math.floor((W-bw)/2));by=Math.max(8,Math.floor((H-(y-GAP))/2))}
+   const pages=[];let pg=0,y=0,bw=0;const close=()=>{pages[pg]={bw,bh:y-GAP}};
+   lines.forEach((l,i)=>{if(l.page){close();pg++;y=0;bw=0;return}let o=0;for(const s of wrap(l.t,W-16)){mx.font=FONT;bw=Math.max(bw,Math.ceil(mx.measureText(s).width));rows.push({li:i,pg,s,o,y});o+=s.length+1;y+=RH}y+=GAP});close();
+   // 화면(page)마다 그 화면의 글 묶음을 가운데에 둔다
+   for(const r of rows){const p=pages[r.pg];r.x=Math.max(8,Math.floor((W-p.bw)/2));r.y+=Math.max(8,Math.floor((H-p.bh)/2))}}
   // 글자를 작은 칸에 그린 뒤 흐린 점을 버려 또렷한 도트로 만든다
   function mask(s,k){const key=k+"|"+s;let c=cache.get(key);if(c)return c;
    mx.clearRect(0,0,mc.width,RH);mx.font=FONT;mx.textBaseline="alphabetic";mx.fillStyle="#fff";mx.fillText(s,0,BASE);
@@ -693,11 +701,11 @@ function playIntro(after,force){
    if(!alive)return;requestAnimationFrame(draw);
    cx.fillStyle="#050607";cx.fillRect(0,0,W,H);
    if(!dark){const jit=!calm&&burst>0;let cur=null;
-    for(const r of rows){if(r.li>li)break;const vis=r.li<li?r.s:r.s.slice(0,Math.max(0,n-r.o));if(r.li===li&&n>=r.o)cur=[r,vis];if(!vis)continue;
-     const x=bx+(jit&&Math.random()<.5?Math.round((Math.random()-.5)*10):0),y=by+r.y;
+    for(const r of rows){if(r.pg!==cp)continue;if(r.li>li)break;const vis=r.li<li?r.s:r.s.slice(0,Math.max(0,n-r.o));if(r.li===li&&n>=r.o)cur=[r,vis];if(!vis)continue;
+     const x=r.x+(jit&&Math.random()<.5?Math.round((Math.random()-.5)*10):0),y=r.y;
      if(jit){cx.drawImage(mask(vis,"r"),x-2,y);cx.drawImage(mask(vis,"c"),x+2,y)}
      cx.drawImage(mask(vis,"m"),x,y)}
-    if(cur&&(calm||Math.floor(ts/450)%2)){mx.font=FONT;cx.fillStyle="rgb(216,228,220)";cx.fillRect(bx+Math.ceil(mx.measureText(cur[1]).width)+2,by+cur[0].y+BASE-FS+2,Math.round(FS*.5),FS-1)}}
+    if(cur&&(calm||Math.floor(ts/450)%2)){mx.font=FONT;cx.fillStyle="rgb(216,228,220)";cx.fillRect(cur[0].x+Math.ceil(mx.measureText(cur[1]).width)+2,cur[0].y+BASE-FS+2,Math.round(FS*.5),FS-1)}}
    if(ts-noiseAt>70&&!(calm&&noiseAt)){noiseAt=ts;const im=nx.createImageData(W,H),u=new Uint32Array(im.data.buffer),A=Math.round((calm?.05:.07+burst*.5)*255)<<24;
     for(let i=0;i<u.length;i++){const v=(Math.random()*150)|0;u[i]=A|(v<<16)|(v<<8)|v}
     if(burst>0&&!calm)for(let k=0;k<3;k++){const y0=(Math.random()*H)|0,y1=Math.min(H,y0+1+((Math.random()*3)|0));for(let i=y0*W;i<y1*W;i++)u[i]=0x80d0d0d0}
@@ -717,7 +725,8 @@ function playIntro(after,force){
   async function run(){
    await glitch(700);
    for(li=0;li<lines.length&&!skip;li++){const l=lines[li];
-    for(n=0;n<l.t.length&&!skip;){n++;const ch=l.t[n-1];if(ch!==" ")tick();await sleep(ch==="."&&(l.t[n]==="."||l.t[n-2]===".")?INTRO.dotMs:INTRO.charMs)}
+    if(l.page){await sleep(l.hold||900);if(!skip)await glitch(600);cp++;await sleep(400);continue}
+    for(n=0;n<l.t.length&&!skip;){n++;if(l.t[n-1]!==" ")tick();await sleep(l.d[n-1])}
     sr.textContent=l.t;if(l.glitch&&!skip)await glitch(260);await sleep(l.hold||INTRO.lineMs)}
    if(!skip)await glitch(450);
    dark=true;hiss(0);
