@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v302 · 갱신 2026-10-10 20:03 KST -->
+<!-- ProjectGY-test-console v303 · 갱신 2026-10-11 00:40 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -383,9 +383,58 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .intro-scan{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.28) 2px 3px)}
 .intro-skip{position:absolute;left:0;right:0;bottom:max(18px,env(safe-area-inset-bottom));text-align:center;font-size:12px;color:rgba(216,228,220,.45);pointer-events:none}
 .intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+/* ===== 퀘스트 리모콘 =====
+   층 표(겹칠 때 위에 오는 순서, 한곳에서 정한다): 리모콘 20 < 보급 안내 30 < 도움말·확인·전투 로그 창 50 < 끌어 옮기는 캐릭터 60 < 튜토리얼 90~93 < 접속 연출 300.
+   창이 뜨면 창의 어두운 바탕이 리모콘까지 덮는다(리모콘을 따로 숨기지 않는다). 리모콘 안에서 뜨는 글자(+골드)는 리모콘 층 안에서만 위로 간다. */
+.q-remote{--q-w:240px;--z-remote:20;position:absolute;z-index:var(--z-remote);width:var(--q-w)}
+.q-remote.hidden{display:none}
+.q-panel{position:relative;display:flex;flex-direction:column;max-height:calc(100vh - 32px);background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px 14px 10px;font-size:13px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+.q-head{flex:none;display:flex;align-items:center;gap:8px;margin:0 0 10px}
+.q-title{font-size:15px;font-weight:700;color:var(--ac)}
+.q-cnt{font-size:11px;color:var(--mu);margin-left:auto}
+.q-hbtn{all:unset;cursor:pointer;color:var(--mu);font-size:12px;line-height:1;padding:3px 5px;border-radius:6px}.q-hbtn:hover{color:var(--ac)}.q-hbtn:focus-visible{outline:2px solid var(--ac)}
+.q-all{all:unset;box-sizing:border-box;cursor:pointer;flex:none;display:none;text-align:center;font-size:12px;font-weight:700;border-radius:8px;padding:5px 0;margin:0 0 10px;background:var(--ac);color:var(--onac)}
+.q-remote.multi-done .q-all{display:block}
+.q-list{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-right:-8px;padding-right:8px;scrollbar-width:thin;scrollbar-color:var(--bd) transparent}
+.q-empty{color:var(--mu);font-size:12px}
+.q-item{position:relative;padding:10px 26px 10px 6px;margin:0 -6px;border-top:1px solid var(--bd);border-radius:8px;overflow:hidden;transition:background .15s}
+.q-item[title]{cursor:pointer}.q-item[title]:hover{background:color-mix(in srgb,var(--bd) 35%,transparent)}
+.q-item:first-child{border-top:0}
+.q-go{position:absolute;right:8px;top:12px;color:var(--mu);font-size:16px;line-height:1}
+.q-name{font-weight:700;line-height:1.35}.q-desc{color:var(--mu);font-size:12px;margin-top:2px}
+.q-new{display:inline-block;margin-left:6px;padding:0 5px;border-radius:4px;font-size:10px;font-weight:700;line-height:16px;vertical-align:1px;background:var(--ac);color:var(--onac)}
+.q-bar{height:6px;border-radius:3px;background:color-mix(in srgb,var(--bd) 70%,transparent);margin:7px 0 4px;overflow:hidden}
+.q-bar i{display:block;height:100%;background:var(--ac);transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.q-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mu)}.q-rw{text-align:right;color:var(--tx)}
+.q-itemlink{all:unset;cursor:pointer;font-weight:700;color:var(--tx);text-decoration:underline;text-underline-offset:2px}.q-itemlink:hover{color:var(--ac)}
+.q-claim{all:unset;box-sizing:border-box;cursor:pointer;display:block;text-align:center;margin-top:7px;width:100%;padding:5px 0;font-size:12px;font-weight:700;border-radius:8px;background:var(--ac);color:var(--onac)}
+.q-claim:focus-visible,.q-all:focus-visible,.q-itemlink:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+/* 진행이 오르면 그 줄이 한 번 밝아지고, 다 채우면 빛이 한 번씩 지나간다 */
+.q-item.bump{animation:qbump 1.1s ease-out}
+@keyframes qbump{0%{background:color-mix(in srgb,var(--ac) 30%,transparent)}100%{background:transparent}}
+.q-item.done .q-name{color:var(--ac)}
+.q-item.done::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 30%,color-mix(in srgb,var(--ac) 30%,transparent) 50%,transparent 70%);background-size:250% 100%;animation:qshine 2.2s ease-in-out infinite}
+@keyframes qshine{from{background-position:150% 0}to{background-position:-100% 0}}
+.q-remote.has-done .q-panel,.q-remote.has-done .q-tab,.q-remote.has-new:not(.has-done) .q-tab{animation:qglow 1.6s ease-in-out infinite}
+@keyframes qglow{0%,100%{box-shadow:0 0 0 0 transparent,0 6px 22px rgba(0,0,0,.18)}50%{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 55%,transparent),0 6px 22px rgba(0,0,0,.18)}}
+.q-float{position:absolute;z-index:2;pointer-events:none;font-weight:800;font-size:14px;color:var(--ok);white-space:nowrap;animation:qfloat 1.3s ease-out forwards;text-shadow:0 1px 0 var(--card)}
+@keyframes qfloat{0%{opacity:0;transform:translate(-50%,6px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-38px)}}
+#tabGold.q-up{animation:qgold .6s ease-out}
+@keyframes qgold{0%{transform:scale(1.15)}100%{transform:scale(1)}}
+/* 접힌 상태: 세로 손잡이. 점 = 새 퀘스트나 받을 보상이 있음 */
+.q-tab{all:unset;box-sizing:border-box;cursor:pointer;display:none;writing-mode:vertical-rl;padding:12px 6px;border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--ac);font-weight:700;font-size:13px;letter-spacing:1px;position:relative}
+.q-tab:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.q-dot{position:absolute;top:-4px;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--ac);display:none}
+.q-remote.has-done .q-dot,.q-remote.has-new .q-dot{display:block}
+.q-remote.folded{width:auto}
+.q-remote.folded .q-tab{display:block}
+.q-remote.folded .q-panel{display:none}
+.q-remote.folded.open{width:var(--q-w)}
+.q-remote.folded.open .q-tab{display:none}
+.q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v302 · 2026-10-10 20:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v303 · 2026-10-11 00:40</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -537,6 +586,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="section-title">Battle Rush</div>
     <label class="save-opt"><input type="checkbox" id="rushKeepChk" onchange="setRushKeep(this.checked)"><span>Battle Rush에서 지거나 비겨도 계속 돌리기</span></label>
     <div class="pattern-help">꺼 두면 이기지 못한 판에서 멈춥니다.</div>
+  </div>
+  <div class="card" id="questSetCard">
+    <div class="section-title">퀘스트</div>
+    <label class="save-opt"><input type="checkbox" id="hideQuestChk" onchange="setHideQuest(this.checked)"><span>퀘스트창 숨기기</span></label>
+    <div class="pattern-help">켜면 화면 오른쪽의 퀘스트창(접힌 손잡이 포함)을 그리지 않습니다.</div>
   </div>
   <div class="card" id="tutReplayCard" style="display:none">
     <div class="section-title">튜토리얼 다시 보기</div>
@@ -782,7 +836,7 @@ async function init(){stageBoot();if(!stage)await practiceResume();const {data:{
  if(now){$("currentEmail").textContent=isGuest?"손님 계정":(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
- loggedIn=now;
+ loggedIn=now;questPlace(true);
  if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;$("advIdle").style.display="none";openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
@@ -796,6 +850,7 @@ async function loadUiPrefs(){
  idleOpen=prefs.idle_open!==false;renderIdle();
  adminMode=prefs.admin_mode!==false;applyAdminMode();
  rushKeepGoing=prefs.rush_keep_going===true;hideMock=prefs.hide_mock===true;applyRushPrefs();
+ hideQuest=prefs.hide_quest===true;questIntroSeen=prefs.quest_intro_seen===true;applyQuestPrefs();
  collapsedSecs=new Set(Array.isArray(prefs.collapsed_sections)?prefs.collapsed_sections:[]);
 
  if(selectedCharId)renderCharacterDetail();
@@ -900,7 +955,8 @@ async function load(){
  renderAdminChars();
  if(innJobs.length||$("innJobs"))loadInn();
  if(selectedCharId && !chars.some(c=>c.id===selectedCharId)) selectedCharId=null;
- renderCamp(); loadItems(); if(currentView==="adventure")loadAdventure();else if(!supplyState)loadSupply()}
+ renderCamp(); loadItems(); if(currentView==="adventure")loadAdventure();else if(!supplyState)loadSupply();
+ questLoad()}
 function setTabsForLogin(on){
  $("tabLogin").style.display=on?"none":"";
  $("tabSupply").style.display=on?"":"none";$("tabGold").style.display=on?"":"none";
@@ -937,6 +993,125 @@ function showView(view){
  if(view==="log")loadBattleLogs();
  renderIdle();
 }
+// ===== 퀘스트 리모콘 =====
+// 퀘스트(지금 할 것)는 서버(get_quests)가 주고, 진행 세기와 보상 지급도 서버가 한다(claim_quests). 화면은 보여 주기만 한다.
+// 자리: 본문(메인 박스 카드 오른쪽 끝)에서 12px 띄운 오른쪽. 휠을 굴릴 때마다 화면 가운데로 부드럽게 따라온다(메인 박스 위·아래 끝은 넘지 않는다).
+// 접힘 순서: 1 창이 좁으면 접힘 → 2 남은 퀘스트가 0개면 접힘 → 3 이 브라우저에 기억된 마지막 상태 → 4 처음이면 펼침. 새 퀘스트가 생겨도 저절로 펼치지 않는다(손잡이 점과 깜빡임).
+// 좁은 화면: 손잡이를 누르면 본문 안쪽 오른쪽에 창이 위로 뜨고, ×·바깥·Esc로 닫힌다.
+// 숨김: 로그인 전, 무대(챕터 다시 보기), Setting의 "퀘스트창 숨기기", 튜토리얼 진행 중(챕터 1을 마친 뒤 리모콘을 짚는 안내 한 번만 예외).
+// 층: 리모콘은 --z-remote(20). 도움말·확인·전투 로그 창(50), 끌어 옮기는 캐릭터(60), 튜토리얼(90~)이 언제나 위에 뜬다(스타일 조각의 층 표 참고).
+let quests=[],hideQuest=false,questIntroSeen=true,questIntroPending=false;
+const QR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,prev:{},sig:"",seen:null,busy:false};
+const Q_GAP=12,Q_EDGE=8,Q_FOLD_KEY="pgy_quest_fold",Q_SEEN_KEY="pgy_quest_seen";
+function questSavedFold(){const v=LS.get(Q_FOLD_KEY);return v==null?null:v==="1"}
+function questSeen(){if(!QR.seen){let a=[];try{a=JSON.parse(LS.get(Q_SEEN_KEY)||"[]")}catch(e){}QR.seen=new Set(Array.isArray(a)?a:[])}return QR.seen}
+function questLive(){return quests}
+function questRewardHtml(q){
+ const parts=[];if(Number(q.gold)>0)parts.push(`<b>${Number(q.gold)}골드</b>`);
+ (q.items||[]).forEach((it,i)=>parts.push(`<button type="button" class="q-itemlink" data-qitem="${esc(q.id)}:${i}">${esc(it.item_defs?.name||it.def)} ×${Number(it.qty)||1}</button>`));
+ return parts.join(" ")||"<b>-</b>";
+}
+function questEnsure(){
+ if(QR.el)return QR.el;
+ const d=document.createElement("div");d.className="q-remote hidden";d.id="questRemote";
+ d.innerHTML=`<button type="button" class="q-tab" id="qTab" aria-label="퀘스트 열기"><span class="q-dot"></span>Quest <span id="qTabCnt">0</span></button>
+<div class="q-panel" role="region" aria-label="퀘스트"><div class="q-head"><span class="q-title">Quest</span><span class="q-cnt" id="qCnt"></span><button type="button" class="q-hbtn" id="qFold"></button></div>
+<button type="button" class="q-all" id="qAll">모두 받기</button><div class="q-list" id="qList"></div></div>`;
+ document.body.appendChild(d);QR.el=d;
+ $("qTab").addEventListener("click",()=>{if(QR.narrow)QR.open=true;else{QR.userFold=false;LS.set(Q_FOLD_KEY,"0")}questPlace(true)});
+ $("qFold").addEventListener("click",()=>{if(QR.narrow)QR.open=false;else{QR.userFold=true;LS.set(Q_FOLD_KEY,"1")}questPlace(true)});
+ $("qAll").addEventListener("click",e=>questClaim(quests.filter(q=>q.cur>=q.max).map(q=>q.id),e.currentTarget));
+ $("qList").addEventListener("click",e=>{
+  const c=e.target.closest("[data-qclaim]");if(c){questClaim([c.dataset.qclaim],c);return}
+  const it=e.target.closest("[data-qitem]");if(it){const [id,i]=it.dataset.qitem.split(":");const q=quests.find(x=>x.id===id),x=q&&q.items[Number(i)];
+   if(x)openConfirm(x.item_defs?.name||x.def,itemDetailHtml({def_id:x.def,qty:x.qty,item_defs:x.item_defs||{}}),[["닫기",null,true]]);return}
+  const row=e.target.closest(".q-item");if(row)questGo(quests.find(q=>q.id===row.dataset.id));
+ });
+ document.addEventListener("click",e=>{if(QR.narrow&&QR.open&&!questIntroPending&&!d.contains(e.target)&&!e.target.closest(".help-overlay")){QR.open=false;questPlace(true)}});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&QR.narrow&&QR.open&&!questIntroPending&&$("helpOverlay").hidden){QR.open=false;questPlace(true)}});
+ addEventListener("scroll",questFollow,{passive:true});
+ addEventListener("resize",()=>questPlace(true));
+ // 본문 크기가 바뀌면(화면 전환, 목록이 늦게 채워짐) 그 자리에서 바로 다시 놓는다(따라오는 움직임은 휠을 굴릴 때만)
+ try{new ResizeObserver(()=>{if(!d.classList.contains("hidden"))questPlace(true)}).observe(document.querySelector("main"))}catch(e){}
+ setInterval(questSync,500);
+ return d;
+}
+async function questLoad(){
+ if(stage||!loggedIn)return;
+ const {data,error}=await sb.rpc("get_quests");if(error){log("get_quests 실패: "+error.message,"bad");return}
+ quests=Array.isArray(data)?data:[];questRender();
+}
+function questRender(){
+ const d=questEnsure(),seen=questSeen(),done=quests.filter(q=>q.cur>=q.max);
+ // 정렬: 보상 받을 수 있는 것 → 진행 중 → 시작 안 한 것(같은 무리 안에서는 서버 순서)
+ const rank=q=>q.cur>=q.max?0:q.cur>0?1:2,order=quests.map((q,i)=>[q,i]).sort((a,b)=>rank(a[0])-rank(b[0])||a[1]-b[1]).map(x=>x[0]);
+ const bumped=[];
+ $("qList").innerHTML=order.length?order.map(q=>{
+  const was=QR.prev[q.id],from=was!=null&&was<q.cur?was:q.cur,pct=v=>Math.round(Math.min(1,v/Math.max(1,q.max))*100);if(from!==q.cur)bumped.push(q.id);
+  return `<div class="q-item${q.cur>=q.max?" done":""}" data-id="${esc(q.id)}"${q.go&&q.go.view?' title="누르면 할 곳으로 갑니다"':""}>${q.go&&q.go.view?'<span class="q-go" aria-hidden="true">›</span>':""}<div class="q-name">${esc(q.name)}${seen.has(q.id)?"":'<span class="q-new">NEW</span>'}</div>${q.desc?`<div class="q-desc">${esc(q.desc)}</div>`:""}<div class="q-bar"><i style="width:${pct(from)}%" data-to="${pct(q.cur)}"></i></div><div class="q-row"><span>${Number(q.cur)} / ${Number(q.max)}</span><span class="q-rw">${questRewardHtml(q)}</span></div>${q.cur>=q.max?`<button type="button" class="q-claim" data-qclaim="${esc(q.id)}">보상 받기</button>`:""}</div>`}).join(""):`<div class="q-empty">지금 할 퀘스트가 없습니다.</div>`;
+ // 진행이 오른 줄: 옛 길이에서 새 길이로 차오르고 한 번 밝아진다
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{d.querySelectorAll(".q-bar i").forEach(i=>i.style.width=i.dataset.to+"%");bumped.forEach(id=>{const el=d.querySelector(`.q-item[data-id="${CSS.escape(id)}"]`);if(el)el.classList.add("bump")})}));
+ QR.prev={};quests.forEach(q=>QR.prev[q.id]=q.cur);
+ $("qCnt").textContent=`${quests.length-done.length} 진행 · ${done.length} 완료`;$("qTabCnt").textContent=quests.length;
+ d.classList.toggle("has-done",done.length>0);d.classList.toggle("multi-done",done.length>1);d.classList.toggle("has-new",quests.some(q=>!seen.has(q.id)));
+ questPlace(true);
+}
+async function questClaim(ids,anchor){
+ if(QR.busy||!ids.length)return;QR.busy=true;
+ const {data,error}=await sb.rpc("claim_quests",{p_ids:ids});QR.busy=false;
+ if(error){log("claim_quests 실패: "+error.message,"bad");questLoad();return}
+ log("claim_quests 성공","ok");
+ const txt=[Number(data?.gold)>0?`+${data.gold}골드`:"",...(data?.items||[]).map(x=>{const n=quests.flatMap(q=>q.items||[]).find(i=>i.def===x.def)?.item_defs?.name||x.def;return `+${n} ×${x.qty}`})].filter(Boolean).join("  ");
+ if(txt&&anchor&&QR.el.contains(anchor))questFloat(anchor,txt);
+ if(data?.gold_now!=null)questGold(Number(data.gold_now));
+ if((data?.items||[]).length)loadItems();
+ await questLoad();
+}
+function questFloat(anchor,text){const p=QR.el.getBoundingClientRect(),a=anchor.getBoundingClientRect(),f=document.createElement("div");f.className="q-float";f.textContent=text;f.style.left=(a.left+a.width/2-p.left)+"px";f.style.top=(a.top-p.top-6)+"px";QR.el.appendChild(f);setTimeout(()=>f.remove(),1400)}
+// 위쪽 GOLD 숫자가 받은 만큼 올라간다
+function questGold(to){const from=Number(gold)||0;if(to<=from){gold=to;renderGold();return}const t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/600);gold=Math.round(from+(to-from)*k);renderGold();if(k<1)requestAnimationFrame(step);else{gold=to;renderGold();const b=$("tabGold");if(b){b.classList.remove("q-up");void b.offsetWidth;b.classList.add("q-up")}}};requestAnimationFrame(step)}
+// 바로가기: go = {view, dungeon}. 저장 안 한 패턴이 있으면 화면 이동을 묻는 창이 먼저 뜨고, 이동하지 않으면 멈춘다
+function questGo(q){
+ const g=q&&q.go;if(!g||!g.view)return;
+ const ok=["camp","adventure","bag","town","log","setting"].includes(g.view);if(!ok)return;
+ showView(g.view);if(currentView!==g.view)return;
+ if(QR.narrow&&QR.open){QR.open=false;questPlace(true)}
+ if(g.view==="adventure"&&g.dungeon){const t0=Date.now(),tryEnter=()=>{if(dungeons.some(d=>d.id===g.dungeon))enterRoom(g.dungeon);else if(Date.now()-t0<4000)setTimeout(tryEnter,150)};tryEnter()}
+ else window.scrollTo(0,0);
+}
+// 지금 보여야 하는지(튜토리얼·무대·설정·로그인을 한곳에서 판단)
+function questHidden(){return !loggedIn||!!stage||hideQuest||tut.step==null||(!questIntroPending&&tut.step<tut.last)||!!tutPractice}
+function questBodyRight(){const m=document.querySelector("main"),r=m.getBoundingClientRect();return r.right-parseFloat(getComputedStyle(m).paddingRight)}
+function questTarget(){const m=document.querySelector("main").getBoundingClientRect(),mt=m.top+scrollY,mb=m.bottom+scrollY,h=QR.el.offsetHeight;return Math.max(mt+8,Math.min(scrollY+(innerHeight-h)/2,mb-h-8))}
+function questPlace(jump){
+ const d=questEnsure(),vw=document.documentElement.clientWidth,br=questBodyRight(),w=parseFloat(getComputedStyle(d).getPropertyValue("--q-w"))||240;
+ QR.narrow=vw-br<Q_GAP+w+Q_EDGE;
+ const hidden=questHidden();d.classList.toggle("hidden",hidden);
+ if(!QR.narrow)QR.open=false;
+ if(questIntroPending&&QR.narrow)QR.open=true;
+ const folded=questIntroPending?QR.narrow:QR.narrow||(QR.userFold??(quests.length===0||(questSavedFold()??false)));
+ d.classList.toggle("folded",folded);d.classList.toggle("open",folded&&QR.open);
+ $("qFold").textContent=QR.narrow?"×":"접기";$("qFold").setAttribute("aria-label",QR.narrow?"닫기":"접기");$("qFold").style.visibility=questIntroPending?"hidden":"";
+ QR.sig=questSig();
+ if(hidden)return;
+ let left;
+ if(!folded)left=br+Q_GAP;
+ else if(QR.open)left=br-d.offsetWidth;
+ else{const tw=d.offsetWidth;left=br+Q_GAP+tw<=vw-4?br+Q_GAP:vw-tw}
+ d.style.left=(left+scrollX)+"px";
+ if(jump||QR.top==null){QR.top=questTarget();d.style.top=QR.top+"px"}else questFollow();
+ // 펼친 창이 보이면 새 퀘스트를 본 것으로 친다(NEW와 손잡이 점은 다음 그리기부터 빠진다)
+ if(!folded||QR.open){const s=questSeen(),n=s.size;quests.forEach(q=>s.add(q.id));if(s.size!==n)LS.set(Q_SEEN_KEY,JSON.stringify([...s].slice(-300)))}
+}
+function questFollow(){if(!QR.el||QR.raf||QR.el.classList.contains("hidden"))return;const step=()=>{const t=questTarget(),dd=t-QR.top;if(Math.abs(dd)<.5){QR.top=t;QR.el.style.top=t+"px";QR.raf=0;return}QR.top+=dd*.18;QR.el.style.top=QR.top+"px";QR.raf=requestAnimationFrame(step)};QR.raf=requestAnimationFrame(step)}
+// 보일지·접힐지를 바꾸는 값(튜토리얼 단계, 로그인, 무대, 설정, 창 폭, 본문 크기)이 바뀌었으면 다시 놓는다
+function questSig(){const m=document.querySelector("main").getBoundingClientRect();return [questHidden(),questIntroPending,document.documentElement.clientWidth,Math.round(m.right),Math.round(m.height)].join("|")}
+function questSync(){if(QR.el&&questSig()!==QR.sig)questPlace(true)}
+function setHideQuest(v){hideQuest=!!v;saveUiPref("hide_quest",hideQuest);questPlace(true)}
+function applyQuestPrefs(){if($("hideQuestChk"))$("hideQuestChk").checked=hideQuest;questPlace(true)}
+// 튜토리얼: 챕터 1을 마치면(Mend 축하 장 다음) 한 번만 리모콘을 짚는다. 본 뒤에는 계정에 기억해 다시 띄우지 않는다
+function questIntroEl(){const d=questEnsure();if(questSig()!==QR.sig)questPlace(true);return d.classList.contains("hidden")?null:(d.classList.contains("folded")&&!d.classList.contains("open")?$("qTab"):d.querySelector(".q-panel"))}
+function questIntroDone(){questIntroPending=false;questIntroSeen=true;saveUiPref("quest_intro_seen",true);questPlace(true)}
 async function selectCharacter(id){
  if(id===selectedCharId)return;
  if(!guardLeave(()=>selectCharacter(id)))return;
@@ -1188,7 +1363,7 @@ async function loadTutorial(){
  if(error){log("get_tutorial 실패: "+error.message,"bad");return}
  const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
  tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
- if(prev===2&&tut.step>=3)tutCongrats="mend";else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";
+ if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";
 }
 async function tutAck(key){
  if(tutAcking)return;tutAcking=true;
@@ -1196,7 +1371,7 @@ async function tutAck(key){
  if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
  tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
 }
-function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice)}
+function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice||questIntroPending)}
 function tutVisible(el){return !!el&&el.isConnected&&el.getClientRects().length>0}
 // 목록에서 고를 줄 하나만 남기고 나머지는 선택 불가(브라우저가 흐리게 그린다). 단계가 끝나면 바로 푼다
 function tutLimit(sel,keep){if(!sel||sel.dataset.tutLim===keep)return;[...sel.options].forEach(o=>o.disabled=o.value!==keep);sel.dataset.tutLim=keep}
@@ -1226,6 +1401,11 @@ function tutResolve(){
   if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.\n${door(2)}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
   if(tutCongrats==="skills")return mid("done2",`잘하셨습니다!\n이제 네 명이 공격 스킬을 씁니다.\n${door(1)}`,{btn:"확인",fn:()=>{tutCongrats=null}});
   return mid("done","잘하셨습니다!\n이제 Cleric이 다친 아군을 회복합니다.",{btn:"확인",fn:()=>{tutCongrats=null}});
+ }
+ // 챕터 1을 마친 뒤 한 번: 퀘스트 리모콘을 짚는다(리모콘은 이때만 튜토리얼 중에 보인다)
+ if(questIntroPending){
+  if(modal)return okBtn?savedOk():say("qclose",q(".help-close"),"닫기를 눌러 주세요.");
+  return say("qintro",questIntroEl(),"퀘스트 창이 열렸습니다.\n할 일과 보상을 여기서 볼 수 있습니다.\n\n퀘스트를 누르면 할 곳으로 바로 갑니다.",{btn:"확인",fn:()=>{questIntroDone()}});
  }
  // 무대: 그 챕터가 끝나는 단계에 닿으면 마친다
  if(tutPractice&&tut.step>=tutPractice.end){
