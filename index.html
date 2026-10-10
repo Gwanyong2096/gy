@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v299 · 갱신 2026-10-09 03:33 KST -->
+<!-- ProjectGY-test-console v300 · 갱신 2026-10-10 13:55 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -385,7 +385,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .intro-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v299 · 2026-10-09 03:33</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v300 · 2026-10-10 13:55</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -394,6 +394,8 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="pattern-help" style="margin-top:0">끄면 이 관리자 도구 말고는 일반 유저와 같은 화면으로 보입니다(계산 내역·턴 번호·로그 창 숨김). 테스트 던전·아이템은 계속 보입니다.</div>
     <div class="row" style="margin-bottom:0"><label class="save-opt" style="font-size:13px"><input type="checkbox" id="hideMockChk" onchange="setHideMock(this.checked)"><span>Mock Battle 버튼 숨기기</span></label></div>
     <div class="pattern-help" style="margin-top:0">내 화면의 던전 화면에서만 숨깁니다.</div>
+    <div class="pattern-help" style="margin-top:12px">로그인할 때 나오는 접속 연출을 지금 다시 봅니다.</div>
+    <div class="row"><button type="button" id="adminIntroBtn" onclick="playIntro(null,true)">접속 연출 보기</button></div>
     <div class="pattern-help">관리자 계정에서만 표시됩니다. 대상 계정의 골드를 원하는 값으로 설정할 수 있습니다.</div>
     <div class="row"><input id="adminEmail" placeholder="대상 이메일" style="flex:1;min-width:220px">
     <input id="adminGold" type="number" min="0" step="1" placeholder="설정할 골드" style="width:150px">
@@ -655,11 +657,11 @@ const INTRO={charMs:50,dotMs:230,lineMs:460,sound:true,skippable:false,lines:[
  "당신이 깬 패턴은 다음에 고쳐 두겠습니다.",
  {t:"그럼, 행운을 빕니다...",hold:1300,glitch:true}
 ]};
-// after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다).
-function playIntro(after){
+// after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다). force = 자동 점검 브라우저에서도 보여 준다(관리자 도구의 다시 보기).
+function playIntro(after,force){
  after=after||(()=>{});
  const lines=INTRO.lines.map(l=>typeof l==="string"?{t:l}:l);
- if((navigator.webdriver&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.length)return Promise.resolve().then(after);
+ if((navigator.webdriver&&!force&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.length)return Promise.resolve().then(after);
  return new Promise(resolve=>{
   const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
   const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label","접속 연출");
