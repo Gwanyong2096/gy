@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v313 · 갱신 2026-10-12 09:43 KST -->
+<!-- ProjectGY-test-console v314 · 갱신 2026-10-12 15:56 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -408,7 +408,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-new{display:inline-block;margin-left:6px;padding:0 5px;border-radius:4px;font-size:10px;font-weight:700;line-height:16px;vertical-align:1px;background:var(--ac);color:var(--onac)}
 .q-bar{height:6px;border-radius:3px;background:color-mix(in srgb,var(--bd) 70%,transparent);margin:7px 0 4px;overflow:hidden}
 .q-bar i{display:block;height:100%;background:var(--ac);transition:width .7s cubic-bezier(.2,.8,.2,1)}
-.q-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mu)}.q-rw{text-align:right;color:var(--tx)}
+.q-row{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mu)}.q-row>span:first-child{white-space:nowrap;flex:none}.q-rw{text-align:right;color:var(--tx)}
 .q-itemlink{all:unset;cursor:pointer;font-weight:700;color:var(--tx);text-decoration:underline;text-underline-offset:2px}.q-itemlink:hover{color:var(--ac)}
 .q-claim{all:unset;box-sizing:border-box;cursor:pointer;display:block;text-align:center;margin-top:7px;width:100%;padding:5px 0;font-size:12px;font-weight:700;border-radius:8px;background:var(--ac);color:var(--onac)}
 .q-claim:focus-visible,.q-all:focus-visible,.q-itemlink:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
@@ -437,7 +437,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v313 · 2026-10-12 09:43</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v314 · 2026-10-12 15:56</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1012,7 +1012,7 @@ function questSeen(){if(!QR.seen){let a=[];try{a=JSON.parse(LS.get(Q_SEEN_KEY)||
 function questLive(){return quests}
 function questRewardHtml(q){
  const parts=[];if(Number(q.gold)>0)parts.push(`<b>${Number(q.gold)}골드</b>`);
- (q.items||[]).forEach((it,i)=>parts.push(`<button type="button" class="q-itemlink" data-qitem="${esc(q.id)}:${i}">${esc(it.item_defs?.name||it.def)} ×${Number(it.qty)||1}</button>`));
+ (q.items||[]).forEach((it,i)=>parts.push(`<button type="button" class="q-itemlink" data-qitem="${esc(q.id)}:${i}">${esc(it.item_defs?.name||it.def)}${unkTag(it)} ×${Number(it.qty)||1}</button>`));
  return parts.join(" ")||"<b>-</b>";
 }
 function questEnsure(){
@@ -1028,7 +1028,7 @@ function questEnsure(){
  $("qList").addEventListener("click",e=>{
   const c=e.target.closest("[data-qclaim]");if(c){questClaim([c.dataset.qclaim],c);return}
   const it=e.target.closest("[data-qitem]");if(it){const [id,i]=it.dataset.qitem.split(":");const q=quests.find(x=>x.id===id),x=q&&q.items[Number(i)];
-   if(x)openConfirm(x.item_defs?.name||x.def,itemDetailHtml({def_id:x.def,qty:x.qty,item_defs:x.item_defs||{}}),[["닫기",null,true]]);return}
+   if(x)openConfirm(x.item_defs?.name||x.def,itemDetailHtml({def_id:x.def,qty:x.qty,unknown:!!x.unknown,item_defs:x.item_defs||{}}),[["닫기",null,true]]);return}
   const row=e.target.closest(".q-item");if(row)questGo(quests.find(q=>q.id===row.dataset.id));
  });
  document.addEventListener("click",e=>{if(QR.narrow&&QR.open&&!questIntroPending&&!d.contains(e.target)&&!e.target.closest(".help-overlay")){QR.open=false;questPlace(true)}});
@@ -1067,7 +1067,7 @@ function questClaim(ids,anchor){
  // 짚는 설명을 아직 안 본 퀘스트가 있으면 그 설명부터(끝나면 다시 받기로 돌아온다)
  const need=qs.find(questNeedsGuide);if(need){questGo(need,()=>questClaim(ids,anchor));return}
  const g=qs.reduce((a,q)=>a+(Number(q.gold)||0),0),its=[];
- qs.forEach(q=>(q.items||[]).forEach(it=>{const nm=it.item_defs?.name||it.def,x=its.find(y=>y.def===it.def);if(x)x.n+=Number(it.qty)||1;else its.push({def:it.def,nm,n:Number(it.qty)||1})}));
+ qs.forEach(q=>(q.items||[]).forEach(it=>{const u=!!it.unknown,nm=(it.item_defs?.name||it.def)+(u?" (Unknown)":""),x=its.find(y=>y.def===it.def&&y.u===u);if(x)x.n+=Number(it.qty)||1;else its.push({def:it.def,u,nm,n:Number(it.qty)||1})}));
  const rw=[g>0?`<b>${g.toLocaleString()}골드</b>`:"",...its.map(x=>`<b>${esc(x.nm)} ×${x.n}</b>`)].filter(Boolean).join(", ");
  const html=qs.length===1?`<p><b>${esc(qs[0].name)}</b> 보상을 받습니다${rw?`: ${rw}`:"."}</p>`:`<p>퀘스트 <b>${qs.length}</b>개의 보상을 받습니다${rw?`: 합계 ${rw}`:"."}</p>`;
  openConfirm("보상 받기",html,[["취소",null,false],["받기",()=>questClaimGo(qs.map(q=>q.id),anchor),true]],"quest");
@@ -1078,7 +1078,7 @@ async function questClaimGo(ids,anchor){
  const {data,error}=await sb.rpc("claim_quests",{p_ids:ids});QR.busy=false;
  if(error){log("claim_quests 실패: "+error.message,"bad");questLoad();return}
  log("claim_quests 성공","ok");
- const txt=[Number(data?.gold)>0?`+${data.gold}골드`:"",...(data?.items||[]).map(x=>{const n=quests.flatMap(q=>q.items||[]).find(i=>i.def===x.def)?.item_defs?.name||x.def;return `+${n} ×${x.qty}`})].filter(Boolean).join("  ");
+ const txt=[Number(data?.gold)>0?`+${data.gold}골드`:"",...(data?.items||[]).map(x=>{const n=quests.flatMap(q=>q.items||[]).find(i=>i.def===x.def)?.item_defs?.name||x.def;return `+${n}${x.unknown?" (Unknown)":""} ×${x.qty}`})].filter(Boolean).join("  ");
  if(txt&&anchor&&QR.el.contains(anchor))questFloat(anchor,txt);
  if(data?.gold_now!=null)questGold(Number(data.gold_now));
  if((data?.items||[]).length)loadItems();
