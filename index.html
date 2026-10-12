@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v311 · 갱신 2026-10-12 09:01 KST -->
+<!-- ProjectGY-test-console v312 · 갱신 2026-10-12 09:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -437,7 +437,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v311 · 2026-10-12 09:01</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v312 · 2026-10-12 09:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1816,7 +1816,7 @@ function skillEffectText(s,ak){
  if(e.buff)e.buff.forEach(b=>out.push(`${buffLabel(b.k)} +${bufSize(b)}`));
  if(e.debuff)e.debuff.forEach(b=>out.push(`${buffLabel(b.k)} -${bufSize(b)}`));
  if(e.bleed_hit_amp)out.push(`출혈이 걸린 적을 때릴 때 피해 증폭 +${e.bleed_hit_amp}%`);
- if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%p`);
+ if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%`);
  if(e.delay_pull)out.push(`Delay Pull ${e.delay_pull}`);
  if(e.revive)out.push(e.revive.mult!=null?`쓰러진 아군을 ${coef(e.revive,1)} HP로 부활`:`쓰러진 아군을 HP ${e.revive.hp_pct}%로 부활`);
  if(e.first_action_no_pre)out.push("전투 첫 행동 Front Delay 0");
