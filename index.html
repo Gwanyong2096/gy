@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v312 · 갱신 2026-10-12 09:13 KST -->
+<!-- ProjectGY-test-console v313 · 갱신 2026-10-12 09:43 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -437,7 +437,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v312 · 2026-10-12 09:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v313 · 2026-10-12 09:43</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1002,8 +1002,9 @@ function showView(view){
 // 접힘 순서: 1 창이 좁으면 접힘 → 2 남은 퀘스트가 0개면 접힘 → 3 이 브라우저에 기억된 마지막 상태 → 4 처음이면 펼침. 새 퀘스트가 생겨도 저절로 펼치지 않는다(손잡이 점과 깜빡임).
 // 좁은 화면: 손잡이를 누르면 본문 안쪽 오른쪽에 창이 위로 뜨고, ×·바깥·Esc로 닫힌다.
 // 숨김: 로그인 전, 무대(챕터 다시 보기), Setting의 "퀘스트창 숨기기", 튜토리얼 진행 중(챕터 1을 마친 뒤 리모콘을 짚는 안내 한 번만 예외).
+// 설명(guide): 짚는 설명은 줄을 눌러 그 화면에 갔을 때 보여 주고, 안 보고 깼으면 보상 받기를 누를 때 보여 준 뒤 받는다(서버도 본 것만 받아 준다). guide_popup이면 보상을 받은 뒤 팝업 하나.
 // 층: 리모콘은 --z-remote(20). 도움말·확인·전투 로그 창(50), 끌어 옮기는 캐릭터(60), 튜토리얼(90~)이 언제나 위에 뜬다(스타일 조각의 층 표 참고).
-let quests=[],hideQuest=false,questIntroSeen=true,questIntroPending=false;
+let quests=[],hideQuest=false,questIntroSeen=true,questIntroPending=false,qGuide=null;
 const QR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,prev:{},sig:"",seen:null,busy:false};
 const Q_GAP=12,Q_EDGE=8,Q_FOLD_KEY="pgy_quest_fold",Q_SEEN_KEY="pgy_quest_seen";
 function questSavedFold(){const v=LS.get(Q_FOLD_KEY);return v==null?null:v==="1"}
@@ -1061,8 +1062,10 @@ function questRender(){
 }
 // 보상 받기: 받을 보상(골드 합계, 아이템별 수)을 적은 확인 창을 먼저 띄운다
 function questClaim(ids,anchor){
- if(QR.busy||!ids.length)return;
+ if(QR.busy||qGuide||!ids.length)return;
  const qs=ids.map(id=>quests.find(q=>q.id===id)).filter(Boolean);if(!qs.length)return;
+ // 짚는 설명을 아직 안 본 퀘스트가 있으면 그 설명부터(끝나면 다시 받기로 돌아온다)
+ const need=qs.find(questNeedsGuide);if(need){questGo(need,()=>questClaim(ids,anchor));return}
  const g=qs.reduce((a,q)=>a+(Number(q.gold)||0),0),its=[];
  qs.forEach(q=>(q.items||[]).forEach(it=>{const nm=it.item_defs?.name||it.def,x=its.find(y=>y.def===it.def);if(x)x.n+=Number(it.qty)||1;else its.push({def:it.def,nm,n:Number(it.qty)||1})}));
  const rw=[g>0?`<b>${g.toLocaleString()}골드</b>`:"",...its.map(x=>`<b>${esc(x.nm)} ×${x.n}</b>`)].filter(Boolean).join(", ");
@@ -1071,6 +1074,7 @@ function questClaim(ids,anchor){
 }
 async function questClaimGo(ids,anchor){
  if(QR.busy||!ids.length)return;QR.busy=true;
+ const pops=ids.map(id=>quests.find(q=>q.id===id)).filter(q=>q&&q.guide&&q.guide_popup);
  const {data,error}=await sb.rpc("claim_quests",{p_ids:ids});QR.busy=false;
  if(error){log("claim_quests 실패: "+error.message,"bad");questLoad();return}
  log("claim_quests 성공","ok");
@@ -1079,15 +1083,20 @@ async function questClaimGo(ids,anchor){
  if(data?.gold_now!=null)questGold(Number(data.gold_now));
  if((data?.items||[]).length)loadItems();
  await questLoad();
+ // 받은 퀘스트(목록에서 빠진 것) 중 팝업 설명이 있는 것
+ const p=pops.filter(q=>!quests.some(x=>x.id===q.id)).map(q=>QUEST_POPUP[q.guide]).find(Boolean);
+ if(p)openConfirm(p.title,p.html,[["확인",null,true]]);
 }
 function questFloat(anchor,text){const p=QR.el.getBoundingClientRect(),a=anchor.getBoundingClientRect(),f=document.createElement("div");f.className="q-float";f.textContent=text;f.style.left=(a.left+a.width/2-p.left)+"px";f.style.top=(a.top-p.top-6)+"px";QR.el.appendChild(f);setTimeout(()=>f.remove(),1400)}
 // 위쪽 GOLD 숫자가 받은 만큼 올라간다
 function questGold(to){const from=Number(gold)||0;if(to<=from){gold=to;renderGold();return}const t0=performance.now();const step=t=>{const k=Math.min(1,(t-t0)/600);gold=Math.round(from+(to-from)*k);renderGold();if(k<1)requestAnimationFrame(step);else{gold=to;renderGold();const b=$("tabGold");if(b){b.classList.remove("q-up");void b.offsetWidth;b.classList.add("q-up")}}};requestAnimationFrame(step)}
 // 바로가기: go = {view, dungeon}. 저장 안 한 패턴이 있으면 화면 이동을 묻는 창이 먼저 뜨고, 이동하지 않으면 멈춘다
-function questGo(q){
- const g=q&&q.go;if(!g||!g.view)return;
- const ok=["camp","adventure","bag","town","log","setting"].includes(g.view);if(!ok)return;
+// 짚는 설명을 아직 안 본 퀘스트면 간 뒤 설명을 시작한다(then: 설명이 끝나면 할 일. 보상 받기에서 부를 때)
+function questGo(q,then){
+ const g=q&&q.go;if(!g||!g.view||qGuide)return;
+ const ok=["camp","adventure","bag","town","appraise","craft","log","setting"].includes(g.view);if(!ok)return;
  showView(g.view);if(currentView!==g.view)return;
+ if(questNeedsGuide(q))questGuideStart(q,then);
  if(QR.narrow&&QR.open){QR.open=false;questPlace(true)}
  if(g.view==="adventure"&&g.dungeon){const t0=Date.now(),tryEnter=()=>{if(dungeons.some(d=>d.id===g.dungeon))enterRoom(g.dungeon);else if(Date.now()-t0<4000)setTimeout(tryEnter,150)};tryEnter()}
  else window.scrollTo(0,0);
@@ -1125,6 +1134,68 @@ function applyQuestPrefs(){if($("hideQuestChk"))$("hideQuestChk").checked=hideQu
 // 튜토리얼: 챕터 1을 마치면(Mend 축하 장 다음) 한 번만 리모콘을 짚는다. 본 뒤에는 계정에 기억해 다시 띄우지 않는다
 function questIntroEl(){const d=questEnsure();if(questSig()!==QR.sig)questPlace(true);return d.classList.contains("hidden")?null:(d.classList.contains("folded")&&!d.classList.contains("open")?$("qTab"):d.querySelector(".q-panel"))}
 function questIntroDone(){questIntroPending=false;questIntroSeen=true;saveUiPref("quest_intro_seen",true);questPlace(true)}
+// ===== 퀘스트 설명 =====
+// 튜토리얼과 같은 짚기 화면을 쓴다(08의 tutResolve가 qGuide일 때 questGuideResolve를 부른다). 설명이 끝나면 서버에 본 것으로 남긴다(quest_guided)
+function questNeedsGuide(q){return !!(q&&q.guide&&!q.guide_popup&&!q.guided&&QUEST_GUIDE[q.guide])}
+function questGuideStart(q,then){
+ [...tutSeen].forEach(k=>{if(k.startsWith("qg-"))tutSeen.delete(k)});
+ qGuide={q,key:q.guide,then:then||null,at:Date.now()};
+}
+async function questGuideDone(){
+ const g=qGuide;if(!g)return;qGuide=null;
+ const {error}=await sb.rpc("quest_guided",{p_id:g.q.id});
+ if(error){log("quest_guided 실패: "+error.message,"bad");return}
+ g.q.guided=true;const x=quests.find(y=>y.id===g.q.id);if(x)x.guided=true;
+ if(g.then)g.then();
+}
+// 지금 짚을 곳. h = 08이 넘겨주는 도구(say, mid, page, wait, modal, q)
+function questGuideResolve(h){const g=qGuide,fn=QUEST_GUIDE[g.key];if(!fn){qGuide=null;return null}return fn(g,h)}
+// 던전 화면 설명: 그 던전 화면에 들어올 때까지 기다린다(오래 못 들어가면 설명을 접는다. 다음에 다시 보여 준다)
+function qgRoom(g,h){
+ const id=g.q.go?.dungeon,d=dungeons.find(x=>x.id===id);
+ if(currentView==="adventure"&&advRoom===id&&d)return {d};
+ if(Date.now()-g.at>8000){qGuide=null;return {stop:null}}
+ return {stop:h.wait()};
+}
+const QUEST_GUIDE={
+ mock(g,h){
+  const r=qgRoom(g,h);if(!r.d)return r.stop;const d=r.d;
+  const el=h.q('#roomActs button[onclick*="MOCK"]')||h.q("#roomActs");
+  if(!tutSeen.has("qg-m1"))return h.page("qg-m1",el,"Mock Battle은 연습 전투입니다.\nSUPPLY를 쓰지 않습니다.\n이기거나 져도 경험치와 보상이 없습니다.");
+  return h.page("qg-m2",el,`던전마다 하루 ${d.mock_limit??3}번까지 할 수 있습니다.\n버튼 아래 숫자가 오늘 남은 횟수입니다.\n패턴을 고친 뒤 시험해 볼 때 쓰면 좋습니다.`,{back:"qg-m1",btn:"확인",fn:questGuideDone});
+ },
+ idle(g,h){
+  const r=qgRoom(g,h);if(!r.d)return r.stop;const d=r.d;
+  const el=h.q('#roomActs button[onclick^="confirmDispatch"]')||h.q("#roomActs");
+  if(!tutSeen.has("qg-i1"))return h.page("qg-i1",el,`Auto Battle은 파티를 던전에 보내 자동으로 싸우게 합니다.\n이 던전을 직접 ${d.auto_unlock_clears||10}번 이겨서 열렸습니다.`);
+  if(!tutSeen.has("qg-i2"))return h.page("qg-i2",el,"파티마다 30분에 한 판을 실제로 싸웁니다.\n질 수도 있습니다.\n접속하지 않은 동안에도 쌓이고, 접속하면 한꺼번에 정산합니다.",{back:"qg-i1"});
+  if(!tutSeen.has("qg-i3"))return h.page("qg-i3",el,`이긴 판만 경험치와 아이템을 받습니다.\n직접 싸울 때의 절반이고, 골드는 받지 않습니다.\n이기든 지든 판마다 파견비 ${d.idle_fee}골드를 냅니다.`,{back:"qg-i2"});
+  return h.page("qg-i4",el,"보낸 캐릭터는 회수할 때까지 다른 파티에 쓸 수 없습니다.\n보낸 파티는 맨 위의 Auto Battle 카드에서 보고 회수합니다.",{back:"qg-i3",btn:"확인",fn:questGuideDone});
+ },
+ rush(g,h){
+  const r=qgRoom(g,h);if(!r.d)return r.stop;
+  const box=h.q("#roomActs .rush-box")||h.q("#roomActs"),n=h.q("#rushCount")||box;
+  if(!tutSeen.has("qg-r1"))return h.page("qg-r1",box,"Battle Rush는 같은 던전을 여러 판 이어서 직접 싸웁니다.\n판마다 SUPPLY를 쓰고, 보상은 직접 싸울 때와 같습니다.");
+  if(!tutSeen.has("qg-r2"))return h.page("qg-r2",n,`여기에 판 수를 적습니다.\n한 번에 ${rushMaxN()}판까지 됩니다.\n최대를 누르면 남은 SUPPLY로 돌 수 있는 만큼 채웁니다.`,{back:"qg-r1"});
+  return h.page("qg-r3",box,"지거나 비기면 그 판에서 멈춥니다.\nSetting에서 끝까지 돌리도록 바꿀 수 있습니다.",{back:"qg-r2",btn:"확인",fn:questGuideDone});
+ },
+ appraise(g,h){return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 이름 옆 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.")},
+ craft(g,h){return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 이름 옆 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않습니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.")}
+};
+// 감정·제작: 이름 옆 ?를 눌러 재료별 옵션 창을 보고, 닫은 뒤 목록을 짚는다
+function qgTown(g,h,view,askMsg,when,listMsg){
+ const k=g.key[0];
+ if(currentView!==view){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+ if(h.modal){
+  if(!tutSeen.has(`qg-${k}2`))return h.page(`qg-${k}2`,h.q("#helpBody"),`장비의 재료마다 더 잘 붙는 랜덤 옵션이 있습니다.\n${when} 그 재료의 옵션이 더 잘 붙습니다.`);
+  return h.say(`qg-${k}close`,h.q(".help-close"),"닫기를 눌러 주세요.");
+ }
+ if(!tutSeen.has(`qg-${k}2`))return h.say(`qg-${k}1`,h.q(`#${view}View .town-head .help-btn`),askMsg);
+ return h.page(`qg-${k}3`,$(view+"List"),listMsg,{btn:"확인",fn:questGuideDone});
+}
+const QUEST_POPUP={
+ draught:{title:"Unwinding Draught",html:`<p><b>Unwinding Draught</b>를 받았습니다.</p><p>한 병을 마시면 한 캐릭터의 <b>TP를 모두 돌려받거나</b>, <b>배운 스킬을 모두 초기화하고 SP를 돌려받습니다</b>. 둘 중 하나만 고릅니다.</p><p>Camp에서 캐릭터를 열어 Status의 <b>TP 초기화</b>나 Skill의 <b>스킬 초기화</b>를 누르면 마십니다.</p><p class="help-note">잘못 나눈 TP나 SP를 다시 나눌 때 씁니다. 보스가 드물게 떨구기도 합니다.</p>`}
+};
 async function selectCharacter(id){
  if(id===selectedCharId)return;
  if(!guardLeave(()=>selectCharacter(id)))return;
@@ -1390,7 +1461,8 @@ async function tutAck(key){
  if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
  tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
 }
-function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice||questIntroPending)}
+// 퀘스트 설명(06의 qGuide)도 같은 짚기 화면을 쓴다
+function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice||questIntroPending||!!qGuide)}
 function tutVisible(el){return !!el&&el.isConnected&&el.getClientRects().length>0}
 // 목록에서 고를 줄 하나만 남기고 나머지는 선택 불가(브라우저가 흐리게 그린다). 단계가 끝나면 바로 푼다
 function tutLimit(sel,keep){if(!sel||sel.dataset.tutLim===keep)return;[...sel.options].forEach(o=>o.disabled=o.value!==keep);sel.dataset.tutLim=keep}
@@ -1415,6 +1487,7 @@ function tutResolve(){
  const cfm=modal?$("helpActions").dataset.kind||"":"",priBtn=modal?q("#helpActions:not([hidden]) button.pri"):null;
  const savedOk=()=>say("savedok",okBtn,"확인을 눌러 주세요.");
  const sec=k=>q(`#charDetail .sec-wrap[data-sec="${k}"]`);
+ if(qGuide)return questGuideResolve({say,mid,page,wait,modal,q});
  if(tutCongrats){
   if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
   if(!dungeons.length&&!tutDgAsked){tutDgAsked=true;sb.rpc("get_dungeons").then(r=>{if(!r.error&&!dungeons.length)dungeons=r.data||[]})}
@@ -1691,7 +1764,7 @@ function tutRender(st){
  }
  ui.bubble.style.top=top+"px";ui.bubble.style.left=left+"px";
  // 구석 버튼: 왼쪽 아래 → 오른쪽 아래 → 왼쪽 위 → 오른쪽 위 순서로, 말풍선이나 짚는 곳과 겹치지 않는 첫 자리에 둔다
- if(ui.exit){const x=ui.exit,pr=!!tutPractice;ui.skip.style.display=pr?"none":"";ui.again.style.display=isAdminUser&&!pr?"":"none";ui.chap.forEach((b,i)=>b.style.display=!pr&&tut.step>=TUT_CHAPTERS[i].to&&stageRange(TUT_CHAPTERS[i].n)?"":"none");ui.pend.style.display=pr?"":"none";x.style.display="flex";const xw=x.offsetWidth,xh=x.offsetHeight;
+ if(ui.exit){const x=ui.exit,pr=!!tutPractice;ui.skip.style.display=pr?"none":"";ui.again.style.display=isAdminUser&&!pr?"":"none";ui.chap.forEach((b,i)=>b.style.display=!pr&&tut.step>=TUT_CHAPTERS[i].to&&stageRange(TUT_CHAPTERS[i].n)?"":"none");ui.pend.style.display=pr?"":"none";x.style.display=qGuide?"none":"flex";const xw=x.offsetWidth,xh=x.offsetHeight;
   const hit=(xl,xt,l,t,w,h)=>l<xl+xw+8&&l+w>xl-8&&t<xt+xh+8&&t+h>xt-8;
   const spots=[[12,H-12-xh],[W-12-xw,H-12-xh],[12,12],[W-12-xw,12]];
   const [xl,xt]=spots.find(([a,b])=>!hit(a,b,left,top,bw,bh)&&!(r&&hit(a,b,r.l,r.t,r.w,r.h)))||spots[0];
@@ -1699,7 +1772,7 @@ function tutRender(st){
  ui.cur=st;ui.key=st.id;ui.shown=true;document.documentElement.classList.add("tut-on");
 }
 function tutTick(){
- if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;renderTutReplay()}tutHide();return}
+ if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;renderTutReplay()}qGuide=null;tutHide();return}
  if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
  if(!tutActive()){tutHide();return}
  let st=null;try{st=tutResolve()}catch(e){st=null}
