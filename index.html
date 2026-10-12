@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v319 · 갱신 2026-10-12 23:03 KST -->
+<!-- ProjectGY-test-console v320 · 갱신 2026-10-12 23:26 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -441,7 +441,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v319 · 2026-10-12 23:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v320 · 2026-10-12 23:26</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1120,10 +1120,11 @@ function questPlace(jump){
  $("qFold").textContent=QR.narrow?"×":"접기";$("qFold").setAttribute("aria-label",QR.narrow?"닫기":"접기");$("qFold").style.visibility=questIntroPending?"hidden":"";
  QR.sig=questSig();
  if(hidden)return;
- let left;
+ let left;d.style.width="";
  if(!folded)left=br+Q_GAP;
  else if(QR.open)left=br-d.offsetWidth;
- else{const tw=d.offsetWidth;left=br+Q_GAP+tw<=vw-4?br+Q_GAP:vw-tw}
+ // 접힌 손잡이는 손잡이 자체의 폭을 잰다(아이폰 사파리는 세로 글씨 손잡이를 감싼 상자의 폭을 실제보다 작게 잡아 화면 밖으로 밀어냈다). 감싼 상자도 그 폭으로 맞춘다
+ else{const tw=Math.ceil($("qTab").getBoundingClientRect().width);d.style.width=tw+"px";left=br+Q_GAP+tw<=vw-4?br+Q_GAP:vw-tw}
  d.style.left=(left+scrollX)+"px";
  if(jump||QR.top==null){QR.top=questTarget();d.style.top=QR.top+"px"}else questFollow();
  // 펼친 창이 보이면 새 퀘스트를 본 것으로 친다(NEW와 손잡이 점은 다음 그리기부터 빠진다)
