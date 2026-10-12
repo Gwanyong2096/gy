@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v316 · 갱신 2026-10-12 18:26 KST -->
+<!-- ProjectGY-test-console v317 · 갱신 2026-10-12 18:58 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -105,6 +105,8 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .mon-card.wide .sprite-slot{width:max(calc(100% - 128px*(var(--dw) - 1)),calc(100%/var(--dw)))}
 .mon-card.fit .sprite-slot img.spr{margin-left:calc(-1*var(--dx)*min(100%,128px))}
 .mon-card.boss .unit-name{color:var(--bad)}.boss-tag{color:var(--mu);font-weight:400}.unit-meta .boss-tag{overflow-wrap:normal;word-break:keep-all}
+/* 보스 카드 타이틀은 한 줄: 카드보다 넓으면 이름 아래 가운데에서 양옆으로 넘친다(옆 카드의 그 줄은 비어 있다) */
+.mon-card.boss .unit-meta{max-width:none;width:max-content;white-space:nowrap}
 @media(max-width:520px){.mon-grid{gap:16px 2px}.mon-card{width:calc((100% - 8px)/var(--n,5));padding:4px 0 6px}.mon-card.wide{width:calc((100% - 8px)/var(--n,5) + min((100% - 8px)/var(--n,5),128px)*(var(--dw) - 1))}.mon-card .unit-name{font-size:11px}}
 .dg-auto{display:flex;align-items:baseline;gap:8px;border-top:1px solid var(--bd);padding-top:8px;font-size:13px}.dg-auto-k{font-size:11.2px;font-weight:700;color:var(--mu)}
 .idle-card{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px}
@@ -439,7 +441,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v316 · 2026-10-12 18:26</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v317 · 2026-10-12 18:58</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
