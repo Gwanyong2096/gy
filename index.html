@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v322 · 갱신 2026-10-13 11:25 KST -->
+<!-- ProjectGY-test-console v323 · 갱신 2026-10-13 11:30 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -441,7 +441,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v322 · 2026-10-13 11:25</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v323 · 2026-10-13 11:30</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1006,7 +1006,8 @@ function showView(view){
 // 접힘 순서: 1 창이 좁으면 접힘 → 2 남은 퀘스트가 0개면 접힘 → 3 이 브라우저에 기억된 마지막 상태 → 4 처음이면 펼침. 새 퀘스트가 생겨도 저절로 펼치지 않는다(손잡이 점과 깜빡임).
 // 좁은 화면: 손잡이를 누르면 본문 안쪽 오른쪽에 창이 위로 뜨고, ×·바깥·Esc로 닫힌다.
 // 숨김: 로그인 전, 무대(챕터 다시 보기), Setting의 "퀘스트창 숨기기", 튜토리얼 진행 중(챕터 1을 마친 뒤 리모콘을 짚는 안내 한 번만 예외).
-// 설명(guide): 짚는 설명은 줄을 눌러 그 화면에 갔을 때 보여 주고, 안 보고 깼으면 보상 받기를 누를 때 보여 준 뒤 받는다(서버도 본 것만 받아 준다). guide_popup이면 보상을 받은 뒤 팝업 하나.
+// 설명(guide): 짚는 설명은 줄을 눌러 그 화면에 갔을 때 보여 주고, 안 보고 깼으면 보상 받기를 누를 때 보여 준 뒤 받는다(서버도 본 것만 받아 준다).
+// 보상으로 소모품을 받으면 받은 뒤 가볍게 설명하는 팝업을 띄운다(QUEST_ITEM_NOTE, 없으면 전투용·그 밖 공통 문구).
 // 층: 리모콘은 --z-remote(20). 도움말·확인·전투 로그 창(50), 끌어 옮기는 캐릭터(60), 튜토리얼(90~)이 언제나 위에 뜬다(스타일 조각의 층 표 참고).
 let quests=[],hideQuest=false,questIntroSeen=true,questIntroPending=false,qGuide=null;
 const QR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,prev:{},sig:"",seen:null,busy:false};
@@ -1078,7 +1079,7 @@ function questClaim(ids,anchor){
 }
 async function questClaimGo(ids,anchor){
  if(QR.busy||!ids.length)return;QR.busy=true;
- const pops=ids.map(id=>quests.find(q=>q.id===id)).filter(q=>q&&q.guide&&q.guide_popup);
+ const defs={};quests.forEach(q=>(q.items||[]).forEach(i=>{if(i.item_defs)defs[i.def]=i.item_defs}));
  const {data,error}=await sb.rpc("claim_quests",{p_ids:ids});QR.busy=false;
  if(error){log("claim_quests 실패: "+error.message,"bad");questLoad();return}
  log("claim_quests 성공","ok");
@@ -1087,9 +1088,14 @@ async function questClaimGo(ids,anchor){
  if(data?.gold_now!=null)questGold(Number(data.gold_now));
  if((data?.items||[]).length)loadItems();
  await questLoad();
- // 받은 퀘스트(목록에서 빠진 것) 중 팝업 설명이 있는 것
- const p=pops.filter(q=>!quests.some(x=>x.id===q.id)).map(q=>QUEST_POPUP[q.guide]).find(Boolean);
- if(p)openConfirm(p.title,p.html,[["확인",null,true]]);
+ questItemNotes((data?.items||[]).filter(x=>defs[x.def]?.slot==="CONSUMABLE").map(x=>({def:x.def,qty:x.qty,d:defs[x.def]})));
+}
+// 받은 소모품 설명: 한 창에 모아서 한 번
+function questItemNotes(list){
+ if(!list.length)return;
+ const body=list.map(x=>{const nm=x.d.name||x.def,n=QUEST_ITEM_NOTE[x.def];
+  return `<p>받은 소모품: <b>${esc(nm)}</b> ×${Number(x.qty)||1}</p>`+(n||(x.d.use_skill?`<p>${esc(x.d.note||"")}</p><p>Camp에서 캐릭터의 Equipment 소모품 칸에 종류를 정하고, 패턴의 <b>Use Item</b>으로 전투에서 씁니다. 쓰면 하나씩 사라집니다.</p>`:`<p>${esc(x.d.note||"")}</p>`))}).join("");
+ openConfirm(list.length===1?(list[0].d.name||list[0].def):"소모품",body,[["확인",null,true]]);
 }
 function questFloat(anchor,text){const p=QR.el.getBoundingClientRect(),a=anchor.getBoundingClientRect(),f=document.createElement("div");f.className="q-float";f.textContent=text;f.style.left=(a.left+a.width/2-p.left)+"px";f.style.top=(a.top-p.top-6)+"px";QR.el.appendChild(f);setTimeout(()=>f.remove(),1400)}
 // 위쪽 GOLD 숫자가 받은 만큼 올라간다
@@ -1163,6 +1169,21 @@ function qgRoom(g,h){
  return {stop:h.wait()};
 }
 const QUEST_GUIDE={
+ // TP: 캐릭터를 열고 Status의 TP 옆 ?를 눌러 설명을 본 뒤 배분 칸을 짚는다
+ tp(g,h){
+  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal){
+   if(!tutSeen.has("qg-t2"))return h.page("qg-t2",h.q("#helpBody"),"TP는 Front SPD, Pattern, Karma Limit 세 가지에 씁니다.\n세 가지를 모두 끝까지 채울 수는 없으니 골라서 찍습니다.");
+   return h.say("qg-tclose",h.q(".help-close"),"닫기를 눌러 주세요.");
+  }
+  const c=chars.find(x=>x.id===selectedCharId);
+  if(!c)return h.say("qg-t0",h.q("#chars .roster-unit"),"TP는 캐릭터마다 따로 찍습니다.\n캐릭터를 하나 눌러 주세요.");
+  const w=h.q('#charDetail .sec-wrap[data-sec="status"]');if(w?.classList.contains("collapsed"))return h.say("qg-tsec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+  const help=h.q("#charDetail .stat-pt .help-btn");
+  if(!help){if(!tutSeen.has("qg-t2"))return h.page("qg-tnone",h.q("#charDetail .main-st"),"이 캐릭터는 남은 TP가 없습니다.\nTP는 레벨이 오를 때마다 받습니다.",{btn:"확인",fn:questGuideDone});}
+  else if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
+  return h.page("qg-t3",h.q(`#alloc-${c.id}`)||h.q("#charDetail .main-st"),"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.",{btn:"확인",fn:questGuideDone});
+ },
  mock(g,h){
   const r=qgRoom(g,h);if(!r.d)return r.stop;const d=r.d;
   const el=h.q('#roomActs button[onclick*="MOCK"]')||h.q("#roomActs");
@@ -1198,8 +1219,9 @@ function qgTown(g,h,view,askMsg,when,listMsg){
  if(!tutSeen.has(`qg-${k}2`))return h.say(`qg-${k}1`,h.q(`#${view}View .town-head .help-btn`),askMsg);
  return h.page(`qg-${k}3`,$(view+"List"),listMsg,{btn:"확인",fn:questGuideDone});
 }
-const QUEST_POPUP={
- draught:{title:"Unwinding Draught",html:`<p><b>Unwinding Draught</b>를 받았습니다.</p><p>한 병을 마시면 한 캐릭터의 <b>TP를 모두 돌려받거나</b>, <b>배운 스킬을 모두 초기화하고 SP를 돌려받습니다</b>. 둘 중 하나만 고릅니다.</p><p>Camp에서 캐릭터를 열어 Status의 <b>TP 초기화</b>나 Skill의 <b>스킬 초기화</b>를 누르면 마십니다.</p><p class="help-note">잘못 나눈 TP나 SP를 다시 나눌 때 씁니다. 보스가 드물게 떨구기도 합니다.</p>`}
+// 퀘스트 보상 소모품 중 따로 설명을 둔 것
+const QUEST_ITEM_NOTE={
+ reset_draught:`<p>한 병을 마시면 한 캐릭터의 <b>TP를 모두 돌려받거나</b>, <b>배운 스킬을 모두 초기화하고 SP를 돌려받습니다</b>. 둘 중 하나만 고릅니다.</p><p>Camp에서 캐릭터를 열어 Status의 <b>TP 초기화</b>나 Skill의 <b>스킬 초기화</b>를 누르면 마십니다.</p><p class="help-note">잘못 나눈 TP나 SP를 다시 나눌 때 씁니다. 보스가 드물게 떨구기도 합니다.</p>`
 };
 async function selectCharacter(id){
  if(id===selectedCharId)return;
@@ -2023,10 +2045,16 @@ const hasteText=v=>`${Number(v)<0?"":"+"}${Number((Number(v)||0).toFixed(2))}`;
 function renderTalent(c){
  const s=c.stats||{},pts=Number(c.tp||0),t=tpCur(c),mx=tpMax();
  const canReset=tpUsed(c)>0&&itemsData.some(i=>i.def_id==="reset_draught"&&!i.equipped_character);
- const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
+ const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP<button type="button" class="help-btn" aria-label="TP 도움말" onclick="openTpHelp()"><span>?</span></button> <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
  if(pts<=0)return row;
  const f=(key,label,unit,left)=>`<label class="alloc-f"><span>${label}</span><input type="number" min="0" max="${left}" step="1" value="0" data-tp="${key}" ${left<=0?"disabled":""} oninput="tpPreview('${c.id}')"><span class="alloc-unit">${unit}</span></label>`;
  return row+`<div class="alloc-row" id="alloc-${c.id}">${f("h","Front SPD","포인트",mx.h-t.h)}${f("p","Pattern","줄",mx.p-t.p)}${f("k","Karma Limit","점",mx.k-t.k)}<button type="button" class="fm-btn pri" onclick="confirmTp('${c.id}')"><span>배분</span></button></div><div class="alloc-left" id="allocLeft-${c.id}">${tpHint(c,{h:0,p:0,k:0})}</div>`;
+}
+// TP 도움말: 레벨당 TP는 공개 설정에서 읽는다
+function openTpHelp(){
+ const per=Number(pubCfg.TP_PER_LEVEL)||0;
+ HELP.tp={title:"TP",html:`<p>레벨이 오를 때마다 TP(Talent Point)를 ${per?`<b>${per}</b>씩 `:""}받습니다. TP는 세 가지에 씁니다.</p><ul><li><b>Front SPD</b>: 속도의 앞 수치입니다. 높을수록 차례가 빨리 돌아오고 Delay가 짧아집니다.</li><li><b>Pattern</b>: 패턴 줄을 한 줄씩 늘립니다.</li><li><b>Karma Limit</b>: 장착한 장비의 KARMA 합계 한도입니다. 합계가 한도를 넘으면 과업 상태가 되어 대미지와 속도가 줄어듭니다.</li></ul><p>세 가지를 모두 끝까지 채울 만큼의 TP는 받지 못합니다. 남는 TP는 언제든 Front SPD에 넣을 수 있습니다.</p><p class="help-note">한 번 쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다. 다음 한 단계에 드는 TP는 배분 칸 아래에 나옵니다.</p>`};
+ openHelp("tp");
 }
 function tpValues(id){const o={h:0,p:0,k:0};document.querySelectorAll(`#alloc-${id} input`).forEach(i=>{o[i.dataset.tp]=tpNum(i.value)});return o}
 function tpCost(c,v){const t=tpCur(c);return tpSpentOf(t.h+v.h,t.p+v.p,t.k+v.k)-tpSpentOf(t.h,t.p,t.k)}
