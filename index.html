@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v329 · 갱신 2026-10-13 16:35 KST -->
+<!-- ProjectGY-test-console v330 · 갱신 2026-10-13 16:07 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -343,6 +343,8 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .skill-group b{font-weight:400}
 .skill-head{display:flex;align-items:baseline;gap:6px}.skill-left{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;min-width:0}
 .skill-name{font-size:14px}
+/* 스킬 아이콘(16x16 도트, 1배): 스킬창 이름 앞·전투 로그 스킬 이름 앞 */
+.sk-ico{display:inline-block;width:16px;height:16px;image-rendering:pixelated;vertical-align:-2px;margin-right:5px}.bl-sk .sk-ico{vertical-align:-3px;margin-right:4px}
 .skill-right{margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center}
 .skill-state{font-size:12px;color:var(--card);background:var(--ac);font-weight:700;border-radius:999px;padding:1px 9px;line-height:1.5}.skill-state.dim{color:var(--mu);background:transparent;font-weight:400;padding:0}
 .skill-desc{font-size:13px;margin-top:3px}
@@ -452,7 +454,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v329 · 2026-10-13 16:35</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v330 · 2026-10-13 16:07</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1972,7 +1974,7 @@ function renderSkills(c){
   const eff=skillEffectText(s,d.ammo_kind);
   const state=s.known?`<span class="skill-state">${s.auto?"기본":"습득"}</span>`
    :(d.sp_free>=s.sp_cost?`<button class="mini-btn pri" onclick="confirmLearn('${c.id}','${esc(s.id)}',this)">배우기</button>`:`<span class="skill-state dim">SP 부족</span>`);
-  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
+  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${skillIcon(s.id)}${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
  };
  const known=d.skills.filter(s=>s.known),rest=d.skills.filter(s=>!s.known);
  const rows=`<div class="skill-group known-g">배운 스킬 <b>${known.length}</b></div>${known.map(row).join("")}`
@@ -3059,6 +3061,15 @@ const CARD_GROUND={"Ashen Mine":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA
 (()=>{const st=document.createElement("style");st.textContent=Object.keys(CARD_GROUND).map((k,i)=>`.mon-grid.gd-${i} .mon-card .sprite-slot::after{display:block;background:url(${CARD_GROUND[k]}) center/cover;image-rendering:pixelated}`).join("")+`.mon-grid[class*=" gd-"] img.spr{filter:url(#sprNoSh)}.mon-grid[class*=" gd-"] .mon-card .sprite-slot img.spr{transform:translateX(-50%) translateY(calc(var(--gf,0)*100%))}`;document.head.appendChild(st);const sv=document.createElementNS("http://www.w3.org/2000/svg","svg");sv.setAttribute("width","0");sv.setAttribute("height","0");sv.setAttribute("aria-hidden","true");sv.style.position="absolute";sv.innerHTML=`<filter id="sprNoSh" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter>`;document.body.appendChild(sv)})();
 function cardGroundClass(dg){const i=Object.keys(CARD_GROUND).indexOf(dg);return i<0?"":` gd-${i}`}
 function sceneBgClass(dg){const i=Object.keys(SCENE_BG).indexOf(dg);return i<0?"":` has-bg sbg-${i}`}
+// 스킬 아이콘: 스킬 코드 → 화면 이름(name)과 16x16 도트(src). 원본 PNG·모음표·그리는 코드(skill_icons.py)는 바탕화면 claude/icons/skills.
+// 스킬창의 스킬 이름 앞과 전투 로그 행동 줄의 스킬 이름 앞에 16px(1배)로 넣는다. 아이콘이 없는 스킬은 그대로 둔다.
+// 전투 로그 기록에는 스킬 이름만 남아서 로그에서는 이름으로 찾는다(스킬 이름을 바꾸면 여기 name도 바꾼다).
+const SKILL_ICONS={common_and:{name:"AND",src:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA1UlEQVR4nMVSOw6CQBScJQtXoKPiPlzAUFBwAm2s6L0BhTHE2NNYGmIsPAQVHVcAkrXxkf09Sp1kkt283XnzJg/4NwQdIhkq7tG0zIKrCfrcD6NTfHRvAECZZ6xIYH9Ok3gloW5a1mGgX9IkxrTMgljmGQDg2b24CSB1qz6QCGDmRCMZDsgqcVcc0A+jwbppjZHWEOum9Vqtqr2Th8+d0dmmLhjJUF1ud1WURxXJUEl7Jt2R0+UL3WngVC34ctHBbthWLgBwPZ8wLbNgBUiEq22t92/xAap4ddjJWsiNAAAAAElFTkSuQmCC"},common_use_item:{name:"Use Item",src:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA3UlEQVR4nGNgoBAw4pJgY2H9j8z/9ec3VrVYBdlYWP9PiNFFEStYchmrIUz4nKeno8Cgp6OATwluwMbC+v/Igzf/f/35/x/dOwRdgE0DLkMw/MTGwvp/353nDAwMDAxmMsIMp568hcs5qUhihAMTNs1mMsIMDAwMKJoZGBgY9t15juESJmya0TXiM4QFWVKnoYLhGwMDgw5O7ZgAxYBnV24waEb4MFxfsQWnhm3PPqDw8aYDYgBKiLKxsP6/YGCO1+aqVzdRYgJrNLaJqWM1BF0zVgNghmATx5WhKAIAQNlVaBhepvIAAAAASUVORK5CYII="},common_horn_call:{name:"Horn Call",src:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVR4nGNgIBKwsbD+J1YtVs3/H+X9RzaEaANxaUYRI2QaQc3npln8J8WPyGqZGBgYGHQcHPAqRsYMDAwMv/78ZoTxWWAKL+yZyGDgkv//15/fjMiav1wqhht25cABBou8s/8ZGBgYft7LRLXl2oFpGAH161rFfxMVJTg+N80C7l0YZkJ27oU9EzEC9NimMDg7re8VnP3rz2/GX39+M6IYgGzIhxfnGf6IxTBcOXCAYVaRGM4wQvHvhT0TGX5cW8SgETaHgYGBgeHBlUMMDAwMDD+uLYJrsMg7y4AcTnAGzJBpFcEMVi52EOfvOYRiW1bHWhTNGAYgG4KuEeZvnF5ANwSZj03j4AEAYwyNvDIewPgAAAAASUVORK5CYII="}};
+const SKILL_ICON_BY_NAME=Object.fromEntries(Object.values(SKILL_ICONS).map(v=>[v.name,v.src]));
+function skillIconImg(src){return src?`<img class="sk-ico" src="${src}" alt="" aria-hidden="true">`:""}
+function skillIcon(id){return skillIconImg(SKILL_ICONS[id]?.src)}
+// 로그용: 스킬 이름 칸(bl-sk) 안에 아이콘과 이름을 함께 넣는다(칸의 글은 스킬 이름 그대로). 아이콘과 첫 낱말은 한 덩어리로 묶어 좁은 칸에서 서로 다른 줄로 갈라지지 않게 한다
+function skillNameHtml(name){const s=SKILL_ICON_BY_NAME[name];if(!s)return esc(name);const n=String(name),i=n.indexOf(" "),a=i<0?n:n.slice(0,i),b=i<0?"":n.slice(i);return `<span class="nw">${skillIconImg(s)}${esc(a)}</span>${esc(b)}`}
 // 10턴마다 나오는 전투 장면: 적은 왼쪽, 아군은 오른쪽. 전방 줄이 가운데 쪽, 후방 줄이 바깥쪽이고 줄마다 일자에 가깝게 살짝 비스듬히 선다
 // 가로: 적 전방 31·후방 14, 아군 전방 69·후방 86(화면 너비 %). 세로 간격은 적 최대 17, 아군 최대 22(아군은 5명이라 넉넉히)
 // 원근: 위에 선 캐릭터일수록 작게(가운데 높이 66이 1배, 1칸당 0.5%). 가로로 넓은 그림은 제한 없이 그대로
@@ -3146,7 +3157,7 @@ function battleLogHtml(b){
  LOG.forEach((e,li)=>{
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
-  else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${esc(e.name)}</span></div>`]}}
+  else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
