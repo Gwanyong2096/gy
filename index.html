@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v321 · 갱신 2026-10-13 11:20 KST -->
+<!-- ProjectGY-test-console v322 · 갱신 2026-10-13 11:25 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -441,7 +441,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open .q-panel{display:flex}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v321 · 2026-10-13 11:20</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v322 · 2026-10-13 11:25</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -560,7 +560,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 <div id="appraiseView" class="view">
   <div class="card">
     <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Appraisal Clan</span><button type="button" class="help-btn" onclick="openMaterialHelp()" aria-label="재료 도움말">?</button></div>
-    <div class="npc"><span class="sprite-slot" data-npc="APPRAISER" aria-hidden="true"></span><div class="npc-talk"><p>…응? 그 짐, 정체 모를 게 섞여 있네.</p><p><b>Unknown</b>이구나. 이리 줘. 우리 감정사 일족이 봐 줄 테니까.</p><p>겉은 시시해 보여도, 속에 뭔가 숨긴 물건이 꽤 있거든.</p><p>뭐, 진짜 아무것도 아닐 수도 있고. 열어 보기 전엔 나도 몰라. 그래서 재밌는 거지만.</p><div class="npc-note"><p>※ Unknown 장비를 감정하면 랜덤 옵션이 붙습니다. 하나도 안 붙으면 일반 장비가 됩니다.</p><p>※ 감정에는 골드가 듭니다. 그 장비가 나오는 던전이 깊을수록 비쌉니다.</p><p>※ Unknown 장비는 감정하기 전에는 장착도, 다른 일도 할 수 없습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(이름 옆 ?).</a></p></div></div></div>
+    <div class="npc"><span class="sprite-slot" data-npc="APPRAISER" aria-hidden="true"></span><div class="npc-talk"><p>…응? 그 짐, 정체 모를 게 섞여 있네.</p><p><b>Unknown</b>이구나. 이리 줘. 우리 감정사 일족이 봐 줄 테니까.</p><p>겉은 시시해 보여도, 속에 뭔가 숨긴 물건이 꽤 있거든.</p><p>뭐, 진짜 아무것도 아닐 수도 있고. 열어 보기 전엔 나도 몰라. 그래서 재밌는 거지만.</p><div class="npc-note"><p>※ Unknown 장비를 감정하면 랜덤 옵션이 붙습니다. 하나도 안 붙으면 일반 장비가 됩니다.</p><p>※ 감정에는 골드가 듭니다. 그 장비가 나오는 던전이 깊을수록 비쌉니다.</p><p>※ Unknown 장비는 감정하기 전에는 장착도, 다른 일도 할 수 없습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(?).</a></p></div></div></div>
     <div id="appraiseList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
@@ -568,7 +568,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 <div id="craftView" class="view">
   <div class="card">
     <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Smithy</span><button type="button" class="help-btn" onclick="openMaterialHelp()" aria-label="재료 도움말">?</button></div>
-    <div class="npc"><span class="sprite-slot" data-npc="BLACKSMITH" aria-hidden="true"></span><div class="npc-talk"><p>뭐야. 구경이면 저리 비켜. 불 식는다.</p><p><b>재료</b> 가져왔으면 내놔. 쇠든 가죽이든 두드려서 못 만드는 건 없다.</p><p><b>레시피</b>가 있으면 적힌 대로 뽑아 준다. 한 치도 안 틀리게.</p><p>옵션 하나 없는 <b>일반 장비</b>? 그런 밋밋한 건 내가 다시 두드려 주지.</p><p>만들 수 있는 것만 꺼내 놨다. 재료가 모자란 건 입에도 안 올려.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(이름 옆 ?).</a></p></div></div></div>
+    <div class="npc"><span class="sprite-slot" data-npc="BLACKSMITH" aria-hidden="true"></span><div class="npc-talk"><p>뭐야. 구경이면 저리 비켜. 불 식는다.</p><p><b>재료</b> 가져왔으면 내놔. 쇠든 가죽이든 두드려서 못 만드는 건 없다.</p><p><b>레시피</b>가 있으면 적힌 대로 뽑아 준다. 한 치도 안 틀리게.</p><p>옵션 하나 없는 <b>일반 장비</b>? 그런 밋밋한 건 내가 다시 두드려 주지.</p><p>만들 수 있는 것만 꺼내 놨다. 재료가 모자란 건 입에도 안 올려.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(?).</a></p></div></div></div>
     <div id="craftList"><div class="empty">불러오는 중…</div></div>
   </div>
 </div>
@@ -1184,8 +1184,8 @@ const QUEST_GUIDE={
   if(!tutSeen.has("qg-r2"))return h.page("qg-r2",n,`여기에 판 수를 적습니다.\n한 번에 ${rushMaxN()}판까지 됩니다.\n최대를 누르면 남은 SUPPLY로 돌 수 있는 만큼 채웁니다.`,{back:"qg-r1"});
   return h.page("qg-r3",box,"지거나 비기면 그 판에서 멈춥니다.\nSetting에서 끝까지 돌리도록 바꿀 수 있습니다.",{back:"qg-r2",btn:"확인",fn:questGuideDone});
  },
- appraise(g,h){return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 이름 옆 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.")},
- craft(g,h){return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 이름 옆 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않습니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.")}
+ appraise(g,h){return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.")},
+ craft(g,h){return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않습니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.")}
 };
 // 감정·제작: 이름 옆 ?를 눌러 재료별 옵션 창을 보고, 닫은 뒤 목록을 짚는다
 function qgTown(g,h,view,askMsg,when,listMsg){
