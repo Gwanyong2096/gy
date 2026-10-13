@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v328 · 갱신 2026-10-13 15:19 KST -->
+<!-- ProjectGY-test-console v329 · 갱신 2026-10-13 16:35 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -66,7 +66,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 :root{--el-earth:#7a5a2e;--el-water:#1f5fae;--el-fire:#b8452a;--el-electric:#8a6d00;--el-wind:#2d7a5a}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--el-earth:#d8b36a;--el-water:#6fa8f2;--el-fire:#f28b70;--el-electric:#e7d36a;--el-wind:#78cfa6}}:root[data-theme="dark"]{--el-earth:#d8b36a;--el-water:#6fa8f2;--el-fire:#f28b70;--el-electric:#e7d36a;--el-wind:#78cfa6}
 .bl-elem{color:var(--ac);font-weight:700}.bl-scan{color:var(--mu)}.bl-scan b{font-weight:700}
-.tag-active{color:var(--tag-active)}.tag-passive{color:var(--tag-passive)}.tag-link{color:var(--tag-link)}.tag-valid{color:var(--tag-valid)}.tag-invalid{color:var(--tag-invalid)}.tag-frontattack{color:var(--tag-frontattack)}.tag-backattack{color:var(--tag-backattack)}.tag-multi{color:var(--tag-multi)}.tag-personal{color:var(--tag-personal)}.tag-others{color:var(--tag-others)}.tag-everyone{color:var(--tag-everyone)}.tag-all{color:var(--tag-all)}.tag-self{color:var(--tag-self)}.tag-ally{color:var(--tag-ally)}.tag-enemy{color:var(--tag-enemy)}.tag-delaypush{color:var(--tag-delaypush)}.tag-delaypull{color:var(--tag-delaypull)}
+.tag-active{color:var(--tag-active)}.tag-passive{color:var(--tag-passive)}.tag-link{color:var(--tag-link)}.tag-valid{color:var(--tag-valid)}.tag-invalid{color:var(--tag-invalid)}.tag-frontattack{color:var(--tag-frontattack)}.tag-backattack{color:var(--tag-backattack)}.tag-frontline{color:var(--tag-frontattack)}.tag-backline{color:var(--tag-backattack)}.tag-multi{color:var(--tag-multi)}.tag-personal{color:var(--tag-personal)}.tag-others{color:var(--tag-others)}.tag-everyone{color:var(--tag-everyone)}.tag-all{color:var(--tag-all)}.tag-self{color:var(--tag-self)}.tag-ally{color:var(--tag-ally)}.tag-enemy{color:var(--tag-enemy)}.tag-delaypush{color:var(--tag-delaypush)}.tag-delaypull{color:var(--tag-delaypull)}
 .equip-row{min-height:52px;box-sizing:border-box}.equip-row .slot-label{flex:0 0 96px;color:var(--mu);font-size:12px}.equip-row .slot-item{flex:1;min-width:0}.equip-row.empty-slot .slot-item{color:var(--mu)}
 .main-st>span{white-space:nowrap}
 .item-core,.item-extra,.item-note{font-size:12px;color:var(--mu);margin-top:2px}.item-core{display:flex;flex-wrap:wrap;gap:2px 12px}.item-core b{color:var(--tx)}
@@ -452,7 +452,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v328 · 2026-10-13 15:19</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v329 · 2026-10-13 16:35</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1933,6 +1933,7 @@ function skillEffectText(s,ak){
  if(e.bleed_hit_amp)out.push(`출혈이 걸린 적을 때릴 때 피해 증폭 +${e.bleed_hit_amp}%`);
  if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%`);
  if(e.delay_pull)out.push(`Delay Pull ${e.delay_pull}`);
+ if(e.shove)out.push({BACK:"맞은 상대를 후방으로 밀어냄",FRONT:"맞은 상대를 전방으로 당김",FLIP:"맞은 상대의 전방·후방 뒤바꿈"}[e.shove]||"");
  if(e.revive)out.push(e.revive.mult!=null?`쓰러진 아군을 ${coef(e.revive,1)} HP로 부활`:`쓰러진 아군을 HP ${e.revive.hp_pct}%로 부활`);
  if(e.first_action_no_pre)out.push("전투 첫 행동 Front Delay 0");
  if(e.gold_bonus_pct)out.push(`전투 보상 골드 +${e.gold_bonus_pct}%`);
@@ -1947,7 +1948,9 @@ function skillTags(s){
  const TG={SELF:"self",ALLY:"ally",ENEMY:"enemy",OTHERS:"others",ALL:"everyone"};
  if(s.target&&TG[s.target])t.push(TG[s.target]);
  if(s.hit_type==="ALL")t.push("all");else if(s.hit_type&&s.hits>1)t.push(s.hit_type.toLowerCase());
- if(s.target_priority)t.push(s.target_priority==="BACK"?"backattack":"frontattack");
+ // 맞는 위치: Personal/Multi = Front/Back Attack(우선), ALL = Front/Back Line(그 줄 전원)
+ const TP={FRONT:"frontattack",BACK:"backattack",FRONT_LINE:"frontline",BACK_LINE:"backline"};
+ if(TP[s.target_priority])t.push(TP[s.target_priority]);
  if(s.category)t.push(s.category==="VALID"?"valid":"invalid");
  if(e.delay_push)t.push("delaypush");
  if(e.delay_pull)t.push("delaypull");
@@ -3163,8 +3166,10 @@ function battleLogHtml(b){
   else if(e.t==="resist"&&cur)cur.html.push(`<div class="bl-psn"><span class="psn-ico">☠</span> ${who(e.tg)} 독에 저항했다!</div>`);
   else if(e.t==="tick"&&e.parts){const lab=e.kind==="POISON"?"독":"출혈",cs=Array.isArray(e.calc)?e.calc:[];
    const h=`<div class="bl-hit"><span class="nw ${e.kind==="POISON"?"bl-psn":"bl-bld"} bl-tk" ${tkOpen}>${lab}(${tkCnt(e.parts)}건) <b>${e.dmg}</b> 대미지${tkPop(e.parts,lab,"대미지",e.dmg)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc?e.parts.map((p,i)=>cs[i]?`<div class="bl-calc"><span class="nw">${p.d}${p.n>1?` ×${p.n}`:""} (${p.t}턴)</span> = ${calcText(cs[i],p.k||"PHYS",true)}</div>`:"").join(""):""}</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
-  else if(e.t==="formation"&&cur&&e.self)cur.html.push((e.units||[]).map(x=>`<div class="bl-move">⇄ ${x.pos==="FRONT"?"전방":"후방"}으로 신속히 움직인다!</div>`).join(""));
-  else if(e.t==="formation"&&cur)cur.html.push(`<div class="bl-form">뿔피리 소리가 울려 퍼졌다!</div>${(e.units||[]).map(x=>`<div class="bl-move">⇄ ${who(x.u)}${josa(x.u,"이","가")} ${x.pos==="FRONT"?"전방":"후방"}으로 이동했다.</div>`).join("")}${(e.deaf||[]).map(id=>`<div class="bl-deaf">${who(id)}${josa(id,"은","는")} 듣지 못한다...</div>`).join("")}`);
+  else if(e.t==="formation"&&cur&&e.self)cur.html.push((e.units||[]).map(x=>`<div class="bl-move">${x.pos==="FRONT"?"전방":"후방"}으로 신속히 움직인다!</div>`).join(""));
+  else if(e.t==="formation"&&cur)cur.html.push(`<div class="bl-form">뿔피리 소리가 울려 퍼졌다!</div>${(e.units||[]).map(x=>`<div class="bl-move">${who(x.u)}${josa(x.u,"이","가")} ${x.pos==="FRONT"?"전방":"후방"}으로 신속히 움직인다!</div>`).join("")}${(e.deaf||[]).map(id=>`<div class="bl-deaf">${who(id)}${josa(id,"은","는")} 듣지 못한다...</div>`).join("")}`);
+  // 상대 위치 옮기기(엔진 0.22.0): 그 타격의 대미지 줄 바로 다음
+  else if(e.t==="shove"&&cur)cur.html.push(`<div class="bl-move">${who(e.tg)}${josa(e.tg,"이","가")} ${e.pos==="FRONT"?"전방으로 당겨졌다!":"후방으로 밀려났다!"}</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
   else if(e.t==="delay"){const h=delayHtml(e);if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
