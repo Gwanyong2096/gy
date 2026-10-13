@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v325 · 갱신 2026-10-13 13:34 KST -->
+<!-- ProjectGY-test-console v326 · 갱신 2026-10-13 13:56 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -452,7 +452,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v325 · 2026-10-13 13:34</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v326 · 2026-10-13 13:56</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2701,6 +2701,7 @@ const MON_ERR={FORBIDDEN:"관리자만 쓸 수 있습니다.",MONSTER_NOT_FOUND:
  INVALID_MONSTER_EXP:"경험치는 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_GOLD:"골드는 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_BONUS_TURNS:"추가턴은 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_DATA:"경험치·골드·추가턴을 확인해 주세요.",
  MONSTER_BONUS_TURNS_MIN:"보스의 추가턴은 30 이상이어야 합니다.",MONSTER_BONUS_TURNS_BOSS_ONLY:"일반 몬스터의 추가턴은 0이어야 합니다.",INVALID_MONSTER_ELEMENT:"원소를 확인해 주세요.",
  MONSTER_SKILL_NOT_ALLOWED:"이 몬스터의 스킬이 아닌 행동이 있습니다.",INVALID_PATTERN_AND_LAST:"마지막 줄에는 AND를 쓸 수 없습니다.",INVALID_PATTERN_AND_COOLDOWN:"AND 줄에는 쿨타임 조건을 쓸 수 없습니다.",INVALID_MONSTER_PATTERN:"패턴은 1~20줄이고, 수치는 정수여야 합니다.",
+ MONSTER_MULTI_BOSS_ONLY:"중복 패턴은 보스만 둘 수 있습니다.",BOSS_NO_SLOT_PATTERN:"보스는 자리 패턴 없이 단독 패턴을 씁니다.",
  SLOT_CHANGED:"고정 구성이 바뀌었습니다. 몬스터 상세를 다시 열어 주세요.",INVALID_SLOT:"고정 구성이 바뀌었습니다. 몬스터 상세를 다시 열어 주세요.",DUNGEON_NOT_FOUND:"던전을 찾지 못했습니다."};
 const MON_PAT_MAX=20;
 function monCanOpen(){return adminView()&&!tutActive()}
@@ -2773,6 +2774,8 @@ function monReadPattern(list){
   if(VALUE_CONDS.has(c)){let v=Math.round(Number(row.querySelector(".pattern-value").value));if(!Number.isFinite(v))v=0;o.v=Math.max(condMin(c),Math.min(PERCENT_CONDS.has(c)?100:999999,v))}
   return o});
 }
+// 보스는 단독·중복 패턴 둘 다 본다
+function monCheckDef(d){return monCheckPattern(d.pattern)||(monData.is_boss?monCheckPattern(d.pattern_multi||[]):"")}
 function monCheckPattern(rows){
  for(let i=0;i<rows.length;i++){if(rows[i].a!=="common_and")continue;if(i===rows.length-1)return "마지막 줄에는 AND를 쓸 수 없습니다.";if(COOLDOWN_CONDS.has(rows[i].c))return "AND 줄에는 쿨타임 조건을 쓸 수 없습니다."}
  return "";
@@ -2781,9 +2784,9 @@ const monPatKey=rows=>(rows||[]).map(p=>`${p.c}|${p.a}|${VALUE_CONDS.has(p.c)?Nu
 function monReadDef(){
  const box=$("advMon"),st={};
  box.querySelectorAll(".mon-stat input").forEach(i=>st[i.dataset.k]=Math.round(Number(i.value)));
- return {stats:st,exp:Math.round(Number($("monExp").value)),gold:Math.round(Number($("monGold").value)),bonus_turns:monData.is_boss?Math.round(Number($("monBt").value)):0,element:$("monEl").value||null,pattern:monReadPattern($("mpat-def"))};
+ return {stats:st,exp:Math.round(Number($("monExp").value)),gold:Math.round(Number($("monGold").value)),bonus_turns:monData.is_boss?Math.round(Number($("monBt").value)):0,element:$("monEl").value||null,pattern:monReadPattern($("mpat-def")),pattern_multi:monData.is_boss?monReadPattern($("mpat-multi")):null};
 }
-function monDefKey(d){return JSON.stringify([MON_STATS.map(([k])=>Number(d.stats?.[k]??0)),Number(d.exp),Number(d.gold),Number(d.bonus_turns),d.element||null,monPatKey(d.pattern)])}
+function monDefKey(d){return JSON.stringify([MON_STATS.map(([k])=>Number(d.stats?.[k]??0)),Number(d.exp),Number(d.gold),Number(d.bonus_turns),d.element||null,monPatKey(d.pattern),monData.is_boss?monPatKey(d.pattern_multi):""])}
 const monSlotId=s=>`mpat-s-${s.dungeon}-${s.slot}`;
 function monDirtyParts(){
  if(!advMon||!monData||!$("mpat-def"))return [];
@@ -2835,8 +2838,11 @@ function renderMonster(keep){
    <div class="mon-fields">${rewards}</div>
    ${notes.length?`<div class="pattern-help">${notes.map(esc).join(" ")}</div>`:""}
    <div class="section-title sec-line sec-gap">Pattern</div>
-   <div class="pattern-help">굴린 구성의 판에 쓰는 패턴입니다${slots?"(고정 구성 판은 아래 Slot Pattern)":""}. 1~20줄이고 언제든 줄을 넣고 뺄 수 있습니다. 행동에는 이 몬스터의 스킬과 AND를 쓸 수 있습니다.</div>
-   ${monListHtml("mpat-def",d.pattern||[])}
+   ${m.is_boss?`<div class="pattern-help">보스 패턴은 둘입니다. 1~20줄이고 언제든 줄을 넣고 뺄 수 있습니다. 행동에는 이 몬스터의 스킬과 AND를 쓸 수 있습니다.</div>
+   <div class="mon-slot"><div class="mon-slot-head"><b>단독 패턴</b> · 첫 판, 혼자 나온 판, 여럿 나온 판의 한 마리</div>${monListHtml("mpat-def",d.pattern||[])}</div>
+   <div class="mon-slot"><div class="mon-slot-head"><b>중복 패턴</b> · 보스가 2~3마리 나온 판의 나머지 보스</div>${monListHtml("mpat-multi",d.pattern_multi||d.pattern||[])}</div>`
+   :`<div class="pattern-help">굴린 구성의 판에 쓰는 패턴입니다${slots?"(고정 구성 판은 아래 Slot Pattern)":""}. 1~20줄이고 언제든 줄을 넣고 뺄 수 있습니다. 행동에는 이 몬스터의 스킬과 AND를 쓸 수 있습니다.</div>
+   ${monListHtml("mpat-def",d.pattern||[])}`}
    <div class="row pattern-save"><button class="pri" onclick="monSave(false)">시험 저장</button><button onclick="monSave(true)">모두에게 적용</button>${test?`<button onclick="monClearTest()">시험 취소</button>`:""}</div>
    <div class="pattern-help">Status와 Pattern을 함께 저장합니다. 시험 저장은 내 계정의 전투(Mock Battle, Auto Battle, Battle Rush 포함)에만 쓰고, 모두에게 적용은 실제 값으로 올린 뒤 시험값을 지웁니다.</div>
    ${slots?`<div class="section-title sec-line sec-gap">Slot Pattern</div><div class="pattern-help">그 던전을 직접 처음 이기기 전의 판(고정 구성)은 자리마다 이 패턴을 씁니다. 저장하면 바로 모든 유저에게 적용됩니다.</div>${slots}`:""}
@@ -2854,12 +2860,14 @@ function monLiveDiff(d){
  if(Number(lv.gold)!==d.gold)out.push(`골드 ${lv.gold} → ${d.gold}`);
  if(Number(lv.bonus_turns)!==d.bonus_turns)out.push(`추가턴 ${lv.bonus_turns} → ${d.bonus_turns}`);
  if((lv.element||null)!==(d.element||null))out.push(`원소 ${lv.element?EL_KO[lv.element]||lv.element:"없음"} → ${d.element?EL_KO[d.element]||d.element:"없음"}`);
- if(monPatKey(lv.pattern)!==monPatKey(d.pattern))out.push(`패턴 ${(lv.pattern||[]).length}줄 → ${d.pattern.length}줄(내용 바뀜)`);
+ const pn=monData.is_boss?"단독 패턴":"패턴";
+ if(monPatKey(lv.pattern)!==monPatKey(d.pattern))out.push(`${pn} ${(lv.pattern||[]).length}줄 → ${d.pattern.length}줄(내용 바뀜)`);
+ if(monData.is_boss&&monPatKey(lv.pattern_multi)!==monPatKey(d.pattern_multi))out.push(`중복 패턴 ${(lv.pattern_multi||[]).length}줄 → ${(d.pattern_multi||[]).length}줄(내용 바뀜)`);
  return out;
 }
 async function monSave(live){
  if(monBusy||!monData)return;
- const d=monReadDef(),bad=monCheckPattern(d.pattern);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
+ const d=monReadDef(),bad=monCheckDef(d);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
  const run=async()=>{
   const keep=monCapture();delete keep.def;
   monBusy=true;const {data,error}=await sb.rpc("admin_save_monster",{p_monster:monData.id,p_data:d,p_live:!!live});monBusy=false;
@@ -2903,7 +2911,7 @@ function monGuard(next){
  openConfirm("저장하지 않은 변경",`<p><b>${parts.join(", ")}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.</p><p class="help-note">저장하고 나가면 Status·Pattern은 시험값(내 계정 전투에만)으로, Slot Pattern은 실제 값으로 저장됩니다.</p>`,
   [["계속 편집",null,false],["저장하지 않고 나가기",leave,false],["저장하고 나가기",async()=>{
    if(parts.includes("Status·Pattern")){
-    const d=monReadDef(),bad=monCheckPattern(d.pattern);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
+    const d=monReadDef(),bad=monCheckDef(d);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
     const keep=monCapture();delete keep.def;
     monBusy=true;const {data,error}=await sb.rpc("admin_save_monster",{p_monster:monData.id,p_data:d,p_live:false});monBusy=false;
     if(error){log("admin_save_monster 실패: "+error.message,"bad");monError(error.message,"저장하지 못했습니다.");return}
