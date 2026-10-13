@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v323 · 갱신 2026-10-13 11:30 KST -->
+<!-- ProjectGY-test-console v324 · 갱신 2026-10-13 12:05 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -439,9 +439,20 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .q-remote.folded.open{width:var(--q-w)}
 .q-remote.folded.open .q-tab{display:none}
 .q-remote.folded.open .q-panel{display:flex}
+/* 관리자: 던전 화면의 몬스터 카드(눌러서 몬스터 상세). 카드 모양은 .mon-card 그대로, 버튼 기본 모양만 지운다 */
+.mon-card.mon-click{appearance:none;-webkit-appearance:none;margin:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;transition:background .12s}
+.mon-card.mon-click:hover,.mon-card.mon-click:focus-visible{background:color-mix(in srgb,var(--ac) 10%,transparent);outline:none}
+/* 관리자: 몬스터 상세 */
+.mon-state{margin-top:6px;font-size:12.5px;color:var(--mu)}.mon-state.test{color:var(--ac);font-weight:700}
+.mon-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px 12px;margin-top:14px}
+.mon-in{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:12px;color:var(--mu)}
+.mon-in input,.mon-in select{width:100%;min-width:0;box-sizing:border-box}.mon-in input:disabled{opacity:.55;cursor:not-allowed}
+.mon-live{font-style:normal;font-size:11px;color:var(--ac)}
+.mon-slot+.mon-slot{margin-top:28px}.mon-slot-head{font-size:13px;color:var(--mu)}.mon-slot-head b{color:var(--tx)}
+.mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v323 · 2026-10-13 11:30</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v324 · 2026-10-13 12:05</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -533,6 +544,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="pattern-help adv-pick-help" id="partyPickHelp">캐릭터를 누르면 파티에 넣고, 파티에서 누르면 뺍니다.</div>
     <div class="roster adv-pick" id="partyPick"></div>
   </div>
+  <div class="card" id="advMon" style="display:none"></div>
 </div>
 
 <div id="logView" class="view">
@@ -869,8 +881,8 @@ function applyAdminMode(){
  if($("logCard"))$("logCard").style.display=adminView()?"block":"none";
  const on=$("amOn"),off=$("amOff");if(on&&off){on.classList.toggle("on",adminMode);off.classList.toggle("on",!adminMode);on.setAttribute("aria-checked",adminMode);off.setAttribute("aria-checked",!adminMode)}
 }
-function setAdminMode(v){adminMode=!!v;applyAdminMode();saveUiPref("admin_mode",adminMode)}
-async function loadAdminTools(){const {data,error}=await sb.rpc("is_admin");isAdminUser=!error&&!!data;if(error||!data){$("adminCard").style.display="none";$("logCard").style.display="none";return}$("adminCard").style.display="block";applyAdminMode();loadAdminItems();loadTestAssets()}
+function setAdminMode(v){adminMode=!!v;applyAdminMode();saveUiPref("admin_mode",adminMode);if(advRoom)renderRoom()}
+async function loadAdminTools(){const {data,error}=await sb.rpc("is_admin");isAdminUser=!error&&!!data;if(error||!data){$("adminCard").style.display="none";$("logCard").style.display="none";return}$("adminCard").style.display="block";applyAdminMode();loadAdminItems();loadTestAssets();if(advRoom)renderRoom()}
 async function loadTestAssets(){
  const {data,error}=await sb.rpc("admin_test_assets");const box=$("adminTestList");if(!box)return;
  if(error){box.textContent="불러오지 못했습니다: "+error.message;return}
@@ -973,6 +985,8 @@ function setTabsForLogin(on){
 function showView(view){
  if(!guardLeave(()=>showView(view)))return;
  currentView=view;
+ // 몬스터 상세(관리자)는 탭을 옮기면 닫는다(Adventure 탭을 누르면 목록으로)
+ if(advMon){advMon=null;monData=null;$("advMon").innerHTML="";if(view==="adventure")advRoom=null;renderRoom()}
  if(view==="camp"){selectedCharId=null;if(chars.length)renderCamp();}
  if($("recruitMsg"))setRecruitMsg("");
  $("loginView").classList.toggle("active",view==="login");
@@ -2180,7 +2194,10 @@ function dirtyParts(charId){
 function discardDrafts(charId){delete patternDraft[charId];delete coverDraft[charId];delete pendingPos[charId];if(coverOpenFor===charId)coverOpenFor=null}
 // 상세 화면을 떠나는 동작 앞에서 호출. 바로 떠나도 되면 true, 경고 모달을 띄웠으면 false.
 function guardLeave(next){
- if(leaveGuardBypass||!selectedCharId)return true;
+ if(leaveGuardBypass)return true;
+ // 몬스터 상세(관리자)에 저장하지 않은 변경이 있으면 그쪽 경고를 먼저 띄운다
+ if(advMon&&monDirtyParts().length)return monGuard(next);
+ if(!selectedCharId)return true;
  const id=selectedCharId,parts=dirtyParts(id);if(!parts.length)return true;
  const go=()=>{discardDrafts(id);leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}};
  openConfirm("저장하지 않은 변경",`<p><b>${parts.join(", ")}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.</p>`,
@@ -2195,13 +2212,15 @@ document.addEventListener("input",e=>{const l=e.target.closest(".pattern-list");
 document.addEventListener("click",e=>{const l=e.target.closest(".pattern-list");if(l&&e.target.closest("button"))setTimeout(()=>capturePatternDraft(l.id.replace("pat-","")),0)});
 // 브라우저 뒤로가기: 상세 화면이면 로스터로 돌아가고, 저장 안 한 변경이 있으면 경고
 window.addEventListener("popstate",()=>{
+ // 몬스터 상세(관리자)면 던전 화면으로 돌아간다
+ if(advMon&&currentView==="adventure"){if(!guardLeave(closeMonster)){history.pushState({mon:advMon},"");return}closeMonster();return}
  if(!selectedCharId)return;
  if(!guardLeave(closeDetail)){history.pushState({detail:selectedCharId},"");return}
  closeDetail();
 });
 function closeDetail(){selectedCharId=null;renderCamp()}
 // 새로고침, 창 닫기 등 페이지 자체를 떠날 때는 브라우저 기본 경고창만 쓸 수 있다
-window.addEventListener("beforeunload",e=>{if(selectedCharId&&dirtyParts(selectedCharId).length){e.preventDefault();e.returnValue=""}});
+window.addEventListener("beforeunload",e=>{if((selectedCharId&&dirtyParts(selectedCharId).length)||(advMon&&monDirtyParts().length)){e.preventDefault();e.returnValue=""}});
 function renderCharacterDetail(){
  const box=$("charDetail"); const c=chars.find(x=>x.id===selectedCharId);
  if(!c){box.style.display="none";return;}
@@ -2618,14 +2637,16 @@ async function togglePartyMember(id){
  renderRoom();
 }
 const BOSS_TAG=`<span class="boss-tag">《Dungeon Boss》</span>`;
-function monstersHtml(list,dg){
+function monstersHtml(list,dg,inRoom){
  // 던전에 들어가기 전에는 몬스터·보스의 이름만 카드로 보여 준다(같은 몬스터는 한 장, 마릿수는 안 보여 줌)
+ // 던전 화면에서는 관리자 모드일 때만(튜토리얼 중 제외) 카드를 눌러 몬스터 상세를 연다
+ const click=!!inRoom&&monCanOpen();
  const groups=[];for(const m of list||[]){const g=groups.find(x=>x.m.id===m.id);if(g)g.n++;else groups.push({m,n:1})}
  groups.sort((a,b)=>(a.m.is_boss?1:0)-(b.m.is_boss?1:0)); // 보스 카드는 항상 맨 오른쪽(마지막)
  // 그림 범위(dw·dx)를 아는 몬스터는 그림 가운데를 칸 가운데에 두고, dw>1이면 칸을 그림만큼 넓힌다. 한 줄(5칸)을 넘치면 --n으로 모든 칸을 같이 좁혀 한 줄에 둔다(카드끼리 겹치지 않게)
  const bw=m=>{const p=sprOf(m.id);return p&&p.dw>1?p.dw:1};
  const n=Math.max(5,groups.reduce((s,{m})=>s+bw(m),0));
- return `<div class="dg-stage"><div class="mon-grid${cardGroundClass(dg)}" style="--n:${n}">${groups.map(({m})=>{const w=bw(m),p=sprOf(m.id),fit=!!(p&&p.dw);return `<div class="mon-card${m.is_boss?" boss":""}${fit?" fit":""}${w>1?" wide":""}"${fit||(p&&p.gf)?` style="${fit?`--dw:${w};--dx:${p.dx||0};`:""}${p&&p.gf?`--gf:${p.gf}`:""}"`:""}><span class="sprite-slot" aria-hidden="true">${sprImg(m.id)}</span><span class="unit-name">${esc(m.name)}</span><span class="unit-meta">${m.is_boss?BOSS_TAG:"&nbsp;"}</span></div>`}).join("")}</div></div>`;
+ return `<div class="dg-stage"><div class="mon-grid${cardGroundClass(dg)}" style="--n:${n}">${groups.map(({m})=>{const w=bw(m),p=sprOf(m.id),fit=!!(p&&p.dw);const tg=click?"button":"div";return `<${tg}${click?` type="button" onclick="openMonster('${esc(m.id)}')" aria-label="${esc(m.name)} 상세"`:""} class="mon-card${click?" mon-click":""}${m.is_boss?" boss":""}${fit?" fit":""}${w>1?" wide":""}"${fit||(p&&p.gf)?` style="${fit?`--dw:${w};--dx:${p.dx||0};`:""}${p&&p.gf?`--gf:${p.gf}`:""}"`:""}><span class="sprite-slot" aria-hidden="true">${sprImg(m.id)}</span><span class="unit-name">${esc(m.name)}</span><span class="unit-meta">${m.is_boss?BOSS_TAG:"&nbsp;"}</span></${tg}>`}).join("")}</div></div>`;
 }
 function autoLineHtml(d){
  const need=d.auto_unlock_clears||0,have=Math.min(d.manual_clears||0,need);
@@ -2670,6 +2691,228 @@ function renderDungeons(){
     ${enterRowHtml(d)}</div>`:""}
   </div>`}).join("");
 }
+// ===== 관리자: 몬스터 상세(던전 화면의 몬스터 카드를 눌러 연다) =====
+// 능력치·보상·패턴은 시험 저장(내 계정 전투에만, Mock·Auto Battle·Battle Rush 포함) 또는 모두에게 적용(실제 값). 고정 구성 자리 패턴은 바로 실제 값
+let advMon=null,monData=null,monBusy=false;
+const MON_STATS=[["HP","HP"],["MP","MP"],["ATK","ATK"],["MATK","MATK"],["SPD_F","Front SPD"],["SPD_B","Back SPD"],["DEF_F","Front DEF"],["DEF_B","Back DEF"],["MDEF_F","Front MDEF"],["MDEF_B","Back MDEF"],
+ ["MIT","물리 경감",1],["MMIT","마법 경감",1],["DMG_AMP","피해 증폭",1],["PARRY","패링",1],["PIERCE","관통",1],["SUPPORT_AMP","지원 증폭",1],["SUPPORT_TAKEN","받는 지원",1],["FINAL_AMP","최종 증폭",1],["FINAL_REDUCE","최종 경감",1],["POISON_RES","독 저항",1]];
+const MON_ERR={FORBIDDEN:"관리자만 쓸 수 있습니다.",MONSTER_NOT_FOUND:"몬스터를 찾지 못했습니다.",INVALID_MONSTER_STATS:"능력치는 정수로 적어 주세요.",MONSTER_HP_MIN:"HP는 1 이상이어야 합니다.",MONSTER_MP_MIN:"MP는 0 이상이어야 합니다.",
+ MONSTER_SPD_F_TIER1:"티어 1 던전에만 나오는 몬스터는 Front SPD가 0이어야 합니다.",MONSTER_SPD_F_LOW:"티어 2 이상 던전에 나오는 몬스터는 Front SPD가 10 이상이어야 합니다.",
+ INVALID_MONSTER_EXP:"경험치는 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_GOLD:"골드는 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_BONUS_TURNS:"추가턴은 0 이상의 정수로 적어 주세요.",INVALID_MONSTER_DATA:"경험치·골드·추가턴을 확인해 주세요.",
+ MONSTER_BONUS_TURNS_MIN:"보스의 추가턴은 30 이상이어야 합니다.",MONSTER_BONUS_TURNS_BOSS_ONLY:"일반 몬스터의 추가턴은 0이어야 합니다.",INVALID_MONSTER_ELEMENT:"원소를 확인해 주세요.",
+ MONSTER_SKILL_NOT_ALLOWED:"이 몬스터의 스킬이 아닌 행동이 있습니다.",INVALID_PATTERN_AND_LAST:"마지막 줄에는 AND를 쓸 수 없습니다.",INVALID_PATTERN_AND_COOLDOWN:"AND 줄에는 쿨타임 조건을 쓸 수 없습니다.",INVALID_MONSTER_PATTERN:"패턴은 1~20줄이고, 수치는 정수여야 합니다.",
+ SLOT_CHANGED:"고정 구성이 바뀌었습니다. 몬스터 상세를 다시 열어 주세요.",INVALID_SLOT:"고정 구성이 바뀌었습니다. 몬스터 상세를 다시 열어 주세요.",DUNGEON_NOT_FOUND:"던전을 찾지 못했습니다."};
+const MON_PAT_MAX=20;
+function monCanOpen(){return adminView()&&!tutActive()}
+function monError(msg,fallback){const k=Object.keys(MON_ERR).find(x=>String(msg).includes(x));openConfirm("몬스터",`<p>${esc(k?MON_ERR[k]:fallback||"처리하지 못했습니다.")}</p>`,[["확인",null,true]])}
+async function openMonster(id){
+ if(!monCanOpen()||monBusy)return;
+ monBusy=true;const {data,error}=await sb.rpc("admin_get_monster",{p_monster:id});monBusy=false;
+ if(error){log("admin_get_monster 실패: "+error.message,"bad");monError(error.message,"몬스터 정보를 불러오지 못했습니다.");return}
+ advMon=id;monData=data;try{history.pushState({mon:id},"")}catch(e){}
+ renderMonster();renderRoom();window.scrollTo(0,0);
+}
+function closeMonster(){advMon=null;monData=null;$("advMon").innerHTML="";renderRoom();window.scrollTo(0,0)}
+function backFromMonster(){if(!guardLeave(closeMonster))return;closeMonster()}
+// 편집 기준: 내 시험값이 있으면 시험값, 없으면 실제 값
+function monBase(){return monData.test||monData.live}
+function monActs(){return (monData.skills||[]).filter(s=>s.kind==="ACTIVE"||s.kind==="LINK")}
+// 리셋·새 줄의 행동: 정의 패턴에서 마지막 "반드시" 줄의 행동(서버가 기본 공격으로 쓰는 것), 없으면 첫 스킬
+function monBasic(){const acts=monActs(),p=monData.live.pattern||[];for(let i=p.length-1;i>=0;i--)if(p[i].c==="always"&&acts.some(s=>s.id===p[i].a))return p[i].a;return acts.find(s=>s.kind==="ACTIVE")?.id||acts[0]?.id||""}
+function monSkillName(id){return monActs().find(s=>s.id===id)?.name||id}
+// 조건 목록: 캐릭터와 같고, 몬스터에 뜻이 없는 소모품 조건만 뺀다
+function monCondOptions(current,actName){
+ const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품");
+ const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_CONDS.has(current);
+ const cd=COOLDOWN_GROUP.options.map(([v,n])=>[v,actName?cooldownText(v,actName):n]);
+ return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(cd,current)}</optgroup>`;
+}
+const MON_UP=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>`,MON_DOWN=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>`;
+function monRowHtml(p,i){
+ const acts=monActs(),basic=monBasic();
+ const c=p?.c||"always",a=acts.some(s=>s.id===p?.a)?p.a:basic,has=VALUE_CONDS.has(c);
+ const v=Number.isFinite(Number(p?.v))?Number(p.v):condDefault(c);
+ return `<div class="pattern-row">
+  <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span></div>
+  <div class="pattern-controls">
+   <select class="pattern-cond" onchange="conditionChanged(this)">${monCondOptions(c,monSkillName(a))}</select>
+   <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${PERCENT_CONDS.has(c)?100:999999}" step="1" value="${esc(v)}" aria-label="수치"><span>${pctUnit(c)?" %":""}</span></span>
+   <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(s.name)}</option>`).join("")}</select>
+  </div>
+  <div class="pattern-order" data-ctl-row><button onclick="monMoveRow(this,-1)">${MON_UP}<span>위로</span></button><button onclick="monMoveRow(this,1)">${MON_DOWN}<span>아래로</span></button><button onclick="monResetRow(this)"><span>리셋</span></button><button class="mon-add" onclick="monAddRow(this)"><span>추가</span></button><button class="mon-del" onclick="monDelRow(this)"><span>삭제</span></button></div>
+ </div>`;
+}
+function monListHtml(id,rows){return `<div class="pattern-count">총 패턴 <b>${rows.length}</b>줄</div><div class="pattern-list mon-pat" id="${id}">${rows.map(monRowHtml).join("")}</div>`}
+// 줄 번호, 총 줄 수, 추가(20줄까지)·삭제(1줄까지) 버튼 상태를 다시 맞춘다
+function monRenumber(list){
+ const rows=[...list.querySelectorAll(".pattern-row")];
+ rows.forEach((r,i)=>{r.querySelector(".pattern-num").textContent=`패턴 ${i+1}`;r.querySelector(".mon-add").disabled=rows.length>=MON_PAT_MAX;r.querySelector(".mon-del").disabled=rows.length<=1});
+ const cnt=list.previousElementSibling;if(cnt&&cnt.classList.contains("pattern-count"))cnt.innerHTML=`총 패턴 <b>${rows.length}</b>줄`;
+}
+function monMoveRow(btn,dir){
+ const row=btn.closest(".pattern-row"),box=row.parentElement,rows=[...box.querySelectorAll(".pattern-row")],i=rows.indexOf(row),j=i+dir;
+ if(j<0||j>=rows.length)return;
+ if(dir<0)box.insertBefore(row,rows[j]);else box.insertBefore(row,rows[j].nextSibling);
+ monRenumber(box);
+}
+function monAddRow(btn){
+ const row=btn.closest(".pattern-row"),box=row.parentElement;if(box.querySelectorAll(".pattern-row").length>=MON_PAT_MAX)return;
+ row.insertAdjacentHTML("afterend",monRowHtml({c:"always",a:monBasic()},0));monRenumber(box);
+}
+function monDelRow(btn){const row=btn.closest(".pattern-row"),box=row.parentElement;if(box.querySelectorAll(".pattern-row").length<=1)return;row.remove();monRenumber(box)}
+function monResetRow(btn){
+ const row=btn.closest(".pattern-row"),cond=row.querySelector(".pattern-cond"),action=row.querySelector(".pattern-action"),basic=monBasic();
+ if(cond.value==="always"&&action.value===basic)return;
+ const no=[...row.parentElement.querySelectorAll(".pattern-row")].indexOf(row)+1;
+ openConfirm("패턴 리셋",`<p>패턴 ${no}의 조건과 행동을 처음 상태(<b>반드시 → ${esc(monSkillName(basic))}</b>)로 되돌립니다.</p><p class="help-note">저장을 눌러야 적용됩니다.</p>`,
+  [["취소",null,false],["확인",()=>{cond.value="always";action.value=basic;conditionChanged(cond);actionChanged(action)},true]]);
+}
+function monReadPattern(list){
+ return [...list.querySelectorAll(".pattern-row")].map(row=>{
+  const c=row.querySelector(".pattern-cond").value,a=row.querySelector(".pattern-action").value,o={c,a};
+  if(VALUE_CONDS.has(c)){let v=Math.round(Number(row.querySelector(".pattern-value").value));if(!Number.isFinite(v))v=0;o.v=Math.max(condMin(c),Math.min(PERCENT_CONDS.has(c)?100:999999,v))}
+  return o});
+}
+function monCheckPattern(rows){
+ for(let i=0;i<rows.length;i++){if(rows[i].a!=="common_and")continue;if(i===rows.length-1)return "마지막 줄에는 AND를 쓸 수 없습니다.";if(COOLDOWN_CONDS.has(rows[i].c))return "AND 줄에는 쿨타임 조건을 쓸 수 없습니다."}
+ return "";
+}
+const monPatKey=rows=>(rows||[]).map(p=>`${p.c}|${p.a}|${VALUE_CONDS.has(p.c)?Number(p.v??condDefault(p.c)):""}`).join("\n");
+function monReadDef(){
+ const box=$("advMon"),st={};
+ box.querySelectorAll(".mon-stat input").forEach(i=>st[i.dataset.k]=Math.round(Number(i.value)));
+ return {stats:st,exp:Math.round(Number($("monExp").value)),gold:Math.round(Number($("monGold").value)),bonus_turns:monData.is_boss?Math.round(Number($("monBt").value)):0,element:$("monEl").value||null,pattern:monReadPattern($("mpat-def"))};
+}
+function monDefKey(d){return JSON.stringify([MON_STATS.map(([k])=>Number(d.stats?.[k]??0)),Number(d.exp),Number(d.gold),Number(d.bonus_turns),d.element||null,monPatKey(d.pattern)])}
+const monSlotId=s=>`mpat-s-${s.dungeon}-${s.slot}`;
+function monDirtyParts(){
+ if(!advMon||!monData||!$("mpat-def"))return [];
+ const out=[];
+ if(monDefKey(monReadDef())!==monDefKey(monBase()))out.push("Status·Pattern");
+ if((monData.slots||[]).some(s=>{const l=$(monSlotId(s));return l&&monPatKey(monReadPattern(l))!==monPatKey(s.pattern)}))out.push("Slot Pattern");
+ return out;
+}
+// 다시 그릴 때 저장하지 않은 다른 칸의 편집을 지킨다(keep: 지금 화면 값, 방금 저장한 칸은 빼고 넘긴다)
+function monCapture(){
+ if(!$("mpat-def"))return {};
+ const k={def:monReadDef(),slots:{}};
+ (monData.slots||[]).forEach(s=>{const l=$(monSlotId(s));if(l)k.slots[monSlotId(s)]=monReadPattern(l)});
+ return k;
+}
+function monFmtTime(t){const d=new Date(new Date(t).getTime()+9*3600e3);if(isNaN(d))return "";const z=n=>String(n).padStart(2,"0");return `${d.getUTCMonth()+1}/${d.getUTCDate()} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}`}
+function renderMonster(keep){
+ const box=$("advMon"),m=monData;if(!box||!m)return;
+ keep=keep||{};
+ const live=m.live,base=monBase(),d=keep.def||base,test=m.test;
+ const room=dungeons.find(x=>x.id===advRoom);
+ const fixSpd=m.tier===1;
+ const liveHint=(cur,lv)=>test&&Number(cur)!==Number(lv)?`<em class="mon-live">실제 ${esc(lv)}</em>`:"";
+ const stats=MON_STATS.map(([k,label,pct])=>{const v=Number(d.stats?.[k]??0),lv=Number(live.stats?.[k]??0);
+  const lock=k==="SPD_F"&&fixSpd;
+  return `<label class="mon-in mon-stat"><span>${esc(label)}${pct?" (%)":""}</span><input type="number" step="1" data-k="${k}" value="${esc(lock?0:v)}"${k==="HP"?` min="1"`:k==="MP"?` min="0"`:k==="SPD_F"&&m.tier>=2?` min="10"`:""}${lock?" disabled":""}>${liveHint(v,lv)}</label>`}).join("");
+ const elOpt=[["","없음"],...(m.elements||[]).map(e=>[e,`${EL_KO[e]||e} (${e})`])].map(([v,n])=>`<option value="${esc(v)}"${(d.element||"")===v?" selected":""}>${esc(n)}</option>`).join("");
+ const rewards=`<label class="mon-in"><span>EXP</span><input id="monExp" type="number" min="0" step="1" value="${esc(d.exp)}">${liveHint(d.exp,live.exp)}</label>
+  <label class="mon-in"><span>골드</span><input id="monGold" type="number" min="0" step="1" value="${esc(d.gold)}">${liveHint(d.gold,live.gold)}</label>
+  ${m.is_boss?`<label class="mon-in"><span>추가턴</span><input id="monBt" type="number" min="30" step="1" value="${esc(d.bonus_turns)}">${liveHint(d.bonus_turns,live.bonus_turns)}</label>`:""}
+  <label class="mon-in"><span>원소</span><select id="monEl">${elOpt}</select>${test&&(d.element||null)!==(live.element||null)?`<em class="mon-live">실제 ${esc(live.element?EL_KO[live.element]||live.element:"없음")}</em>`:""}</label>`;
+ const state=test?`<div class="mon-state test">시험값 적용 중 · 내 계정 전투에만 · ${esc(monFmtTime(test.updated_at))} 저장</div>`:`<div class="mon-state">실제 값 · 모든 유저의 전투에 쓰는 값</div>`;
+ const notes=[fixSpd?"Front SPD: 티어 1 던전에만 나오는 몬스터라 0으로 고정입니다.":m.tier>=2?"Front SPD: 티어 2 이상 던전에 나오는 몬스터라 10 이상이어야 합니다.":"",m.is_boss?"추가턴: 보스는 30 이상.":""].filter(Boolean);
+ const slots=(m.slots||[]).map(s=>{const rows=keep.slots?.[monSlotId(s)]||s.pattern||[];
+  return `<div class="mon-slot"><div class="mon-slot-head"><b>${esc(s.dungeon_name)}</b> · 자리 ${s.nth}/${s.of} · ${s.pos==="FRONT"?"front":"back"}${s.own?"":" · 자리 패턴 없음(정의 패턴을 씀)"}</div>
+   ${monListHtml(monSlotId(s),rows)}
+   <div class="row pattern-save"><button class="pri" onclick="monSaveSlot('${esc(s.dungeon)}',${Number(s.slot)})">자리 패턴 저장</button></div></div>`}).join("");
+ const skills=(m.skills||[]).filter(s=>s.id!=="common_and").map(s=>{
+  const meta=[];if(s.mp_cost)meta.push(`MP ${s.mp_cost}`);if(s.pre_delay!=null)meta.push(`Delay ${s.pre_delay}:${s.post_delay}`);if(s.windup)meta.push(String(s.windup).toLowerCase());if(s.cooldown)meta.push(`쿨타임 ${s.cooldown}`);if(s.uses_per_battle)meta.push(`전투당 ${s.uses_per_battle}회`);
+  const eff=skillEffectText(s);
+  return `<div class="skill-row known"><div class="skill-head"><span class="skill-left"><b class="skill-name">${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span></div>${s.description?`<div class="skill-desc">${esc(s.description)}</div>`:""}${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`}).join("");
+ box.innerHTML=`<div class="town-head"><button type="button" class="fm-btn back-btn" onclick="backFromMonster()"><span>‹ ${esc(room?room.name:"Dungeon")}</span></button><span class="section-title" style="margin:0">${esc(m.name)}</span></div>
+  <div class="detail-grid"><div>
+   <div class="section-title sec-line">Status</div>
+   <div class="status-body"><span class="sprite-slot status-sprite" aria-hidden="true">${sprImg(m.id)}</span>
+    <div class="status-info"><div class="char-title"><span class="nm">${esc(m.name)}</span>${m.is_boss?BOSS_TAG:""}</div>
+     <div class="char-meta">티어 ${m.tier??"-"} · ${(m.dungeons||[]).map(x=>esc(x.name)).join(", ")||"나오는 던전 없음"}</div>${state}</div></div>
+   <div class="mon-fields">${stats}</div>
+   <div class="mon-fields">${rewards}</div>
+   ${notes.length?`<div class="pattern-help">${notes.map(esc).join(" ")}</div>`:""}
+   <div class="section-title sec-line sec-gap">Pattern</div>
+   <div class="pattern-help">굴린 구성의 판에 쓰는 패턴입니다${slots?"(고정 구성 판은 아래 Slot Pattern)":""}. 1~20줄이고 언제든 줄을 넣고 뺄 수 있습니다. 행동에는 이 몬스터의 스킬과 AND를 쓸 수 있습니다.</div>
+   ${monListHtml("mpat-def",d.pattern||[])}
+   <div class="row pattern-save"><button class="pri" onclick="monSave(false)">시험 저장</button><button onclick="monSave(true)">모두에게 적용</button>${test?`<button onclick="monClearTest()">시험 취소</button>`:""}</div>
+   <div class="pattern-help">Status와 Pattern을 함께 저장합니다. 시험 저장은 내 계정의 전투(Mock Battle, Auto Battle, Battle Rush 포함)에만 쓰고, 모두에게 적용은 실제 값으로 올린 뒤 시험값을 지웁니다.</div>
+   ${slots?`<div class="section-title sec-line sec-gap">Slot Pattern</div><div class="pattern-help">그 던전을 직접 처음 이기기 전의 판(고정 구성)은 자리마다 이 패턴을 씁니다. 저장하면 바로 모든 유저에게 적용됩니다.</div>${slots}`:""}
+   <div class="section-title sec-line sec-gap">Skill</div>
+   <div class="pattern-help">이 몬스터가 패턴에 쓸 수 있는 스킬입니다. 스킬을 더하려면 따로 요청해 주세요.</div>
+   <div>${skills||`<div class="empty">스킬이 없습니다.</div>`}</div>
+  </div></div>`;
+ box.querySelectorAll(".mon-pat").forEach(monRenumber);
+}
+// 실제 값과 달라지는 항목(모두에게 적용 확인 창)
+function monLiveDiff(d){
+ const lv=monData.live,out=[];
+ MON_STATS.forEach(([k,label])=>{const a=Number(lv.stats?.[k]??0),b=Number(d.stats?.[k]??0);if(a!==b)out.push(`${label} ${a} → ${b}`)});
+ if(Number(lv.exp)!==d.exp)out.push(`EXP ${lv.exp} → ${d.exp}`);
+ if(Number(lv.gold)!==d.gold)out.push(`골드 ${lv.gold} → ${d.gold}`);
+ if(Number(lv.bonus_turns)!==d.bonus_turns)out.push(`추가턴 ${lv.bonus_turns} → ${d.bonus_turns}`);
+ if((lv.element||null)!==(d.element||null))out.push(`원소 ${lv.element?EL_KO[lv.element]||lv.element:"없음"} → ${d.element?EL_KO[d.element]||d.element:"없음"}`);
+ if(monPatKey(lv.pattern)!==monPatKey(d.pattern))out.push(`패턴 ${(lv.pattern||[]).length}줄 → ${d.pattern.length}줄(내용 바뀜)`);
+ return out;
+}
+async function monSave(live){
+ if(monBusy||!monData)return;
+ const d=monReadDef(),bad=monCheckPattern(d.pattern);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
+ const run=async()=>{
+  const keep=monCapture();delete keep.def;
+  monBusy=true;const {data,error}=await sb.rpc("admin_save_monster",{p_monster:monData.id,p_data:d,p_live:!!live});monBusy=false;
+  if(error){log("admin_save_monster 실패: "+error.message,"bad");monError(error.message,"저장하지 못했습니다.");return false}
+  log("admin_save_monster 성공","ok");monData=data;renderMonster(keep);
+  openNotice(live?"모두에게 적용했습니다.":"시험값을 저장했습니다. 내 계정 전투에만 적용됩니다.");return true;
+ };
+ if(!live)return run();
+ const diff=monLiveDiff(d);
+ openConfirm("모두에게 적용",`<p><b>${esc(monData.name)}</b>의 실제 값을 바꿉니다. 모든 유저의 다음 전투부터 적용됩니다.</p>${diff.length?`<ul>${diff.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p>실제 값과 같습니다.</p>`}${monData.test?`<p class="help-note">내 시험값은 지워집니다.</p>`:""}`,
+  [["취소",null,false],["적용",run,true]]);
+}
+function monClearTest(){
+ if(monBusy||!monData?.test)return;
+ openConfirm("시험 취소",`<p><b>${esc(monData.name)}</b>의 시험값을 지우고 실제 값으로 돌아갑니다.</p><p class="help-note">화면에서 고친 Status와 Pattern도 실제 값으로 돌아갑니다.</p>`,
+  [["취소",null,false],["시험 취소",async()=>{
+   const keep=monCapture();delete keep.def;
+   monBusy=true;const {data,error}=await sb.rpc("admin_clear_monster_test",{p_monster:monData.id});monBusy=false;
+   if(error){log("admin_clear_monster_test 실패: "+error.message,"bad");monError(error.message);return}
+   log("admin_clear_monster_test 성공","ok");monData=data;renderMonster(keep)},true]]);
+}
+async function monSaveSlot(dg,slot,quiet){
+ if(monBusy||!monData)return false;
+ const s=(monData.slots||[]).find(x=>x.dungeon===dg&&x.slot===slot),list=s&&$(monSlotId(s));if(!list)return false;
+ const rows=monReadPattern(list),bad=monCheckPattern(rows);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return false}
+ const run=async()=>{
+  const keep=monCapture();delete keep.slots[monSlotId(s)];
+  monBusy=true;const {data,error}=await sb.rpc("admin_save_monster_slot",{p_dungeon:dg,p_slot:slot,p_monster:monData.id,p_pattern:rows});monBusy=false;
+  if(error){log("admin_save_monster_slot 실패: "+error.message,"bad");monError(error.message,"저장하지 못했습니다.");return false}
+  log("admin_save_monster_slot 성공","ok");monData=data;renderMonster(keep);if(!quiet)openNotice("자리 패턴을 저장했습니다.");return true;
+ };
+ if(quiet)return run();
+ openConfirm("자리 패턴 저장",`<p><b>${esc(s.dungeon_name)}</b> 자리 ${s.nth}/${s.of}의 패턴을 실제 값으로 저장합니다. 그 던전을 처음 이기기 전의 판(고정 구성)에 모든 유저에게 바로 적용됩니다.</p>`,
+  [["취소",null,false],["저장",run,true]]);
+ return false;
+}
+// 떠나려 할 때 저장하지 않은 변경이 있으면 캐릭터 상세와 같은 경고(저장하고 나가기 = Status·Pattern은 시험 저장, 자리 패턴은 실제 값)
+function monGuard(next){
+ const parts=monDirtyParts();
+ const leave=()=>{closeMonster();leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}};
+ openConfirm("저장하지 않은 변경",`<p><b>${parts.join(", ")}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.</p><p class="help-note">저장하고 나가면 Status·Pattern은 시험값(내 계정 전투에만)으로, Slot Pattern은 실제 값으로 저장됩니다.</p>`,
+  [["계속 편집",null,false],["저장하지 않고 나가기",leave,false],["저장하고 나가기",async()=>{
+   if(parts.includes("Status·Pattern")){
+    const d=monReadDef(),bad=monCheckPattern(d.pattern);if(bad){openConfirm("몬스터",`<p>${esc(bad)}</p>`,[["확인",null,true]]);return}
+    const keep=monCapture();delete keep.def;
+    monBusy=true;const {data,error}=await sb.rpc("admin_save_monster",{p_monster:monData.id,p_data:d,p_live:false});monBusy=false;
+    if(error){log("admin_save_monster 실패: "+error.message,"bad");monError(error.message,"저장하지 못했습니다.");return}
+    monData=data;renderMonster(keep);
+   }
+   for(const s of [...(monData.slots||[])]){const l=$(monSlotId(s));if(l&&monPatKey(monReadPattern(l))!==monPatKey(s.pattern)&&!await monSaveSlot(s.dungeon,s.slot,true))return}
+   leave()},true]]);
+ return false;
+}
 // ===== 전투 =====
 function supplyNow(){const st=supplyState;if(!st)return null;if(st.next_sec==null||st.supply>=st.max)return st.supply;const el=(Date.now()-st.at)/1000;const g=el<st.next_sec?0:1+Math.floor((el-st.next_sec)/st.regen_sec);return Math.min(st.max,st.supply+g)}
 function enterRowHtml(d){return `<div class="dg-enter"><button class="pri" onclick="enterRoom('${esc(d.id)}')">입장</button></div>`}
@@ -2690,11 +2933,13 @@ function enterRoom(id){advRoom=id;renderRoom();window.scrollTo(0,0)}
 function leaveRoom(){advRoom=null;renderRoom()}
 function renderRoom(){
  const d=dungeons.find(x=>x.id===advRoom);if(!d)advRoom=null;
- $("advList").style.display=d?"none":"";$("advRoom").style.display=d?"":"none";
+ // 몬스터 상세(관리자)가 열려 있으면 목록과 던전 화면은 숨긴다(던전 화면은 뒤에서 그대로 그려 둔다)
+ const mon=!!advMon;
+ $("advList").style.display=d||mon?"none":"";$("advRoom").style.display=d&&!mon?"":"none";$("advMon").style.display=mon?"":"none";
  renderIdle();
  if(!d)return;
  $("roomTitle").textContent=d.name;
- $("roomInfo").innerHTML=`<div class="room-meta">권장 Lv.${d.rec_level}</div><div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters,d.name)}`;
+ $("roomInfo").innerHTML=`<div class="room-meta">권장 Lv.${d.rec_level}</div><div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters,d.name,true)}`;
  renderParty();
  const hasParty=party.some(id=>chars.some(c=>c.id===id));
  const cost=d.supply_cost??10,sup=supplyNow(),left=Math.max(0,(d.mock_limit??0)-(d.mock_used??0)),noSupply=sup!=null&&sup<cost;
