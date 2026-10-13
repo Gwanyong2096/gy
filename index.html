@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v333 · 갱신 2026-10-13 23:22 KST -->
+<!-- ProjectGY-test-console v334 · 갱신 2026-10-14 00:20 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -143,6 +143,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-calc{display:none;color:var(--mu);font-size:11.5px;line-height:1.4}.bl-log.show-calc .bl-calc{display:block}
 .bl-tk{position:relative;display:inline-block;cursor:pointer;border-bottom:1px dashed currentColor;outline:0}.bl-pop{display:none;position:absolute;left:0;top:100%;z-index:6;margin-top:4px;min-width:150px;max-width:calc(100vw - 32px);padding:7px 10px;background:var(--card);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.25);font-size:12px;font-weight:400;line-height:1.5;cursor:default;color:var(--tx)}
 .bl-r .bl-pop{left:auto;right:0}.bl-tk.on .bl-pop{display:block}@media(hover:hover){.bl-tk:hover .bl-pop{display:block}}.bl-tk:focus-visible{outline:2px solid var(--ac);outline-offset:2px;border-radius:2px}.bl-pop-r{display:flex;justify-content:space-between;gap:14px}.bl-pop-n{color:var(--mu)}.bl-pop-sum{margin-top:4px;padding-top:4px;border-top:1px solid var(--bd);font-weight:700}
+.cs-u{position:relative}.cs-dot .bl-tk{position:static}.cs-dot .bl-tk,.bl-psn>.bl-tk,.bl-bld>.bl-tk{margin-bottom:-1px}.cs-side.r .cs-col:last-child .bl-pop{left:auto;right:0}@media(max-width:520px){.cs-side.r .bl-pop{left:auto;right:0}}
 .bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
 .bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
@@ -454,7 +455,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v333 · 2026-10-13 23:22</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v334 · 2026-10-14 00:20</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3129,7 +3130,7 @@ function battleLogHtml(b){
   const meta=u.boss?"":(u.job||"");
   return `<div class="cs-u${dead?" dead":""}${u.boss?" boss":""}"><div class="cs-name"><span class="cs-id">${who(st.u)}</span>${dead?"":w?`<span class="cs-st">${w[1]}...</span>`:""}${meta?`<span class="cs-meta">${esc(meta)}</span>`:""}</div>
   ${line("HP",st.hp,mhp[st.u],"hp")}${mmp[st.u]>0?line("MP",st.mp,mmp[st.u],"mp"):""}${dead?"":`<div class="cs-line"><span class="cs-k"></span><span class="cs-bar fd"><i style="width:${w?Math.max(0,Math.min(100,+st.fp||0)):0}%"></i></span><span class="cs-v"></span></div>`}
-  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw"><span class="psn-ico">☠</span> 독 ${st.ps}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw">${BLEED_ICO}출혈 ${st.bl}턴</span>`:""}</div>`:""}</div>`};
+  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw${st.psl?" bl-tk":""}"${st.psl?` ${tkOpen}`:""}><span class="psn-ico">☠</span> 독 ${st.ps}${tkListPop(st.psl,"독")}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw${st.bll?" bl-tk":""}"${st.bll?` ${tkOpen}`:""}>${BLEED_ICO}출혈 ${st.bl}턴${tkListPop(st.bll,"출혈")}</span>`:""}</div>`:""}</div>`};
  // 한쪽 = 전방/후방 두 줄. 전방 줄이 가운데 선 쪽(적: back | front, 아군: front | back). 사람이 적은 줄은 세로 가운데에 선다
  const statusSide=(sd,list)=>{const order=sd==="E"?["BACK","FRONT"]:["FRONT","BACK"];
   return `<div class="cs-side ${sd==="E"?"l":"r"}">${order.map(pos=>{const us=list.filter(x=>(x.pos||info[x.u]?.pos||"BACK")===pos);
@@ -3153,6 +3154,8 @@ function battleLogHtml(b){
   g.sort((a,b)=>b.t-a.t||b.d-a.d);
   return `<span class="bl-pop">${g.map(x=>`<span class="bl-pop-r"><span class="nw">${lab} ${unit} ${x.d} (${x.t}턴)</span><span class="bl-pop-n nw">${x.n>1?`×${x.n}`:""}</span></span>`).join("")}<span class="bl-pop-r bl-pop-sum"><span class="nw">합계</span><span class="nw">${total}</span></span></span>`};
  const tkCnt=parts=>(parts||[]).reduce((s,p)=>s+p.n,0);
+ // 지금 걸려 있는 건 목록(엔진 0.23.0부터 dot.list·status psl·bll)을 같은 팝업으로: 합계 = 턴마다 들어가는 대미지. 목록이 없는 옛 로그는 팝업 없이 그대로
+ const tkListPop=(l,lab)=>l&&l.length?tkPop(l,lab,"대미지",l.reduce((s,p)=>s+p.d*p.n,0)):"";
  const tkOpen=`tabindex="0"`;
  LOG.forEach((e,li)=>{
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
@@ -3173,7 +3176,8 @@ function battleLogHtml(b){
   else if(e.t==="revive"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">✚ ${who(e.tg)} 되살아났다!</span><span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   else if(e.t==="offset"&&cur){const L={POISON:"독",BLEED:"출혈",REGEN:"재생"},cls=e.a==="REGEN"?"bl-heal":e.a==="POISON"?"bl-psn":"bl-bld",ico=e.a==="REGEN"?"⟳":e.a==="POISON"?PSN_ICO:BLEED_ICO;
    cur.html.push(`<div class="${cls}">${ico} ${who(e.tg)} ${L[e.a]}이 ${L[e.b]}을 <b>${e.amt}</b> 덜어냈다!${e.n>0?` <span class="bl-sub nw">(${e.n}건 사라짐)</span>`:""}</div>`)}
-  else if(e.t==="dot"&&cur&&e.tick!=null)cur.html.push(`<div class="${e.kind==="POISON"?"bl-psn":"bl-bld"}">${e.kind==="POISON"?PSN_ICO:BLEED_ICO} ${who(e.tg)} ${e.kind==="POISON"?"독":"출혈"} ${e.turns}턴 (턴마다 ${e.tick})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.k||"PHYS",true)}</div>`:""}</div>`);
+  else if(e.t==="dot"&&cur&&e.tick!=null){const ps=e.kind==="POISON",lab=ps?"독":"출혈",txt=`${ps?PSN_ICO:BLEED_ICO} ${who(e.tg)} ${lab} ${e.turns}턴 (턴마다 ${e.tick})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}`;
+   cur.html.push(`<div class="${ps?"bl-psn":"bl-bld"}">${e.list&&e.c>1?`<span class="bl-tk" ${tkOpen}>${txt}${tkListPop(e.list,lab)}</span>`:txt}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.k||"PHYS",true)}</div>`:""}</div>`)}
   else if(e.t==="resist"&&cur)cur.html.push(`<div class="bl-psn"><span class="psn-ico">☠</span> ${who(e.tg)} 독에 저항했다!</div>`);
   else if(e.t==="tick"&&e.parts){const lab=e.kind==="POISON"?"독":"출혈",cs=Array.isArray(e.calc)?e.calc:[];
    const h=`<div class="bl-hit"><span class="nw ${e.kind==="POISON"?"bl-psn":"bl-bld"} bl-tk" ${tkOpen}>${lab}(${tkCnt(e.parts)}건) <b>${e.dmg}</b> 대미지${tkPop(e.parts,lab,"대미지",e.dmg)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc?e.parts.map((p,i)=>cs[i]?`<div class="bl-calc"><span class="nw">${p.d}${p.n>1?` ×${p.n}`:""} (${p.t}턴)</span> = ${calcText(cs[i],p.k||"PHYS",true)}</div>`:"").join(""):""}</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
