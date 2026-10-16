@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v344 · 갱신 2026-10-16 18:14 KST -->
+<!-- ProjectGY-test-console v345 · 갱신 2026-10-16 18:16 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -455,7 +455,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v344 · 2026-10-16 18:14</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v345 · 2026-10-16 18:16</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3083,20 +3083,22 @@ const ITEM_ICONS={"bone_mace":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACA
 function itemIconImg(id){const s=ITEM_ICONS[id];return s?`<img class="item-ic" src="${s}" alt="" width="32" height="32">`:""}
 // 10턴마다 나오는 전투 장면: 적은 왼쪽, 아군은 오른쪽. 전방 줄이 가운데 쪽, 후방 줄이 바깥쪽이고 줄마다 일자에 가깝게 살짝 비스듬히 선다
 // 가로: 적 전방 31·후방 14, 아군 전방 69·후방 86(화면 너비 %). 세로 간격은 적 최대 17, 아군 최대 22(아군은 5명이라 넉넉히)
-// 원근: 위에 선 캐릭터일수록 작게(가운데 높이 66이 1배, 1칸당 0.5%). 가로로 넓은 그림은 제한 없이 그대로
+// 세로: 발이 서는 띠는 배경의 벽·바닥 수평선 아래(위 한계 = 수평선+5, 아래 한계 94, 가운데 72, 퍼지는 폭 44). 수평선은 던전별 SCENE_HORIZON(그림 위에서 %), 없으면 45
+// 원근: 위에 선 캐릭터일수록 작게(가운데 높이 72가 1배, 1칸당 0.5%). 가로로 넓은 그림은 제한 없이 그대로
 // 위치: 상태표에 pos가 있으면(대열 이동으로 시작과 달라짐) 그 위치, 없으면 시작 위치
 // 바탕: 던전 이름(dg)에 도트 바탕이 있으면 그 그림(19-sprites의 SCENE_BG), 없으면 기본 파란 격자
 function sceneHtml(n,stList,info,nameOf,dg){
+ const hz=typeof SCENE_HORIZON!=="undefined"&&SCENE_HORIZON[dg]!=null?SCENE_HORIZON[dg]:45,yTop=hz+5,yBot=94,yMid=72,ySpan=44;
  const place=[];
  for(const sd of ["E","A"])for(const pos of ["FRONT","BACK"]){
   const col=stList.filter(x=>info[x.u]&&info[x.u].side===sd&&(x.pos||info[x.u].pos||"BACK")===pos);
   const baseX=sd==="E"?(pos==="FRONT"?31:14):(pos==="FRONT"?69:86);
-  const step=col.length>1?Math.min(sd==="A"?22:17,58/(col.length-1)):0;
-  const y0=66-step*(col.length-1)/2;
+  const step=col.length>1?Math.min(sd==="A"?22:17,ySpan/(col.length-1)):0;
+  let y0=yMid-step*(col.length-1)/2;if(y0<yTop)y0=yTop;if(y0+step*(col.length-1)>yBot)y0=yBot-step*(col.length-1);
   col.forEach((x,i)=>{const y=y0+i*step;const dx=(sd==="E"?-1:1)*(i-(col.length-1)/2)*Math.min(2,8/Math.max(1,col.length-1));place.push({x:baseX+dx,y,st:x,u:info[x.u]})});
  }
  const units=place.sort((a,b)=>a.y-b.y).map(p=>{const dead=p.st.st==="DEAD",sp=sprOf(p.u.side==="E"?p.u.name:p.u.job);
-  return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":sp&&sp.sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%;--ps:${(1+(p.y-66)*.005).toFixed(3)}" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:sp?`<img class="sc-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
+  return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":sp&&sp.sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%;--ps:${(1+(p.y-72)*.005).toFixed(3)}" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:sp?`<img class="sc-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
  return `<div class="bl-scene${sceneBgClass(dg)}" aria-label="${n}턴 전투 장면">${units}</div>`;
 }
 // 드랍 옵션 한 줄: 앞방+뒷방은 DEF 3+87처럼 묶는다
