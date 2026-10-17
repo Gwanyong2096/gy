@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v347 · 갱신 2026-10-17 01:06 KST -->
+<!-- ProjectGY-test-console v348 · 갱신 2026-10-17 21:57 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -455,7 +455,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v347 · 2026-10-17 01:06</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v348 · 2026-10-17 21:57</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1200,6 +1200,21 @@ const QUEST_GUIDE={
   if(!help){if(!tutSeen.has("qg-t2"))return h.page("qg-tnone",h.q("#charDetail .main-st"),"이 캐릭터는 남은 TP가 없습니다.\nTP는 레벨이 오를 때마다 받습니다.",{btn:"확인",fn:questGuideDone});}
   else if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
   return h.page("qg-t3",h.q(`#alloc-${c.id}`)||h.q("#charDetail .main-st"),"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.",{btn:"확인",fn:questGuideDone});
+ },
+ // KARMA: 캐릭터를 열고 KARMA 합계/한도 줄과 세 상태를 알려 준 뒤 TP 배분 칸의 Karma Limit을 짚는다
+ karma(g,h){
+  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  const c=chars.find(x=>x.id===selectedCharId);
+  if(!c)return h.say("qg-k0",h.q("#chars .roster-unit"),"KARMA는 캐릭터마다 따로 셉니다.\n캐릭터를 하나 눌러 주세요.");
+  const w=h.q('#charDetail .sec-wrap[data-sec="status"]');if(w?.classList.contains("collapsed"))return h.say("qg-ksec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+  const k=c.stats?.KARMA||{},line=h.q("#charDetail .karma-red")?.parentElement||h.q("#charDetail .main-st");
+  if(!tutSeen.has("qg-k1"))return h.page("qg-k1",line,`KARMA ${k.TOTAL??"-"}/${k.LIMIT??"-"}에서 앞은 장착한 장비의 KARMA 합계, 뒤는 한도입니다.\n장비마다 KARMA가 있습니다.\n처음 얻는 장비는 모두 1이라 다 끼면 12입니다.`);
+  if(!tutSeen.has("qg-k2"))return h.page("qg-k2",line,"합계가 0보다 작으면 축복입니다. 1점마다 최종 대미지와 속도가 +1%입니다.\n0부터 한도까지는 평온이고 효과가 없습니다.\n한도를 넘으면 과업입니다. 넘은 1점마다 최종 대미지와 속도가 -5%입니다.",{back:"qg-k1"});
+  const t=tpCur(c),b=pubCfg.TP_KARMA_BANDS,cost=tpBandSum(b,t.k+1)-tpBandSum(b,t.k),lim=Number(k.LIMIT);
+  const up=`한도는 TP의 Karma Limit으로 올립니다.\n1점에 ${cost} TP를 쓰고, 한도가 ${lim} → ${lim+1}이 됩니다.`;
+  const f=h.q(`#alloc-${c.id} input[data-tp="k"]`);
+  if(!f)return h.page("qg-k3",h.q("#charDetail .main-st"),`${up}\n이 캐릭터는 남은 TP가 없습니다.\n레벨을 올리거나 Unwinding Draught로 되돌린 뒤 찍습니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
+  return h.page("qg-k3",f.closest(".alloc-f")||f,`${up}\n숫자를 넣고 배분을 누르면 찍힙니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
  },
  mock(g,h){
   const r=qgRoom(g,h);if(!r.d)return r.stop;const d=r.d;
