@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v349 · 갱신 2026-10-18 03:18 KST -->
+<!-- ProjectGY-test-console v350 · 갱신 2026-10-18 03:29 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -213,7 +213,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .sec-wrap.collapsed .sec-chev{transform:rotate(-90deg)}
 .sec-wrap.collapsed .sec-body{display:none}
 .modal-input{width:100%;box-sizing:border-box;margin:4px 0 2px}
-.pattern-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}.pattern-count{margin-top:12px;font-size:13px;color:var(--mu);display:flex;align-items:center;gap:14px;flex-wrap:wrap}.pat-guide{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:var(--mu);font-size:13px;cursor:pointer}.pat-guide:hover,.pat-guide:focus-visible{color:var(--ac);outline:none}.pat-guide:hover .help-btn,.pat-guide:focus-visible .help-btn{border-color:var(--ac);color:var(--ac)}.pat-guide-list{margin:0;padding-left:22px}.pat-guide-list li{margin:3px 0}.pat-guide-list li span::after{content:" → ";color:var(--mu)}.pat-guide-tip{margin-top:12px;color:var(--mu)}.pattern-count b{color:var(--tx);margin:0 2px 0 4px}
+.pattern-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}.pattern-count{margin-top:12px;font-size:13px;color:var(--mu);display:flex;align-items:center;gap:14px;flex-wrap:wrap}.pat-guide{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:var(--mu);font-size:13px;cursor:pointer}.pat-guide[hidden]{display:none}.pat-guide:hover,.pat-guide:focus-visible{color:var(--ac);outline:none}.pat-guide:hover .help-btn,.pat-guide:focus-visible .help-btn{border-color:var(--ac);color:var(--ac)}.pat-guide-list{margin:0;padding-left:22px}.pat-guide-list li{margin:3px 0}.pat-guide-list li span::after{content:" → ";color:var(--mu)}.pat-guide-tip{margin-top:12px;color:var(--mu)}.pattern-count b{color:var(--tx);margin:0 2px 0 4px}
 .pattern-row{border:1px solid var(--bd);border-radius:8px;padding:8px;background:color-mix(in srgb,var(--card) 92%,var(--ac))}
 .pattern-row.pattern-off{border-style:dashed;background:transparent;opacity:.55}
 .pattern-off-tag{margin-left:6px;font-size:11px;color:var(--mu)}
@@ -455,7 +455,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v349 · 2026-10-18 03:18</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v350 · 2026-10-18 03:29</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1066,6 +1066,7 @@ async function questLoad(){
  if(stage||!loggedIn)return;
  const {data,error}=await sb.rpc("get_quests");if(error){log("get_quests 실패: "+error.message,"bad");return}
  quests=Array.isArray(data)?data:[];questRender();
+ patGuideLoad();
 }
 function questRender(){
  const d=questEnsure(),seen=questSeen(),done=quests.filter(q=>q.cur>=q.max);
@@ -1197,9 +1198,12 @@ const QUEST_GUIDE={
   if(!c)return h.say("qg-t0",h.q("#chars .roster-unit"),"TP는 캐릭터마다 따로 찍습니다.\n캐릭터를 하나 눌러 주세요.");
   const w=h.q('#charDetail .sec-wrap[data-sec="status"]');if(w?.classList.contains("collapsed"))return h.say("qg-tsec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
   const help=h.q("#charDetail .stat-pt .help-btn");
-  if(!help){if(!tutSeen.has("qg-t2"))return h.page("qg-tnone",h.q("#charDetail .main-st"),"이 캐릭터는 남은 TP가 없습니다.\nTP는 레벨이 오를 때마다 받습니다.",{btn:"확인",fn:questGuideDone});}
+  if(!help){if(!tutSeen.has("qg-tnone"))return h.page("qg-tnone",h.q("#charDetail .main-st"),"이 캐릭터는 남은 TP가 없습니다.\nTP는 레벨이 오를 때마다 받습니다.");}
   else if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
-  return h.page("qg-t3",h.q(`#alloc-${c.id}`)||h.q("#charDetail .main-st"),"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.",{btn:"확인",fn:questGuideDone});
+  else if(!tutSeen.has("qg-t3"))return h.page("qg-t3",h.q(`#alloc-${c.id}`)||h.q("#charDetail .main-st"),"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.");
+  // 끝: 패턴 줄을 늘리도록 이끌고, 퀘스트를 마치면 범용 패턴(?)이 생긴다고 알린다
+  const pf=h.q(`#alloc-${c.id} input[data-tp="p"]`);
+  return h.page("qg-t4",pf?.closest(".alloc-f")||h.q("#charDetail .main-st"),`Pattern에 TP를 쓰면 패턴 줄이 늘어납니다.\n줄이 늘면 상황마다 다른 행동을 넣을 수 있습니다.\n이 퀘스트를 마치면 총 패턴 ${patLines(c.id)}줄 옆에 범용 패턴(?)이 나타납니다.\n누르면 이 직업이 두루 쓰는 패턴을 볼 수 있습니다.`,{back:help?"qg-t3":"qg-tnone",btn:"확인",fn:questGuideDone});
  },
  // KARMA: 캐릭터를 열고 KARMA 합계/한도 줄과 세 상태를 알려 준 뒤 TP 배분 칸의 Karma Limit을 짚는다
  karma(g,h){
@@ -2291,7 +2295,7 @@ function renderCharacterDetail(){
   <div>
    <div class="section-title sec-line sec-gap">Pattern</div>
    <div class="pattern-help">기본 패턴은 3줄이고 TP를 Pattern에 쓰면 늘어나며, 장비 옵션(Pattern)으로 늘거나 줄어듭니다. 줄어든 줄은 지워지지 않고 비활성(실행 안 함)으로 남습니다. 각 줄은 리셋할 수 있고, 임의로 추가하거나 삭제할 수 없습니다. 행동에는 배운 스킬, AND, Use Item(소모품 칸의 소모품 사용), 대열 이동(Horn Call, Move Forward 등)을 쓸 수 있습니다.</div>
-   <div class="pattern-count"><span>총 패턴 <b>${patLines(c.id)}</b>줄${patShown(c.id)>patLines(c.id)?` · 비활성 <b>${patShown(c.id)-patLines(c.id)}</b>줄`:""}</span>${patGuideOn()?`<button type="button" class="pat-guide" aria-label="범용 패턴 보기" onclick="openPatternGuide('${c.id}')"><span>범용 패턴</span><span class="help-btn" aria-hidden="true"><span>?</span></span></button>`:""}</div>
+   <div class="pattern-count"><span>총 패턴 <b>${patLines(c.id)}</b>줄${patShown(c.id)>patLines(c.id)?` · 비활성 <b>${patShown(c.id)-patLines(c.id)}</b>줄`:""}</span><button type="button" class="pat-guide" aria-label="범용 패턴 보기" onclick="openPatternGuide('${c.id}')"${patGuideOn()?"":" hidden"}><span>범용 패턴</span><span class="help-btn" aria-hidden="true"><span>?</span></span></button></div>
    <div class="pattern-list${hideOffPatterns?" hide-off":""}" id="pat-${c.id}">${renderPatternRows(patternRowsFor(c),c.job,c.id)}</div>
    <div class="row pattern-save"><button class="pri" onclick="confirmPattern('${c.id}')">패턴 저장</button>${patShown(c.id)>patLines(c.id)?`<label class="pat-hide"><input type="checkbox"${hideOffPatterns?" checked":""} onchange="toggleHideOff(this,'${c.id}')"><span>비활성 패턴 숨기기</span></label>`:""}</div>
    ${renderFormation(c)}
@@ -2449,8 +2453,15 @@ const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
     rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["쓰러진 아군이 1명 이상","Resurrection"],["Bless 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["Inspire 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
 };
-// TP 찍기 퀘스트(q_ch2_02)를 마친 뒤에만 보여야 하는데, 지금 서버가 마친 퀘스트를 알려 주지 않아 늘 보인다.
-function patGuideOn(){return true}
+// 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
+let patGuideFlag=false;
+function patGuideOn(){return !stage&&patGuideFlag}
+async function patGuideLoad(){
+  if(stage||!loggedIn)return;
+  const {data,error}=await sb.rpc("get_pattern_guide_on");if(error){log("get_pattern_guide_on 실패: "+error.message,"bad");return}
+  if(patGuideFlag===!!data)return;
+  patGuideFlag=!!data;document.querySelectorAll("#charDetail .pat-guide").forEach(b=>b.hidden=!patGuideOn());
+}
 function openPatternGuide(charId){
   const c=chars.find(x=>x.id===charId);if(!c)return;
   const jobName=c.job_name||c.job,g=PATTERN_GUIDE[c.job];
