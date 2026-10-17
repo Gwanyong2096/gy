@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v348 · 갱신 2026-10-17 21:57 KST -->
+<!-- ProjectGY-test-console v349 · 갱신 2026-10-18 03:18 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -213,7 +213,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .sec-wrap.collapsed .sec-chev{transform:rotate(-90deg)}
 .sec-wrap.collapsed .sec-body{display:none}
 .modal-input{width:100%;box-sizing:border-box;margin:4px 0 2px}
-.pattern-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}.pattern-count{margin-top:12px;font-size:13px;color:var(--mu)}.pattern-count b{color:var(--tx);margin:0 2px 0 4px}
+.pattern-list{display:flex;flex-direction:column;gap:8px;margin:8px 0}.pattern-count{margin-top:12px;font-size:13px;color:var(--mu);display:flex;align-items:center;gap:14px;flex-wrap:wrap}.pat-guide{display:inline-flex;align-items:center;gap:5px;padding:0;border:0;background:transparent;color:var(--mu);font-size:13px;cursor:pointer}.pat-guide:hover,.pat-guide:focus-visible{color:var(--ac);outline:none}.pat-guide:hover .help-btn,.pat-guide:focus-visible .help-btn{border-color:var(--ac);color:var(--ac)}.pat-guide-list{margin:0;padding-left:22px}.pat-guide-list li{margin:3px 0}.pat-guide-list li span::after{content:" → ";color:var(--mu)}.pat-guide-tip{margin-top:12px;color:var(--mu)}.pattern-count b{color:var(--tx);margin:0 2px 0 4px}
 .pattern-row{border:1px solid var(--bd);border-radius:8px;padding:8px;background:color-mix(in srgb,var(--card) 92%,var(--ac))}
 .pattern-row.pattern-off{border-style:dashed;background:transparent;opacity:.55}
 .pattern-off-tag{margin-left:6px;font-size:11px;color:var(--mu)}
@@ -455,7 +455,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v348 · 2026-10-17 21:57</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v349 · 2026-10-18 03:18</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1372,7 +1372,8 @@ const HELP={
   <li>여기에 <b>Back Attack</b>(후방 우선)이나 <b>Front Attack</b>(전방 우선)이 붙을 수 있습니다. 둘 다 없는 공격은 무작위로 대상을 고릅니다.</li></ul>
   <p class="help-note">엄호 설정은 위치와 상관없이 적용되며, 전투 중 위치가 바뀌어도 그대로 유지됩니다.</p>`}
 };
-function openHelp(key){const h=HELP[key];if(!h)return;{const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width=""}$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=h.title;$("helpBody").innerHTML=h.html;$("helpOverlay").hidden=false;document.querySelector(".help-close").focus()}
+function openHelp(key){const h=HELP[key];if(h)showHelp(h.title,h.html)}
+function showHelp(title,html){{const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width=""}$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=title;$("helpBody").innerHTML=html;$("helpOverlay").hidden=false;document.querySelector(".help-close").focus()}
 function closeHelp(){$("helpOverlay").hidden=true;const bx=document.querySelector(".help-box");bx.classList.remove("wide","notice","fit");bx.style.width=""}
 // 확인 창 상자를 글의 실제 오른쪽 끝에 맞춘다(줄이 바뀐 글은 가장 긴 줄 기준). 제목 줄과 버튼 줄보다 좁아지지는 않는다
 function fitHelpBox(){const bx=document.querySelector(".help-box");bx.style.width="";if(!bx.classList.contains("fit")||bx.classList.contains("notice"))return;
@@ -2290,7 +2291,7 @@ function renderCharacterDetail(){
   <div>
    <div class="section-title sec-line sec-gap">Pattern</div>
    <div class="pattern-help">기본 패턴은 3줄이고 TP를 Pattern에 쓰면 늘어나며, 장비 옵션(Pattern)으로 늘거나 줄어듭니다. 줄어든 줄은 지워지지 않고 비활성(실행 안 함)으로 남습니다. 각 줄은 리셋할 수 있고, 임의로 추가하거나 삭제할 수 없습니다. 행동에는 배운 스킬, AND, Use Item(소모품 칸의 소모품 사용), 대열 이동(Horn Call, Move Forward 등)을 쓸 수 있습니다.</div>
-   <div class="pattern-count">총 패턴 <b>${patLines(c.id)}</b>줄${patShown(c.id)>patLines(c.id)?` · 비활성 <b>${patShown(c.id)-patLines(c.id)}</b>줄`:""}</div>
+   <div class="pattern-count"><span>총 패턴 <b>${patLines(c.id)}</b>줄${patShown(c.id)>patLines(c.id)?` · 비활성 <b>${patShown(c.id)-patLines(c.id)}</b>줄`:""}</span>${patGuideOn()?`<button type="button" class="pat-guide" aria-label="범용 패턴 보기" onclick="openPatternGuide('${c.id}')"><span>범용 패턴</span><span class="help-btn" aria-hidden="true"><span>?</span></span></button>`:""}</div>
    <div class="pattern-list${hideOffPatterns?" hide-off":""}" id="pat-${c.id}">${renderPatternRows(patternRowsFor(c),c.job,c.id)}</div>
    <div class="row pattern-save"><button class="pri" onclick="confirmPattern('${c.id}')">패턴 저장</button>${patShown(c.id)>patLines(c.id)?`<label class="pat-hide"><input type="checkbox"${hideOffPatterns?" checked":""} onchange="toggleHideOff(this,'${c.id}')"><span>비활성 패턴 숨기기</span></label>`:""}</div>
    ${renderFormation(c)}
@@ -2442,6 +2443,20 @@ const JOB_CONDITION_OPTIONS={
     ["stanceOn","Coup d'Arrêt 상태일 때",false],["stanceOff","Coup d'Arrêt 상태가 아닐 때",false]
   ]
 };
+// 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
+// 줄은 [조건, 행동]. OO는 유저가 정할 값.
+const PATTERN_GUIDE={
+  CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
+    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["쓰러진 아군이 1명 이상","Resurrection"],["Bless 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["Inspire 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
+};
+// TP 찍기 퀘스트(q_ch2_02)를 마친 뒤에만 보여야 하는데, 지금 서버가 마친 퀘스트를 알려 주지 않아 늘 보인다.
+function patGuideOn(){return true}
+function openPatternGuide(charId){
+  const c=chars.find(x=>x.id===charId);if(!c)return;
+  const jobName=c.job_name||c.job,g=PATTERN_GUIDE[c.job];
+  const body=g?`<p>${esc(g.design)}</p><h4>패턴 순서</h4><ol class="pat-guide-list">${g.rows.map(([c,a])=>`<li><span>${esc(c)}</span><b>${esc(a)}</b></li>`).join("")}</ol>`:`<p>${esc(jobName)}의 범용 패턴은 준비 중입니다.</p>`;
+  showHelp(`범용 패턴 · ${jobName}`,body+`<p class="pat-guide-tip">던전에 기믹이 있으면 이 패턴의 위나 아래에 그 기믹에 대응하는 줄을 넣으면 됩니다.</p>`);
+}
 // 패턴 행동 = 알고 있는 ACTIVE 스킬 + AND. 기본 공격은 그 직업의 자동 습득 ACTIVE 스킬.
 function skillData(id){return skillsByChar[id]?.skills||[]}
 function actionSkills(charId){return skillData(charId).filter(s=>s.known&&(s.kind==="ACTIVE"||s.kind==="LINK"))}
