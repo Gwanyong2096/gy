@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v357 · 갱신 2026-10-18 20:56 KST -->
+<!-- ProjectGY-test-console v358 · 갱신 2026-10-18 21:30 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -463,7 +463,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v357 · 2026-10-18 20:56</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v358 · 2026-10-18 21:30</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3221,6 +3221,14 @@ function lootRow(x){return `${lootIc(x.def)}<b>${esc(x.name)}</b>${x.n>1?` x${x.
 // 로그 드랍 줄: "Rat Hide가 바닥에 떨어졌다." 조사는 서버 jb(이름 받침)가 있으면 그것, 없으면 이름으로 판단(영문은 이(가))
 function lootDropLine(x){const j=x.n>1?josaOf(x.n,"이","가"):x.jb!=null?(x.jb?"이":"가"):josaOf(x.name,"이","가");
  return `<div class="bl-loot">${lootIc(x.def)}<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${j} 바닥에 떨어졌다.${lootTail(x)}</div>`}
+// 아이템 이름: 받아 둔 이름 → Bag → 로그 item 이름 → def 순서. 모르는 이름은 item_defs에서 받아 창을 다시 그린다
+const itemNameCache={};
+function itemNameOf(def,b){return itemNameCache[def]||itemsData.find(i=>i.def_id===def)?.item_defs?.name||(b?.log||[]).find(e=>e.t==="item"&&e.def===def)?.name||def}
+function usedItems(b){const rw=b.rewards||{};
+ if(rw.consumed&&Object.keys(rw.consumed).length)return Object.entries(rw.consumed).map(([def,n])=>({def,name:itemNameOf(def,b),n:Number(n)||0,left:rw.left?.[def]}));
+ const used=[];for(const e of b.log||[])if(e.t==="item"){const k=e.def||e.name,g=used.find(x=>x.k===k);if(g)g.n++;else used.push({k,def:e.def,name:e.name,n:1})}return used}
+async function loadItemNames(defs){const need=defs.filter(d=>d&&!itemNameCache[d]&&!itemsData.some(i=>i.def_id===d));if(!need.length)return false;
+ let r;try{r=await sb.from("item_defs").select("id,name").in("id",need)}catch(e){return false}const {data,error}=r||{};if(error||!data?.length)return false;data.forEach(x=>itemNameCache[x.id]=x.name);return true}
 function battleLogHtml(b){
  // 계산 내역과 턴 번호 켜기는 관리자만(서버도 관리자에게만 calc를 보낸다). 일반 유저는 10턴마다와 끝의 턴 표시만 본다
  const showCalc=adminView();
@@ -3338,9 +3346,9 @@ function battleLogHtml(b){
   const gf=[];for(const x of rw.gifts||[]){const eq=!!x.char,g=gf.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else gf.push({def:x.def,name:x.name||x.def,eq,n:1})}
   if(gf.length){rwParts.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);gf.forEach(x=>rwParts.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
  // 이번 전투에서 쓴 소모품(Mock Battle·패배 포함 차감됨)
- const used={};for(const e of b.log||[])if(e.t==="item")used[e.name]=(used[e.name]||0)+1;
- const usedTxt=Object.entries(used).map(([n,k])=>`${esc(n)} ${k}개`).join(", ");
- if(usedTxt)rwParts.push(`소모품 사용: ${usedTxt}`);
+ // 사용한 소모품: 서버 rewards.consumed{def:쓴 수}·left{def:끝난 뒤 Bag 남은 수}(로그가 지워져도 남음). 예전 판(consumed 없음)은 로그 item으로 센다(남은 수 없음)
+ const used=usedItems(b);
+ if(used.length){rwParts.push(`<b class="bl-loot-h">사용한 소모품</b>`);used.forEach(x=>rwParts.push(`${lootIc(x.def)}<b>${esc(x.name)}</b> x${x.n}${x.left!=null?` <span class="bl-sub">(남은 ${x.left})</span>`:""}`))}
  if(b.mode==="IDLE"&&rw.fee!=null)rwParts.push(`파견비 ${Number(rw.fee).toLocaleString()}골드`);
  // 요약: 마지막 상태표 기준 남은 HP, 생존자, 준 피해 합계
  const last=[...(b.log||[])].reverse().find(e=>e.t==="status");
@@ -3391,6 +3399,8 @@ function openBattleLog(b){
  openedBattle=b;
  $("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent="전투 결과";
  $("helpBody").innerHTML=`${b._rush&&openedRush?`<button type="button" class="mini-btn bl-back" onclick="openRushResult(openedRush)">← Battle Rush 결과</button>`:""}<button type="button" class="mini-btn bl-newtab" onclick="openBattleLogTab()">새 탭으로 보기</button>`+battleLogHtml(b);document.querySelector(".help-box").classList.add("wide");$("helpOverlay").hidden=false;document.querySelector(".help-close").focus();
+ // 쓴 소모품 이름을 모르면(다 써서 Bag에 없음 등) 받아 와서 다시 그린다
+ loadItemNames(Object.keys(b.rewards?.consumed||{})).then(ok=>{if(ok&&openedBattle===b)openBattleLog(b)});
 }
 // 전투 로그를 새 탭으로: 콘솔의 스타일과 화면 모드를 그대로 가져가 독립된 페이지로 연다
 function openBattleLogTab(){
@@ -3522,7 +3532,7 @@ function renderIdle(){
   const mem=(p.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
   const exp=Object.values(s.exp||{}).map(x=>`${esc(x.name||"")} +${Number(x.gain||0).toLocaleString()}${x.level_up>0?` (Lv.${x.level})`:""}`).join(" · ");
   const drops=Object.values(s.drops||{}).map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`).join(", ");
-  const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개`).join(", ");
+  const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (남은 ${x.left})`:""}`).join(", ");
   return `<div class="idle-card">
    <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
    ${mem?`<div class="idle-line dim">${mem}</div>`:""}
