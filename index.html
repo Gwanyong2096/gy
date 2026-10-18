@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v358 · 갱신 2026-10-18 21:30 KST -->
+<!-- ProjectGY-test-console v359 · 갱신 2026-10-18 21:49 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -463,7 +463,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v358 · 2026-10-18 21:30</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v359 · 2026-10-18 21:49</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3348,7 +3348,7 @@ function battleLogHtml(b){
  // 이번 전투에서 쓴 소모품(Mock Battle·패배 포함 차감됨)
  // 사용한 소모품: 서버 rewards.consumed{def:쓴 수}·left{def:끝난 뒤 Bag 남은 수}(로그가 지워져도 남음). 예전 판(consumed 없음)은 로그 item으로 센다(남은 수 없음)
  const used=usedItems(b);
- if(used.length){rwParts.push(`<b class="bl-loot-h">사용한 소모품</b>`);used.forEach(x=>rwParts.push(`${lootIc(x.def)}<b>${esc(x.name)}</b> x${x.n}${x.left!=null?` <span class="bl-sub">(남은 ${x.left})</span>`:""}`))}
+ if(used.length){rwParts.push(`<b class="bl-loot-h">사용한 소모품</b>`);used.forEach(x=>rwParts.push(`${lootIc(x.def)}<b>${esc(x.name)}</b> x${x.n}${x.left!=null?` <span class="bl-sub">(${Number(x.left).toLocaleString()}회 남음)</span>`:""}`))}
  if(b.mode==="IDLE"&&rw.fee!=null)rwParts.push(`파견비 ${Number(rw.fee).toLocaleString()}골드`);
  // 요약: 마지막 상태표 기준 남은 HP, 생존자, 준 피해 합계
  const last=[...(b.log||[])].reverse().find(e=>e.t==="status");
@@ -3532,7 +3532,7 @@ function renderIdle(){
   const mem=(p.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
   const exp=Object.values(s.exp||{}).map(x=>`${esc(x.name||"")} +${Number(x.gain||0).toLocaleString()}${x.level_up>0?` (Lv.${x.level})`:""}`).join(" · ");
   const drops=Object.values(s.drops||{}).map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`).join(", ");
-  const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (남은 ${x.left})`:""}`).join(", ");
+  const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (${Number(x.left).toLocaleString()}회 남음)`:""}`).join(", ");
   return `<div class="idle-card">
    <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
    ${mem?`<div class="idle-line dim">${mem}</div>`:""}
