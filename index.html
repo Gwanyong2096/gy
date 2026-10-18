@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v356 · 갱신 2026-10-18 14:14 KST -->
+<!-- ProjectGY-test-console v357 · 갱신 2026-10-18 20:56 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -129,7 +129,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .bl-meta{color:var(--mu);font-size:13px}
 .bl-res{display:inline-block;font-size:11.2px;font-weight:700;border:1px solid currentColor;border-radius:999px;padding:0 7px;line-height:17px}
 .bl-win{color:var(--ok)}.bl-lose{color:var(--bad)}.bl-draw{color:var(--mu)}
-.bl-rw{font-size:13px;margin-bottom:10px}.bl-sum-turn{font-size:15.5px;margin:6px 0 0}.bl-sum-turn b{font-weight:700}.bl-loot-h{display:block;margin:20px 0}
+.bl-rw{font-size:13px;margin-bottom:10px}.bl-sum-turn{font-size:15.5px;margin:6px 0 0}.bl-sum-turn b{font-weight:700}.bl-loot-h{display:block;margin:20px 0}.bl-loot-ic{width:24px;height:24px;image-rendering:pixelated;vertical-align:middle;margin:2px 6px 2px 0}.bl-loot{color:var(--tx)}
 .bl-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mu);margin-bottom:8px;cursor:pointer}
 .bl-log{font-size:13px;line-height:1.55}
 .bl-row{display:grid;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
@@ -463,7 +463,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v356 · 2026-10-18 14:14</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v357 · 2026-10-18 20:56</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3213,6 +3213,14 @@ function dropOptText(r){const out=[];for(const [k,v] of Object.entries(r)){if(k=
  if((r.DEF_B||r.MDEF_B)&&!r.DEF_F&&!r.MDEF_F){if(r.DEF_B)out.push(`DEF ${fbText(0,r.DEF_B)}`);if(r.MDEF_B)out.push(`MDEF ${fbText(0,r.MDEF_B)}`)}
  if(r.SPD_B&&!r.SPD_F)out.push(`SPD ${fbText(0,r.SPD_B)}`);
  return esc(out.join(" "))}
+// 전리품: 옵션 없는 같은 아이템은 x2로 묶고, 랜덤 옵션이 붙은 것은 따로 둔다. 한 줄은 도트 아이콘(있으면)·이름·Unknown·옵션
+function lootGroups(list){const dg=[];for(const x of list||[]){const r=x.rolled||{},plain=!Object.keys(r).length,unk=!!x.unknown;const g=plain&&dg.find(y=>y.plain&&y.def===x.def&&y.unk===unk);if(g)g.n++;else dg.push({def:x.def,name:x.name||x.def,jb:x.jb,r,plain,unk,n:1})}return dg}
+const lootIc=def=>{const s=ITEM_ICONS[def];return s?`<img class="bl-loot-ic" src="${s}" alt="" width="24" height="24">`:""};
+const lootTail=x=>`${x.unk?` <span class="item-unk">(Unknown)</span>`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`;
+function lootRow(x){return `${lootIc(x.def)}<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${lootTail(x)}`}
+// 로그 드랍 줄: "Rat Hide가 바닥에 떨어졌다." 조사는 서버 jb(이름 받침)가 있으면 그것, 없으면 이름으로 판단(영문은 이(가))
+function lootDropLine(x){const j=x.n>1?josaOf(x.n,"이","가"):x.jb!=null?(x.jb?"이":"가"):josaOf(x.name,"이","가");
+ return `<div class="bl-loot">${lootIc(x.def)}<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${j} 바닥에 떨어졌다.${lootTail(x)}</div>`}
 function battleLogHtml(b){
  // 계산 내역과 턴 번호 켜기는 관리자만(서버도 관리자에게만 calc를 보낸다). 일반 유저는 10턴마다와 끝의 턴 표시만 본다
  const showCalc=adminView();
@@ -3252,6 +3260,10 @@ function battleLogHtml(b){
   return `<div class="cs-side ${sd==="E"?"l":"r"}">${order.map(pos=>{const us=list.filter(x=>(x.pos||info[x.u]?.pos||"BACK")===pos);
    return `<div class="cs-col ${pos.toLowerCase()}">${us.map(entry).join("")||`<div class="cs-empty">-</div>`}</div>`}).join("")}</div>`};
  const lastStatus=[...(b.log||[])].reverse().find(x=>x.t==="status");
+ // 몬스터가 떨군 전리품(drops의 u = 로그 유닛 id): 그 몬스터가 마지막으로 쓰러진 줄 바로 아래에 보인다
+ const dropBy={},lastDeath={};
+ if(b.mode!=="MOCK"&&b.result==="WIN"){for(const x of b.rewards?.drops||[])if(x.u)(dropBy[x.u]||(dropBy[x.u]=[])).push(x);for(const e of b.log||[])if(e.t==="death")lastDeath[e.u]=e}
+ const dropHtml=e=>lastDeath[e.u]===e&&dropBy[e.u]?lootGroups(dropBy[e.u]).map(lootDropLine).join(""):"";
  // Front/Back Delay: 로그 숫자는 스킬 자체 딜레이만(글로벌·속도는 숨김). fr/bk = 지금 페이즈의 값(딜밀·딜땡 반영), pend = 새 페이즈에 넘어온 딜땡(기본 줄 뒤에 표시, 엔진 0.9.0까지의 로그에만 있음)
  const LOG=b.log||[],fr={},bk={};
  const fmt=x=>+(+x).toFixed(1);
@@ -3307,7 +3319,7 @@ function battleLogHtml(b){
   else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=`${tv>0?"+":""}${tv}${u}`,d=`${dv>0?"+":dv<0?"":(up===(sg>0)?"+":"-")}${dv}${u}`;
    /* 턴 있는 버프: 걸 때 turns(자기 턴 수), 끝나 되돌릴 때 end */
    const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)} ${esc(lab)} 효과 끝 <span class="bl-sub nw">(누적 ${tot})</span></div>`:`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(누적 ${tot}${e.cap?" · 한계":""}${e.turns?` · ${e.turns}턴`:""})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
-  else if(e.t==="death"){if(cur)cur.html.push(`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>`);else rows.push(row(side[e.u],`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>`))}
+  else if(e.t==="death"){const h=`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>${dropHtml(e)}`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   else if(e.t==="status"){flush();
    rows.push(`<div class="bl-scene-row"><span class="sc-turnmark">${e===lastStatus?`${e.n} TURN END`:e.n===0?"BATTLE START!":`${e.n} TURN`}</span>${sceneHtml(e.n,e.units,info,id=>nm[id]||id,b.dungeon)}</div>`);
    const su=e.units;
@@ -3319,9 +3331,9 @@ function battleLogHtml(b){
  if(b.mode==="MOCK")rwParts.push("Mock Battle이라 보상이 없습니다.");
  else if(b.result!=="WIN")rwParts.push("지거나 비기면 보상이 없습니다.");
  else{if(b.mode!=="IDLE")rwParts.push(`골드 +${rw.gold||0}`);for(const x of Object.values(rw.exp||{}))rwParts.push(`${esc(x.name||"")} EXP +${x.gain}${x.level_up>0?` · <b>Lv.${x.level}</b>`:""}`)}
- // 드랍: 옵션 없는 같은 아이템은 x2로 묶고, 랜덤 옵션이 붙은 것은 옵션과 함께 따로 보여 준다
- if(b.mode!=="MOCK"&&b.result==="WIN"){const dg=[];for(const x of rw.drops||[]){const r=x.rolled||{},plain=!Object.keys(r).length,unk=!!x.unknown;const g=plain&&dg.find(y=>y.plain&&y.def===x.def&&y.unk===unk);if(g)g.n++;else dg.push({def:x.def,name:x.name||x.def,r,plain,unk,n:1})}
-  if(dg.length){rwParts.push(`<b class="bl-loot-h">전리품</b>`);dg.forEach(x=>rwParts.push(`<b>${esc(x.name)}${x.unk?` <span class="item-unk">(Unknown)</span>`:""}</b>${x.n>1?` x${x.n}`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`))}
+ // 드랍: lootGroups로 묶어 한 줄씩(도트 아이콘 포함)
+ if(b.mode!=="MOCK"&&b.result==="WIN"){const dg=lootGroups(rw.drops);
+  if(dg.length){rwParts.push(`<b class="bl-loot-h">전리품</b>`);dg.forEach(x=>rwParts.push(lootRow(x)))}
   // 던전을 처음 이겼을 때만 받는 장비: 같은 것은 묶고, 서버가 바로 끼워 준 것은 표시한다
   const gf=[];for(const x of rw.gifts||[]){const eq=!!x.char,g=gf.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else gf.push({def:x.def,name:x.name||x.def,eq,n:1})}
   if(gf.length){rwParts.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);gf.forEach(x=>rwParts.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
@@ -3431,7 +3443,7 @@ function rushResultHtml(g){
  const runs=g.runs||[],n=runs.length,s=rushSummary(runs),rw=[];
  if(!s.win)rw.push("이긴 판이 없어 보상이 없습니다.");
  else{rw.push(`골드 +${s.gold.toLocaleString()}`);for(const x of Object.values(s.exp))rw.push(`${esc(x.name)} EXP +${x.gain.toLocaleString()}${x.up>0?` · <b>Lv.${x.level}</b>`:""}`);
-  if(s.drops.length){rw.push(`<b class="bl-loot-h">전리품</b>`);s.drops.forEach(x=>rw.push(`<b>${esc(x.name)}${x.unk?` <span class="item-unk">(Unknown)</span>`:""}</b>${x.n>1?` x${x.n}`:""}${x.plain?"":` <span class="bl-sub">(${dropOptText(x.r)})</span>`}`))}
+  if(s.drops.length){rw.push(`<b class="bl-loot-h">전리품</b>`);s.drops.forEach(x=>rw.push(lootRow(x)))}
   if(s.gifts.length){rw.push(`<b class="bl-loot-h">첫 클리어 보상</b>`);s.gifts.forEach(x=>rw.push(`<b>${esc(x.name)}</b>${x.n>1?` x${x.n}`:""}${x.eq?` <span class="bl-sub">(장착됨)</span>`:""}`))}}
  const rwHtml=rw.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1");
  return `<div class="bl-result">
