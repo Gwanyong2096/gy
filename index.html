@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v355 · 갱신 2026-10-18 14:05 KST -->
+<!-- ProjectGY-test-console v356 · 갱신 2026-10-18 14:14 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -463,7 +463,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v355 · 2026-10-18 14:05</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v356 · 2026-10-18 14:14</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2466,6 +2466,12 @@ const CONDITION_GROUPS=[
     ["enemyFrontGte","상대방 전방이 OO명 이상",true],["enemyFrontLte","상대방 전방이 OO명 이하",true],["enemyFrontEq","상대방 전방이 OO명",true],
     ["enemyBackGte","상대방 후방이 OO명 이상",true],["enemyBackLte","상대방 후방이 OO명 이하",true],["enemyBackEq","상대방 후방이 OO명",true]
   ]},
+  {label:"생존·사망", options:[
+    ["allyAliveGte","아군 생존자가 OO명 이상",true],["allyAliveLte","아군 생존자가 OO명 이하",true],["allyAliveEq","아군 생존자가 OO명",true],
+    ["allyDeadGte","아군 사망자가 OO명 이상",true],["allyDeadLte","아군 사망자가 OO명 이하",true],["allyDeadEq","아군 사망자가 OO명",true],
+    ["enemyAliveGte","상대방 생존자가 OO명 이상",true],["enemyAliveLte","상대방 생존자가 OO명 이하",true],["enemyAliveEq","상대방 생존자가 OO명",true],
+    ["enemyDeadGte","상대방 사망자가 OO명 이상",true],["enemyDeadLte","상대방 사망자가 OO명 이하",true],["enemyDeadEq","상대방 사망자가 OO명",true]
+  ]},
   {label:"차징·캐스팅(적)", options:[
     ["enemyWindupGte","차징이나 캐스팅 중인 적이 OO명 이상",true],["enemyWindupLte","차징이나 캐스팅 중인 적이 OO명 이하",true],
     ["enemyChargingAny","차징 중인 적이 있을 때",false],["enemyChargingNone","차징 중인 적이 없을 때",false],
@@ -2505,7 +2511,7 @@ const JOB_CONDITION_OPTIONS={
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
 const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
-    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["쓰러진 아군이 1명 이상","Resurrection"],["Bless 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["Inspire 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
+    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["Bless 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["Inspire 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
@@ -2536,15 +2542,19 @@ const VALUE_CONDS=new Set([
   "allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpLte","enemyMpGtePct","enemyMpGte",
   "arrowEq","arrowGte","arrowLte","ammoEq","ammoGte","ammoLte","enemyPoisonGte","enemyPoisonLte","enemyBleedGte","enemyBleedLte","enemyBleedAmtGte","enemyBleedAmtLte","chancePct","everyNTurns","enemyWindupGte","enemyWindupLte","itemGte","itemLte",
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
-  "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"
+  "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
+  "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq"
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
-// 조건별 기본 수치: 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 차징·캐스팅 인원과 출혈 건수와 대열 인원 1, 나머지 0
-function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyWindupGte","enemyWindupLte","enemyBleedGte","enemyBleedLte"].includes(c)||FORM_COUNT_CONDS.has(c)?1:0}
+// 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
+const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte"]);
+// 조건별 기본 수치: 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
+function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
 const pctUnit=c=>PERCENT_CONDS.has(c)||c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte";
 const condMin=c=>c==="everyNTurns"||c==="chancePct"?1:0;
+const condMax=c=>PERCENT_CONDS.has(c)?100:COUNT_CONDS.has(c)?1000:999999;
 const PERCENT_CONDS=new Set([
   "selfHpGtePct","selfHpLtePct","allyHpLtePct","allyHpGtePct","allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpGtePct",
   "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct","chancePct"
@@ -2579,7 +2589,7 @@ function renderPatternRow(p,i,job,charId){
     <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span><span class="pattern-off-tag"${off?"":" hidden"}>비활성</span></div>
     <div class="pattern-controls">
       <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(job,c,skillName(charId,a))}</select>
-      <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${PERCENT_CONDS.has(c)?100:999999}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
+      <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${condMax(c)}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
       <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
     </div>
     <div class="pattern-order" data-ctl-row><button onclick="movePattern(this,-1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg><span>위로</span></button><button onclick="movePattern(this,1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg><span>아래로</span></button><button onclick="resetPatternRow(this)"><span>리셋</span></button></div>
@@ -2591,7 +2601,7 @@ function conditionChanged(sel){
   wrap.style.display=show?"inline-flex":"none";
   const input=row.querySelector(".pattern-value");
   const suffix=wrap.querySelector("span");
-  input.max=PERCENT_CONDS.has(c)?"100":"999999";input.min=String(condMin(c));
+  input.max=String(condMax(c));input.min=String(condMin(c));
   if(c==="everyNTurns"&&!(Number(input.value)>=1))input.value="2";
   suffix.textContent=pctUnit(c)?" %":"";
 }
@@ -2633,8 +2643,7 @@ function collectPattern(id){
     if(VALUE_CONDS.has(cond)){
       let v=Number(row.querySelector(".pattern-value").value);
       if(!Number.isFinite(v))v=0;
-      if(PERCENT_CONDS.has(cond))v=Math.max(condMin(cond),Math.min(100,Math.round(v)));
-      else v=Math.max(condMin(cond),Math.min(999999,Math.round(v)));
+      v=Math.max(condMin(cond),Math.min(condMax(cond),Math.round(v)));
       out.v=v;
     }
     return out;
