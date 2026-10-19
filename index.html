@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v374 · 갱신 2026-10-19 19:42 KST -->
+<!-- ProjectGY-test-console v375 · 갱신 2026-10-19 21:58 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -200,7 +200,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .blog-row{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;padding:8px 2px;border-bottom:1px solid var(--bd)}
 .blog-row:hover{background:color-mix(in srgb,var(--ac) 8%,transparent)}
 .blog-name{font-weight:700;font-size:14px}.blog-mock{font-size:11.2px;color:var(--mu);font-weight:700}.blog-meta{margin-left:auto;color:var(--mu);font-size:12px;white-space:nowrap}
-.room-meta{color:var(--mu);font-size:12px;margin:-4px 0 10px}.room-party{margin-top:14px;padding-top:18px;border-top:1px solid var(--bd)}
+.room-party{margin-top:14px;padding-top:18px;border-top:1px solid var(--bd)}
 .room-acts{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px 14px;margin:12px 0 0;padding-bottom:18px}
 .pill{border-radius:999px;padding:5px 12px;font-weight:700;font-size:15px;line-height:20px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:0;white-space:nowrap;box-sizing:border-box;width:156px;border-width:1px;border-style:solid}
 .pill .pill-sub{font-size:11.2px;line-height:14px;font-weight:700;opacity:.8}
@@ -472,7 +472,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v374 · 2026-10-19 19:42</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v375 · 2026-10-19 21:58</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2883,7 +2883,7 @@ function renderDungeons(){
  box.innerHTML=dungeons.map(d=>{
   const open=d.unlocked&&openDungeons.has(d.id);
   const tag=d.cleared?`<span class="dg-tag clear">clear</span>`:!d.unlocked?`<span class="dg-tag">locked</span>`:"";
-  const meta=d.unlocked?`권장 Lv.${d.rec_level} · SUPPLY ${d.supply_cost??10}`:`권장 Lv.${d.rec_level} · ${d.locked_by==="TUTORIAL"?"과제를 마치면 열립니다":"앞 던전을 클리어하면 열립니다"}`;
+  const meta=d.unlocked?`SUPPLY ${d.supply_cost??10}`:(d.locked_by==="TUTORIAL"?"과제를 마치면 열립니다":"앞 던전을 클리어하면 열립니다");
   return `<div class="dg-card${open?" open":""}${d.unlocked?"":" locked"}" data-dg="${esc(d.id)}">
    <button type="button" class="dg-head"${d.unlocked?` onclick="toggleDungeon('${esc(d.id)}')" aria-expanded="${open}"`:` disabled`}><span><span class="dg-name">${esc(d.name)}</span>${tag}<br><span class="dg-meta">${meta}</span></span>${d.unlocked?CHEV:""}</button>
    ${d.unlocked?`<div class="dg-body"><div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters,d.name)}${autoLineHtml(d)}
@@ -3147,7 +3147,7 @@ function renderRoom(){
  renderIdle();
  if(!d)return;
  $("roomTitle").textContent=d.name;
- $("roomInfo").innerHTML=`<div class="room-meta">권장 Lv.${d.rec_level}</div><div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters,d.name,true)}`;
+ $("roomInfo").innerHTML=`<div class="dg-note">${esc(d.note||"")}</div>${monstersHtml(d.monsters,d.name,true)}`;
  renderParty();
  const hasParty=party.some(id=>chars.some(c=>c.id===id));
  const cost=d.supply_cost??10,sup=supplyNow(),left=Math.max(0,(d.mock_limit??0)-(d.mock_used??0)),noSupply=sup!=null&&sup<cost;
