@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v366 · 갱신 2026-10-19 13:04 KST -->
+<!-- ProjectGY-test-console v367 · 갱신 2026-10-19 13:20 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -463,9 +463,15 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-live{font-style:normal;font-size:11px;color:var(--ac)}
 .mon-slot+.mon-slot{margin-top:28px}.mon-slot-head{font-size:13px;color:var(--mu)}.mon-slot-head b{color:var(--tx)}
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
+/* 한 벌 옷: 상의·하의 두 줄을 한 칸으로. 왼쪽 칸 이름은 두 줄로 나누고, 장비는 두 줄 높이 가운데(왼쪽 정렬) */
+.equip-row.equip-pair{min-height:136px}
+.equip-pair .slot-label{flex-direction:column;align-items:stretch;padding:0;align-self:stretch}
+.equip-pair .slot-label>span{flex:1;display:flex;align-items:center;justify-content:center;padding:0 14px}
+.equip-pair .slot-label>span+span{border-top:1px solid var(--bd)}
+@media(max-width:520px){.equip-row.equip-pair{min-height:0}.equip-pair .slot-label{flex-direction:row;margin:0;gap:0}.equip-pair .slot-label>span{flex:0 0 auto;padding:0;justify-content:flex-start}.equip-pair .slot-label>span+span{border-top:0}.equip-pair .slot-label>span+span::before{content:"·";margin:0 6px}}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v366 · 2026-10-19 13:04</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v367 · 2026-10-19 13:20</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2369,7 +2375,12 @@ function renderCharacterDetail(){
  const handOk=d=>!hand||(d.slot!=="WEAPON"&&d.slot!=="SHIELD")||hand.includes(d.item_type);
  const canEquip=d=>d&&d.slot!=="CONSUMABLE"&&d.slot!=="MATERIAL"&&(!d.jobs||d.jobs.some(j=>line.includes(j)))&&wearOk(d)&&handOk(d);
  const available=itemsData.filter(i=>!i.equipped_character&&!i.unknown&&canEquip(i.item_defs));
- const equippedHtml=EQUIP_SLOTS.map(([slot,label])=>{const i=equipped.find(x=>x.equipped_slot===slot);
+ // 한 벌 옷(item_categories.overall)을 상의 칸에 끼면 상의·하의 두 줄을 한 칸으로 합쳐 그 장비를 가운데 높이에 둔다
+ const top=equipped.find(x=>x.equipped_slot==="TOP"),overall=!!top?.item_defs?.item_categories?.overall;
+ const equippedHtml=EQUIP_SLOTS.map(([slot,label])=>{
+  if(overall&&slot==="BOTTOM")return "";
+  if(overall&&slot==="TOP")return `<div class="equip-row equip-pair"><span class="slot-label"><span>${label}</span><span>${EQUIP_SLOTS.find(x=>x[0]==="BOTTOM")[1]}</span></span><span class="slot-item">${itemDetailHtml(top)}</span><button onclick="unequip('${top.id}')">해제</button></div>`;
+  const i=equipped.find(x=>x.equipped_slot===slot);
   return `<div class="equip-row${i?"":" empty-slot"}"><span class="slot-label">${label}</span><span class="slot-item">${i?itemDetailHtml(i):"비어 있음"}</span>${i?`${handMoveBtn(i,c.id)}<button onclick="unequip('${i.id}')">해제</button>`:""}</div>`}).join("");
  // 소모품 칸: 종류만 정하고 수량은 Bag 보유 수를 모두가 함께 쓴다
  const conCount=d=>itemsData.filter(i=>i.def_id===d&&!i.equipped_character).reduce((a,i)=>a+Number(i.qty||1),0);
@@ -2377,9 +2388,9 @@ function renderCharacterDetail(){
  const conHtml=`<div class="equip-row${c.consumable?"":" empty-slot"}"><span class="slot-label">소모품</span><span class="slot-item">${c.consumable?(h=>conItem?itemTop(h,conItem):h)(`<span class="item-head"><b class="item-name">${esc(c.consumable_name||c.consumable)}</b><b class="item-count">x${conCount(c.consumable)}</b><span class="item-cat item-tags">(consumable)</span></span>`):"비어 있음"}</span>${c.consumable?`<button onclick="setConsumable('${c.id}',null)">해제</button>`:""}</div>`;
  const conKinds=[];for(const i of itemsData){const d=i.item_defs;if(d?.slot==="CONSUMABLE"&&d.use_skill&&i.def_id!==c.consumable&&!conKinds.some(x=>x.def_id===i.def_id))conKinds.push(i)}
  const conAvail=conKinds.map(i=>`<div class="equip-row"><span class="slot-item">${itemTop(`<span class="item-head"><b class="item-name">${esc(i.item_defs.name)}</b><b class="item-count">x${conCount(i.def_id)}</b><span class="item-cat item-tags">(consumable)</span></span>`,i)}</span><button onclick="setConsumable('${c.id}','${esc(i.def_id)}')">장착</button></div>`).join("");
- // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / Armor / Accessory / Consumable 구분선으로 나눈다
+ // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
  const availRow=i=>`<div class="equip-row"><span class="slot-item">${itemDetailHtml(i)}</span><button onclick="equipTo('${i.id}','${c.id}')">장착</button></div>`;
- const AV_GROUPS=ITEM_GROUPS.slice(0,3);
+ const AV_GROUPS=[ITEM_GROUPS[0],...ARMOR_GROUPS,ITEM_GROUPS[2]];
  const avSec=(t,h)=>h?`<div class="av-head"><span>${t}</span></div>${h}`:"";
  const availableHtml=available.length||conAvail?AV_GROUPS.map(([t,sl])=>avSec(t,available.filter(i=>sl.includes(i.item_defs.slot)).map(availRow).join(""))).join("")+avSec("Consumable",conAvail):"<div class=\"empty\">장착할 아이템이 없습니다.</div>";
  box.innerHTML=`${renderQuickSwitch(c.id)} <div class="detail-grid">
@@ -2451,6 +2462,8 @@ function handMoveBtn(i,charId){
 }
 // 아이템 구분: Equipment의 Allowed to Equip과 Bag이 같은 방식으로 나눈다
 const ITEM_GROUPS=[["Weapon",["WEAPON","SHIELD"]],["Armor",["HEAD","SHOULDER","TOP","BOTTOM","BELT","SHOES","CAPE"]],["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
+// 장착 목록(Allowed to Equip)은 방어구를 칸마다 나눈다. 한 벌 옷은 상의 칸 장비라 Top에 든다
+const ARMOR_GROUPS=[["Head",["HEAD"]],["Shoulder",["SHOULDER"]],["Top",["TOP"]],["Bottom",["BOTTOM"]],["Belt",["BELT"]],["Shoes",["SHOES"]],["Cape",["CAPE"]]];
 function renderBag(){
  const box=$("items");
  if(!itemsData.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
@@ -2731,7 +2744,7 @@ async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){
 function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
  loadGold();
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot))").order("created_at").order("id");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
@@ -3825,11 +3838,11 @@ function setConsumable(charId,def){
  const nm=itemsData.find(i=>i.def_id===def)?.item_defs?.name||def;
  openConfirm("소모품 장착",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 소모품 칸에 넣습니다.${curNm?`<br>지금 든 <b>${esc(curNm)}</b>${josaOf(curNm,"은","는")} 빠집니다.`:""}</p><p class="help-note">수량은 Bag의 보유 수를 모든 캐릭터가 함께 씁니다.</p>`,[["취소",null,false],["장착",go,true]],"consumable");
 }
-// 끼우면 빠지는 장비: 같은 칸의 장비, 양손 무기와 방패 칸은 서로 빠진다. slot = 끼울 칸(안 주면 장비의 기본 칸)
+// 끼우면 빠지는 장비: 같은 칸의 장비, 양손 무기와 방패 칸, 한 벌 옷과 하의 칸은 서로 빠진다. slot = 끼울 칸(안 주면 장비의 기본 칸)
 function equipOut(it,charId,slot){
  const i=itemsData.find(x=>x.id===it);if(!i)return [];
- const two=x=>!!x.item_defs?.item_categories?.two_handed,to=slot||i.item_defs?.slot;
- return itemsData.filter(x=>x.equipped_character===charId&&x.id!==it&&(x.equipped_slot===to||(to==="WEAPON"&&two(i)&&x.equipped_slot==="SHIELD")||(to==="SHIELD"&&x.equipped_slot==="WEAPON"&&two(x))));
+ const two=x=>!!x.item_defs?.item_categories?.two_handed,ov=x=>!!x.item_defs?.item_categories?.overall,to=slot||i.item_defs?.slot;
+ return itemsData.filter(x=>x.equipped_character===charId&&x.id!==it&&(x.equipped_slot===to||(to==="WEAPON"&&two(i)&&x.equipped_slot==="SHIELD")||(to==="SHIELD"&&x.equipped_slot==="WEAPON"&&two(x))||(to==="TOP"&&ov(i)&&x.equipped_slot==="BOTTOM")||(to==="BOTTOM"&&x.equipped_slot==="TOP"&&ov(x))));
 }
 // 빠지는 장비 안내 한 줄(없으면 빈 글). pre = 줄 앞에 붙일 말
 function equipOutHtml(out,pre){
@@ -3837,7 +3850,7 @@ function equipOutHtml(out,pre){
  const names=out.map(x=>x.item_defs?.name||x.def_id),last=names[names.length-1];
  return `<p>${pre||""}<b>${names.map(esc).join(", ")}</b>${josaOf(last,"은","는")} 해제되어 Bag으로 돌아갑니다.</p>`;
 }
-// 장착하면 KARMA 합계가 한도를 넘게 되는지(지금보다 늘어날 때만). 같은 칸의 장비, 양손 무기와 방패 칸은 서로 빠진다
+// 장착하면 KARMA 합계가 한도를 넘게 되는지(지금보다 늘어날 때만). 빠지는 장비는 equipOut
 // slot = 끼울 칸(안 주면 장비의 기본 칸). 같은 캐릭터 안에서 칸만 옮기면 그 장비는 이미 합계에 들어 있다
 function karmaAfterEquip(it,charId,slot){
  const c=chars.find(x=>x.id===charId),i=itemsData.find(x=>x.id===it),k=c?.stats?.KARMA;if(!c||!i||!k)return null;
