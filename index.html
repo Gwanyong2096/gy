@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v369 · 갱신 2026-10-19 15:24 KST -->
+<!-- ProjectGY-test-console v370 · 갱신 2026-10-19 15:36 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -471,7 +471,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 @media(max-width:520px){.equip-row.equip-pair{min-height:0}.equip-pair .slot-label{flex-direction:row;margin:0;gap:0}.equip-pair .slot-label>span{flex:0 0 auto;padding:0;justify-content:flex-start}.equip-pair .slot-label>span+span{border-top:0}.equip-pair .slot-label>span+span::before{content:"·";margin:0 6px}}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v369 · 2026-10-19 15:24</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v370 · 2026-10-19 15:36</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1243,23 +1243,40 @@ function qgRoom(g,h){
  return {stop:h.wait()};
 }
 const QUEST_GUIDE={
- // TP: 캐릭터를 열고 Status의 TP 옆 ?를 눌러 설명을 본 뒤 배분 칸을 짚는다
+ // TP: Cleric 카드를 열어 TP 설명을 보고 Cleric의 패턴 줄을 TP로 하나 늘린다. 서버 cleric_tp.mode로 가른다(ready 바로, reset 공짜 되돌리기 뒤, level·spent 모자람 안내로 끝. 설명은 본 것으로 남기지 않아 다시 눌러 잇는다)
  tp(g,h){
   if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(g.busy)return h.wait();
+  const q=quests.find(x=>x.id===g.q.id)||g.q,ct=q.cleric_tp,stop=()=>{qGuide=null};
+  if(!ct)return h.mid("qg-tnoc","Cleric 캐릭터가 있어야 이 퀘스트를 할 수 있습니다.",{btn:"확인",fn:stop});
+  const c=chars.find(x=>x.id===ct.char),nm=c?.display_name||"Cleric";
+  // 패턴 줄을 늘렸으면(서버 셈이 찼으면) 끝 장
+  if(q.cur>=q.max&&c&&selectedCharId===c.id&&!h.modal)return h.page("qg-t9",h.q("#charDetail .pattern-count")||h.q("#charDetail .main-st"),`${nm}의 패턴 줄이 늘었습니다.\n줄이 늘면 상황마다 다른 행동을 넣을 수 있습니다.\n이 퀘스트를 마치면 총 패턴 ${patLines(c.id)}줄 옆에 범용 패턴(?)이 나타납니다.\n누르면 이 직업이 두루 쓰는 패턴을 볼 수 있습니다.`,{btn:"확인",fn:questGuideDone});
+  // 창: TP 배분 확인이면 배분 버튼, TP 도움말이면 설명 장, 그 밖(저장 안 한 패턴 확인 등)은 막지 않는다
+  if(h.modal&&h.q('#helpActions[data-kind="tp"]:not([hidden])'))return h.say("qg-tok",h.q("#helpActions button.pri"),"배분을 눌러 주세요.",{holdId:true,holdAs:"qg-t4"});
+  if(h.modal&&!h.q("#helpActions[hidden]"))return null;
   if(h.modal){
    if(!tutSeen.has("qg-t2"))return h.page("qg-t2",h.q("#helpBody"),"TP는 Front SPD, Pattern, Karma Limit 세 가지에 씁니다.\n세 가지를 모두 끝까지 채울 수는 없으니 골라서 찍습니다.");
    return h.say("qg-tclose",h.q(".help-close"),"닫기를 눌러 주세요.");
   }
-  const c=chars.find(x=>x.id===selectedCharId);
-  if(!c)return h.say("qg-t0",h.q("#chars .roster-unit"),"TP는 캐릭터마다 따로 찍습니다.\n캐릭터를 하나 눌러 주세요.");
+  if(!c)return h.wait();
+  if(selectedCharId!==c.id){
+   if(!selectedCharId)return h.say("qg-t0",h.q(`#chars .roster-unit[data-id="${c.id}"]`),`이번에는 ${nm}의 패턴 줄을 TP로 늘립니다.\n${nm}${josaOf(nm,"을","를")} 눌러 주세요.`);
+   const chip=h.q(`#charDetail .quick-chip[onclick*="${c.id}"]`);
+   return chip?h.say("qg-t0c",chip,`${nm}${josaOf(nm,"을","를")} 눌러 주세요.`):h.say("qg-t0q",h.q("#charDetail .quick-head"),"Characters를 눌러 주세요.");
+  }
   const w=h.q('#charDetail .sec-wrap[data-sec="status"]');if(w?.classList.contains("collapsed"))return h.say("qg-tsec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+  const st=h.q("#charDetail .main-st");
+  if(ct.mode==="level"||ct.mode==="spent")return h.page("qg-tlow",st,ct.mode==="level"?`${nm}의 TP가 모자랍니다.\n${nm}${josaOf(nm,"을","를")} 파티에 넣고 Lv.${ct.need_level}이 되면 패턴 줄을 늘릴 수 있습니다.\n레벨이 차면 퀘스트를 다시 눌러 이어 하세요.`:`${nm}의 TP가 모자랍니다.\n공짜 되돌리기는 이미 썼습니다.\nUnwinding Draught로 TP를 되돌리면 패턴 줄을 늘릴 수 있습니다.`,{btn:"확인",fn:stop});
+  if(ct.mode==="reset")return h.say("qg-treset",st,`${nm}의 TP를 이미 다른 곳에 썼습니다.\n이번 한 번만 ${nm}의 TP를 공짜로 되돌려 드립니다.`,{btn:"되돌리기",fn:async()=>{
+   g.busy=true;const {error}=await sb.rpc("free_cleric_tp_reset",{p_char:c.id});
+   if(error)log("free_cleric_tp_reset 실패: "+error.message,"bad");else log("free_cleric_tp_reset 성공","ok");
+   await load();await questLoad();g.busy=false}});
   const help=h.q("#charDetail .stat-pt .help-btn");
-  if(!help){if(!tutSeen.has("qg-tnone"))return h.page("qg-tnone",h.q("#charDetail .main-st"),"이 캐릭터는 남은 TP가 없습니다.\nTP는 레벨이 오를 때마다 받습니다.");}
-  else if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
-  else if(!tutSeen.has("qg-t3"))return h.page("qg-t3",h.q(`#alloc-${c.id}`)||h.q("#charDetail .main-st"),"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.");
-  // 끝: 패턴 줄을 늘리도록 이끌고, 퀘스트를 마치면 범용 패턴(?)이 생긴다고 알린다
-  const pf=h.q(`#alloc-${c.id} input[data-tp="p"]`);
-  return h.page("qg-t4",pf?.closest(".alloc-f")||h.q("#charDetail .main-st"),`Pattern에 TP를 쓰면 패턴 줄이 늘어납니다.\n줄이 늘면 상황마다 다른 행동을 넣을 수 있습니다.\n이 퀘스트를 마치면 총 패턴 ${patLines(c.id)}줄 옆에 범용 패턴(?)이 나타납니다.\n누르면 이 직업이 두루 쓰는 패턴을 볼 수 있습니다.`,{back:help?"qg-t3":"qg-tnone",btn:"확인",fn:questGuideDone});
+  if(!help)return h.wait();
+  if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
+  if(!tutSeen.has("qg-t3"))return h.page("qg-t3",h.q(`#alloc-${c.id}`)||st,"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다.");
+  return h.say("qg-t4",h.q(`#alloc-${c.id}`)||st,`${nm}의 패턴 줄을 TP로 하나 늘려 보세요.\nPattern 칸에 1을 넣고 배분을 눌러 주세요.`,{nohold:true});
  },
  // KARMA: 캐릭터를 열고 KARMA 합계/한도 줄과 세 상태를 알려 준 뒤 TP 배분 칸의 Karma Limit을 짚는다
  karma(g,h){
@@ -2233,7 +2250,7 @@ function confirmTp(id){
  const s=c.stats||{},h0=tpBandSum(pubCfg.TP_SPD_F_BANDS,t.h),h1=tpBandSum(pubCfg.TP_SPD_F_BANDS,t.h+v.h),base=Number(s.SPD?.F||0);
  const parts=[v.h>0?`Front SPD ${hasteText(base)} → ${hasteText(+(base+h1-h0).toFixed(2))}`:"",v.p>0?`Pattern ${s.PATTERN_LINES}줄 → ${Number(s.PATTERN_LINES)+v.p}줄`:"",v.k>0?`Karma Limit ${s.KARMA?.LIMIT} → ${Number(s.KARMA?.LIMIT)+v.k}`:""].filter(Boolean);
  openConfirm("TP 배분",`<p>쓰는 TP: <b>${cost}</b></p>${parts.map(x=>`<p><b class="nw">${esc(x)}</b></p>`).join("")}<p class="help-note">쓴 TP는 Unwinding Draught로만 되돌릴 수 있습니다.</p>`,
-  [["취소",null,false],["배분",async()=>{if(await rpc("allocate_tp",{p_char:id,p_spd_f:v.h,p_pattern:v.p,p_karma:v.k}))load()},true]]);
+  [["취소",null,false],["배분",async()=>{if(await rpc("allocate_tp",{p_char:id,p_spd_f:v.h,p_pattern:v.p,p_karma:v.k}))load()},true]],"tp");
 }
 let coverOpenFor=null;
 const pendingPos={};
