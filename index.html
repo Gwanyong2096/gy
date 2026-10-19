@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v376 · 갱신 2026-10-20 00:52 KST -->
+<!-- ProjectGY-test-console v377 · 갱신 2026-10-20 04:16 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -300,6 +300,10 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .shop-buy button:disabled{opacity:.45;cursor:not-allowed}.shop-pack{white-space:nowrap;min-width:10.5em;text-align:center}
 .shop-why{grid-column:1/-1;font-size:12px;color:var(--mu);text-align:right}
 @media(max-width:520px){.shop-row{grid-template-columns:1fr;row-gap:18px}.shop-buy{justify-content:flex-end}}
+.shop-list[hidden]{display:none}.shop-tabs{margin:2px 0 12px}
+.sell-hint{font-size:12.5px;color:var(--mu);margin:0 0 4px}#innSell .av-head{margin-top:6px}
+.sell-opt{font-size:12.5px;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}.sell-opt .item-core{display:inline-flex;gap:8px}
+.shop-qty.one{display:inline-block;width:56px;text-align:center;color:var(--mu);font-size:13px}.sell-btn{min-width:5.2em}.sell-row.zero .shop-price{color:var(--mu)}
 @media(max-width:520px){.job-label{font-size:12px}.job-cost{font-size:11px}}
 .sec-line{padding-bottom:8px;margin-bottom:16px;border-bottom:1px solid var(--bd)}.sec-gap{margin-top:44px}.pattern-save{margin-top:18px}.pat-hide{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bd);border-radius:8px;padding:6px 10px;background:var(--card);cursor:pointer;user-select:none}.pat-hide input[type=checkbox]{width:14px;height:14px;padding:0;margin:0;accent-color:var(--ac);cursor:pointer}.pattern-list.hide-off .pattern-row.pattern-off{display:none}.detail-grid .empty{padding:12px 0 6px}
 .status-body{display:flex;align-items:center;gap:20px}
@@ -472,7 +476,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v376 · 2026-10-20 00:52</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v377 · 2026-10-20 04:16</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -605,7 +609,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="row inn-form"><input id="nm" placeholder="이름 (비워도 됨)"><button class="pri" onclick="recruit()">영입</button></div>
     <div id="recruitMsg" style="display:none;font-size:12px;color:var(--mu);margin-top:5px"></div>
     <div id="innShopWrap"><div class="section-title sec-line sec-gap">Goods</div>
-    <div class="shop-list" id="innShop"><div class="empty">불러오는 중…</div></div></div>
+    <div class="seg shop-tabs" id="shopTabs"><button type="button" class="seg-btn on" data-t="buy" onclick="setShopTab('buy')"><span>Buy</span></button><button type="button" class="seg-btn" data-t="sell" onclick="setShopTab('sell')"><span>Sell</span></button></div>
+    <div class="shop-list" id="innShop"><div class="empty">불러오는 중…</div></div>
+    <div class="shop-list" id="innSell" hidden></div></div>
   </div>
 </div>
 
@@ -973,6 +979,7 @@ function renderInn(){
 let innShop=[];
 async function loadShop(){
  $("innShopWrap").hidden=!!stage;if(stage||!loggedIn)return;
+ if(shopTab==="sell")loadSell();
  const {data,error}=await sb.rpc("get_shop",{p_shop:"INN"});
  if(error){log("get_shop 실패: "+error.message,"bad");return}
  innShop=Array.isArray(data)?data:[];renderShop();
@@ -1006,6 +1013,53 @@ async function shopBuyGo(id,n){
  const x=innShop.find(y=>y.id===id);if(x&&data?.owned!=null)innShop.forEach(y=>{if((y.def||y.id)===(x.def||x.id))y.owned=data.owned});
  if(data?.gold!=null){gold=Number(data.gold);renderGold()}
  renderShop();loadItems();
+}
+// 여관 Goods Sell: 목록과 개당 값은 서버(get_sell_list, 장착 중인 건 서버가 뺌), 팔기는 sell_items. 값은 화면이 보내지 않는다
+let shopTab="buy",sellList=[];
+const SELL_ZERO_WHY={UNKNOWN:"Unknown이라",SHOP:"여관 상품이라",CONSUMABLE:"소모품이라",STARTER:"시작 장비라",PROMOTE:"전직 장비라"};
+function setShopTab(t){shopTab=t;document.querySelectorAll("#shopTabs .seg-btn").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("innShop").hidden=t!=="buy";$("innSell").hidden=t!=="sell";if(t==="sell")loadSell()}
+async function loadSell(){
+ if(stage||!loggedIn)return;
+ const {data,error}=await sb.rpc("get_sell_list");
+ if(error){log("get_sell_list 실패: "+error.message,"bad");return}
+ const list=Array.isArray(data)?data:[];
+ // 이름·범주·옵션은 item_defs에서(Bag에 받아 둔 것을 먼저 쓰고, 없으면 받아 온다)
+ const defs={};itemsData.forEach(i=>{if(i.item_defs)defs[i.def_id]=i.item_defs});
+ const miss=[...new Set(list.map(x=>x.def_id).filter(d=>!defs[d]))];
+ if(miss.length){const r=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap").in("id",miss);(r.data||[]).forEach(d=>defs[d.id]=d)}
+ sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));renderSell();
+}
+function renderSell(){
+ if(!sellList.length){$("innSell").innerHTML=`<div class="empty">팔 수 있는 아이템이 없습니다.</div>`;return}
+ const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
+ const secs=ITEM_GROUPS.map(([t,sl])=>[t,sellList.filter(i=>sl.includes(i.item_defs.slot))]);
+ const rest=sellList.filter(i=>!known.has(i.item_defs.slot));if(rest.length)secs.push(["Etc",rest]);
+ const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i),why=z?SELL_ZERO_WHY[i.zero_why]:"";
+  return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
+  <div class="shop-main"><div class="shop-name"><b>${esc(d.name)}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}${why?`<div class="shop-note">${why} 0골드입니다.</div>`:""}</div>
+  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(d.name)} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="${z?"":"pri "}sell-btn" onclick="sellPick('${esc(i.id)}',this)">${z?"버리기":"판매"}</button></div>
+ </div>`};
+ $("innSell").innerHTML=`<div class="sell-hint">장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
+}
+function sellPick(id,btn){
+ const i=sellList.find(x=>x.id===id);if(!i)return;
+ const q=Number(i.qty)||1,p=Number(i.price)||0,inp=btn.parentElement.querySelector("input.shop-qty"),n=inp?Math.max(1,Math.min(q,Math.floor(Number(inp.value))||1)):1;if(inp)inp.value=n;
+ const nm=`<b>${esc(i.item_defs.name)}</b>${unkTag(i)}`,opt=!i.unknown&&Object.values(i.rolled_bonuses||{}).some(v=>Number(v));
+ const html=p?`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}판 아이템은 되살 수 없습니다.</p>`
+  :`<p>${nm} ${n}개를 버립니다. <b>0골드</b>이고, 되찾을 수 없습니다.</p>`;
+ openConfirm(p?"판매":"버리기",html,[["취소",null,false],[p?"판매":"버리기",()=>sellGo(id,n),true]],"sell");
+}
+async function sellGo(id,n){
+ const {data,error}=await sb.rpc("sell_items",{p_items:[{id,qty:n}]});
+ if(error){const m=error.message||"";log("sell_items 실패: "+m,"bad");
+  openNotice(m.includes("ITEM_EQUIPPED")?"장착 중인 아이템은 팔 수 없습니다.":m.includes("NOT_ENOUGH_ITEMS")?"가진 수보다 많이 팔 수 없습니다.":m.includes("ITEM_NOT_FOUND")?"이미 없는 아이템입니다.":m.includes("INVALID_COUNT")?"수량을 다시 정해 주세요.":"팔지 못했습니다.");
+  loadSell();return}
+ log("sell_items 성공","ok");
+ if(data?.gold!=null){gold=Number(data.gold);renderGold()}
+ const s=(data?.sold||[])[0],g=Number(data?.gained)||0,nm=s?.name||sellList.find(x=>x.id===id)?.item_defs.name||"";
+ openNotice(g?`${nm} ${n}개를 팔아 ${g.toLocaleString()}골드를 받았습니다.`:`${nm} ${n}개를 버렸습니다.`);
+ // Bag·골드·캐릭터(낀 소모품 칸 수량)를 다시 받는다
+ load();
 }
 function selectJob(job){selectedJob=job;renderInn()}
 let templates=[],pubCfg={},skillsByChar={},promoteByChar={};
