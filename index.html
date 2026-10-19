@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v363 · 갱신 2026-10-19 12:34 KST -->
+<!-- ProjectGY-test-console v364 · 갱신 2026-10-19 12:41 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -465,7 +465,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v363 · 2026-10-19 12:34</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v364 · 2026-10-19 12:41</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2140,7 +2140,7 @@ const hasteText=v=>`${Number(v)<0?"":"+"}${Number((Number(v)||0).toFixed(2))}`;
 function renderTalent(c){
  const s=c.stats||{},pts=Number(c.tp||0),t=tpCur(c),mx=tpMax();
  const canReset=tpUsed(c)>0&&itemsData.some(i=>i.def_id==="reset_draught"&&!i.equipped_character);
- const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP<button type="button" class="help-btn" aria-label="TP 도움말" onclick="openTpHelp()"><span>?</span></button> <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
+ const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP <button type="button" class="help-btn" aria-label="TP 도움말" onclick="openTpHelp()"><span>?</span></button> <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
  if(pts<=0)return row;
  const f=(key,label,unit,left)=>`<label class="alloc-f"><span>${label}</span><input type="number" min="0" max="${left}" step="1" value="0" data-tp="${key}" ${left<=0?"disabled":""} oninput="tpPreview('${c.id}')"><span class="alloc-unit">${unit}</span></label>`;
  return row+`<div class="alloc-row" id="alloc-${c.id}">${f("h","Front SPD","포인트",mx.h-t.h)}${f("p","Pattern","줄",mx.p-t.p)}${f("k","Karma Limit","점",mx.k-t.k)}<button type="button" class="fm-btn pri" onclick="confirmTp('${c.id}')"><span>배분</span></button></div><div class="alloc-left" id="allocLeft-${c.id}">${tpHint(c,{h:0,p:0,k:0})}</div>`;
