@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v365 · 갱신 2026-10-19 12:53 KST -->
+<!-- ProjectGY-test-console v366 · 갱신 2026-10-19 13:04 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -465,7 +465,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v365 · 2026-10-19 12:53</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v366 · 2026-10-19 13:04</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1284,7 +1284,7 @@ const QUEST_GUIDE={
   if(!g.phase){if(info.guide==="DONE")g.phase="back";else if((info.parties||[]).length)g.phase="sent"}
   if(g.phase==="sending")return h.wait();
   const rm=h.q("#idleRemote"),panel=h.q("#idleRemote .q-panel");
-  if(g.phase==="back")return h.page("qg-i8",panel||rm,`파티가 돌아와 직접 싸우는 파티에도 다시 들어갔습니다.\n다음에 보내면 회수할 때까지 ${mins}분마다 한 판씩 싸웁니다.\nAuto Battle은 파티를 여러 개(지금 최대 ${info.slots??3}개) 함께 보낼 수 있습니다.\nTown의 Inn에서 캐릭터를 더 영입해 서브 파티를 꾸려 보내면, 직접 싸우는 동안에도 경험치와 아이템이 쌓여 효율적입니다.`,{btn:"확인",fn:questGuideDone});
+  if(g.phase==="back")return h.page("qg-i8",panel||rm,`파티가 돌아와 직접 싸우는 파티에 다시 들어갔습니다.\n다음에 보내면 회수할 때까지 ${mins}분마다 한 판씩 싸웁니다.\nAuto Battle은 파티를 여러 개(지금 최대 ${info.slots??3}개) 함께 보낼 수 있습니다.\nTown의 Inn에서 캐릭터를 더 영입해 서브 파티를 꾸려 보내면, 직접 싸우는 동안에도 경험치와 아이템이 쌓여 효율적입니다.`,{btn:"확인",fn:questGuideDone});
   if(g.phase==="sent"){
    if(!rm||rm.classList.contains("hidden"))return h.wait();
    const folded=!panel||!panel.offsetParent;
@@ -1317,11 +1317,21 @@ const QUEST_GUIDE={
   if(!tutSeen.has("qg-r2"))return h.page("qg-r2",n,`여기에 판 수를 적습니다.\n한 번에 ${rushMaxN()}판까지 됩니다.\n최대를 누르면 남은 SUPPLY로 돌 수 있는 만큼 채웁니다.`,{back:"qg-r1"});
   return h.page("qg-r3",box,"지거나 비기면 그 판에서 멈춥니다.\nSetting에서 끝까지 돌리도록 바꿀 수 있습니다.",{back:"qg-r2",btn:"확인",fn:questGuideDone});
  },
- appraise(g,h){return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.")},
+ // 감정: 첫 감정 공짜(get_appraise_costs.free_first)가 남았으면 지금 장들 뒤에 직접 감정해 보게 한다. 이미 써서 퀘스트가 채워졌으면 마지막 장에 덧붙이고 끝나면 바로 보상 받기
+ appraise(g,h){
+  if(currentView!=="appraise"||!appraiseAt){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  const ff=appraiseCosts.free_first;
+  if(g.free==null)g.free=!!ff&&itemsData.some(i=>i.unknown&&!i.equipped_character);
+  if(g.free&&!g.res&&!ff)g.free=false;
+  if(g.free&&tutSeen.has("qg-a3"))return qgFreeAppraise(g,h,ff);
+  const q=quests.find(x=>x.id===g.q.id),filled=!g.free&&q&&q.cur>=q.max;
+  const end=g.free?{btn:"다음"}:filled?{add:"\n이미 감정을 해 봤으니 이 퀘스트는 깬 것으로 칩니다.",btn:"확인",fn:async()=>{const then=g.then;await questGuideDone();if(!then){await questLoad();questClaim([g.q.id])}}}:null;
+  return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.",end);
+ },
  craft(g,h){return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않습니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.")}
 };
 // 감정·제작: 이름 옆 ?를 눌러 재료별 옵션 창을 보고, 닫은 뒤 목록을 짚는다
-function qgTown(g,h,view,askMsg,when,listMsg){
+function qgTown(g,h,view,askMsg,when,listMsg,end){
  const k=g.key[0];
  if(currentView!==view){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
  if(h.modal){
@@ -1329,7 +1339,23 @@ function qgTown(g,h,view,askMsg,when,listMsg){
   return h.say(`qg-${k}close`,h.q(".help-close"),"닫기를 눌러 주세요.");
  }
  if(!tutSeen.has(`qg-${k}2`))return h.say(`qg-${k}1`,h.q(`#${view}View .town-head .help-btn`),askMsg);
- return h.page(`qg-${k}3`,$(view+"List"),listMsg,{btn:"확인",fn:questGuideDone});
+ const e=end||{btn:"확인",fn:questGuideDone};
+ return h.page(`qg-${k}3`,$(view+"List"),listMsg+(e.add||""),{btn:e.btn,fn:e.fn});
+}
+// 첫 감정(0골드): Scout Tunic(없으면 맨 위 Unknown)의 감정을 누르게 하고, 결과 창에서 옵션이 붙는 방식을 알려 준다. 결과는 22-appraise.js가 g.res에 넣는다
+function qgFreeAppraise(g,h,ff){
+ if(appraising)return h.wait();
+ if(!g.res){
+  if(h.modal&&h.q('#helpActions[data-kind="appraise"]'))return h.say("qg-afc",h.q("#helpActions:not([hidden]) button.pri"),"감정을 눌러 주세요.",{holdId:true,holdAs:"qg-af1"});
+  if(h.modal)return h.say("qg-afx",h.q(".help-close"),"닫기를 눌러 주세요.");
+  const list=itemsData.filter(i=>i.unknown&&!i.equipped_character),t=list.find(i=>i.def_id==="scout_tunic")||list[0];
+  if(!t)return h.wait();
+  const nm=t.item_defs?.name||t.def_id,orig=Number(ff?.orig_cost?.[t.def_id])||0;
+  return h.say("qg-af1",h.q(`#appraiseList button[onclick="confirmAppraise('${t.id}')"]`),`첫 감정은 한 번만 공짜입니다.\n이 ${nm}의 감정비는 원래 ${orig.toLocaleString()}골드지만 이번에는 0골드입니다.\n감정을 눌러 주세요.`);
+ }
+ const el=h.modal?h.q("#helpBody .item-card")||h.q("#helpBody"):$("appraiseList"),p=pubCfg.ITEM_OPT_SLOT_PCT||[50,30];
+ if(!tutSeen.has("qg-af2"))return h.page("qg-af2",el,`감정하면 장비에 랜덤 옵션이 붙습니다.\n첫 칸은 ${p[0]}%, 둘째 칸은 ${p[1]}%처럼 칸이 늘수록 붙기 어렵습니다.\n붙은 옵션마다 종류와 값을 무작위로 정하고, 가끔은 값이 깎이는 나쁜 옵션도 붙습니다.`);
+ return h.page("qg-af3",el,"붙은 옵션은 장비 이름 옆에 보입니다.\n옵션 값은 장비의 기본 능력치에 더해집니다.\n옵션이 붙지 않을 때도 있습니다.",{back:"qg-af2",btn:"확인",fn:questGuideDone});
 }
 // 퀘스트 보상 소모품 중 따로 설명을 둔 것
 const QUEST_ITEM_NOTE={
@@ -3699,10 +3725,10 @@ function toggleDungeon(id){
 }
 // ===== 감정소: Unknown 장비를 감정해 랜덤 옵션을 굴린다 =====
 // 감정 비용은 서버가 정한다(get_appraise_costs: 장비 종류별 골드). 화면은 받은 값을 버튼에 보여 준다
-let appraiseCosts={};
+let appraiseCosts={},appraiseAt=0;
 async function loadAppraise(){
  const {data,error}=await sb.rpc("get_appraise_costs");
- if(error)log("get_appraise_costs 실패: "+error.message,"bad");else appraiseCosts=data||{};
+ if(error)log("get_appraise_costs 실패: "+error.message,"bad");else{appraiseCosts=data||{};appraiseAt=Date.now()}
  renderAppraise();
 }
 function renderAppraise(){
@@ -3713,25 +3739,28 @@ function renderAppraise(){
 // 감정: 골드를 내고 결과를 되돌릴 수 없어 확인 창을 먼저 띄운다
 function confirmAppraise(id){
  const i=itemsData.find(x=>x.id===id);if(!i)return;
- const nm=i.item_defs?.name||i.def_id,c=appraiseCosts[i.def_id];
- openConfirm("감정",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 감정합니다.${c!=null?` <b>${Number(c).toLocaleString()}골드</b>를 냅니다.`:""}</p><p class="help-note">랜덤 옵션이 안 붙을 수도 있습니다.<br>결과는 되돌릴 수 없습니다.</p>`,
+ const nm=i.item_defs?.name||i.def_id,c=appraiseCosts[i.def_id],o=appraiseCosts.free_first?.orig_cost?.[i.def_id];
+ openConfirm("감정",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 감정합니다.${c!=null?` <b>${Number(c).toLocaleString()}골드</b>를 냅니다.`:""}${o!=null?`<br>첫 감정이라 한 번만 0골드입니다(원래 ${Number(o).toLocaleString()}골드).`:""}</p><p class="help-note">랜덤 옵션이 안 붙을 수도 있습니다.<br>결과는 되돌릴 수 없습니다.</p>`,
   [["취소",null,false],["감정",()=>appraise(id),true]],"appraise");
 }
 let appraising=false;
 async function appraise(id){
  if(appraising)return;appraising=true;
- const {data,error}=await sb.rpc("appraise_item",{p_item:id});appraising=false;
- if(error){log("appraise_item 실패: "+error.message,"bad");showBattleError(String(error.message).includes("NOT_ENOUGH_GOLD")?"골드가 부족합니다.":"감정하지 못했습니다.","Appraisal Clan");return}
+ const {data,error}=await sb.rpc("appraise_item",{p_item:id});
+ if(error){appraising=false;log("appraise_item 실패: "+error.message,"bad");showBattleError(String(error.message).includes("NOT_ENOUGH_GOLD")?"골드가 부족합니다.":"감정하지 못했습니다.","Appraisal Clan");return}
  log("appraise_item 성공","ok");
  await loadItems();
  showItemResult("감정 결과",data);
+ // 첫 감정 안내 중이면 결과를 넘겨 다음 장(옵션 설명)으로 간다. 결과 창이 뜰 때까지는 안내가 기다린다(appraising)
+ if(qGuide?.key==="appraise")qGuide.res=data;
+ appraising=false;
 }
 // 감정·제작 결과: 받은 장비를 아이템 표시 형식으로 보여 준다
 function showItemResult(title,r){
  const d=itemsData.find(i=>i.def_id===r.def)?.item_defs||{name:r.name};
  const it={def_id:r.def,rolled_bonuses:r.rolled||{},qty:1,item_defs:d};
  const none=!Object.keys(r.rolled||{}).length;
- openConfirm(title,`<div class="item-card">${itemDetailHtml(it)}</div><p class="help-note">${none?"랜덤 옵션이 붙지 않아 일반 장비가 되었습니다.":"랜덤 옵션이 붙었습니다. Bag에 들어갔습니다."}</p>${r.cost!=null?`<p class="help-note">감정 비용 ${Number(r.cost).toLocaleString()}골드를 냈습니다.</p>`:""}`,[["확인",null,true]]);
+ openConfirm(title,`<div class="item-card">${itemDetailHtml(it)}</div><p class="help-note">${none?"랜덤 옵션이 붙지 않아 일반 장비가 되었습니다.":"랜덤 옵션이 붙었습니다. Bag에 들어갔습니다."}</p>${r.free?`<p class="help-note">첫 감정이라 0골드로 감정했습니다(원래 ${Number(r.orig_cost).toLocaleString()}골드).</p>`:r.cost!=null?`<p class="help-note">감정 비용 ${Number(r.cost).toLocaleString()}골드를 냈습니다.</p>`:""}`,[["확인",null,true]]);
 }
 // ===== 제작 =====
 let craftData=[],craftDefs={},craftN={};
