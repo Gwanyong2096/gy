@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v362 · 갱신 2026-10-19 12:10 KST -->
+<!-- ProjectGY-test-console v363 · 갱신 2026-10-19 12:34 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -465,7 +465,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v362 · 2026-10-19 12:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v363 · 2026-10-19 12:34</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -665,9 +665,13 @@ sb.rpc=function(fn,args,opt){
  if(RPC_READ.test(fn))return rpcRaw(fn,args,opt);
  const k=fn+"|"+JSON.stringify(args??{});
  let p=rpcFlying.get(k);
- if(!p){p=Promise.resolve(rpcRaw(fn,args,opt)).finally(()=>rpcFlying.delete(k));rpcFlying.set(k,p)}
+ if(!p){p=Promise.resolve(rpcRaw(fn,args,opt)).finally(()=>rpcFlying.delete(k));rpcFlying.set(k,p);
+  // 퀘스트 셈은 서버가 값을 바꾸는 동작 안에서 한다(감정·제작·보내기·스킬·TP 등). 값을 바꾸는 요청이 성공하면 퀘스트 창도 다시 받는다(동작마다가 아니라 여기 한 곳에서)
+  p.then(r=>{if(!r?.error)questSoon(fn)},()=>{})}
  return p;
 };
+// 전투(Edge Function battle)도 같은 길목: 성공하면 퀘스트 창을 다시 받는다. sb.functions는 부를 때마다 새로 만들어지므로 하나로 고정해 감싼다(토큰은 요청마다 붙는다)
+{const fc=sb.functions,invokeRaw=fc.invoke.bind(fc);fc.invoke=function(name,o){const p=invokeRaw(name,o);p.then(r=>{if(!r?.error)questSoon(name)},()=>{});return p};Object.defineProperty(sb,"functions",{value:fc})}
 const LB={BLESSED:"축복",NEUTRAL:"평온",BURDENED:"과업"};
 let chars=[];
 let loggedIn=null;
@@ -1105,6 +1109,9 @@ function questEnsure(){
  setInterval(questSync,500);
  return d;
 }
+// 값을 바꾸는 요청 뒤 퀘스트 창 다시 받기(04의 sb.rpc 길목이 부른다). 여러 요청이 이어지면 한 번으로 묶는다. 퀘스트 자체 요청은 스스로 다시 받고, 화면 설정 저장은 셈과 상관없어 뺀다
+let questSoonT=0;
+function questSoon(fn){if(fn==="claim_quests"||fn==="quest_guided"||fn==="set_ui_pref"||!loggedIn||stage)return;clearTimeout(questSoonT);questSoonT=setTimeout(questLoad,300)}
 async function questLoad(){
  if(stage||!loggedIn)return;
  const {data,error}=await sb.rpc("get_quests");if(error){log("get_quests 실패: "+error.message,"bad");return}
