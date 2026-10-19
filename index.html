@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v372 · 갱신 2026-10-19 17:01 KST -->
+<!-- ProjectGY-test-console v373 · 갱신 2026-10-19 19:29 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -469,9 +469,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .equip-pair .slot-label>span{flex:1;display:flex;align-items:center;justify-content:center;padding:0 14px}
 .equip-pair .slot-label>span+span{border-top:1px solid var(--bd)}
 @media(max-width:520px){.equip-row.equip-pair{min-height:0}.equip-pair .slot-label{flex-direction:row;margin:0;gap:0}.equip-pair .slot-label>span{flex:0 0 auto;padding:0;justify-content:flex-start}.equip-pair .slot-label>span+span{border-top:0}.equip-pair .slot-label>span+span::before{content:"·";margin:0 6px}}
+.stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v372 · 2026-10-19 17:01</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v373 · 2026-10-19 19:29</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2218,7 +2219,7 @@ const hasteText=v=>`${Number(v)<0?"":"+"}${Number((Number(v)||0).toFixed(2))}`;
 function renderTalent(c){
  const s=c.stats||{},pts=Number(c.tp||0),t=tpCur(c),mx=tpMax();
  const canReset=tpUsed(c)>0&&itemsData.some(i=>i.def_id==="reset_draught"&&!i.equipped_character);
- const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP <button type="button" class="help-btn" aria-label="TP 도움말" onclick="openTpHelp()"><span>?</span></button> <b>${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
+ const row=`<div class="st main-st"><span>Front SPD <b>${hasteText(s.SPD?.F||0)}</b></span><span>Pattern <b>${s.PATTERN_LINES??"-"}줄</b></span><span>Karma Limit <b>${s.KARMA?.LIMIT??"-"}</b></span>${pts>0?`<span class="stat-pt">TP <button type="button" class="help-btn" aria-label="TP 도움말" onclick="openTpHelp()"><span>?</span></button> <b id="tpLeft-${c.id}">${pts}</b></span>`:""}${canReset?`<button class="mini-btn pri" onclick="confirmTpReset('${c.id}')">TP 초기화</button>`:""}</div>`;
  if(pts<=0)return row;
  const f=(key,label,unit,left)=>`<label class="alloc-f"><span>${label}</span><input type="number" min="0" max="${left}" step="1" value="0" data-tp="${key}" ${left<=0?"disabled":""} oninput="tpPreview('${c.id}')"><span class="alloc-unit">${unit}</span></label>`;
  return row+`<div class="alloc-row" id="alloc-${c.id}">${f("h","Front SPD","포인트",mx.h-t.h)}${f("p","Pattern","줄",mx.p-t.p)}${f("k","Karma Limit","점",mx.k-t.k)}<button type="button" class="fm-btn pri" onclick="confirmTp('${c.id}')"><span>배분</span></button></div><div class="alloc-left" id="allocLeft-${c.id}">${tpHint(c,{h:0,p:0,k:0})}</div>`;
@@ -2238,7 +2239,8 @@ function tpHint(c,v){
  const nx=[n.h<mx.h?`Front SPD 1포인트에 +${step(n.h,n.h+1)}`:"Front SPD 최대",n.p<mx.p?`Pattern 1줄에 ${tpPatternCost(n.p+1)-tpPatternCost(n.p)} TP`:"Pattern 최대",n.k<mx.k?`Karma Limit 1점에 ${tpBandSum(pubCfg.TP_KARMA_BANDS,n.k+1)-tpBandSum(pubCfg.TP_KARMA_BANDS,n.k)} TP`:"Karma Limit 최대"];
  return `<span class="${left<0?"over":""}">남은 TP ${left}</span> · 다음: ${nx.join(", ")}`;
 }
-function tpPreview(id){const c=chars.find(x=>x.id===id);if(!c)return;$("allocLeft-"+id).innerHTML=tpHint(c,tpValues(id))}
+// 입력하는 대로 아래 줄과 위쪽 TP 숫자를 남을 TP로 바꾼다(배분 전이라도 얼마나 쓰는지 보이게). 배분하면 서버 값으로 다시 그린다
+function tpPreview(id){const c=chars.find(x=>x.id===id);if(!c)return;const v=tpValues(id),left=Number(c.tp||0)-tpCost(c,v);$("allocLeft-"+id).innerHTML=tpHint(c,v);const b=$("tpLeft-"+id);if(b){b.textContent=left;b.classList.toggle("over",left<0)}}
 function confirmTpReset(id){
  const c=chars.find(x=>x.id===id);if(!c)return;
  openConfirm("TP 초기화",`<p><b>Unwinding Draught</b> 1개를 마셔 Front SPD, Pattern, Karma Limit에 쓴 TP를 모두 되돌립니다. 돌려받는 TP: <b>${tpUsed(c)}</b></p><p class="help-note">Karma Limit이 줄면 장착한 장비에 따라 과업 상태가 될 수 있습니다. Pattern이 줄면 패턴 줄 수가 줄고, 넘는 줄은 비활성이 됩니다.</p>${draftWarnHtml(id)}`,
