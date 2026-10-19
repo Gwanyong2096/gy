@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v361 · 갱신 2026-10-19 12:01 KST -->
+<!-- ProjectGY-test-console v362 · 갱신 2026-10-19 12:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -114,7 +114,9 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .idle-line{font-size:13px;line-height:1.6;margin-top:4px}.idle-line.dim{color:var(--mu)}.idle-line b{font-weight:700}
 .idle-warn{color:var(--bad);font-weight:700}
 .idle-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
-.idle-top{font-size:13px;color:var(--mu);margin:-2px 0 10px}.idle-toggle{cursor:pointer;user-select:none}.idle-toggle:focus-visible{outline:2px solid var(--ac);outline-offset:3px;border-radius:4px}.idle-brief{display:none;font-size:13px;line-height:1.6;color:var(--mu)}#advIdle.collapsed .idle-brief{display:block}#advIdle.collapsed .section-title{margin-bottom:2px}#advIdle .idle-card:last-child{margin-bottom:0}
+.idle-top{flex:none;font-size:12px;color:var(--mu);margin:-4px 0 10px}
+/* Auto Battle 리모콘: 퀘스트 리모콘(.q-remote) 모양 그대로, 본문 왼쪽. 파티 카드가 길어 조금 넓다 */
+.i-remote{--q-w:280px}.i-remote .q-head .help-btn{margin-left:2px}.i-remote .idle-card:last-child{margin-bottom:0}.i-remote .idle-head .dg-name{font-weight:700}
 .roster-unit.on-idle{position:relative;cursor:default}.roster-unit.on-idle>:not(.u-idle){opacity:.3}.u-idle{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:14px;font-weight:700;line-height:1.2;white-space:nowrap;color:var(--mu);opacity:.8;pointer-events:none}@media(max-width:520px){.u-idle{font-size:9px}}
 .help-box.wide{max-width:var(--log-w-console)}
 .bl-result{text-align:center;padding:4px 0 2px}
@@ -463,7 +465,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .mon-pat .pattern-order{flex-wrap:wrap}.mon-pat .pattern-order button:disabled{opacity:.45;cursor:not-allowed}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v361 · 2026-10-19 12:01</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v362 · 2026-10-19 12:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -501,15 +503,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 
 
 <div class="camp-nav"><button id="tabLogin" class="camp-tab active" onclick="showView('login')">Login</button><button id="tabCamp" class="camp-tab" style="display:none" onclick="showView('camp')">Camp</button><button id="tabAdventure" class="camp-tab" style="display:none" onclick="showView('adventure')">Adventure</button><button id="tabBag" class="camp-tab" style="display:none" onclick="showView('bag')">Bag</button><button id="tabTown" class="camp-tab" style="display:none" onclick="showView('town')">Town</button><button id="tabLog" class="camp-tab" style="display:none" onclick="showView('log')">Log</button><button id="tabSetting" class="camp-tab" style="display:none" onclick="showView('setting')">Setting</button><div id="tabGold" class="supply-tab gold-tab" style="display:none"></div><div id="tabSupply" class="supply-tab" style="display:none"></div><button type="button" id="themeToggle" class="camp-tab theme-tab" onclick="toggleTheme()"></button></div>
-
-<div class="card sec-wrap" id="advIdle" style="display:none">
-  <div class="section-title adv-title idle-toggle" id="idleToggle" role="button" tabindex="0" aria-expanded="true" onclick="toggleIdleCard(event)" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleIdleCard(event)}">Auto Battle <span class="adv-count" id="idleCount"></span><button type="button" class="help-btn" onclick="openHelp('idle')" aria-label="Auto Battle 도움말">?</button><svg class="sec-chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-  <div class="idle-brief" id="idleBrief"></div>
-  <div class="sec-body">
-    <div class="idle-top" id="idleTop"></div>
-    <div id="idleList"></div>
-  </div>
-</div>
 
 <div id="loginView" class="view active">
   <div class="card">
@@ -869,7 +862,7 @@ async function init(){stageBoot();if(!stage)await practiceResume();const {data:{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
  loggedIn=now;questPlace(true);
- if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;$("advIdle").style.display="none";openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
+ if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;renderIdle();openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
 async function saveUiPref(key,value){const {error}=await sb.rpc("set_ui_pref",{p_key:key,p_value:value});if(error)log("화면 설정 저장 실패: "+error.message,"bad")}
@@ -3474,8 +3467,51 @@ function openRushResult(g){
 function openRushGroup(id){const runs=rushRunsOf(id);if(!runs.length)return;openRushResult({dungeon:runs[0].dungeon,requested:null,stopped:null,runs:runs.map(r=>({battle_id:r.id,result:r.result,turns:r.turns,rewards:r.rewards,has_log:r.has_log}))})}
 // ===== Auto Battle: 파견 · 정산 · 회수 =====
 // 정산은 서버(전투 함수)가 한 번에 한다. 접속할 때와 Adventure를 열 때, 다음 판 시간이 됐을 때(어느 탭에서든) 부른다.
-// 카드는 파견한 파티가 있으면 어느 화면에서든 탭 바로 아래에 보이고, 제목 줄로 접고 편다(idle_open)
+// 화면: 퀘스트 리모콘과 같은 모양의 떠 있는 리모콘(본문 왼쪽). 어느 화면에서든 열어 진행을 보고 회수한다.
+// 보이는 때: 로그인 뒤, 무대·튜토리얼 진행 중이 아닐 때, 파견한 파티가 있을 때(Auto Battle 튜토리얼을 마친 값이 서버에 생기면 그 값으로 바꾼다)
+// 접힘: 창이 좁으면(본문 왼쪽에 안 들어가면) 접힘 → 이 브라우저에 기억된 마지막 상태 → 처음이면 펼침. 좁은 화면은 손잡이를 누르면 본문 안쪽 왼쪽에 뜨고 ×·바깥·Esc로 닫힌다
 let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0,idleOpen=true;
+const IR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,sig:""},I_FOLD_KEY="pgy_idle_fold";
+function idleRemoteOn(){return !!idleInfo&&(idleInfo.parties||[]).length>0}
+function idleHidden(){return !loggedIn||!!stage||tut.step==null||tut.step<tut.last||!!tutPractice||!idleRemoteOn()}
+function idleEnsure(){
+ if(IR.el)return IR.el;
+ const d=document.createElement("div");d.className="q-remote i-remote hidden";d.id="idleRemote";
+ d.innerHTML=`<button type="button" class="q-tab" id="iTab" aria-label="Auto Battle 열기"><span class="q-dot"></span>Auto <span id="iTabCnt">0</span></button>
+<div class="q-panel" role="region" aria-label="Auto Battle"><div class="q-head"><span class="q-title">Auto Battle</span><span class="adv-count" id="idleCount"></span><button type="button" class="help-btn" onclick="openHelp('idle')" aria-label="Auto Battle 도움말">?</button><span class="q-cnt"></span><button type="button" class="q-hbtn" id="iFold"></button></div>
+<div class="idle-top" id="idleTop"></div><div class="q-list" id="idleList"></div></div>`;
+ document.body.appendChild(d);IR.el=d;
+ $("iTab").addEventListener("click",()=>{if(IR.narrow)IR.open=true;else{IR.userFold=false;LS.set(I_FOLD_KEY,"0")}idlePlace(true)});
+ $("iFold").addEventListener("click",()=>{if(IR.narrow)IR.open=false;else{IR.userFold=true;LS.set(I_FOLD_KEY,"1")}idlePlace(true)});
+ document.addEventListener("click",e=>{if(IR.narrow&&IR.open&&!d.contains(e.target)&&!e.target.closest(".help-overlay")){IR.open=false;idlePlace(true)}});
+ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&IR.narrow&&IR.open&&$("helpOverlay").hidden){IR.open=false;idlePlace(true)}});
+ addEventListener("scroll",idleFollow,{passive:true});
+ addEventListener("resize",()=>idlePlace(true));
+ try{new ResizeObserver(()=>{if(!d.classList.contains("hidden"))idlePlace(true)}).observe(document.querySelector("main"))}catch(e){}
+ setInterval(()=>{if(idleSig()!==IR.sig)idlePlace(true)},500);
+ return d;
+}
+function idleBodyLeft(){const m=document.querySelector("main"),r=m.getBoundingClientRect();return r.left+parseFloat(getComputedStyle(m).paddingLeft)}
+function idleTarget(){const m=document.querySelector("main").getBoundingClientRect(),mt=m.top+scrollY,mb=m.bottom+scrollY,h=IR.el.offsetHeight;return Math.max(mt+8,Math.min(scrollY+(innerHeight-h)/2,mb-h-8))}
+function idleSig(){const m=document.querySelector("main").getBoundingClientRect();return [idleHidden(),document.documentElement.clientWidth,Math.round(m.left),Math.round(m.height)].join("|")}
+function idlePlace(jump){
+ const d=idleEnsure(),bl=idleBodyLeft(),w=parseFloat(getComputedStyle(d).getPropertyValue("--q-w"))||240;
+ IR.narrow=bl<Q_GAP+w+Q_EDGE;
+ const hidden=idleHidden();d.classList.toggle("hidden",hidden);
+ if(!IR.narrow)IR.open=false;
+ const saved=LS.get(I_FOLD_KEY),folded=IR.narrow||(IR.userFold??(saved==null?false:saved==="1"));
+ d.classList.toggle("folded",folded);d.classList.toggle("open",folded&&IR.open);
+ $("iFold").textContent=IR.narrow?"×":"접기";$("iFold").setAttribute("aria-label",IR.narrow?"닫기":"접기");
+ IR.sig=idleSig();
+ if(hidden)return;
+ let left;d.style.width="";
+ if(!folded)left=bl-Q_GAP-d.offsetWidth;
+ else if(IR.open)left=bl;
+ else{const tw=Math.ceil($("iTab").getBoundingClientRect().width);d.style.width=tw+"px";left=bl-Q_GAP-tw>=4?bl-Q_GAP-tw:0}
+ d.style.left=(left+scrollX)+"px";
+ if(jump||IR.top==null){IR.top=idleTarget();d.style.top=IR.top+"px"}else idleFollow();
+}
+function idleFollow(){if(!IR.el||IR.raf||IR.el.classList.contains("hidden"))return;const step=()=>{const t=idleTarget(),dd=t-IR.top;if(Math.abs(dd)<.5){IR.top=t;IR.el.style.top=t+"px";IR.raf=0;return}IR.top+=dd*.18;IR.el.style.top=IR.top+"px";IR.raf=requestAnimationFrame(step)};IR.raf=requestAnimationFrame(step)}
 const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
 function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
@@ -3518,14 +3554,11 @@ function showIdleResult(res,names){
  openConfirm("Auto Battle 정산",`${rows}<p class="help-note">받은 경험치와 전리품은 Auto Battle의 파티 요약에서 볼 수 있습니다.</p>`,[["확인",null,true]]);
 }
 function renderIdle(){
- const box=$("advIdle");if(!box)return;
- const info=idleInfo,ps=info?.parties||[];
- // 파견한 파티가 있으면 어느 화면에서든, 없으면 Adventure의 던전 목록에서 Auto Battle이 열린 던전이 있을 때만
- const show=!!info&&(ps.length>0||(currentView==="adventure"&&!advRoom&&dungeons.some(d=>d.auto_unlocked)));
- box.style.display=show?"":"none";
- if(!show)return;
- box.classList.toggle("collapsed",!idleOpen);$("idleToggle").setAttribute("aria-expanded",String(idleOpen));
- $("idleCount").textContent=`${ps.length}/${info.slots}`;
+ const d=idleEnsure(),info=idleInfo,ps=info?.parties||[];
+ if(!info){idlePlace(true);return}
+ $("idleCount").textContent=`${ps.length}/${info.slots}`;$("iTabCnt").textContent=ps.length;
+ // 손잡이 점·깜빡임: 골드가 모자라 멈춘 파티가 있을 때
+ d.classList.toggle("has-done",ps.some(p=>p.halted));
  // cap_hours가 null이면 쌓이는 시간 무제한
  $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · ${info.cap_hours==null?"쌓이는 시간 제한 없음":`최대 ${info.cap_hours}시간까지 쌓임`}`;
  $("idleList").innerHTML=ps.map(p=>{
@@ -3546,6 +3579,7 @@ function renderIdle(){
   </div>`}).join("")||`<div class="empty">파견한 파티가 없습니다. Auto Battle이 열린 던전에 입장해 파티를 파견할 수 있습니다.</div>`;
  tickIdle();
  if(!idleTimer)idleTimer=setInterval(tickIdle,1000);
+ idlePlace(true);
 }
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
@@ -3566,10 +3600,6 @@ function tickIdle(){
   if(halted)a.push(`<span class="idle-warn">골드 부족으로 멈춤${ps.length>1?` ${halted}`:""}</span>`);
   const h=ps.length?a.join(" · "):"파견한 파티가 없습니다.";if(brief.dataset.h!==h){brief.dataset.h=h;brief.innerHTML=h}}
  if(due&&!idleBusy&&!battleBusy&&Date.now()>=idleNextTry){idleNextTry=Date.now()+60000;checkIdle(!(currentView==="adventure"&&!advRoom))}
-}
-function toggleIdleCard(e){
- if(e&&e.target.closest&&e.target.closest("button"))return;
- idleOpen=!idleOpen;renderIdle();saveUiPref("idle_open",idleOpen);
 }
 function confirmDispatch(id){
  const d=dungeons.find(x=>x.id===id);if(!d)return;
