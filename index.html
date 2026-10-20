@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v380 · 갱신 2026-10-20 14:34 KST -->
+<!-- ProjectGY-test-console v381 · 갱신 2026-10-20 16:39 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v380 · 2026-10-20 14:34</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v381 · 2026-10-20 16:39</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3708,17 +3708,20 @@ function renderIdle(){
  d.classList.toggle("has-done",ps.some(p=>p.halted));
  // cap_hours가 null이면 쌓이는 시간 무제한
  $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · ${info.cap_hours==null?"쌓이는 시간 제한 없음":`최대 ${info.cap_hours}시간까지 쌓임`}`;
+ idleNeedSlots();
  $("idleList").innerHTML=ps.map(p=>{
   const s=p.summary||{};
   const mem=(p.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
   // EXP는 캐릭터마다 받은 것을 합친 한 값(레벨이 오른 캐릭터 수를 뒤에)
   const ex=Object.values(s.exp||{}),expSum=ex.reduce((a,x)=>a+(Number(x.gain)||0),0),lvUp=ex.filter(x=>x.level_up>0).length;
   const exp=ex.length?`+${expSum.toLocaleString()} (${ex.length}명 합계${lvUp?` · 레벨 업 ${lvUp}명`:""})`:"";
-  // 전리품이 길면 가운데를 …로 줄이고, …를 누르면 다 보이고 끝의 접기로 다시 줄인다
-  const dl=Object.values(s.drops||{}).map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`);
+  // 전리품이 길면 앞 5개 뒤를 …로 줄이고, …를 누르면 다 보이고 끝의 접기로 다시 줄인다
+  // 장비(무기·방어구·장신구, Unknown 포함)를 앞에, 재료·소모품은 뒤에(같은 쪽 안에서는 받은 순서)
+  const dv=Object.values(s.drops||{}),isGear=x=>{const sl=idleDefSlot[x.def];return x.unknown||!!sl&&sl!=="MATERIAL"&&sl!=="CONSUMABLE"};
+  const dl=[...dv.filter(isGear),...dv.filter(x=>!isGear(x))].map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`);
   const dOpen=idleDropsOpen.has(p.id),dCut=dl.length>IDLE_DROPS_MAX;
   const drops=!dCut?dl.join(", "):dOpen?`${dl.join(", ")} <button type="button" class="idle-more" onclick="idleDrops('${esc(p.id)}',false)">접기</button>`
-   :`${dl.slice(0,3).join(", ")}, <button type="button" class="idle-more" aria-label="전리품 ${dl.length-5}개 더 보기" onclick="idleDrops('${esc(p.id)}',true)">…</button>, ${dl.slice(-2).join(", ")}`;
+   :`${dl.slice(0,IDLE_DROPS_MAX).join(", ")} <button type="button" class="idle-more" aria-label="전리품 ${dl.length-IDLE_DROPS_MAX}개 더 보기" onclick="idleDrops('${esc(p.id)}',true)">…</button>`;
   const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (${Number(x.left).toLocaleString()}회 남음)`:""}`).join(", ");
   return `<div class="idle-card">
    <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
@@ -3736,7 +3739,15 @@ function renderIdle(){
  // 안내 중에 나갔거나 새로 고쳤으면 리모콘이 보일 때 남은 장부터 잇는다
  if(info.guide==="ACTIVE"&&ps.length&&!qGuide&&!idleHidden())idleGuideStart();
 }
-const IDLE_DROPS_MAX=6,idleDropsOpen=new Set();
+const IDLE_DROPS_MAX=5,idleDropsOpen=new Set(),idleDefSlot={};
+// 전리품 정렬에 쓰는 아이템 칸: Bag에 받아 둔 것을 쓰고, 모르는 것만 item_defs에서 받아 다시 그린다
+let idleSlotAsk=null;
+function idleNeedSlots(){
+ itemsData.forEach(i=>{if(i.item_defs?.slot)idleDefSlot[i.def_id]=i.item_defs.slot});
+ const miss=[...new Set((idleInfo?.parties||[]).flatMap(p=>Object.values(p.summary?.drops||{}).map(x=>x.def)))].filter(d=>d&&!(d in idleDefSlot));
+ if(!miss.length||idleSlotAsk)return;
+ idleSlotAsk=sb.from("item_defs").select("id,slot").in("id",miss).then(({data})=>{(data||[]).forEach(d=>idleDefSlot[d.id]=d.slot);miss.forEach(d=>{if(!(d in idleDefSlot))idleDefSlot[d]=null});idleSlotAsk=null;renderIdle()});
+}
 function idleDrops(id,on){if(on)idleDropsOpen.add(id);else idleDropsOpen.delete(id);renderIdle()}
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
