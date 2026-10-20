@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v379 · 갱신 2026-10-20 14:27 KST -->
+<!-- ProjectGY-test-console v380 · 갱신 2026-10-20 14:34 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v379 · 2026-10-20 14:27</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v380 · 2026-10-20 14:34</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1017,7 +1017,6 @@ async function shopBuyGo(id,n){
 }
 // 여관 Goods Sell: 목록과 개당 값은 서버(get_sell_list, 장착 중인 건 서버가 뺌), 팔기는 sell_items. 값은 화면이 보내지 않는다
 let shopTab="buy",sellList=[];
-const SELL_ZERO_WHY={UNKNOWN:"Unknown이라",SHOP:"여관 상품이라",CONSUMABLE:"소모품이라",STARTER:"시작 장비라",PROMOTE:"전직 장비라"};
 function setShopTab(t){shopTab=t;document.querySelectorAll("#shopTabs .seg-btn").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("innShop").hidden=t!=="buy";$("innSell").hidden=t!=="sell";if(t==="sell")loadSell()}
 async function loadSell(){
  if(stage||!loggedIn)return;
@@ -1035,9 +1034,9 @@ function renderSell(){
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
  const secs=ITEM_GROUPS.map(([t,sl])=>[t,sellList.filter(i=>sl.includes(i.item_defs.slot))]);
  const rest=sellList.filter(i=>!known.has(i.item_defs.slot));if(rest.length)secs.push(["Etc",rest]);
- const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i),why=z?SELL_ZERO_WHY[i.zero_why]:"";
+ const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i);
   return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
-  <div class="shop-main"><div class="shop-name"><b>${esc(d.name)}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}${why?`<div class="shop-note">${why} 0골드입니다.</div>`:""}</div>
+  <div class="shop-main"><div class="shop-name"><b>${esc(d.name)}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}</div>
   <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(d.name)} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">판매</button></div>
  </div>`};
  $("innSell").innerHTML=`<div class="sell-hint">장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
@@ -2466,7 +2465,7 @@ function renderCharacterDetail(){
  const conAvail=conKinds.map(i=>`<div class="equip-row"><span class="slot-item">${itemTop(`<span class="item-head"><b class="item-name">${esc(i.item_defs.name)}</b><b class="item-count">x${conCount(i.def_id)}</b><span class="item-cat item-tags">(consumable)</span></span>`,i)}</span><button onclick="setConsumable('${c.id}','${esc(i.def_id)}')">장착</button></div>`).join("");
  // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
  const availRow=i=>`<div class="equip-row"><span class="slot-item">${itemDetailHtml(i)}</span><button onclick="equipTo('${i.id}','${c.id}')">장착</button></div>`;
- const AV_GROUPS=[ITEM_GROUPS[0],...ARMOR_GROUPS,ITEM_GROUPS[2]];
+ const AV_GROUPS=ITEM_GROUPS.filter(([t])=>t!=="Consumable"&&t!=="Material");
  const avSec=(t,h)=>h?`<div class="av-head"><span>${t}</span></div>${h}`:"";
  const availableHtml=available.length||conAvail?AV_GROUPS.map(([t,sl])=>avSec(t,available.filter(i=>sl.includes(i.item_defs.slot)).map(availRow).join(""))).join("")+avSec("Consumable",conAvail):"<div class=\"empty\">장착할 아이템이 없습니다.</div>";
  box.innerHTML=`${renderQuickSwitch(c.id)} <div class="detail-grid">
@@ -2536,10 +2535,9 @@ function handMoveBtn(i,charId){
  const to=i.equipped_slot===alt?base:alt;
  return `<button onclick="equipTo('${i.id}','${charId}','${to}')">${HAND_SLOT_NAME[to]||to}로</button>`;
 }
-// 아이템 구분: Equipment의 Allowed to Equip과 Bag이 같은 방식으로 나눈다
-const ITEM_GROUPS=[["Weapon",["WEAPON","SHIELD"]],["Armor",["HEAD","SHOULDER","TOP","BOTTOM","BELT","SHOES","CAPE"]],["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
-// 장착 목록(Allowed to Equip)은 방어구를 칸마다 나눈다. 한 벌 옷은 상의 칸 장비라 Top에 든다
+// 아이템 구분: Equipment의 Allowed to Equip과 Bag·Sell이 같은 방식으로 나눈다. 방어구는 칸마다(한 벌 옷은 상의 칸 장비라 Top에 든다)
 const ARMOR_GROUPS=[["Head",["HEAD"]],["Shoulder",["SHOULDER"]],["Top",["TOP"]],["Bottom",["BOTTOM"]],["Belt",["BELT"]],["Shoes",["SHOES"]],["Cape",["CAPE"]]];
+const ITEM_GROUPS=[["Weapon",["WEAPON","SHIELD"]],...ARMOR_GROUPS,["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
 function renderBag(){
  const box=$("items");
  if(!itemsData.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
