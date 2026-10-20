@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v381 · 갱신 2026-10-20 16:39 KST -->
+<!-- ProjectGY-test-console v382 · 갱신 2026-10-20 23:24 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v381 · 2026-10-20 16:39</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v382 · 2026-10-20 23:24</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3177,7 +3177,7 @@ function supplyNow(){const st=supplyState;if(!st)return null;if(st.next_sec==nul
 function enterRowHtml(d){return `<div class="dg-enter"><button class="pri" onclick="enterRoom('${esc(d.id)}')">입장</button></div>`}
 // 던전 화면: 입장을 누르면 그 던전 화면에서 파티를 고르고 Battle! / Auto Battle! / Battle Rush! / Mock Battle
 let advRoom=null;
-// Battle Rush: 판 수(1 ~ RUSH_MAX)와 지거나 비겨도 계속 돌리기(rush_keep_going). Auto Battle이 열린 던전에서만 보인다
+// Battle Rush: 판 수(1 ~ RUSH_MAX)와 지거나 비겨도 계속 돌리기(rush_keep_going). 들어갈 수 있는 던전이면 늘 보인다
 let rushCount=10,rushKeepGoing=false,hideMock=false;
 function rushMaxN(){return Math.max(1,Math.floor(Number(pubCfg.RUSH_MAX)||50))}
 function clampRush(v){const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(rushMaxN(),Math.max(1,n)):1}
@@ -3207,13 +3207,13 @@ function renderRoom(){
  // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
  const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
  const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()?" disabled":""}>Auto Battle!<span class="pill-sub">${idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:"";
- const rushBtn=d.auto_unlocked?`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="1" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`:"";
+ const rushBtn=`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="1" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`;
  const mockBtn=mockVisible()?`<button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>Mock Battle<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>`:"";
  $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle!<span class="pill-sub">SUPPLY ${cost}</span></button>${autoBtn}${rushBtn}${mockBtn}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
  if(typing!=null){const el=$("rushCount");if(el&&!el.disabled){el.value=typing;el.focus()}}
 }
 let battleBusy=false;
-const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 Mock Battle을 모두 썼습니다.",RUSH_LOCKED:"아직 Battle Rush가 열리지 않은 던전입니다.",INVALID_RUSH:"판 수를 확인해 주세요.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 Mock Battle을 모두 썼습니다.",INVALID_RUSH:"판 수를 확인해 주세요.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function newRequestId(){try{return crypto.randomUUID()}catch(e){return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,12)}}
 async function startBattle(dungeonId,mode){
  if(battleBusy)return;battleBusy=true;renderRoom();
