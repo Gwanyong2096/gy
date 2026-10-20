@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v378 · 갱신 2026-10-20 14:09 KST -->
+<!-- ProjectGY-test-console v379 · 갱신 2026-10-20 14:27 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -112,6 +112,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .idle-card{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .idle-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
 .idle-line{font-size:13px;line-height:1.6;margin-top:4px}.idle-line.dim{color:var(--mu)}.idle-line b{font-weight:700}
+.idle-more{display:inline;height:auto;min-height:0;padding:0 6px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--ac);font-size:12px;line-height:1.5;vertical-align:baseline;cursor:pointer}
 .idle-warn{color:var(--bad);font-weight:700}
 .idle-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .idle-top{flex:none;font-size:12px;color:var(--mu);margin:-4px 0 10px}
@@ -476,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v378 · 2026-10-20 14:09</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v379 · 2026-10-20 14:27</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3630,7 +3631,8 @@ function idleEnsure(){
  document.body.appendChild(d);IR.el=d;
  $("iTab").addEventListener("click",()=>{if(IR.narrow)IR.open=true;else{IR.userFold=false;LS.set(I_FOLD_KEY,"0")}idlePlace(true)});
  $("iFold").addEventListener("click",()=>{if(IR.narrow)IR.open=false;else{IR.userFold=true;LS.set(I_FOLD_KEY,"1")}idlePlace(true)});
- document.addEventListener("click",e=>{if(IR.narrow&&IR.open&&!qGuide&&!d.contains(e.target)&&!e.target.closest(".help-overlay")){IR.open=false;idlePlace(true)}});
+ // 누른 뒤 다시 그려져 떨어진 요소(전리품 …·접기)는 바깥 클릭으로 치지 않는다
+ document.addEventListener("click",e=>{if(IR.narrow&&IR.open&&!qGuide&&e.target.isConnected&&!d.contains(e.target)&&!e.target.closest(".help-overlay")){IR.open=false;idlePlace(true)}});
  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&IR.narrow&&IR.open&&!qGuide&&$("helpOverlay").hidden){IR.open=false;idlePlace(true)}});
  addEventListener("scroll",idleFollow,{passive:true});
  addEventListener("resize",()=>idlePlace(true));
@@ -3711,8 +3713,14 @@ function renderIdle(){
  $("idleList").innerHTML=ps.map(p=>{
   const s=p.summary||{};
   const mem=(p.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
-  const exp=Object.values(s.exp||{}).map(x=>`${esc(x.name||"")} +${Number(x.gain||0).toLocaleString()}${x.level_up>0?` (Lv.${x.level})`:""}`).join(" · ");
-  const drops=Object.values(s.drops||{}).map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`).join(", ");
+  // EXP는 캐릭터마다 받은 것을 합친 한 값(레벨이 오른 캐릭터 수를 뒤에)
+  const ex=Object.values(s.exp||{}),expSum=ex.reduce((a,x)=>a+(Number(x.gain)||0),0),lvUp=ex.filter(x=>x.level_up>0).length;
+  const exp=ex.length?`+${expSum.toLocaleString()} (${ex.length}명 합계${lvUp?` · 레벨 업 ${lvUp}명`:""})`:"";
+  // 전리품이 길면 가운데를 …로 줄이고, …를 누르면 다 보이고 끝의 접기로 다시 줄인다
+  const dl=Object.values(s.drops||{}).map(x=>`${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` x${x.n}`:""}`);
+  const dOpen=idleDropsOpen.has(p.id),dCut=dl.length>IDLE_DROPS_MAX;
+  const drops=!dCut?dl.join(", "):dOpen?`${dl.join(", ")} <button type="button" class="idle-more" onclick="idleDrops('${esc(p.id)}',false)">접기</button>`
+   :`${dl.slice(0,3).join(", ")}, <button type="button" class="idle-more" aria-label="전리품 ${dl.length-5}개 더 보기" onclick="idleDrops('${esc(p.id)}',true)">…</button>, ${dl.slice(-2).join(", ")}`;
   const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (${Number(x.left).toLocaleString()}회 남음)`:""}`).join(", ");
   return `<div class="idle-card">
    <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
@@ -3730,6 +3738,8 @@ function renderIdle(){
  // 안내 중에 나갔거나 새로 고쳤으면 리모콘이 보일 때 남은 장부터 잇는다
  if(info.guide==="ACTIVE"&&ps.length&&!qGuide&&!idleHidden())idleGuideStart();
 }
+const IDLE_DROPS_MAX=6,idleDropsOpen=new Set();
+function idleDrops(id,on){if(on)idleDropsOpen.add(id);else idleDropsOpen.delete(id);renderIdle()}
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
  if(!idleInfo)return;
