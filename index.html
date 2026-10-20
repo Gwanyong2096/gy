@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v377 · 갱신 2026-10-20 04:16 KST -->
+<!-- ProjectGY-test-console v378 · 갱신 2026-10-20 14:09 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -476,7 +476,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v377 · 2026-10-20 04:16</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v378 · 2026-10-20 14:09</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1037,7 +1037,7 @@ function renderSell(){
  const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i),why=z?SELL_ZERO_WHY[i.zero_why]:"";
   return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
   <div class="shop-main"><div class="shop-name"><b>${esc(d.name)}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}${why?`<div class="shop-note">${why} 0골드입니다.</div>`:""}</div>
-  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(d.name)} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="${z?"":"pri "}sell-btn" onclick="sellPick('${esc(i.id)}',this)">${z?"버리기":"판매"}</button></div>
+  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(d.name)} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">판매</button></div>
  </div>`};
  $("innSell").innerHTML=`<div class="sell-hint">장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
 }
@@ -1045,9 +1045,8 @@ function sellPick(id,btn){
  const i=sellList.find(x=>x.id===id);if(!i)return;
  const q=Number(i.qty)||1,p=Number(i.price)||0,inp=btn.parentElement.querySelector("input.shop-qty"),n=inp?Math.max(1,Math.min(q,Math.floor(Number(inp.value))||1)):1;if(inp)inp.value=n;
  const nm=`<b>${esc(i.item_defs.name)}</b>${unkTag(i)}`,opt=!i.unknown&&Object.values(i.rolled_bonuses||{}).some(v=>Number(v));
- const html=p?`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}판 아이템은 되살 수 없습니다.</p>`
-  :`<p>${nm} ${n}개를 버립니다. <b>0골드</b>이고, 되찾을 수 없습니다.</p>`;
- openConfirm(p?"판매":"버리기",html,[["취소",null,false],[p?"판매":"버리기",()=>sellGo(id,n),true]],"sell");
+ const html=`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}판 아이템은 되살 수 없습니다.</p>`;
+ openConfirm("판매",html,[["취소",null,false],["판매",()=>sellGo(id,n),true]],"sell");
 }
 async function sellGo(id,n){
  const {data,error}=await sb.rpc("sell_items",{p_items:[{id,qty:n}]});
@@ -1057,7 +1056,7 @@ async function sellGo(id,n){
  log("sell_items 성공","ok");
  if(data?.gold!=null){gold=Number(data.gold);renderGold()}
  const s=(data?.sold||[])[0],g=Number(data?.gained)||0,nm=s?.name||sellList.find(x=>x.id===id)?.item_defs.name||"";
- openNotice(g?`${nm} ${n}개를 팔아 ${g.toLocaleString()}골드를 받았습니다.`:`${nm} ${n}개를 버렸습니다.`);
+ openNotice(`${nm} ${n}개를 팔아 ${g.toLocaleString()}골드를 받았습니다.`);
  // Bag·골드·캐릭터(낀 소모품 칸 수량)를 다시 받는다
  load();
 }
