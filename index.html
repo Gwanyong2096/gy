@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v383 · 갱신 2026-10-22 02:38 KST -->
+<!-- ProjectGY-test-console v384 · 갱신 2026-10-22 14:00 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v383 · 2026-10-22 02:38</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v384 · 2026-10-22 14:00</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3259,7 +3259,9 @@ const RESULT_KO={WIN:"승리",LOSE:"패배",DRAW:"무승부"};
 const EL_KO={EARTH:"흙",WATER:"물",FIRE:"불",ELECTRIC:"전기",WIND:"바람"};
 function calcText(c,kind,tick){
  const q=v=>String(+(+v).toFixed(2)),sg=v=>`${v<0?"":"+"}${q(v)}`;const mag=kind==="MAGIC";
- const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${q(c.mult*100/(c.elem>0?c.elem:1))}%`];
+ // mult에는 상성 배율과 출혈·뒷방 비례로 더한 양이 이미 들어 있다. 계수는 그 둘을 뺀 스킬 계수로 보이고, 더한 양은 따로 적는다
+ const adds=(c.bleed?.add>0?c.bleed.add:0)+(c.def_scale?.add>0?c.def_scale.add:0);
+ const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${q((c.mult/(c.elem>0?c.elem:1)-(c.power>0?adds/c.power:0))*100)}%`];
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
