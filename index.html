@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v382 · 갱신 2026-10-20 23:24 KST -->
+<!-- ProjectGY-test-console v383 · 갱신 2026-10-22 02:38 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v382 · 2026-10-20 23:24</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v383 · 2026-10-22 02:38</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2119,6 +2119,7 @@ async function openMaterialHelp(){
  HELP.material={title:"Material",html:`<p>장비의 재료마다 더 잘 붙는 랜덤 옵션이 있습니다. 감정과 제작 모두 같습니다.</p><ul>${rows}</ul><p class="help-note">얼마나 더 잘 붙는지는 알려져 있지 않습니다. 다른 옵션도 그대로 붙을 수 있습니다.</p>`};
  openHelp("material");
 }
+const SCALE_STAT={FRONT_DEF_SUM:"Front DEF·Front MDEF 합"};
 function skillEffectText(s,ak){
  const e=s.effect||{},out=[];
  // 계수 표기: 스탯 계수%×타수 (예: ATK 160×1)
@@ -2126,7 +2127,10 @@ function skillEffectText(s,ak){
  if(e.power)out.push(coef(e.power,s.hits||1));
  if(e.heal_self_flat||e.heal_self_pct)out.push(`자신의 HP ${[e.heal_self_flat?`${e.heal_self_flat}`:"",e.heal_self_pct?`최대 HP ${e.heal_self_pct}%`:""].filter(Boolean).join(" + ")} 회복`);
  if(e.heal_lost_pct)out.push(`자신의 잃은 HP ${e.heal_lost_pct}% 회복`);
- if(e.sure_parry)out.push(`다음 ${e.sure_parry.hits}회 피격 확정 패링`);
+ if(e.sure_parry)out.push(`다음 ${e.sure_parry.hits}회 피격 확정 패링${e.sure_parry.buff?.length?` (패링하면 ${e.sure_parry.buff.map(b=>`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`).join(" · ")})`:""}`);
+ if(e.taunt)out.push(`도발 ${e.taunt.turns}턴 (적의 Valid 스킬이 자신을 노림)`);
+ // 다른 능력치에 비례해 오르는 패시브(Bulwark: Front DEF와 Front MDEF 합만큼 Back DEF·Back MDEF)
+ if(e.scale)e.scale.forEach(x=>out.push(`${buffLabel(x.k)} +(${SCALE_STAT[x.stat]||x.stat}의 ${x.pct}%)`));
  if(e.bonuses)Object.entries(e.bonuses).forEach(([k,v])=>out.push(`${STAT_LABEL[k]||k} ${v>0?"+":""}${v}${k.endsWith("_PCT")||["MIT","MMIT","SUPPORT_AMP","PARRY","PIERCE"].includes(k)?"%":""}`));
  if(e.heal)out.push(`${s.hit_type==="ALL"?"모든 아군":"가장 다친 아군"} ${coef(e.heal,s.hit_type==="ALL"?1:(s.hits||1))} 회복`);
  if(e.mp_restore)out.push(s.target==="SELF"?`자신의 MP를 최대 MP의 ${e.mp_restore.pct}% 회복`:`${s.hit_type==="ALL"?"모든 아군":"MP가 가장 적은 아군"}의 MP를 각자 최대 MP의 ${e.mp_restore.pct}% 회복`);
@@ -2135,10 +2139,12 @@ function skillEffectText(s,ak){
  if(e.delay_push)out.push(`Delay Push ${e.delay_push}`);
  // 버프 크기: 고정 수치, 또는 시전자 수치의 몇 %
  const bufSize=b=>b.stat!=null&&b.mult!=null?`시전자 ${b.stat}의 ${+(Number(b.mult)*100).toFixed(2)}%`:`${b.v}${buffUnit(b.k)}`;
+ if(e.def_scale)out.push(`자신 Back DEF·Back MDEF 합의 ${e.def_scale.pct}% 추가`);
  if(e.bleed_scale)out.push(`대상에 남은 출혈량의 ${e.bleed_scale.pct}% 추가${e.bleed_scale.max_mult!=null?` (합계 ${e.power?.stat||"ATK"} ${Math.round(Number(e.bleed_scale.max_mult)*100)}까지)`:""}`);
  const bufTurns=b=>b.turns?` (${b.turns}턴)`:"";
  if(e.buff)e.buff.forEach(b=>out.push(`${buffLabel(b.k)} ${buffSign(b.k)<0?"-":"+"}${bufSize(b)}${bufTurns(b)}`));
  if(e.debuff)e.debuff.forEach(b=>out.push(`${buffLabel(b.k)} ${buffSign(b.k)<0?"+":"-"}${bufSize(b)}${bufTurns(b)}`));
+ if(e.self_debuff)e.self_debuff.forEach(b=>out.push(`자신 ${buffLabel(b.k)} ${buffSign(b.k)<0?"+":"-"}${bufSize(b)}${bufTurns(b)}`));
  if(e.bleed_hit_amp)out.push(`출혈이 걸린 적을 때릴 때 피해 증폭 +${e.bleed_hit_amp}%`);
  if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%`);
  if(e.delay_pull)out.push(`Delay Pull ${e.delay_pull}`);
@@ -3256,6 +3262,7 @@ function calcText(c,kind,tick){
  const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${q(c.mult*100/(c.elem>0?c.elem:1))}%`];
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
+ if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  // 증폭 − 경감 = 결과(한계 적용 뒤). 기본 피해 × (1 + 결과) = 원래 피해
  if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
@@ -3461,6 +3468,9 @@ function battleLogHtml(b){
   else if(e.t==="formation"&&cur)cur.html.push(`<div class="bl-form">뿔피리 소리가 울려 퍼졌다!</div>${(e.units||[]).map(x=>`<div class="bl-move">${who(x.u)}${josa(x.u,"이","가")} ${x.pos==="FRONT"?"전방":"후방"}으로 신속히 움직인다!</div>`).join("")}${(e.deaf||[]).map(id=>`<div class="bl-deaf">${who(id)}${josa(id,"은","는")} 듣지 못한다...</div>`).join("")}`);
   // 상대 위치 옮기기(엔진 0.22.0): 그 타격의 대미지 줄 바로 다음
   else if(e.t==="shove"&&cur)cur.html.push(`<div class="bl-move">${who(e.tg)}${josa(e.tg,"이","가")} ${e.pos==="FRONT"?"전방으로 당겨졌다!":"후방으로 밀려났다!"}</div>`);
+  // 도발(엔진 0.28.0): 걸 때 turns, 끝날 때 end, 쓰러져 끝나면 dead. 도발을 못 따른 타격은 taunt_ignored
+  else if(e.t==="taunt"){const h=!e.end?`<div class="bl-parry">⚑ ${who(e.u)}${josa(e.u,"이","가")} 적을 도발했다! <span class="bl-sub nw">(${e.turns}턴)</span></div>`:e.dead?`<div class="bl-buffend">◇ ${who(e.u)}${josa(e.u,"이","가")} 쓰러져 도발이 풀렸다</div>`:`<div class="bl-buffend">◇ ${who(e.u)} 도발 효과 끝</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
+  else if(e.t==="taunt_ignored"&&cur)cur.html.push(`<div class="bl-cancel">도발을 무시했다!</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
   else if(e.t==="delay"){const h=delayHtml(e);if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
