@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v391 · 갱신 2026-10-22 16:57 KST -->
+<!-- ProjectGY-test-console v392 · 갱신 2026-10-22 18:02 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v391 · 2026-10-22 16:57</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v392 · 2026-10-22 18:02</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1079,6 +1079,8 @@ async function load(){
  if(!templates.length)await loadMeta();
  if(tut.step==null||tut.step<tut.last)loadTutorial();
  chars=await rpc("get_my_characters")||[];
+ // 서버는 BASE가 아닌 직업 줄을 그 직업 캐릭터가 있을 때만 보여준다. 전직 등으로 표에 없는 직업이 생기면 표를 다시 읽는다(장착 판정의 계열·주 스탯·무기 제한이 이 표를 쓴다)
+ if(chars.some(c=>!templates.some(t=>t.job===c.job)))await loadMeta();
  if(selectedCharId&&chars.some(c=>c.id===selectedCharId))await loadSkills(selectedCharId);
  renderAdminChars();
  if(innJobs.length||$("innJobs"))loadInn();
@@ -2105,7 +2107,7 @@ function itemBodyParts(i){
 function unkTag(i){return i&&i.unknown?` <span class="item-unk">(Unknown)</span>`:""}
 function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="item-head"><b class="item-name">${esc(d.name||i.def_id)}${unkTag(i)}</b>${Number(i.qty)>1&&!i.equipped_character?`<b class="item-count">x${i.qty}</b>`:""}${itemTagsHtml(d)}</span>`,i)}
 // 직업 계열(전직 전 직업 포함). 장착 가능 직업 판정에 쓴다.
-function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from||(j==="GUNNER"?"ARCHER":null)}return out}
+function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from}return out}
 // 퍼센트 표시: 소수 둘째 자리까지, 끝의 0은 지움 (예: 74.07%, 0%)
 function pctText(v){const n=Number(v)||0;return `${Number(n.toFixed(2))}%`}
 const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
