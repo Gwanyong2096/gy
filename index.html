@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v390 · 갱신 2026-10-22 16:47 KST -->
+<!-- ProjectGY-test-console v391 · 갱신 2026-10-22 16:57 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v390 · 2026-10-22 16:47</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v391 · 2026-10-22 16:57</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1026,7 +1026,7 @@ async function loadSell(){
  // 이름·범주·옵션은 item_defs에서(Bag에 받아 둔 것을 먼저 쓰고, 없으면 받아 온다)
  const defs={};itemsData.forEach(i=>{if(i.item_defs)defs[i.def_id]=i.item_defs});
  const miss=[...new Set(list.map(x=>x.def_id).filter(d=>!defs[d]))];
- if(miss.length){const r=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",miss);(r.data||[]).forEach(d=>defs[d.id]=d)}
+ if(miss.length){const r=await sb.from("item_defs").select("id,name,name_final,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",miss);(r.data||[]).forEach(d=>{defs[d.id]=d;noteFinal(d)})}
  sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));renderSell();
 }
 function renderSell(){
@@ -1575,7 +1575,11 @@ function fitHelpBox(){const bx=document.querySelector(".help-box");bx.style.widt
  const tr=document.createRange();tr.selectNodeContents($("helpTitle"));need=Math.max(need,tr.getBoundingClientRect().width+12+document.querySelector(".help-close").offsetWidth);
  if(need>0&&need<cur-0.5)bx.style.width=Math.ceil(need)+"px"}
 // 이름 뒤 조사(을/를, 은/는): 숫자·한글로 끝나면 발음으로, 그 밖(영어 이름 등)은 을(를)처럼 둘 다 적는다
-function josaOf(text,a,b){const c=String(text??"").trim().slice(-1),code=c.charCodeAt(0);
+// 아이템 이름의 받침 여부(item_defs.name_final). 아이템 정의를 읽을 때 noteFinal로 모아 두고, josaOf가 이름이 같으면 먼저 쓴다
+const NAME_FINAL={};
+function noteFinal(d){if(d?.name&&d.name_final!=null)NAME_FINAL[d.name]=!!d.name_final}
+function josaOf(text,a,b){const f=NAME_FINAL[String(text??"").trim()];if(f!=null)return f?a:b;
+ const c=String(text??"").trim().slice(-1),code=c.charCodeAt(0);
  if(/[0-9]/.test(c))return "013678".includes(c)?a:b;
  if(code>=0xAC00&&code<=0xD7A3)return (code-0xAC00)%28?a:b;
  return `${a}(${b})`}
@@ -2829,8 +2833,9 @@ async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){
 function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
  loadGold();
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind))").order("created_at").order("id");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,name_final,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
+ itemsData.forEach(i=>noteFinal(i.item_defs));
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
 function setRecruitMsg(t){$("recruitMsg").textContent=t;$("recruitMsg").style.display=t?"block":"none"}
@@ -3895,7 +3900,7 @@ async function loadCraft(){
  const {data,error}=await sb.rpc("get_craft_list");if(error){log("get_craft_list 실패: "+error.message,"bad");return}
  craftData=data||[];
  const ids=[...new Set(craftData.flatMap(x=>[x.result,x.recipe]).filter(Boolean))].filter(id=>!craftDefs[id]);
- if(ids.length){const q=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",ids);(q.data||[]).forEach(d=>craftDefs[d.id]=d)}
+ if(ids.length){const q=await sb.from("item_defs").select("id,name,name_final,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",ids);(q.data||[]).forEach(d=>{craftDefs[d.id]=d;noteFinal(d)})}
  renderCraft();
 }
 // 한 번에 만들 수 있는 개수: 가진 것으로 만들 수 있는 수(서버가 준 max)와 상한(CRAFT_MAX) 중 작은 쪽, 최소 1
