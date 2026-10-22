@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v385 · 갱신 2026-10-22 14:20 KST -->
+<!-- ProjectGY-test-console v386 · 갱신 2026-10-22 14:36 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v385 · 2026-10-22 14:20</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v386 · 2026-10-22 14:36</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3260,9 +3260,10 @@ const EL_KO={EARTH:"흙",WATER:"물",FIRE:"불",ELECTRIC:"전기",WIND:"바람"}
 function calcText(c,kind,tick){
  const q=v=>String(+(+v).toFixed(2)),sg=v=>`${v<0?"":"+"}${q(v)}`;const mag=kind==="MAGIC";
  // mult에는 상성 배율과 출혈·뒷방 비례로 더한 양이 이미 들어 있다. 엔진 순서대로 스킬 계수 → 비례로 더한 양 → 상성을 적는다
- // 서버 로그는 mult를 소수 둘째 자리로 반올림해 보낸다. 스킬 계수(쌍권총 절반 포함)는 모두 정수 %라 반올림해 되살린다
+ // 비례가 붙은 타격은 엔진 0.28.1부터 skill_mult(스킬 원래 계수)가 온다. 없으면(비례 없는 타격, 예전 로그) 반올림된 mult에서 되살린다(스킬 계수는 모두 정수 %)
  const adds=(c.bleed?.add>0?c.bleed.add:0)+(c.def_scale?.add>0?c.def_scale.add:0);
- const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${Math.round((c.mult/(c.elem>0?c.elem:1)-(c.power>0?adds/c.power:0))*100)}%`];
+ const coef=c.skill_mult!=null?q(c.skill_mult*100):Math.round((c.mult/(c.elem>0?c.elem:1)-(c.power>0?adds/c.power:0))*100);
+ const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${coef}%`];
  if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
