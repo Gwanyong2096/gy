@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v392 · 갱신 2026-10-22 18:02 KST -->
+<!-- ProjectGY-test-console v393 · 갱신 2026-10-22 18:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v392 · 2026-10-22 18:02</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v393 · 2026-10-22 18:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2458,7 +2458,8 @@ function renderCharacterDetail(){
  box.style.display="block"; const s=c.stats||{}, k=s.KARMA||{TOTAL:0,LIMIT:0,STATE:"NEUTRAL",MULT:1};
  const hasIdentificationTag=itemsData.some(i=>i.def_id==="identification_tag");
  const equipped=itemsData.filter(i=>i.equipped_character===c.id);
- const line=jobLine(c.job);
+ // 직업 계열은 서버가 계산해 보낸 job_line을 쓴다(위 직업 줄이 화면 표에 안 보여도 맞다). 아직 안 보내는 서버면 화면 표로 거슬러 올라간다
+ const line=Array.isArray(c.job_line)&&c.job_line.length?c.job_line:jobLine(c.job);
  // 착용 계열: STR/DEX/INT 범주는 현재 직업의 계열과 같아야 한다(ALL은 공용)
  const mainStat=templates.find(t=>t.job===c.job)?.main_stat;
  const wearOk=d=>{const g=d?.item_categories?.wear_group,o=d?.item_categories?.only_jobs;return (!g||g==="ALL"||g===mainStat)&&(!o||o.includes(c.job))};
@@ -2651,18 +2652,20 @@ const CONDITION_GROUPS=[
   ]}
 ];
 const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄의 스킬 쿨타임이 아닐 때",false],["skillCooldown","이 줄의 스킬 쿨타임일 때",false]]};
-const JOB_CONDITION_OPTIONS={
-  ARCHER:[
+// 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때
+const AMMO_CONDITION_OPTIONS={
+  ARROW:[
     ["arrowEq","자신의 화살 수가 OO일 때",true],["arrowGte","자신의 화살 수가 OO 이상일 때",true],["arrowLte","자신의 화살 수가 OO 이하일 때",true]
   ],
-  GUNNER:[
+  AMMO:[
     ["ammoEq","자신의 탄약 수가 OO일 때",true],["ammoGte","자신의 탄약 수가 OO 이상일 때",true],["ammoLte","자신의 탄약 수가 OO 이하일 때",true],
     ["ammo","탄약이 있을 때",false],["noAmmo","탄약이 없을 때",false]
-  ],
-  CHEVALIER:[
-    ["stanceOn","Coup d'Arrêt 상태일 때",false],["stanceOff","Coup d'Arrêt 상태가 아닐 때",false]
   ]
 };
+function jobConditionOptions(charId){
+  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance);
+  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[])];
+}
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
 const PATTERN_GUIDE={
@@ -2717,12 +2720,13 @@ const PERCENT_CONDS=new Set([
 ]);
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
-function conditionOptionsForJob(job){return CONDITION_GROUPS.flatMap(g=>g.options).concat(COOLDOWN_GROUP.options,JOB_CONDITION_OPTIONS[job]||[]);}
-function conditionSelectOptions(job,current,actName){
+function conditionOptionsFor(charId){return CONDITION_GROUPS.flatMap(g=>g.options).concat(COOLDOWN_GROUP.options,jobConditionOptions(charId));}
+function conditionSelectOptions(charId,current,actName){
+  const jo=jobConditionOptions(charId);
   const cd=COOLDOWN_GROUP.options.map(([v,n])=>[v,actName?cooldownText(v,actName):n]);
   return CONDITION_GROUPS.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")
     + `<optgroup label="${COOLDOWN_GROUP.label}">${options(cd,current)}</optgroup>`
-    + ((JOB_CONDITION_OPTIONS[job]||[]).length?`<optgroup label="직업 전용">${options(JOB_CONDITION_OPTIONS[job],current)}</optgroup>`:"");
+    + (jo.length?`<optgroup label="직업 전용">${options(jo,current)}</optgroup>`:"");
 }
 function options(list,current){return list.map(([v,n])=>`<option value="${v}" ${current===v?"selected":""}>${n}</option>`).join("")}
 // 패턴 줄: 활성 줄 = 스탯의 PATTERN_LINES(기본 3 + TP의 Pattern + 장비 옵션, 최소 1). 저장된 줄이 더 많으면 넘는 줄은 비활성으로 보관
@@ -2744,7 +2748,7 @@ function renderPatternRow(p,i,job,charId){
   return `<div class="pattern-row${off?" pattern-off":""}" data-index="${i}">
     <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span><span class="pattern-off-tag"${off?"":" hidden"}>비활성</span></div>
     <div class="pattern-controls">
-      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(job,c,skillName(charId,a))}</select>
+      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(charId,c,skillName(charId,a))}</select>
       <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${condMax(c)}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
       <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
     </div>
@@ -2786,7 +2790,7 @@ function movePattern(btn,dir){
 }
 function renumberPatternRows(box){const lines=patLines(box.id.replace("pat-",""));[...box.querySelectorAll(".pattern-row")].forEach((r,i)=>{r.querySelector(".pattern-num").textContent=`패턴 ${i+1}`;const off=i>=lines;r.classList.toggle("pattern-off",off);r.querySelector(".pattern-off-tag").hidden=!off})}
 function collectPattern(id){
-  const c=chars.find(x=>x.id===id), allowed=new Set(conditionOptionsForJob(c?.job).map(x=>x[0]));
+  const c=chars.find(x=>x.id===id), allowed=new Set(conditionOptionsFor(id).map(x=>x[0]));
   const acts=new Map(actionSkills(id).map(s=>[s.id,s]));
   const rows=[...$("pat-"+id).querySelectorAll(".pattern-row")];
   return rows.map((row,idx)=>{
