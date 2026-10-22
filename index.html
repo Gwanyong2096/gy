@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v389 · 갱신 2026-10-22 16:31 KST -->
+<!-- ProjectGY-test-console v390 · 갱신 2026-10-22 16:47 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v389 · 2026-10-22 16:31</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v390 · 2026-10-22 16:47</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1026,7 +1026,7 @@ async function loadSell(){
  // 이름·범주·옵션은 item_defs에서(Bag에 받아 둔 것을 먼저 쓰고, 없으면 받아 온다)
  const defs={};itemsData.forEach(i=>{if(i.item_defs)defs[i.def_id]=i.item_defs});
  const miss=[...new Set(list.map(x=>x.def_id).filter(d=>!defs[d]))];
- if(miss.length){const r=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap").in("id",miss);(r.data||[]).forEach(d=>defs[d.id]=d)}
+ if(miss.length){const r=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",miss);(r.data||[]).forEach(d=>defs[d.id]=d)}
  sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));renderSell();
 }
 function renderSell(){
@@ -1518,17 +1518,18 @@ function renderQuickSwitch(cur){
 const COVER_MODES=[["ALWAYS","항상 막아선다",false],["NEVER","막아서지 않는다",false],["HP_GTE_PCT","자신의 HP가 OO% 이상이면 막아선다",true],["CHANCE_PCT","OO% 확률로 막아선다",true]];
 function coverText(r){const m=COVER_MODES.find(x=>x[0]===r?.mode)||COVER_MODES[1];return m[1].replace("OO",String(r?.v??0))}
 const HELP={
- party:{title:"Party",html:`<p>던전에 함께 들어갈 캐릭터를 최대 5명까지 고릅니다. 파티는 서버에 바로 저장됩니다.</p><p>전방/후방은 각 캐릭터의 Formation에서 정한 시작 위치를 그대로 씁니다.</p>`},
- dungeon:{title:"Dungeon",html:`<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!을 누릅니다. Battle!을 누를 때마다 SUPPLY 10을 씁니다. SUPPLY는 30초마다 1씩 차고 최대 500입니다.</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다(첫 던전 10회, 다음부터 10회씩 늘어 최대 50회). 파티마다 30분에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 절반이고 골드는 받지 않으며, 판마다 파견비(직접 보상 골드의 30%)를 냅니다. 무료는 3파티까지, 접속하지 않은 동안 8시간까지 쌓입니다.</p>`},
- idle:{title:"Auto Battle",html:`<p>Auto Battle이 열린 던전에 입장해 <b>Auto Battle!</b>을 누르면 지금 파티를 그 던전에 보냅니다.</p>
-  <ul><li>파티마다 30분에 한 판을 실제로 싸웁니다. 질 수도 있습니다.</li>
-  <li>이긴 판만 경험치와 아이템을 받습니다. 직접 플레이의 절반이고 골드는 받지 않습니다.</li>
+ party:{title:"Party",html:()=>`<p>던전에 함께 들어갈 캐릭터를 최대 ${Number(pubCfg.PARTY_MAX)||5}명까지 고릅니다. 파티는 서버에 바로 저장됩니다.</p><p>전방/후방은 각 캐릭터의 Formation에서 정한 시작 위치를 그대로 씁니다.</p>`},
+ // 숫자는 서버 값(SUPPLY: get_supply, Auto Battle: get_idle_info, 열리는 횟수: get_dungeons)을 연 때 읽는다. 아직 못 읽었으면 숫자를 뺀다. get_dungeons는 보이는 던전만 주므로 최대 횟수는 적지 않는다
+ dungeon:{title:"Dungeon",html:()=>{const sp=supplyState,ii=idleInfo,need=(dungeons||[]).map(d=>Number(d.auto_unlock_clears)).filter(n=>n>0);return `<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!을 누릅니다. ${sp?`Battle!을 누를 때마다 SUPPLY ${sp.per_run}${josaOf(sp.per_run,"을","를")} 씁니다. SUPPLY는 ${durWord(sp.regen_sec)}마다 1씩 차고 최대 ${sp.max}입니다.`:"Battle!을 누를 때마다 SUPPLY를 씁니다. SUPPLY는 시간이 지나면 다시 찹니다."}</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다${need.length?`(첫 던전 ${need[0]}회${need.some(n=>n>need[0])?", 뒤 던전일수록 늘어납니다":""})`:""}. 파티마다 ${ii?durWord(ii.run_minutes*60):"정해진 시간"}에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}이고 골드는 받지 않으며, 판마다 파견비${ii?`(직접 보상 골드의 ${ii.fee_pct}%)`:""}를 냅니다. ${ii?`${ii.subscribed?"지금은":"무료는"} ${ii.slots}파티까지, 접속하지 않은 동안 ${ii.cap_hours!=null?`${ii.cap_hours}시간까지`:"제한 없이"} 쌓입니다.`:""}</p>`}},
+ idle:{title:"Auto Battle",html:()=>{const ii=idleInfo;return `<p>Auto Battle이 열린 던전에 입장해 <b>Auto Battle!</b>을 누르면 지금 파티를 그 던전에 보냅니다.</p>
+  <ul><li>파티마다 ${ii?durWord(ii.run_minutes*60):"정해진 시간"}에 한 판을 실제로 싸웁니다. 질 수도 있습니다.</li>
+  <li>이긴 판만 경험치와 아이템을 받습니다. 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}이고 골드는 받지 않습니다.</li>
   <li>판마다 파견비를 냅니다(이기든 지든). 골드가 모자라면 멈추고, 골드를 채우면 그때부터 다시 돕니다.</li>
-  <li>접속해 있는 동안에는 시간이 될 때마다 정산합니다. 접속하지 않은 동안에도 쌓이고, 접속할 때 한꺼번에 정산합니다. 쌓이는 시간에는 제한이 없습니다.</li>
+  <li>접속해 있는 동안에는 시간이 될 때마다 정산합니다. 접속하지 않은 동안에도 쌓이고, 접속할 때 한꺼번에 정산합니다. ${ii&&ii.cap_hours!=null?`쌓이는 시간은 ${ii.cap_hours}시간까지입니다.`:"쌓이는 시간에는 제한이 없습니다."}</li>
   <li>보낸 파티는 왼쪽의 Auto Battle 리모콘에서 봅니다. 어느 탭에서든 열 수 있고, 손잡이와 접기 버튼으로 접고 폅니다. Auto Battle 튜토리얼을 마치거나 건너뛰면 생깁니다.</li>
   <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>
   <li>패턴은 파견할 때의 것으로 싸웁니다. 파견한 뒤 고친 패턴은 다음 판부터 적용됩니다.</li>
-  <li>기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.</li></ul>`},
+  <li>기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.</li></ul>`}},
  equipment:{title:"Equipment",html:`<p>장비 12칸과 소모품 칸 1개가 있습니다.</p>
   <h4>소모품</h4>
   <ul><li>소모품 칸에는 소모품의 <b>종류</b>를 정합니다. 같은 종류를 여러 캐릭터가 함께 낄 수 있습니다.</li>
@@ -1559,7 +1560,9 @@ const HELP={
   <li>여기에 <b>Back Attack</b>(후방 우선)이나 <b>Front Attack</b>(전방 우선)이 붙을 수 있습니다. 둘 다 없는 공격은 무작위로 대상을 고릅니다.</li></ul>
   <p class="help-note">엄호 설정은 위치와 상관없이 적용되며, 전투 중 위치가 바뀌어도 그대로 유지됩니다.</p>`}
 };
-function openHelp(key){const h=HELP[key];if(h)showHelp(h.title,h.html)}
+function openHelp(key){const h=HELP[key];if(h)showHelp(h.title,typeof h.html==="function"?h.html():h.html)}
+function pctWord(p){return Number(p)===50?"절반":`${p}%`}
+function durWord(sec){sec=Number(sec)||0;return sec%3600===0?`${sec/3600}시간`:sec%60===0?`${sec/60}분`:`${sec}초`}
 function showHelp(title,html){{const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width=""}$("helpActions").hidden=true;$("helpActions").innerHTML="";$("helpTitle").textContent=title;$("helpBody").innerHTML=html;$("helpOverlay").hidden=false;document.querySelector(".help-close").focus()}
 function closeHelp(){$("helpOverlay").hidden=true;const bx=document.querySelector(".help-box");bx.classList.remove("wide","notice","fit");bx.style.width=""}
 // 확인 창 상자를 글의 실제 오른쪽 끝에 맞춘다(줄이 바뀐 글은 가장 긴 줄 기준). 제목 줄과 버튼 줄보다 좁아지지는 않는다
@@ -2087,8 +2090,10 @@ function itemBodyParts(i){
  // 기본 옵션과 그 밖의 옵션을 순서대로 한 줄(가로)에 나열
  const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(vis(ITEM_OPT_LABEL[k]||k))}${v>0?"+":" "}${esc(v)}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}</b>`);
  const all=[...parts,...extra].join("");
- // 화살·탄약 수는 설명 맨 왼쪽에, 랜덤 옵션은 설명 맨 오른쪽에 붙인다(화살통은 화살, 총기는 장탄수)
- const ammo=d.ammo_cap!=null?`${d.item_type==="QUIVER"?"화살":"장탄수"}(${d.ammo_cap})`:"";
+ // 화살·탄약 수는 설명 맨 왼쪽에, 랜덤 옵션은 설명 맨 오른쪽에 붙인다(종류의 ammo_kind가 ARROW면 화살, AMMO면 장탄수)
+ // ammo_kind가 없는 튜토리얼 무대 자료(v334에 찍음)만 예전처럼 종류 QUIVER로 가른다. 무대를 다시 찍으면 이 대체는 지운다
+ const ak=d.item_categories?.ammo_kind??(d.item_type==="QUIVER"?"ARROW":"AMMO");
+ const ammo=d.ammo_cap!=null?`${ak==="ARROW"?"화살":"장탄수"}(${d.ammo_cap})`:"";
  const note=[ammo,d.note].filter(Boolean).join(" ");
  const rand=itemRandHtml(i);
  return [all?`<div class="item-core">${all}</div>`:"",(note||rand)?`<div class="item-note">${esc(note)}${note&&rand?" ":""}${rand}</div>`:""];
@@ -2824,7 +2829,7 @@ async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){
 function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
  loadGold();
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall))").order("created_at").order("id");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
@@ -3890,7 +3895,7 @@ async function loadCraft(){
  const {data,error}=await sb.rpc("get_craft_list");if(error){log("get_craft_list 실패: "+error.message,"bad");return}
  craftData=data||[];
  const ids=[...new Set(craftData.flatMap(x=>[x.result,x.recipe]).filter(Boolean))].filter(id=>!craftDefs[id]);
- if(ids.length){const q=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap").in("id",ids);(q.data||[]).forEach(d=>craftDefs[d.id]=d)}
+ if(ids.length){const q=await sb.from("item_defs").select("id,name,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",ids);(q.data||[]).forEach(d=>craftDefs[d.id]=d)}
  renderCraft();
 }
 // 한 번에 만들 수 있는 개수: 가진 것으로 만들 수 있는 수(서버가 준 max)와 상한(CRAFT_MAX) 중 작은 쪽, 최소 1
