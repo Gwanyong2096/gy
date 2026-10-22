@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v387 · 갱신 2026-10-22 14:50 KST -->
+<!-- ProjectGY-test-console v388 · 갱신 2026-10-22 16:22 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v387 · 2026-10-22 14:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v388 · 2026-10-22 16:22</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2227,7 +2227,7 @@ function renderPromoteCards(c){
  const opts=promoteByChar[c.id]||[];if(!opts.length)return "";
  const multi=opts.length>1?" multi":"";
  return `<div class="promote-cards${multi}">${opts.map(t=>{
-  const tier=t.tier==="FIRST"?"1차 전직":"2차 전직";
+  const tier=t.special?"특수 전직":t.tier==="FIRST"?"1차 전직":"2차 전직";
   if(t.masked)return `<button type="button" class="promote-card locked" aria-label="${tier} 조건 보기" onclick="openLockedPromote('${tier}',${Number(t.cond_count)||0})">
   <span class="sprite-slot promote-sprite silhouette" aria-hidden="true"></span>
   <span class="promote-info"><span class="promote-label">${tier}</span><span class="promote-name">???</span><span class="promote-sub">???</span></span></button>`;
