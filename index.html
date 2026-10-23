@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v393 · 갱신 2026-10-22 18:13 KST -->
+<!-- ProjectGY-test-console v394 · 갱신 2026-10-23 14:04 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -114,6 +114,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .idle-line{font-size:13px;line-height:1.6;margin-top:4px}.idle-line.dim{color:var(--mu)}.idle-line b{font-weight:700}
 .idle-more{display:inline;height:auto;min-height:0;padding:0 6px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--ac);font-size:12px;line-height:1.5;vertical-align:baseline;cursor:pointer}
 .idle-warn{color:var(--bad);font-weight:700}
+.recall-sec{margin-top:12px}.recall-h{font-size:13px;font-weight:700;color:var(--mu);margin-bottom:4px}.recall-list{margin:0;padding-left:18px;font-size:13.5px;line-height:1.7;max-height:40vh;overflow:auto}.recall-up{color:var(--ok);font-weight:700}
 .idle-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .idle-top{flex:none;font-size:12px;color:var(--mu);margin:-4px 0 10px}
 /* Auto Battle 리모콘: 퀘스트 리모콘(.q-remote) 모양 그대로, 본문 왼쪽. 파티 카드가 길어 조금 넓다 */
@@ -477,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v393 · 2026-10-22 18:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v394 · 2026-10-23 14:04</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3847,13 +3848,31 @@ function confirmRecall(pid){
   [["취소",null,false],["회수",()=>recallIdle(pid),true]]);
 }
 async function recallIdle(pid){
- if(idleBusy)return;idleBusy=true;let err="";
- try{await settleIdle();const {error}=await sb.rpc("idle_recall",{p_party:pid});if(error)err=error.message}catch(e){err=String(e&&e.message||e)}
+ if(idleBusy)return;idleBusy=true;let err="",sum=null;
+ const p=(idleInfo?.parties||[]).find(x=>x.id===pid),mem=(p?.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean);
+ try{await settleIdle();const {data,error}=await sb.rpc("idle_recall",{p_party:pid});if(error)err=error.message;else sum=data?.summary||{}}catch(e){err=String(e&&e.message||e)}
  idleBusy=false;
  if(err){log("idle_recall 실패: "+err,"bad");showBattleError(idleErrText(err,"회수하지 못했습니다."),"Auto Battle")}else log("idle_recall 성공","ok");
  const g=!err&&qGuide?.key==="idle"?qGuide:null;
  await load();if(currentView!=="adventure")await checkIdle();
+ if(sum)showRecallResult(p?.dungeon||"",mem,sum);
  if(g&&qGuide===g)g.phase="back";
+}
+// 회수 결과 모달: 회수한 파티가 파견된 동안 모은 것(idle_recall의 summary) 전부. 판 수·승패·파견비, 캐릭터별 EXP와 합계, 전리품 전체(장비 먼저, 같은 것은 묶어 개수), 소모품 사용
+function showRecallResult(dungeon,mem,s){
+ const ex=Object.entries(s.exp||{}),expSum=ex.reduce((a,[,x])=>a+(Number(x.gain)||0),0);
+ const nm=id=>mem.find(c=>c.id===id)?.display_name;
+ const expRows=ex.map(([id,x])=>`<li><b>${esc(nm(id)||x.name||"")}</b> +${(Number(x.gain)||0).toLocaleString()}${x.level_up>0?` <span class="recall-up">레벨 업 → Lv.${x.level}</span>`:""}</li>`).join("");
+ const dv=Object.values(s.drops||{}),isGear=x=>{const sl=idleDefSlot[x.def];return x.unknown||!!sl&&sl!=="MATERIAL"&&sl!=="CONSUMABLE"};
+ const dropRows=[...dv.filter(isGear),...dv.filter(x=>!isGear(x))].map(x=>`<li>${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` <b>x${x.n}</b>`:""}</li>`).join("");
+ const dropCnt=dv.reduce((a,x)=>a+(Number(x.n)||1),0);
+ const used=Object.values(s.consumed||{}).map(x=>`<li>${esc(x.name||"")} ${x.n}개${x.left!=null?` (${Number(x.left).toLocaleString()}회 남음)`:""}</li>`).join("");
+ const runs=Number(s.runs)||0;
+ openConfirm("Auto Battle 회수",`<p><b>${esc(dungeon)}</b>에서 파티가 돌아왔습니다.</p>
+  <p>${runs>0?`${runs}판 · ${winLoseText(s)} · 파견비 ${Number(s.fee||0).toLocaleString()}골드`:"끝난 판이 없습니다."}</p>
+  ${ex.length?`<div class="recall-sec"><div class="recall-h">EXP · 합계 +${expSum.toLocaleString()}</div><ul class="recall-list">${expRows}</ul></div>`:""}
+  ${dv.length?`<div class="recall-sec"><div class="recall-h">전리품 · ${dropCnt}개</div><ul class="recall-list">${dropRows}</ul></div>`:runs>0?`<div class="recall-sec"><div class="recall-h">전리품</div><p class="help-note">받은 전리품이 없습니다.</p></div>`:""}
+  ${used?`<div class="recall-sec"><div class="recall-h">소모품 사용</div><ul class="recall-list">${used}</ul></div>`:""}`,[["확인",null,true]],"recall");
 }
 async function openIdleLog(pid){const {data,error}=await sb.rpc("get_idle_log",{p_party:pid});if(error){log("get_idle_log 실패: "+error.message,"bad");return}openBattleLog(data)}
 function toggleDungeon(id){
