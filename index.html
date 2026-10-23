@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v395 · 갱신 2026-10-23 14:13 KST -->
+<!-- ProjectGY-test-console v396 · 갱신 2026-10-23 15:24 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v395 · 2026-10-23 14:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v396 · 2026-10-23 15:24</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3191,11 +3191,11 @@ function supplyNow(){const st=supplyState;if(!st)return null;if(st.next_sec==nul
 function enterRowHtml(d){return `<div class="dg-enter"><button class="pri" onclick="enterRoom('${esc(d.id)}')">입장</button></div>`}
 // 던전 화면: 입장을 누르면 그 던전 화면에서 파티를 고르고 Battle! / Auto Battle! / Battle Rush! / Mock Battle
 let advRoom=null;
-// Battle Rush: 판 수(1 ~ RUSH_MAX)와 지거나 비겨도 계속 돌리기(rush_keep_going). 들어갈 수 있는 던전이면 늘 보인다
+// Battle Rush: 판 수(0 ~ RUSH_MAX, 0이면 버튼이 꺼진다. 돌리고 나면 0으로 비운다)와 지거나 비겨도 계속 돌리기(rush_keep_going). 들어갈 수 있는 던전이면 늘 보인다
 let rushCount=10,rushKeepGoing=false,hideMock=false;
 function rushMaxN(){return Math.max(1,Math.floor(Number(pubCfg.RUSH_MAX)||50))}
-function clampRush(v){const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(rushMaxN(),Math.max(1,n)):1}
-function rushInput(el,commit){rushCount=clampRush(el.value);if(commit)el.value=rushCount;const s=$("rushSub");if(s)s.textContent=`SUPPLY ${Number(el.dataset.cost)*rushCount}`}
+function clampRush(v){const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(rushMaxN(),Math.max(0,n)):0}
+function rushInput(el,commit){rushCount=clampRush(el.value);if(commit)el.value=rushCount;const s=$("rushSub");if(s)s.textContent=`SUPPLY ${Number(el.dataset.cost)*rushCount}`;const b=$("rushGo");if(b)b.disabled=b.dataset.off==="1"||rushCount<1}
 function rushMax(cost){const sup=supplyNow();rushCount=clampRush(sup==null?rushMaxN():Math.floor(sup/cost));renderRoom()}
 function setRushKeep(v){rushKeepGoing=!!v;saveUiPref("rush_keep_going",rushKeepGoing)}
 // Mock Battle 버튼을 보일지는 여기 한 곳에서 정한다. MOCK_ON=false면 모두에게 안 보이고(사용자가 잠시 숨김, 서버 기능은 그대로), true로 바꾸면 다시 보인다. 켜져 있을 때는 관리자가 자기 화면에서 숨길 수 있다
@@ -3221,7 +3221,7 @@ function renderRoom(){
  // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
  const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
  const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()?" disabled":""}>Auto Battle!<span class="pill-sub">${idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:"";
- const rushBtn=`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="1" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`;
+ const rushBtn=`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="0" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" id="rushGo" data-off="${battleBusy||!hasParty||noSupply?1:0}" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply||rushCount<1?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`;
  const mockBtn=mockVisible()?`<button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>Mock Battle<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>`:"";
  $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle!<span class="pill-sub">SUPPLY ${cost}</span></button>${autoBtn}${rushBtn}${mockBtn}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
  if(typing!=null){const el=$("rushCount");if(el&&!el.disabled){el.value=typing;el.focus()}}
@@ -3244,7 +3244,7 @@ async function startBattle(dungeonId,mode){
 }
 // Battle Rush: 서버가 판마다 보통 전투와 똑같이 처리한다. 한 번에 다 못 하면 more를 주고, 같은 요청을 다시 보내 이어 간다
 async function startRush(dungeonId){
- if(battleBusy)return;const n=clampRush(rushCount);battleBusy=true;renderRoom();
+ if(battleBusy)return;const n=clampRush(rushCount);if(n<1)return;battleBusy=true;renderRoom();
  const body={action:"rush",dungeon_id:dungeonId,count:n,keep_going:rushKeepGoing,request_id:newRequestId()};
  let data=null,errMsg="";
  try{
@@ -3257,6 +3257,8 @@ async function startRush(dungeonId){
  battleBusy=false;
  const key=errMsg?Object.keys(BATTLE_ERR).find(k=>errMsg.includes(k)):null;
  if(errMsg)log("battle rush 실패: "+errMsg,"bad");
+ // 한 판이라도 돌았으면 판 수 칸을 0으로 비운다(다음 Rush는 판 수를 새로 정한다)
+ if(data&&(data.runs||[]).length)rushCount=0;
  if(data&&(data.runs||[]).length){log(`battle rush 성공: ${data.runs.length}판`,"ok");openRushResult({...data,stopped:data.stopped||(errMsg?(key||"ERROR"):null),dungeon:dungeons.find(x=>x.id===dungeonId)?.name||dungeonId})}
  else showBattleError(key?BATTLE_ERR[key]:"전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.","Battle Rush");
  await load();loadAdventure();
@@ -3921,7 +3923,8 @@ async function loadCraft(){
 }
 // 한 번에 만들 수 있는 개수: 가진 것으로 만들 수 있는 수(서버가 준 max)와 상한(CRAFT_MAX) 중 작은 쪽, 최소 1
 function craftCap(x){return Math.max(1,Math.min(Math.floor(Number(x.max)||0),Math.max(1,Math.floor(Number(pubCfg.CRAFT_MAX)||99))))}
-function craftCount(x){const n=Math.floor(Number(craftN[x.id]));return x.ready&&Number.isFinite(n)?Math.min(craftCap(x),Math.max(1,n)):1}
+// 개수: 처음은 1(재료가 모자란 것도 1개 기준으로 보여 준다), 만들고 나면 0으로 비운다(0이면 제작 버튼이 꺼진다)
+function craftCount(x){const v=craftN[x.id];if(v==null||!x.ready)return 1;const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(craftCap(x),Math.max(0,n)):0}
 // 쓰는 재료: 가진 수/필요한 수(만드는 개수만큼). 사이의 가운뎃점은 앞 재료에 붙여 줄 맨 앞에 오지 않게 한다
 function craftMatsHtml(x,n){const ms=x.materials||[];return ms.map((m,i)=>`<span class="${m.have<m.qty*n?"short":""}">${esc(m.name||m.def)} ${m.have}/${m.qty*n}${i<ms.length-1?`<i aria-hidden="true">·</i>`:""}</span>`).join("")}
 function craftSrcText(x,n){
@@ -3931,6 +3934,7 @@ function craftSrcText(x,n){
 // 개수를 적는 중에는 그 카드의 재료 줄만 바꾼다(다시 그리지 않아 적던 값과 커서를 지킨다)
 function craftInput(id,el,commit){
  const x=craftData.find(y=>y.id===id);if(!x)return;craftN[id]=el.value;const n=craftCount(x);if(commit){craftN[id]=n;el.value=n}
+ const b=$("crg-"+id);if(b)b.disabled=!x.ready||n<1;
  const m=$("crm-"+id),t=$("crs-"+id);if(m)m.innerHTML=craftMatsHtml(x,n);if(t)t.innerHTML=craftSrcText(x,n);
 }
 function craftMaxN(id){const x=craftData.find(y=>y.id===id);if(!x)return;craftN[id]=craftCap(x);renderCraft()}
@@ -3941,17 +3945,17 @@ function renderCraft(){
   const d=craftDefs[x.result]||{name:x.result};const it={def_id:x.result,rolled_bonuses:{},qty:1,item_defs:d};
   // 목록에 뜬 것은 종류와 상관없이 쓰는 재료를 보여 준다
   const id=esc(x.id),n=craftCount(x),off=x.ready?"":" disabled";
-  return `<div class="cr-card"><div class="item-cat" style="margin-bottom:4px">${CRAFT_KIND[x.kind]||""}</div>${itemDetailHtml(it)}<div class="cr-src" id="crs-${id}">${craftSrcText(x,n)}</div><div class="cr-mats" id="crm-${id}">${craftMatsHtml(x,n)}</div><div class="cr-act"><span class="rush-box"><input id="crn-${id}" class="rush-n" type="number" inputmode="numeric" min="1" max="${craftCap(x)}" step="1" value="${n}" aria-label="제작 개수" oninput="craftInput('${id}',this)" onchange="craftInput('${id}',this,true)"${off}><button type="button" class="mini-btn rush-max" onclick="craftMaxN('${id}')"${off}>최대</button></span><button class="pri fm-btn" onclick="confirmCraft('${id}')"${off}><span>제작</span></button>${x.ready?"":`<span class="pattern-help" style="margin:0">재료가 모자랍니다.</span>`}</div></div>`}).join("");
+  return `<div class="cr-card"><div class="item-cat" style="margin-bottom:4px">${CRAFT_KIND[x.kind]||""}</div>${itemDetailHtml(it)}<div class="cr-src" id="crs-${id}">${craftSrcText(x,n)}</div><div class="cr-mats" id="crm-${id}">${craftMatsHtml(x,n)}</div><div class="cr-act"><span class="rush-box"><input id="crn-${id}" class="rush-n" type="number" inputmode="numeric" min="0" max="${craftCap(x)}" step="1" value="${n}" aria-label="제작 개수" oninput="craftInput('${id}',this)" onchange="craftInput('${id}',this,true)"${off}><button type="button" class="mini-btn rush-max" onclick="craftMaxN('${id}')"${off}>최대</button></span><button class="pri fm-btn" id="crg-${id}" onclick="confirmCraft('${id}')"${off||(n<1?" disabled":"")}><span>제작</span></button>${x.ready?"":`<span class="pattern-help" style="margin:0">재료가 모자랍니다.</span>`}</div></div>`}).join("");
 }
 let crafting=false;
 function confirmCraft(id){
- const x=craftData.find(y=>y.id===id);if(!x)return;const nm=craftDefs[x.result]?.name||x.result,n=craftCount(x);
+ const x=craftData.find(y=>y.id===id);if(!x)return;const nm=craftDefs[x.result]?.name||x.result,n=craftCount(x);if(n<1)return;
  const gone=[];
  if(x.kind==="REMAKE")gone.push(`일반 장비 ${esc(nm)} ${n}`);
  if(x.kind==="RECIPE")gone.push(`${esc(craftDefs[x.recipe]?.name||"레시피")} ${n}`);
  (x.materials||[]).forEach(m=>gone.push(`${esc(m.name||m.def)} ${m.qty*n}`));
  openConfirm("제작",`<p><b>${esc(nm)}</b> ${n}개를 만듭니다.</p><p>사라지는 것: ${gone.join(" · ")}</p><p class="help-note">랜덤 옵션이 안 붙을 수도 있습니다.</p>`,[["취소",null,false],["제작",async()=>{
-  if(crafting)return;crafting=true;const r=await rpc("craft_items",{p_recipe:id,p_count:n});crafting=false;craftN[id]=1;
+  if(crafting)return;crafting=true;const r=await rpc("craft_items",{p_recipe:id,p_count:n});crafting=false;if(r)craftN[id]=0;
   await loadItems();await loadCraft();if(r)showCraftResult(r)},true]]);
 }
 // 제작 결과: 하나면 감정 결과와 같은 창, 여러 개면 만든 순서대로 한 줄씩(길면 창 안에서 스크롤)
