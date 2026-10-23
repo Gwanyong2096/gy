@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v396 · 갱신 2026-10-23 15:24 KST -->
+<!-- ProjectGY-test-console v397 · 갱신 2026-10-23 15:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v396 · 2026-10-23 15:24</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v397 · 2026-10-23 15:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3220,7 +3220,7 @@ function renderRoom(){
  const msg=battleBusy?"전투 중…":!hasParty?"파티에 캐릭터를 넣어 주세요.":noSupply?"SUPPLY가 부족합니다.":"";
  // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
  const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
- const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()?" disabled":""}>Auto Battle!<span class="pill-sub">${idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:"";
+ const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()||idleTaken(d.id)?" disabled":""}>Auto Battle!<span class="pill-sub">${idleTaken(d.id)?"파견 중":idleFull()?"자리 없음":`${d.idle_fee}골드/판`}</span></button>`:"";
  const rushBtn=`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="0" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="Battle Rush 판 수" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>최대</button><button class="pill" id="rushGo" data-off="${battleBusy||!hasParty||noSupply?1:0}" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply||rushCount<1?" disabled":""}>Battle Rush!<span class="pill-sub" id="rushSub">SUPPLY ${cost*rushCount}</span></button></span>`;
  const mockBtn=mockVisible()?`<button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>Mock Battle<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>`:"";
  $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>Battle!<span class="pill-sub">SUPPLY ${cost}</span></button>${autoBtn}${rushBtn}${mockBtn}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
@@ -3683,9 +3683,11 @@ function idlePlace(jump){
  if(jump||IR.top==null){IR.top=idleTarget();d.style.top=IR.top+"px"}else idleFollow();
 }
 function idleFollow(){if(!IR.el||IR.raf||IR.el.classList.contains("hidden"))return;const step=()=>{const t=idleTarget(),dd=t-IR.top;if(Math.abs(dd)<.5){IR.top=t;IR.el.style.top=t+"px";IR.raf=0;return}IR.top+=dd*.18;IR.el.style.top=IR.top+"px";IR.raf=requestAnimationFrame(step)};IR.raf=requestAnimationFrame(step)}
-const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",IDLE_DUNGEON_TAKEN:"이 던전에는 이미 Auto Battle 파티가 있습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
 function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
+// 한 던전에는 내 Auto Battle 파티 하나만(서버 idle_dispatch가 IDLE_DUNGEON_TAKEN으로 막는다). 직접 전투·Battle Rush는 그 던전에서도 된다
+function idleTaken(did){return (idleInfo?.parties||[]).some(p=>p.dungeon_id===did)}
 function idleFull(){return !!idleInfo&&(idleInfo.parties||[]).length>=Number(idleInfo.slots||0)}
 async function loadIdle(){const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();if(data&&data.gold!=null){gold=Number(data.gold)||0;renderGold()}return true}
 // 밀린 판 정산: 서버가 한 번에 다 못 하면 more를 주고, 그동안 이어서 부른다
@@ -3814,6 +3816,7 @@ function confirmDispatch(id){
 }
 function confirmDispatchGo(id){
  const d=dungeons.find(x=>x.id===id);if(!d)return;
+ if(idleTaken(id)){openNotice(IDLE_ERR.IDLE_DUNGEON_TAKEN);return}
  const members=party.map(i=>chars.find(c=>c.id===i)).filter(Boolean);if(!members.length)return;
  const mins=idleInfo?.run_minutes??30,pct=idleInfo?.reward_pct??50;
  openConfirm("Auto Battle",`<p>지금 파티(${members.map(c=>esc(c.display_name)).join(", ")})를 <b>${esc(d.name)}</b>에 파견합니다.</p>
