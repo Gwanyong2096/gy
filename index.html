@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v394 · 갱신 2026-10-23 14:04 KST -->
+<!-- ProjectGY-test-console v395 · 갱신 2026-10-23 14:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v394 · 2026-10-23 14:04</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v395 · 2026-10-23 14:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2652,7 +2652,7 @@ const CONDITION_GROUPS=[
     ["allySpdFBuffRoom","아군에 Front SPD 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
   ]}
 ];
-const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄의 스킬 쿨타임이 아닐 때",false],["skillCooldown","이 줄의 스킬 쿨타임일 때",false]]};
+const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false]]};
 // 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때
 const AMMO_CONDITION_OPTIONS={
   ARROW:[
@@ -2671,7 +2671,7 @@ function jobConditionOptions(charId){
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
 const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
-    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["Bless 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["Inspire 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
+    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["이 줄 스킬이 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
@@ -2694,7 +2694,6 @@ function actionSkills(charId){return skillData(charId).filter(s=>s.known&&(s.kin
 function basicSkill(charId){const c=chars.find(x=>x.id===charId);return skillData(charId).find(s=>s.auto&&s.kind==="ACTIVE"&&s.job===c?.job)?.id||""}
 function skillName(charId,sid){if(sid==="common_use_item"){const c=chars.find(x=>x.id===charId);return `Use Item (${c?.consumable_name||"소모품 없음"})`}return skillData(charId).find(s=>s.id===sid)?.name||sid}
 const COOLDOWN_CONDS=new Set(["skillReady","skillCooldown"]);
-function cooldownText(code,name){return code==="skillReady"?`${name} 쿨타임이 아닐 때`:`${name} 쿨타임일 때`}
 const VALUE_CONDS=new Set([
   "selfHpGtePct","selfHpLtePct","selfHpGte","selfHpLte","maxHpGte","maxHpLte","allyHpLtePct","allyHpGtePct",
   "allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpLte","enemyHpGtePct","enemyHpGte",
@@ -2722,11 +2721,10 @@ const PERCENT_CONDS=new Set([
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 function conditionOptionsFor(charId){return CONDITION_GROUPS.flatMap(g=>g.options).concat(COOLDOWN_GROUP.options,jobConditionOptions(charId));}
-function conditionSelectOptions(charId,current,actName){
+function conditionSelectOptions(charId,current){
   const jo=jobConditionOptions(charId);
-  const cd=COOLDOWN_GROUP.options.map(([v,n])=>[v,actName?cooldownText(v,actName):n]);
   return CONDITION_GROUPS.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")
-    + `<optgroup label="${COOLDOWN_GROUP.label}">${options(cd,current)}</optgroup>`
+    + `<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`
     + (jo.length?`<optgroup label="직업 전용">${options(jo,current)}</optgroup>`:"");
 }
 function options(list,current){return list.map(([v,n])=>`<option value="${v}" ${current===v?"selected":""}>${n}</option>`).join("")}
@@ -2749,9 +2747,9 @@ function renderPatternRow(p,i,job,charId){
   return `<div class="pattern-row${off?" pattern-off":""}" data-index="${i}">
     <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span><span class="pattern-off-tag"${off?"":" hidden"}>비활성</span></div>
     <div class="pattern-controls">
-      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(charId,c,skillName(charId,a))}</select>
+      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(charId,c)}</select>
       <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${condMax(c)}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
-      <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
+      <select class="pattern-action">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
     </div>
     <div class="pattern-order" data-ctl-row><button onclick="movePattern(this,-1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg><span>위로</span></button><button onclick="movePattern(this,1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg><span>아래로</span></button><button onclick="resetPatternRow(this)"><span>리셋</span></button></div>
   </div>`;
@@ -2766,12 +2764,6 @@ function conditionChanged(sel){
   if(c==="everyNTurns"&&!(Number(input.value)>=1))input.value="2";
   suffix.textContent=pctUnit(c)?" %":"";
 }
-// 행동을 바꾸면 쿨타임 조건 문구의 스킬 이름도 함께 바뀜
-function actionChanged(sel){
-  const row=sel.closest(".pattern-row"), charId=row.closest(".pattern-list").id.replace("pat-","");
-  const name=sel.options[sel.selectedIndex]?.text||"";
-  row.querySelectorAll('.pattern-cond option').forEach(o=>{if(COOLDOWN_CONDS.has(o.value))o.text=cooldownText(o.value,name)});
-}
 function resetPatternRow(btn){
   const row=btn.closest(".pattern-row");
   const cond=row.querySelector(".pattern-cond"), action=row.querySelector(".pattern-action");
@@ -2781,7 +2773,7 @@ function resetPatternRow(btn){
   const no=[...list.querySelectorAll(".pattern-row")].indexOf(row)+1;
   const name=[...action.options].find(o=>o.value===basic)?.textContent.trim()||"기본 공격";
   openConfirm("패턴 리셋",`<p>패턴 ${no}의 조건과 행동을 처음 상태(<b>반드시 → ${esc(name)}</b>)로 되돌립니다.</p><p class="help-note">패턴 저장을 눌러야 적용됩니다.</p>`,
-   [["취소",null,false],["확인",()=>{cond.value="always"; action.value=basic; conditionChanged(cond); actionChanged(action)},true]]);
+   [["취소",null,false],["확인",()=>{cond.value="always"; action.value=basic; conditionChanged(cond)},true]]);
 }
 function movePattern(btn,dir){
   const row=btn.closest(".pattern-row"),box=row.parentElement,rows=[...box.querySelectorAll(".pattern-row")],i=rows.indexOf(row),j=i+dir;
@@ -2996,11 +2988,10 @@ function monActs(){return (monData.skills||[]).filter(s=>s.kind==="ACTIVE"||s.ki
 function monBasic(){const acts=monActs(),p=monData.live.pattern||[];for(let i=p.length-1;i>=0;i--)if(p[i].c==="always"&&acts.some(s=>s.id===p[i].a))return p[i].a;return acts.find(s=>s.kind==="ACTIVE")?.id||acts[0]?.id||""}
 function monSkillName(id){return monActs().find(s=>s.id===id)?.name||id}
 // 조건 목록: 캐릭터와 같고, 몬스터에 뜻이 없는 소모품 조건만 뺀다
-function monCondOptions(current,actName){
+function monCondOptions(current){
  const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품");
  const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_CONDS.has(current);
- const cd=COOLDOWN_GROUP.options.map(([v,n])=>[v,actName?cooldownText(v,actName):n]);
- return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(cd,current)}</optgroup>`;
+ return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`;
 }
 const MON_UP=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>`,MON_DOWN=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>`;
 function monRowHtml(p,i){
@@ -3010,9 +3001,9 @@ function monRowHtml(p,i){
  return `<div class="pattern-row">
   <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span></div>
   <div class="pattern-controls">
-   <select class="pattern-cond" onchange="conditionChanged(this)">${monCondOptions(c,monSkillName(a))}</select>
+   <select class="pattern-cond" onchange="conditionChanged(this)">${monCondOptions(c)}</select>
    <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${PERCENT_CONDS.has(c)?100:999999}" step="1" value="${esc(v)}" aria-label="수치"><span>${pctUnit(c)?" %":""}</span></span>
-   <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(s.name)}</option>`).join("")}</select>
+   <select class="pattern-action">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(s.name)}</option>`).join("")}</select>
   </div>
   <div class="pattern-order" data-ctl-row><button onclick="monMoveRow(this,-1)">${MON_UP}<span>위로</span></button><button onclick="monMoveRow(this,1)">${MON_DOWN}<span>아래로</span></button><button onclick="monResetRow(this)"><span>리셋</span></button><button class="mon-add" onclick="monAddRow(this)"><span>추가</span></button><button class="mon-del" onclick="monDelRow(this)"><span>삭제</span></button></div>
  </div>`;
@@ -3040,7 +3031,7 @@ function monResetRow(btn){
  if(cond.value==="always"&&action.value===basic)return;
  const no=[...row.parentElement.querySelectorAll(".pattern-row")].indexOf(row)+1;
  openConfirm("패턴 리셋",`<p>패턴 ${no}의 조건과 행동을 처음 상태(<b>반드시 → ${esc(monSkillName(basic))}</b>)로 되돌립니다.</p><p class="help-note">저장을 눌러야 적용됩니다.</p>`,
-  [["취소",null,false],["확인",()=>{cond.value="always";action.value=basic;conditionChanged(cond);actionChanged(action)},true]]);
+  [["취소",null,false],["확인",()=>{cond.value="always";action.value=basic;conditionChanged(cond)},true]]);
 }
 function monReadPattern(list){
  return [...list.querySelectorAll(".pattern-row")].map(row=>{
