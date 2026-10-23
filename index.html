@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v397 · 갱신 2026-10-23 15:50 KST -->
+<!-- ProjectGY-test-console v398 · 갱신 2026-10-23 23:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -150,7 +150,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .cs-u{position:relative}.cs-dot .bl-tk{position:static}.cs-dot .bl-tk,.bl-psn>.bl-tk,.bl-bld>.bl-tk{margin-bottom:-1px}.cs-side.r .cs-col:last-child .bl-pop{left:auto;right:0}@media(max-width:520px){.cs-side.r .bl-pop{left:auto;right:0}}
 .bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
-.bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
+.bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-pimm{color:var(--tag-delaypush);font-weight:700}.bl-pimm.end{font-weight:400}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
 
 .bl-srow .cs-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 30px;padding:8px 0;min-width:0}
 .cs-col{align-self:center;min-width:0}
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v397 · 2026-10-23 15:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v398 · 2026-10-23 23:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3442,10 +3442,10 @@ function battleLogHtml(b){
  const delayHtml=e=>{const ar=e.kind==="PUSH"?"⇥":"⇤";
   // 헛방(엔진 0.10.0부터): 딜밀은 차징·캐스팅 중이 아닐 때, 딜땡은 글로벌 쿨타임 중일 때
   if(e.miss)return `<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(${e.kind==="PUSH"?"차징·캐스팅 중이 아님":"글로벌 쿨타임 중"})</span></div>`;
-  if(!e.ph)return e.item?`<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`:`<div class="bl-delay">${ar} ${who(e.tg)} Delay <b>${e.kind==="PUSH"?"+":"-"}${e.amt}</b>${e.res>0?` <span class="bl-sub nw">(저항 ${e.res}%)</span>`:""}</div>`;
+  if(!e.ph)return e.item?`<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`:`<div class="bl-delay">${ar} ${who(e.tg)} Delay <b>${e.kind==="PUSH"?"+":"-"}${e.amt}</b>${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}</div>`;
   if(e.item)return `<div class="bl-delay">${ar} ${who(e.tg)} <span class="bl-dlk">${DL(e.ph)}</span> 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`;
   const m=e.ph==="PRE"?fr:bk,a=m[e.tg]||0,c=e.kind==="PUSH"?a+e.amt:Math.max(0,a-e.amt);m[e.tg]=c;
-  return `<div class="bl-delay">${ar} ${who(e.tg)} ${dlk(e.ph,a,c)}${e.res>0?` <span class="bl-sub nw">(저항 ${e.res}%)</span>`:""}</div>`};
+  return `<div class="bl-delay">${ar} ${who(e.tg)} ${dlk(e.ph,a,c)}${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}</div>`};
  // 독·출혈·재생 틱(엔진 0.8.0부터): 종류별 한 줄에 합계, 누르거나 대면 내역. 값과 남은 턴이 같은 건은 ×N으로 묶는다
  const tkPop=(parts,lab,unit,total)=>{const g=[];for(const p of parts||[]){const x=g.find(y=>y.d===p.d&&y.t===p.t);if(x)x.n+=p.n;else g.push({d:p.d,t:p.t,n:p.n})}
   g.sort((a,b)=>b.t-a.t||b.d-a.d);
@@ -3484,6 +3484,8 @@ function battleLogHtml(b){
   else if(e.t==="shove"&&cur)cur.html.push(`<div class="bl-move">${who(e.tg)}${josa(e.tg,"이","가")} ${e.pos==="FRONT"?"전방으로 당겨졌다!":"후방으로 밀려났다!"}</div>`);
   // 도발(엔진 0.28.0): 걸 때 turns, 끝날 때 end, 쓰러져 끝나면 dead. 도발을 못 따른 타격은 taunt_ignored
   else if(e.t==="taunt"){const h=!e.end?`<div class="bl-parry">⚑ ${who(e.u)}${josa(e.u,"이","가")} 적을 도발했다! <span class="bl-sub nw">(${e.turns}턴)</span></div>`:e.dead?`<div class="bl-buffend">◇ ${who(e.u)}${josa(e.u,"이","가")} 쓰러져 도발이 풀렸다</div>`:`<div class="bl-buffend">◇ ${who(e.u)} 도발 효과 끝</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
+  // 딜밀 면역(엔진 0.30.0부터): 시작 줄은 마지막으로 민 쪽 카드 안(그 타격 바로 밑), 끝 줄은 면역이 풀린 개체 칸
+  else if(e.t==="push_immune"){const dp=`<span class="nw">Delay Push</span>`;const h=e.on?`<div class="bl-pimm">${who(e.u)} 인내심이 다했다! ${dp} 면역 <span class="bl-sub nw">(${e.turns}턴)</span></div>`:`<div class="bl-pimm end">${who(e.u)} 인내심을 되찾았다. ${dp} 면역 종료</div>`;if(e.on&&cur)cur.html.push(h);else rows.push(row(side[e.on&&e.by?e.by:e.u],h))}
   else if(e.t==="taunt_ignored"&&cur)cur.html.push(`<div class="bl-cancel">도발을 무시했다!</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
