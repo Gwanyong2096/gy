@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v399 · 갱신 2026-10-24 13:38 KST -->
+<!-- ProjectGY-test-console v400 · 갱신 2026-10-24 13:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v399 · 2026-10-24 13:38</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v400 · 2026-10-24 13:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1072,7 +1072,7 @@ async function loadMeta(){
 async function loadSkills(id){
  const {data,error}=await sb.rpc("get_character_skills",{p_char:id});
  if(error){log("get_character_skills 실패: "+error.message,"bad");return}
- skillsByChar[id]=data;
+ skillsByChar[id]=data;(data?.skills||[]).forEach(noteFinal);
  const p=await sb.rpc("get_promote_options",{p_char:id});
  promoteByChar[id]=p.error?[]:(p.data||[]);
 }
@@ -1578,7 +1578,7 @@ function fitHelpBox(){const bx=document.querySelector(".help-box");bx.style.widt
  const tr=document.createRange();tr.selectNodeContents($("helpTitle"));need=Math.max(need,tr.getBoundingClientRect().width+12+document.querySelector(".help-close").offsetWidth);
  if(need>0&&need<cur-0.5)bx.style.width=Math.ceil(need)+"px"}
 // 이름 뒤 조사(을/를, 은/는): 숫자·한글로 끝나면 발음으로, 그 밖(영어 이름 등)은 을(를)처럼 둘 다 적는다
-// 아이템 이름의 받침 여부(item_defs.name_final). 아이템 정의를 읽을 때 noteFinal로 모아 두고, josaOf가 이름이 같으면 먼저 쓴다
+// 아이템·스킬 이름의 받침 여부(item_defs.name_final, 스킬은 get_character_skills의 name_final). 정의를 읽을 때 noteFinal로 모아 두고, josaOf가 이름이 같으면 먼저 쓴다
 const NAME_FINAL={};
 function noteFinal(d){if(d?.name&&d.name_final!=null)NAME_FINAL[d.name]=!!d.name_final}
 function josaOf(text,a,b){const f=NAME_FINAL[String(text??"").trim()];if(f!=null)return f?a:b;
@@ -2667,8 +2667,8 @@ const AMMO_CONDITION_OPTIONS={
   ]
 };
 function jobConditionOptions(charId){
-  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark);
-  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name} 걸린 적군이 없을 때`,false]]:[])];
+  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark),mj=mk&&josaOf(mk.name,"이","가");
+  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name}${mj} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name}${mj} 걸린 적군이 없을 때`,false]]:[])];
 }
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
