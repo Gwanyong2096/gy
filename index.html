@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v398 · 갱신 2026-10-23 23:13 KST -->
+<!-- ProjectGY-test-console v399 · 갱신 2026-10-24 13:38 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -283,7 +283,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .cr-card{border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px}
 .cr-card .item-head{margin-bottom:2px}
 .cr-src{font-size:12px;color:var(--mu);margin-top:6px}.cr-mats{display:flex;flex-wrap:wrap;gap:2px 6px;font-size:12px;margin-top:6px}.cr-mats span{white-space:nowrap}.cr-mats .short{color:var(--bad)}.cr-mats i{font-style:normal;color:var(--mu);margin-left:6px}.cr-results{max-height:46vh;overflow:auto;margin:8px 0}
-.cr-act{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}.cr-act button:disabled{opacity:.45;cursor:not-allowed}
+.cr-act{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}.cr-act button:disabled{opacity:.45;cursor:not-allowed}.equip-row button:disabled,.promote-card:disabled{opacity:.45;cursor:not-allowed}
 .inn-count{display:flex;gap:18px;flex-wrap:wrap;padding:6px 0 12px;margin-bottom:10px;border-bottom:1px solid var(--bd);font-size:14px;color:var(--mu)}.inn-count b{color:var(--tx);margin-left:4px}
 .inn-jobs{margin:6px 0 12px}
 .job-unit{border:1px solid transparent}
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v398 · 2026-10-23 23:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v399 · 2026-10-24 13:38</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -695,7 +695,7 @@ let selectedCharId=null;
 let currentView="camp";
 const $=id=>document.getElementById(id);
 const log=(m,c)=>{$("log").innerHTML=`<div class="${c||""}">[${new Date().toLocaleTimeString()}] ${m}</div>`+$("log").innerHTML};
-async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error){log(fn+" 실패: "+error.message,"bad");return null}log(fn+" 성공","ok");return data??true}
+async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error){log(fn+" 실패: "+error.message,"bad");if(String(error.message).includes("CHARACTER_ON_IDLE")){checkIdle(true);openNotice(IDLE_LOCK_MSG)}return null}log(fn+" 성공","ok");return data??true}
 function setPwError(t){const e=$("loginMsg");e.textContent=t;e.style.display=t?"block":"none"}
 function togglePassword(){const p=$("loginPw"),b=$("pwToggle"),eye=$("pwEye");const show=p.type==="password";p.type=show?"text":"password";eye.innerHTML=show?`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle>`:`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle><path d="M4 4 20 20"></path>`;b.setAttribute("aria-label",show?"비밀번호 숨기기":"비밀번호 보기")}
 // 비밀번호: 영어, 숫자, 특수문자(키보드의 인쇄 가능한 ASCII)만 허용. 한글/외국 문자/공백은 즉시 지움.
@@ -1348,7 +1348,7 @@ const QUEST_GUIDE={
   if(!tutSeen.has("qg-k1"))return h.page("qg-k1",line,`KARMA ${k.TOTAL??"-"}/${k.LIMIT??"-"}에서 앞은 장착한 장비의 KARMA 합계, 뒤는 한도입니다.\n장비마다 KARMA가 있습니다.\n처음 얻는 장비는 모두 1이라 다 끼면 12입니다.`);
   if(!tutSeen.has("qg-k2"))return h.page("qg-k2",line,"합계가 0보다 작으면 축복입니다. 1점마다 최종 대미지와 속도가 +1%입니다.\n0부터 한도까지는 평온이고 효과가 없습니다.\n한도를 넘으면 과업입니다. 넘은 1점마다 최종 대미지와 속도가 -5%입니다.",{back:"qg-k1"});
   const t=tpCur(c),b=pubCfg.TP_KARMA_BANDS,cost=tpBandSum(b,t.k+1)-tpBandSum(b,t.k),lim=Number(k.LIMIT);
-  const up=`한도는 TP의 Karma Limit으로 올립니다.\n1점에 ${cost} TP를 쓰고, 한도가 ${lim} → ${lim+1}이 됩니다.`;
+  const up=`한도는 TP의 Karma Limit으로 올립니다.\n1점에 ${cost} TP를 쓰고, 한도가 ${lim} → ${lim+1}${josaOf(lim+1,"이","가")} 됩니다.`;
   const f=h.q(`#alloc-${c.id} input[data-tp="k"]`);
   if(!f)return h.page("qg-k3",h.q("#charDetail .main-st"),`${up}\n이 캐릭터는 남은 TP가 없습니다.\n레벨을 올리거나 Unwinding Draught로 되돌린 뒤 찍습니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
   return h.page("qg-k3",f.closest(".alloc-f")||f,`${up}\n숫자를 넣고 배분을 누르면 찍힙니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
@@ -2268,6 +2268,7 @@ function promoteSkillLines(opts){
 }
 async function openPromote(charId,job){
  const c=chars.find(x=>x.id===charId);if(!c)return;
+ if(idleLocked(charId))return;
  if(!promoteByChar[charId]){const p=await sb.rpc("get_promote_options",{p_char:charId});promoteByChar[charId]=p.error?[]:(p.data||[])}
  const opts=promoteByChar[charId].filter(t=>!t.masked&&(!job||t.job===job));if(!opts.length)return log("전직할 수 있는 직업이 없습니다.","bad");
  openConfirm("전직",`<p>이 캐릭터(<b>${esc(c.display_name)}</b>)를 전직합니다.</p>${opts.length===1&&opts[0].conditions?condListHtml(opts[0].conditions.map(x=>`<li class="cond-ok">${esc(promoteCondText(x))}</li>`)):""}
@@ -2511,6 +2512,7 @@ function renderCharacterDetail(){
    <div class="row pattern-save"><button class="pri" onclick="confirmPattern('${c.id}')">패턴 저장</button>${patShown(c.id)>patLines(c.id)?`<label class="pat-hide"><input type="checkbox"${hideOffPatterns?" checked":""} onchange="toggleHideOff(this,'${c.id}')"><span>비활성 패턴 숨기기</span></label>`:""}</div>
    ${renderFormation(c)}
    <div class="section-title sec-line sec-gap title-help"><span>Equipment</span><button type="button" class="help-btn" aria-label="Equipment 도움말" onclick="openHelp('equipment')"><span>?</span></button></div>
+   <p class="help-note idle-lock-note" hidden>Auto Battle 중이라 전직·장비·소모품을 바꿀 수 없습니다.</p>
    <div class="eq-list">${equippedHtml}${conHtml}</div>
    <div class="section-title sec-line sec-gap">Allowed to Equip</div>
    <div>${availableHtml}</div>
@@ -2518,6 +2520,7 @@ function renderCharacterDetail(){
   </div>
  </div>`;
  wrapSections(box);
+ applyIdleLock();
 }
 // 비활성 패턴 숨기기: 화면에서만 가린다(줄은 그대로 남아 저장에도 포함). 다시 그리지 않아 편집 중인 내용이 유지된다.
 let hideOffPatterns=false;
@@ -2653,7 +2656,7 @@ const CONDITION_GROUPS=[
   ]}
 ];
 const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false]]};
-// 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때
+// 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때, 표식 조건은 표식을 거는 스킬(effect.mark)이 있을 때
 const AMMO_CONDITION_OPTIONS={
   ARROW:[
     ["arrowEq","자신의 화살 수가 OO일 때",true],["arrowGte","자신의 화살 수가 OO 이상일 때",true],["arrowLte","자신의 화살 수가 OO 이하일 때",true]
@@ -2664,8 +2667,8 @@ const AMMO_CONDITION_OPTIONS={
   ]
 };
 function jobConditionOptions(charId){
-  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance);
-  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[])];
+  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark);
+  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name} 걸린 적군이 없을 때`,false]]:[])];
 }
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
@@ -3278,7 +3281,7 @@ function calcText(c,kind,tick){
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  // 증폭 − 경감 = 결과(한계 적용 뒤). 기본 피해 × (1 + 결과) = 원래 피해
- if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
+ if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%${c.mark>0?` (표식 +${q(c.mark)}%p)`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
  parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
  if(c.floored)parts.push(`바닥 ${q(c.floor)} 적용`);
@@ -3486,6 +3489,8 @@ function battleLogHtml(b){
   else if(e.t==="taunt"){const h=!e.end?`<div class="bl-parry">⚑ ${who(e.u)}${josa(e.u,"이","가")} 적을 도발했다! <span class="bl-sub nw">(${e.turns}턴)</span></div>`:e.dead?`<div class="bl-buffend">◇ ${who(e.u)}${josa(e.u,"이","가")} 쓰러져 도발이 풀렸다</div>`:`<div class="bl-buffend">◇ ${who(e.u)} 도발 효과 끝</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   // 딜밀 면역(엔진 0.30.0부터): 시작 줄은 마지막으로 민 쪽 카드 안(그 타격 바로 밑), 끝 줄은 면역이 풀린 개체 칸
   else if(e.t==="push_immune"){const dp=`<span class="nw">Delay Push</span>`;const h=e.on?`<div class="bl-pimm">${who(e.u)} 인내심이 다했다! ${dp} 면역 <span class="bl-sub nw">(${e.turns}턴)</span></div>`:`<div class="bl-pimm end">${who(e.u)} 인내심을 되찾았다. ${dp} 면역 종료</div>`;if(e.on&&cur)cur.html.push(h);else rows.push(row(side[e.on&&e.by?e.by:e.u],h))}
+  // Hunter's Mark 같은 표식(엔진 0.29.0부터): 걸림·갱신은 건 쪽 카드 안, 끝은 표식이 풀린 개체 칸. 깎임·되돌림은 뒤따르는 buff 줄
+  else if(e.t==="mark"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-debuff">◎ ${who(e.tg)} ${n}${e.refresh?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur&&!e.end)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="taunt_ignored"&&cur)cur.html.push(`<div class="bl-cancel">도발을 무시했다!</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
@@ -3689,6 +3694,16 @@ const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼�
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
 function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
 // 한 던전에는 내 Auto Battle 파티 하나만(서버 idle_dispatch가 IDLE_DUNGEON_TAKEN으로 막는다). 직접 전투·Battle Rush는 그 던전에서도 된다
+// Auto Battle에 나간 캐릭터는 서버가 전직·장비 끼기/빼기·소모품 바꾸기를 CHARACTER_ON_IDLE로 막는다. 화면은 누르기 전에 막고, 눌러도 같은 안내를 띄운다
+const IDLE_LOCK_MSG="Auto Battle 중인 캐릭터는 바꿀 수 없습니다.";
+function idleLocked(charId){if(!charId||!idleChars().has(charId))return false;openNotice(IDLE_LOCK_MSG);return true}
+// 캐릭터 화면의 전직 카드·장비·소모품 버튼을 Auto Battle 여부에 맞춰 끄고 켠다(다시 그리지 않아 편집 중인 패턴은 그대로)
+function applyIdleLock(){
+ const box=$("charDetail");if(!box||box.style.display==="none")return;
+ const on=idleChars().has(selectedCharId);
+ box.querySelectorAll(".eq-list button,.equip-row button,.promote-card:not(.locked)").forEach(b=>{b.disabled=on});
+ box.querySelectorAll(".idle-lock-note").forEach(x=>x.hidden=!on);
+}
 function idleTaken(did){return (idleInfo?.parties||[]).some(p=>p.dungeon_id===did)}
 function idleFull(){return !!idleInfo&&(idleInfo.parties||[]).length>=Number(idleInfo.slots||0)}
 async function loadIdle(){const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();if(data&&data.gold!=null){gold=Number(data.gold)||0;renderGold()}return true}
@@ -3709,14 +3724,14 @@ async function checkIdle(quiet){
  if(idleBusy)return;idleBusy=true;
  try{
   if(!await loadIdle())return;
-  renderIdle();if(advRoom)renderRoom();
+  renderIdle();if(advRoom)renderRoom();applyIdleLock();
   if(!(idleInfo.parties||[]).some(p=>p.due>0))return;
   const names={};idleInfo.parties.forEach(p=>names[p.id]=p.dungeon);
   let res=null;
   try{res=await settleIdle();log("Auto Battle 정산 성공","ok")}catch(e){log("Auto Battle 정산 실패: "+(e&&e.message||e),"bad")}
   await loadIdle();
   if(res&&res.settled>0){const cs=await rpc("get_my_characters");if(cs){chars=cs;renderAdminChars();renderCamp()}loadItems()}
-  renderIdle();if(advRoom)renderRoom();
+  renderIdle();if(advRoom)renderRoom();applyIdleLock();
   if(res&&res.settled>0&&!quiet)showIdleResult(res,names);
  }finally{idleBusy=false}
 }
@@ -3971,6 +3986,7 @@ function showCraftResult(r){
 }
 // 소모품 칸 바꾸기: 확인 창을 먼저 띄운다(def가 없으면 빼기)
 function setConsumable(charId,def){
+ if(idleLocked(charId))return;
  const c=chars.find(x=>x.id===charId);if(!c)return;
  const go=async()=>{if(await rpc("set_character_consumable",{p_char:charId,p_def:def}))load()};
  const curNm=c.consumable?(c.consumable_name||c.consumable):"";
@@ -4007,6 +4023,7 @@ const HAND_SLOT_NAME={WEAPON:"주무기",SHIELD:"보조무기"};
 // ok = 칸 고르기 창에서 이미 확인했다(다시 묻지 않는다). KARMA가 한도를 넘으면 그 안내 창이 확인 창을 겸한다
 function equipTo(it,charId,slot,ok){
  const i=itemsData.find(x=>x.id===it),d=i?.item_defs||{},alt=d.item_categories?.alt_slot,nm=d.name||i?.def_id||"";if(!i)return;
+ if(idleLocked(charId)||idleLocked(i.equipped_character))return;
  // 다른 칸에도 낄 수 있는 장비는 낄 칸을 먼저 고른다(한 자루는 한 칸에만 들어간다). 칸마다 빠지는 장비를 함께 적는다
  if(!slot&&alt){
   const outs=[d.slot,alt].map(sl=>equipOutHtml(equipOut(it,charId,sl),`${HAND_SLOT_NAME[sl]||sl}에 끼면 `)).join("");
@@ -4030,6 +4047,7 @@ function equipTo(it,charId,slot,ok){
 // 해제: 확인 창을 먼저 띄운다. Pattern 옵션이 있는 장비는 패턴 줄 수가 바뀌는 것을 알린다
 function unequip(it){
  const i=itemsData.find(x=>x.id===it);if(!i)return;
+ if(idleLocked(i.equipped_character))return;
  const nm=i.item_defs?.name||i.def_id,p=Math.round(Number(itemBonuses(i).PATTERN||0));
  const note=p>0?`<p class="help-note">패턴 줄이 ${p}줄 줄어, 넘는 줄은 비활성이 됩니다.</p>`:p<0?`<p class="help-note">패턴 줄이 ${-p}줄 늘어납니다.</p>`:"";
  openConfirm("해제",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 해제합니다. Bag으로 돌아갑니다.</p>${note}`,
