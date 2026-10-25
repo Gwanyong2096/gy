@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v403 · 갱신 2026-10-26 03:08 KST -->
+<!-- ProjectGY-test-console v404 · 갱신 2026-10-26 03:25 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v403 · 2026-10-26 03:08</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v404 · 2026-10-26 03:25</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2145,7 +2145,11 @@ function skillEffectText(s,ak){
  if(e.scale)e.scale.forEach(x=>out.push(`${buffLabel(x.k)} +(${SCALE_STAT[x.stat]||x.stat}의 ${x.pct}%)`));
  if(e.bonuses)Object.entries(e.bonuses).forEach(([k,v])=>out.push(`${STAT_LABEL[k]||k} ${v>0?"+":""}${v}${k.endsWith("_PCT")||["MIT","MMIT","SUPPORT_AMP","PARRY","PIERCE"].includes(k)?"%":""}`));
  if(e.heal)out.push(`${s.hit_type==="ALL"?"모든 아군":"가장 다친 아군"} ${coef(e.heal,s.hit_type==="ALL"?1:(s.hits||1))} 회복`);
- if(e.mp_restore)out.push(s.target==="SELF"?`자신의 MP를 최대 MP의 ${e.mp_restore.pct}% 회복`:`${s.hit_type==="ALL"?"모든 아군":"MP가 가장 적은 아군"}의 MP를 각자 최대 MP의 ${e.mp_restore.pct}% 회복`);
+ // MP 회복: mult가 있으면 스킬 공격력 비례(엔진 0.35.0), 없으면 최대 MP의 pct%
+ const mpWho=s.target==="SELF"?"자신":s.hit_type==="ALL"?"모든 아군":"MP가 가장 적은 아군";
+ if(e.mp_restore)out.push(e.mp_restore.mult!=null?`${mpWho}의 MP ${coef({stat:e.mp_restore.stat||"MATK",mult:e.mp_restore.mult},1)} 회복`:s.target==="SELF"?`자신의 MP를 최대 MP의 ${e.mp_restore.pct}% 회복`:`${mpWho}의 MP를 각자 최대 MP의 ${e.mp_restore.pct}% 회복`);
+ if(e.mp_regen){const r=e.mp_regen;out.push(`${s.hit_type==="ALL"?"모든 아군 ":""}MP 재생 ${r.turns}턴 (턴마다 ${coef({stat:r.stat||"MATK",mult:r.mult},1)})`)}
+ if(e.nullify)out.push(`${s.target==="SELF"?"자신":s.hit_type==="ALL"?"모든 아군":"아군 하나"} 다음 피격 1회 대미지 무효 (독·출혈 틱은 못 막음)`);
  if(e.regen){const r=e.regen,amt=[r.stat&&r.mult!=null?coef(r,1):"",r.flat?`HP ${r.flat}`:"",r.hp_pct?`최대 HP ${r.hp_pct}%`:""].filter(Boolean).join(" + ");out.push(`${s.hit_type==="ALL"?"모든 아군 ":""}재생 ${r.turns}턴 (턴마다 ${amt})`)}
  if(e.dot)out.push(`${DOT_LABEL[e.dot.kind]||e.dot.kind} ${e.dot.turns}턴 (턴마다 ${coef(e.dot,1)})`);
  if(e.delay_push)out.push(`Delay Push ${e.delay_push}`);
@@ -2299,7 +2303,7 @@ function renderTalent(c){
 // TP 도움말: 레벨당 TP는 공개 설정에서 읽는다
 function openTpHelp(){
  const per=Number(pubCfg.TP_PER_LEVEL)||0;
- HELP.tp={title:"TP",html:`<p>레벨이 오를 때마다 TP(Talent Point)를 ${per?`<b>${per}</b>씩 `:""}받습니다. TP는 세 가지에 씁니다.</p><ul><li><b>Front SPD</b>: 속도의 앞 수치입니다. 높을수록 차례가 빨리 돌아오고 Delay가 짧아집니다.</li><li><b>Pattern</b>: 패턴 줄을 한 줄씩 늘립니다.</li><li><b>Karma Limit</b>: 장착한 장비의 KARMA 합계 한도입니다. 합계가 한도를 넘으면 과업 상태가 되어 대미지와 속도가 줄어듭니다.</li></ul><p>세 가지를 모두 끝까지 채울 만큼의 TP는 받지 못합니다. 남는 TP는 언제든 Front SPD에 넣을 수 있습니다.</p><p class="help-note">한 번 쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다. 다음 한 단계에 드는 TP는 배분 칸 아래에 나옵니다.</p>`};
+ HELP.tp={title:"TP",html:`<p>레벨이 오를 때마다 TP(Talent Point)를 ${per?`<b>${per}</b>씩 `:""}받습니다. TP는 세 가지에 씁니다.</p><ul><li><b>Front SPD</b>: 속도의 앞 수치입니다. 높을수록 차례가 빨리 돌아오고 Delay가 짧아집니다. TP로만 오르고 버프·디버프나 장비 옵션으로는 바뀌지 않습니다.</li><li><b>Pattern</b>: 패턴 줄을 한 줄씩 늘립니다.</li><li><b>Karma Limit</b>: 장착한 장비의 KARMA 합계 한도입니다. 합계가 한도를 넘으면 과업 상태가 되어 대미지와 속도가 줄어듭니다.</li></ul><p>세 가지를 모두 끝까지 채울 만큼의 TP는 받지 못합니다. 남는 TP는 언제든 Front SPD에 넣을 수 있습니다.</p><p class="help-note">한 번 쓴 TP는 Unwinding Draught를 마셔야 되돌릴 수 있습니다. 다음 한 단계에 드는 TP는 배분 칸 아래에 나옵니다.</p>`};
  openHelp("tp");
 }
 function tpValues(id){const o={h:0,p:0,k:0};document.querySelectorAll(`#alloc-${id} input`).forEach(i=>{o[i.dataset.tp]=tpNum(i.value)});return o}
@@ -2651,8 +2655,7 @@ const CONDITION_GROUPS=[
   ]},
   {label:"버프", options:[
     ["skillBuffRoom","이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때",false],
-    ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false],
-    ["allySpdFBuffRoom","아군에 Front SPD 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
+    ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
   ]}
 ];
 const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false]]};
@@ -3464,14 +3467,17 @@ function battleLogHtml(b){
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>`);
+  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>`);
   else if(e.t==="cancel"&&cur)cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`);
   else if(e.t==="item"&&cur)cur.html.push(`<div class="bl-item">◈ <span class="nw">${esc(e.name)} 사용</span> <span class="bl-sub nw">(남은 ${e.left})</span></div>`);
   else if(e.t==="short"&&cur)cur.html.push(`<div class="bl-cancel">${AK[e.kind]||"화살"}이 부족하다!</div>`);
   else if(e.t==="hesitate"&&cur)cur.html.push(`<div class="bl-cancel">망설이다 기회를 놓쳤다!</div>`);
   else if(e.t==="heal"&&cur&&e.regen&&e.parts)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal bl-tk" ${tkOpen}>재생(${tkCnt(e.parts)}건) <b>${e.amt}</b> 회복${tkPop(e.parts,"재생","회복",e.amt)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
-  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">MP <b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
+  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">MP ${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
+  // 엔진 0.35.0: MP 재생 걸림, 대미지 무효 걸림
+  else if(e.t==="mp_regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} MP 재생 ${e.turns}턴 (턴마다 ${e.amt})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
+  else if(e.t==="nullify"&&cur)cur.html.push(`<div class="bl-parry">◈ ${who(e.tg)} 대미지 무효 ${e.n||1}회</div>`);
   else if(e.t==="regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} 재생 ${e.turns}턴 (턴마다 ${e.amt})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
   else if(e.t==="revive"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">✚ ${who(e.tg)} 되살아났다!</span><span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   else if(e.t==="offset"&&cur){const L={POISON:"독",BLEED:"출혈",REGEN:"재생"},cls=e.a==="REGEN"?"bl-heal":e.a==="POISON"?"bl-psn":"bl-bld",ico=e.a==="REGEN"?"⟳":e.a==="POISON"?PSN_ICO:BLEED_ICO;
