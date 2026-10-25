@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v405 · 갱신 2026-10-26 03:30 KST -->
+<!-- ProjectGY-test-console v406 · 갱신 2026-10-26 03:52 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v405 · 2026-10-26 03:30</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v406 · 2026-10-26 03:52</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2905,7 +2905,8 @@ async function togglePartyMember(id){
  if(next.length>partyMax)return;
  const prev=party;party=next;renderRoom();partySaving=true;
  const {data,error}=await sb.rpc("set_party",{p_chars:next});partySaving=false;
- if(error){log("set_party 실패: "+error.message,"bad");party=prev}else party=data||next;
+ // 같은 특수전직 직업이 둘이면 서버가 PARTY_SPECIAL_DUPLICATE로 막는다(파티는 되돌린다)
+ if(error){log("set_party 실패: "+error.message,"bad");party=prev;if(String(error.message).includes("PARTY_SPECIAL_DUPLICATE"))openNotice(BATTLE_ERR.PARTY_SPECIAL_DUPLICATE)}else party=data||next;
  renderRoom();
 }
 const BOSS_TAG=`<span class="boss-tag">《Dungeon Boss》</span>`;
@@ -3233,7 +3234,7 @@ function renderRoom(){
  if(typing!=null){const el=$("rushCount");if(el&&!el.disabled){el.value=typing;el.focus()}}
 }
 let battleBusy=false;
-const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 Mock Battle을 모두 썼습니다.",INVALID_RUSH:"판 수를 확인해 주세요.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const BATTLE_ERR={NOT_ENOUGH_SUPPLY:"SUPPLY가 부족합니다.",MOCK_LIMIT:"오늘 이 던전의 Mock Battle을 모두 썼습니다.",INVALID_RUSH:"판 수를 확인해 주세요.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터는 쓸 수 없습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function newRequestId(){try{return crypto.randomUUID()}catch(e){return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,12)}}
 async function startBattle(dungeonId,mode){
  if(battleBusy)return;battleBusy=true;renderRoom();
@@ -3696,7 +3697,7 @@ function idlePlace(jump){
  if(jump||IR.top==null){IR.top=idleTarget();d.style.top=IR.top+"px"}else idleFollow();
 }
 function idleFollow(){if(!IR.el||IR.raf||IR.el.classList.contains("hidden"))return;const step=()=>{const t=idleTarget(),dd=t-IR.top;if(Math.abs(dd)<.5){IR.top=t;IR.el.style.top=t+"px";IR.raf=0;return}IR.top+=dd*.18;IR.el.style.top=IR.top+"px";IR.raf=requestAnimationFrame(step)};IR.raf=requestAnimationFrame(step)}
-const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",IDLE_DUNGEON_TAKEN:"이 던전에는 이미 Auto Battle 파티가 있습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",IDLE_DUNGEON_TAKEN:"이 던전에는 이미 Auto Battle 파티가 있습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
 function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
 // 한 던전에는 내 Auto Battle 파티 하나만(서버 idle_dispatch가 IDLE_DUNGEON_TAKEN으로 막는다). 직접 전투·Battle Rush는 그 던전에서도 된다
