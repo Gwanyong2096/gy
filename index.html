@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v409 · 갱신 2026-10-27 00:38 KST -->
+<!-- ProjectGY-test-console v410 · 갱신 2026-10-27 00:57 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v409 · 2026-10-27 00:38</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v410 · 2026-10-27 00:57</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3478,7 +3478,7 @@ function battleLogHtml(b){
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   // 엔진 0.35.0: MP 재생 걸림, 대미지 무효 걸림
   // 출혈 터뜨리기(엔진 0.36.0): 그 타격 줄 바로 다음. 남은 출혈 총량(total)을 지우고 그 일부를 방어 없이 바로 깎는다
-  else if(e.t==="burst"&&cur)cur.html.push(`<div class="bl-bld">${BLEED_ICO} ${who(e.tg)}의 출혈이 터졌다!</div><div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc?`<div class="bl-calc"><span class="nw">남은 출혈 ${e.total}</span> → <span class="nw">대미지 ${e.dmg}</span> → <span class="nw">방어 없음</span></div>`:""}</div>`);
+  else if(e.t==="burst"&&cur)cur.html.push(`<div class="bl-bld">${BLEED_ICO} ${who(e.tg)}의 피가 한꺼번에 쏟아졌다!</div><div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${showCalc?`<div class="bl-calc"><span class="nw">남은 출혈 ${e.total}</span> → <span class="nw">대미지 ${e.dmg}</span> → <span class="nw">방어 없음</span></div>`:""}</div>`);
   else if(e.t==="mp_regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} MP 재생 ${e.turns}턴 (턴마다 ${e.amt})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
   else if(e.t==="nullify"&&cur)cur.html.push(`<div class="bl-parry">◈ ${who(e.tg)} 대미지 무효 ${e.n||1}회</div>`);
   else if(e.t==="regen"&&cur)cur.html.push(`<div class="bl-heal">⟳ ${who(e.tg)} 재생 ${e.turns}턴 (턴마다 ${e.amt})${e.c>1?` <span class="bl-sub nw">(${e.c}건)</span>`:""}</div>`);
