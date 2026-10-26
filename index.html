@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v413 · 갱신 2026-10-27 03:54 KST -->
+<!-- ProjectGY-test-console v414 · 갱신 2026-10-27 04:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v413 · 2026-10-27 03:54</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v414 · 2026-10-27 04:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3276,14 +3276,16 @@ const RESULT_KO={WIN:"승리",LOSE:"패배",DRAW:"무승부"};
 const EL_KO={EARTH:"흙",WATER:"물",FIRE:"불",ELECTRIC:"전기",WIND:"바람"};
 function calcText(c,kind,tick){
  const q=v=>String(+(+v).toFixed(2)),sg=v=>`${v<0?"":"+"}${q(v)}`;const mag=kind==="MAGIC";
- // mult에는 상성 배율과 출혈·뒷방 비례로 더한 양이 이미 들어 있다. 엔진 순서대로 스킬 계수 → 비례로 더한 양 → 상성을 적는다
+ // mult에는 상성 배율·추가 타 배율과 출혈·뒷방 비례로 더한 양이 이미 들어 있다. 엔진 순서대로 스킬 계수 → 비례로 더한 양 → 상성 → 추가 타를 적는다
  // 비례가 붙은 타격은 엔진 0.28.1부터 skill_mult(스킬 원래 계수)가 온다. 없으면(비례 없는 타격, 예전 로그) 반올림된 mult에서 되살린다(스킬 계수는 모두 정수 %)
  const adds=(c.bleed?.add>0?c.bleed.add:0)+(c.def_scale?.add>0?c.def_scale.add:0);
- const coef=c.skill_mult!=null?q(c.skill_mult*100):Math.round((c.mult/(c.elem>0?c.elem:1)-(c.power>0?adds/c.power:0))*100);
+ // Double Tap 추가 타 배율(엔진 0.36.1, calc.extra)도 mult에 곱해져 온다
+ const coef=c.skill_mult!=null?q(c.skill_mult*100):Math.round((c.mult/(c.elem>0?c.elem:1)/(c.extra>0?c.extra:1)-(c.power>0?adds/c.power:0))*100);
  const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${coef}%`];
  if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
+ if(c.extra>0&&c.extra!==1)parts.push(`추가 타 ×${q(c.extra)}`);
  // 증폭 − 경감 = 결과(한계 적용 뒤). 기본 피해 × (1 + 결과) = 원래 피해
  if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%${c.mark>0?` (표식 +${q(c.mark)}%p)`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
