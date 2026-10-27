@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v417 · 갱신 2026-10-27 13:20 KST -->
+<!-- ProjectGY-test-console v418 · 갱신 2026-10-27 19:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v417 · 2026-10-27 13:20</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v418 · 2026-10-27 19:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2677,7 +2677,9 @@ function jobConditionOptions(charId){
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
 const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
-    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["이 줄 스킬이 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]}
+    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["이 줄 스킬이 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]},
+  GUNNER:{design:"Gunner는 탄을 쓰는 사격 스킬로 딜을 넣는 직업입니다. 탄이 넉넉하고 El Presidente가 쿨타임이 아니면 El Presidente를 먼저 쓰고, 남은 탄에 맞춰 Bill Drill·Box Drill을 쏜 뒤, 탄이 모자라면 Reload로 채웁니다.",
+    rows:[["자신의 탄약 수가 13 이상일 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill"],["자신의 탄약 수가 8 이상일 때","Box Drill"],["반드시","Reload"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
