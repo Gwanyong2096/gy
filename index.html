@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v418 · 갱신 2026-10-27 19:10 KST -->
+<!-- ProjectGY-test-console v419 · 갱신 2026-10-27 19:19 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v418 · 2026-10-27 19:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v419 · 2026-10-27 19:19</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2162,6 +2162,8 @@ function skillEffectText(s,ak){
  if(e.debuff)e.debuff.forEach(b=>out.push(`${buffLabel(b.k)} ${buffSign(b.k)<0?"+":"-"}${bufSize(b)}${bufTurns(b)}`));
  if(e.self_debuff)e.self_debuff.forEach(b=>out.push(`자신 ${buffLabel(b.k)} ${buffSign(b.k)<0?"+":"-"}${bufSize(b)}${bufTurns(b)}`));
  if(e.bleed_hit_amp)out.push(`출혈이 걸린 적을 때릴 때 피해 증폭 +${e.bleed_hit_amp}%`);
+ // 연사(Mag Dump, 엔진 0.37.0): 탄을 쓰는 공격 스킬은 한 행동 안에서 앞서 쏜 발 수 × pct%를 그 타격 증폭에 더한다
+ if(e.mag_dump_pct)out.push(`${ak==="ARROW"?"화살":"탄약"}을 쓰는 공격은 한 행동 안에서 앞서 쏜 발 수 × ${e.mag_dump_pct}%만큼 그 타격 피해 증폭`);
  if(e.element_adv_bonus)out.push(`약점을 찌른 타격의 계수 +${e.element_adv_bonus}%`);
  if(e.delay_pull)out.push(`Delay Pull ${e.delay_pull}`);
  if(e.shove)out.push({BACK:"맞은 상대를 후방으로 밀어냄",FRONT:"맞은 상대를 전방으로 당김",FLIP:"맞은 상대의 전방·후방 뒤바꿈"}[e.shove]||"");
@@ -3291,8 +3293,8 @@ function calcText(c,kind,tick){
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  if(c.extra>0&&c.extra!==1)parts.push(`추가 타 ×${q(c.extra)}`);
- // 증폭 − 경감 = 결과(한계 적용 뒤). 기본 피해 × (1 + 결과) = 원래 피해
- if(c.amp||c.mit){parts.push(`증폭 ${sg(c.amp)}%${c.mark>0?` (표식 +${q(c.mark)}%p)`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
+ // 증폭 − 경감 = 결과(한계 적용 뒤). 증폭에 이미 들어 있는 표식(calc.mark)·연사(Mag Dump, calc.mag, 엔진 0.37.0)는 괄호로 나눠 보인다. 기본 피해 × (1 + 결과) = 원래 피해
+ if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
  parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
  if(c.floored)parts.push(`바닥 ${q(c.floor)} 적용`);
