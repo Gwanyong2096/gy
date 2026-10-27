@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v415 · 갱신 2026-10-27 12:10 KST -->
+<!-- ProjectGY-test-console v416 · 갱신 2026-10-27 12:38 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v415 · 2026-10-27 12:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v416 · 2026-10-27 12:38</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2838,11 +2838,11 @@ async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){
 function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
  loadGold();
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,name_final,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind,sort_order))").order("created_at").order("id");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,name_final,sort_order,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind,sort_order))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
- // 목록 순서: 장비 종류(item_categories.sort_order, 서버가 계열끼리 붙여 매긴다) 순. 같은 종류 안은 서버가 준 순서 그대로(같으면 앞선 것 유지)
- const catOrd=i=>{const v=i.item_defs?.item_categories?.sort_order;return v==null?1e9:Number(v)};
- itemsData=itemsData.map((i,n)=>[i,n]).sort((x,y)=>catOrd(x[0])-catOrd(y[0])||x[1]-y[1]).map(x=>x[0]);
+ // 목록 순서: 장비 종류(item_categories.sort_order, 계열끼리 붙여 매김) → 같은 종류 안은 아이템을 넣은 순(item_defs.sort_order) → 같으면 서버가 준 순서
+ const ord=v=>v==null?1e9:Number(v),catOrd=i=>ord(i.item_defs?.item_categories?.sort_order),defOrd=i=>ord(i.item_defs?.sort_order);
+ itemsData=itemsData.map((i,n)=>[i,n]).sort((x,y)=>catOrd(x[0])-catOrd(y[0])||defOrd(x[0])-defOrd(y[0])||x[1]-y[1]).map(x=>x[0]);
  itemsData.forEach(i=>noteFinal(i.item_defs));
  renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
 }
