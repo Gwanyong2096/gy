@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v419 · 갱신 2026-10-27 19:19 KST -->
+<!-- ProjectGY-test-console v420 · 갱신 2026-10-29 00:51 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -478,7 +478,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v419 · 2026-10-27 19:19</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v420 · 2026-10-29 00:51</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2113,9 +2113,9 @@ function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.uns
 function pctText(v){const n=Number(v)||0;return `${Number(n.toFixed(2))}%`}
 const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
 const DOT_LABEL={POISON:"독",BLEED:"출혈"};
-const BUFF_LABEL={ATK:"ATK",MATK:"MATK",SPD_F:"Front SPD",SPD_B:"Back SPD",DEF_F:"Front DEF",MDEF_F:"Front MDEF",DEF_B:"Back DEF",MDEF_B:"Back MDEF",SUPPORT_TAKEN:"SUPPORT TAKEN",FINAL_AMP:"주는 피해",FINAL_REDUCE:"받는 피해"};
+const BUFF_LABEL={ATK:"ATK",MATK:"MATK",SPD_B:"Back SPD",DEF_F:"Front DEF",MDEF_F:"Front MDEF",DEF_B:"Back DEF",MDEF_B:"Back MDEF",SUPPORT_TAKEN:"SUPPORT TAKEN",FINAL_AMP:"주는 피해",FINAL_REDUCE:"받는 피해"};
 function buffLabel(k){return BUFF_LABEL[k]||k}
-// 버프·디버프는 전부 수치다. 받는 지원만 %
+// 버프·디버프는 전부 수치다. 받는 지원·주는 피해·받는 피해만 %
 function buffUnit(k){return k==="SUPPORT_TAKEN"||k==="FINAL_AMP"||k==="FINAL_REDUCE"?"%":""}
 // 받는 피해(FINAL_REDUCE)는 버프 수치가 클수록 덜 받으므로 부호를 뒤집어 보여 준다
 function buffSign(k){return k==="FINAL_REDUCE"?-1:1}
