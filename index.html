@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v421 · 갱신 2026-10-29 01:03 KST -->
+<!-- ProjectGY-test-console v422 · 갱신 2026-10-29 01:24 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -312,6 +312,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .enh-big span{display:block;font-size:12.5px;color:var(--mu)}.enh-big b{display:block;font-size:24px;line-height:1.3}
 .enh-warn{color:var(--bad);font-weight:700;margin:10px 0 0}.enh-safe{color:var(--ok);font-weight:700;margin:10px 0 0}
 .enh-gain{margin:12px 0 0;font-size:13px}.enh-gain-h{color:var(--mu);font-size:12.5px;margin-bottom:2px}.enh-gain span{color:var(--mu)}
+.enh-target{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0 0;font-size:13px}.enh-target>span:first-child{color:var(--mu)}.enh-n{font-size:13px;color:var(--mu)}.enh-res.run b{color:var(--ac)}
 .enh-res{text-align:center;margin:4px 0 10px}.enh-res b{font-size:30px}.enh-res.ok b{color:var(--ac)}.enh-res.bad b{color:var(--bad)}
 .sell-hint{font-size:12.5px;color:var(--mu);margin:0 0 4px}#innSell .av-head{margin-top:6px}
 .sell-opt{font-size:12.5px;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}.sell-opt .item-core{display:inline-flex;gap:8px}
@@ -488,7 +489,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v421 · 2026-10-29 01:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v422 · 2026-10-29 01:24</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -4095,7 +4096,7 @@ function unequip(it){
 }
 // ===== 강화 (Smithy의 Enhance 탭) =====
 // 목록은 감정을 마친 장비(Bag·장착 모두). 성공률·비용·실패 시 파괴는 누를 때 서버(get_enhance_info)에 묻는다. 시도는 enhance_item
-let smithTab="craft",enhancing=false;
+let smithTab="craft";
 function setSmithTab(t){smithTab=t;document.querySelectorAll("#smithTabs .seg-btn").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("craftList").hidden=t!=="craft";$("enhList").hidden=t!=="enhance";if(t==="enhance")renderEnhance();else loadCraft()}
 const ENH_ERR={NOT_ENOUGH_GOLD:"골드가 모자랍니다.",MAX_ENHANCE:"이미 최대 강화입니다.",CHARACTER_ON_IDLE:IDLE_LOCK_MSG,RATE_LIMITED:"너무 빨리 눌렀습니다. 잠시 뒤에 다시 해 주세요.",ITEM_UNKNOWN:"Unknown 장비는 감정한 뒤에 강화할 수 있습니다.",NOT_ENHANCEABLE:"강화할 수 없는 장비입니다.",ITEM_NOT_FOUND:"이미 없는 장비입니다."};
 function enhErr(fn,error){const m=String(error?.message||"");log(fn+" 실패: "+m,"bad");if(m.includes("CHARACTER_ON_IDLE"))checkIdle(true);const k=Object.keys(ENH_ERR).find(x=>m.includes(x));openNotice(k?ENH_ERR[k]:"강화하지 못했습니다.")}
@@ -4114,40 +4115,71 @@ function enhGainHtml(cur,nx){
  const f=(k,v)=>{v=Number(v)||0;return `${v<0?"":"+"}${v}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}`},lab=k=>vis(ITEM_OPT_LABEL[k]||BUFF_LABEL[k]||k);
  return `<div class="enh-gain"><div class="enh-gain-h">강화로 더해지는 수치</div>${keys.map(k=>`<div><span>${esc(lab(k))}</span> ${Number(cur?.[k]||0)?f(k,cur[k]):"없음"} → <b>${f(k,nx[k]||0)}</b></div>`).join("")}</div>`;
 }
+// 목표 강: 확인 창에서 지금 강+1 ~ 최대 강 중 고르면 그 강까지 이어서 시도한다. 파괴·골드 부족·멈춤이면 그 자리에서 끝
+// 단계마다 성공률·비용은 공개 설정(ENHANCE_RATE_BASE·STEP·GOLD_MULT)과 미리보기의 안전 강·기준 골드로 셈한다(서버 enhance_rate·enhance_cost와 같은 식)
+let enhInfo=null,enhRun=null,enhTo=0;
+function enhMax(){return Math.floor(Number(enhInfo?.max??pubCfg.ENHANCE_MAX)||20)}
+function enhRate(l){return l<=Number(enhInfo.safe)?100:Math.max(0,Number(pubCfg.ENHANCE_RATE_BASE??75)-Number(pubCfg.ENHANCE_RATE_STEP??3)*l)}
+function enhCost(l){return Math.ceil(Number(enhInfo.base_gold)*Number(pubCfg.ENHANCE_GOLD_MULT??0.5)*l-1e-9)}
+// 목표까지: 다 성공할 확률, 다 성공하면 드는 골드, 중간에 파괴될 수 있는지
+function enhPlan(from,to){let p=1,g=0,risk=false;for(let l=from+1;l<=to;l++){const r=enhRate(l);p*=r/100;g+=enhCost(l);if(r<100)risk=true}return {p:p*100,g,risk}}
+// 이어서 시도하는 간격: 목표까지 남은 강이 많을수록 짧다. 서버 속도 제한(초당 ENHANCE_RATE_LIMIT_PER_SEC회)보다 짧게는 안 간다
+function enhGap(n){const lim=Math.max(1,Number(pubCfg.ENHANCE_RATE_LIMIT_PER_SEC)||2),floor=Math.ceil(1000/lim)+30;return Math.max(floor,1200-80*(n-1))}
+function enhPlanHtml(from,to){
+ const pl=enhPlan(from,to),have=Number(enhInfo.gold)||0,pq=v=>+v.toFixed(v<1?2:1);
+ return `<div class="enh-step">+${from} → <b>+${to}</b>${to-from>1?` <span class="enh-n">(${to-from}번)</span>`:""}</div>
+ <div class="enh-big"><div><span>${to-from>1?"목표까지 성공률":"성공률"}</span><b>${pq(pl.p)}%</b></div><div><span>${to-from>1?"목표까지 비용":"비용"}</span><b>${pl.g.toLocaleString()} G</b></div></div>
+ ${pl.risk?`<p class="enh-warn">실패하면 장비가 사라집니다.</p>`:`<p class="enh-safe">안전 강화: 반드시 성공합니다.</p>`}
+ <p class="help-note">보유 골드 ${have.toLocaleString()} G${have<enhCost(from+1)?" · 골드가 모자랍니다":have<pl.g?" · 목표까지는 모자라 가는 데까지 합니다":""}. 쓴 골드는 돌려받지 않습니다.</p>`;
+}
+function enhTargetInput(el){const cur=Number(enhInfo.enhance)||0,t=Math.max(cur+1,Math.min(enhMax(),Math.floor(Number(el.value))||cur+1));enhTo=t;const b=$("enhPlan");if(b)b.innerHTML=enhPlanHtml(cur,t);return t}
 async function openEnhance(id){
  const i=itemsData.find(x=>x.id===id);if(!i)return;
  if(i.equipped_character&&idleLocked(i.equipped_character))return;
  const {data:info,error}=await sb.rpc("get_enhance_info",{p_item:id});if(error)return enhErr("get_enhance_info",error);
  if(info?.gold!=null){gold=Number(info.gold);renderGold()}
- const nx=info?.next,nm=itemName(i);
- if(!nx)return openNotice(`${nm}: 이미 최대 강화(+${Number(info?.max)||20})입니다.`);
- const rate=Number(nx.rate)||0,cost=Number(nx.cost)||0,have=Number(info.gold)||0,short=have<cost;
+ enhInfo=info;const nx=info?.next,nm=itemName(i),cur=Number(info?.enhance)||0;
+ if(!nx)return openNotice(`${nm}: 이미 최대 강화(+${enhMax()})입니다.`);
+ const short=(Number(info.gold)||0)<Number(nx.cost);enhTo=cur+1;
  const html=`<div class="item-card">${itemDetailHtml(i)}</div>
- <div class="enh-step">+${enhOf(i)} → <b>+${Number(nx.level)}</b></div>
- <div class="enh-big"><div><span>성공률</span><b>${+rate.toFixed(2)}%</b></div><div><span>비용</span><b>${cost.toLocaleString()} G</b></div></div>
- ${nx.destroy_on_fail?`<p class="enh-warn">실패하면 장비가 사라집니다.</p>`:`<p class="enh-safe">안전 강화: 반드시 성공합니다.</p>`}
- ${enhGainHtml(info.bonus,nx.bonus)}
- <p class="help-note">보유 골드 ${have.toLocaleString()} G${short?" · 골드가 모자랍니다":""}. 쓴 골드는 돌려받지 않습니다.</p>`;
- openConfirm("강화",html,short?[["닫기",null,true]]:[["취소",null,false],["강화",()=>doEnhance(id),true]],"enhance");
+ <label class="enh-target"><span>목표 강</span><span class="rush-box"><input id="enhTo" class="rush-n" type="number" inputmode="numeric" min="${cur+1}" max="${enhMax()}" step="1" value="${cur+1}" aria-label="목표 강" oninput="enhTargetInput(this)" onchange="this.value=enhTargetInput(this)"></span><button type="button" class="mini-btn rush-max" onclick="$('enhTo').value=${enhMax()};enhTargetInput($('enhTo'))">최대</button></label>
+ <div id="enhPlan">${enhPlanHtml(cur,cur+1)}</div>
+ ${enhGainHtml(info.bonus,nx.bonus)}`;
+ openConfirm("강화",html,short?[["닫기",null,true]]:[["취소",null,false],["강화",()=>runEnhance(id,enhTo),true]],"enhance");
 }
-async function doEnhance(id){
- if(enhancing)return;const before=itemsData.find(x=>x.id===id);if(!before)return;
- enhancing=true;const {data:r,error}=await sb.rpc("enhance_item",{p_item:id});enhancing=false;
- if(error){enhErr("enhance_item",error);await loadItems();return}
- log("enhance_item 성공","ok");
- if(r?.gold!=null){gold=Number(r.gold);renderGold()}
- // 장착 중인 장비는 캐릭터 능력치도 바뀌므로 전부 다시 받는다
- if(r?.equipped_character)await load();else await loadItems();
- showEnhanceResult(r,before);
-}
-// 결과 창(연출은 시안 뒤에 바꾼다)
-function showEnhanceResult(r,before){
- const base=before.item_defs?.name||before.def_id,cost=Number(r?.cost)||0;
- if(r?.result==="SUCCESS"){
-  const it=itemsData.find(x=>x.id===r.id)||{...before,enhance:r.enhance,qty:1};
-  return openConfirm("강화 성공",`<div class="enh-res ok"><b>+${Number(r.enhance)}</b></div><div class="item-card">${itemDetailHtml(it)}</div><p><b>${esc(itemName(it))}</b>${josaOf(base,"이","가")} 되었습니다.</p>`,r.id?[["확인",null,false],["한 번 더",()=>openEnhance(r.id),true]]:[["확인",null,true]],"enhance");
+// 이어서 강화: 진행 창(멈춤 버튼)을 띄우고 한 번씩 시도한다. 창을 닫거나 멈춤을 누르면 지금 시도까지만 하고 끝
+async function runEnhance(id,target){
+ if(enhRun)return;const first=itemsData.find(x=>x.id===id);if(!first)return;
+ const from=Number(enhInfo?.enhance)||0,total=target-from,gap=enhGap(total),run=enhRun={stop:false,id,lvl:from,spent:0,end:""};
+ const draw=()=>{if(!$("helpOverlay").hidden&&$("helpActions").dataset.kind==="enhance-run")$("helpBody").innerHTML=`<div class="enh-res run"><b>+${run.lvl}</b></div><p class="enh-step">목표 <b>+${target}</b>${total>1?` · ${run.lvl-from}/${total}`:""}</p><p class="help-note">쓴 골드 ${run.spent.toLocaleString()} G</p>`};
+ if(total>1){openConfirm(`강화 중: ${first.item_defs?.name||first.def_id}`,"",[["멈춤",()=>{run.stop=true},true]],"enhance-run");draw()}
+ let last=null,eq=first.equipped_character;
+ while(run.lvl<target){
+  if(run.stop||(total>1&&$("helpOverlay").hidden)){run.end="stop";break}
+  let {data:r,error}=await sb.rpc("enhance_item",{p_item:run.id});
+  if(error&&String(error.message).includes("RATE_LIMITED")){await new Promise(f=>setTimeout(f,gap));({data:r,error}=await sb.rpc("enhance_item",{p_item:run.id}))}
+  if(error){const m=String(error.message||"");run.end=m.includes("NOT_ENOUGH_GOLD")&&run.lvl>from?"gold":"err";if(run.end==="err")enhErr("enhance_item",error);else log("enhance_item 멈춤: "+m,"bad");break}
+  log("enhance_item 성공","ok");last=r;run.spent+=Number(r.cost)||0;if(r.gold!=null){gold=Number(r.gold);renderGold()}
+  if(r.result!=="SUCCESS"){run.end="destroyed";break}
+  run.id=r.id;run.lvl=Number(r.enhance);draw();
+  if(run.lvl<target)await new Promise(f=>setTimeout(f,gap));
  }
- openConfirm("강화 실패",`<div class="enh-res bad"><b>파괴</b></div><p class="enh-warn"><b>${esc(itemName(before))}</b>${josaOf(base,"이","가")} 깨져 사라졌습니다.</p><p class="help-note">쓴 골드 ${cost.toLocaleString()} G는 돌려받지 않습니다.${r?.equipped_character?" 장착하던 칸이 비었습니다.":""}</p>`,[["확인",null,true]],"enhance");
+ enhRun=null;if(!run.end)run.end="done";
+ if(total>1&&!$("helpOverlay").hidden&&$("helpActions").dataset.kind==="enhance-run")closeHelp();
+ // 장착 중인 장비는 캐릭터 능력치도 바뀌므로 전부 다시 받는다
+ if(eq)await load();else await loadItems();
+ if(run.end!=="err")showEnhanceResult(run,first,from,target);
+}
+// 결과 창: 목표 도달·멈춤·골드 부족(성공 쪽 창), 파괴(실패 창)
+async function showEnhanceResult(run,before,from,target){
+ const base=before.item_defs?.name||before.def_id,spent=`쓴 골드 ${run.spent.toLocaleString()} G`;
+ if(run.end!=="destroyed"){
+  const it=itemsData.find(x=>x.id===run.id)||{...before,enhance:run.lvl,qty:1},up=run.lvl>from;await loadEnhBonus([it]);
+  const why=run.end==="done"?"":run.end==="gold"?`골드가 모자라 +${run.lvl}에서 멈췄습니다. `:`+${run.lvl}에서 멈췄습니다. `;
+  return openConfirm(run.end==="done"?"강화 성공":"강화 멈춤",`<div class="enh-res ok"><b>+${run.lvl}</b></div><div class="item-card">${itemDetailHtml(it)}</div><p>${up?`<b>${esc(itemName(it))}</b>${josaOf(base,"이","가")} 되었습니다. `:""}${why}</p><p class="help-note">${spent}</p>`,run.lvl<enhMax()?[["확인",null,false],["더 강화",()=>openEnhance(run.id),true]]:[["확인",null,true]],"enhance");
+ }
+ const at=run.lvl+1,nm=`${run.lvl?`+${run.lvl} `:""}${base}`;
+ openConfirm("강화 실패",`<div class="enh-res bad"><b>파괴</b></div><p class="enh-warn"><b>${esc(nm)}</b>${josaOf(base,"이","가")} +${at} 강화에 실패해 깨져 사라졌습니다.</p><p class="help-note">${spent}는 돌려받지 않습니다.${before.equipped_character?" 장착하던 칸이 비었습니다.":""}</p>`,[["확인",null,true]],"enhance");
 }
 renderThemeToggle();
 init();
