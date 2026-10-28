@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v420 · 갱신 2026-10-29 00:51 KST -->
+<!-- ProjectGY-test-console v421 · 갱신 2026-10-29 01:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -303,6 +303,16 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .shop-why{grid-column:1/-1;font-size:12px;color:var(--mu);text-align:right}
 @media(max-width:520px){.shop-row{grid-template-columns:1fr;row-gap:18px}.shop-buy{justify-content:flex-end}}
 .shop-list[hidden]{display:none}.shop-tabs{margin:2px 0 12px}
+/* Smithy 강화: 탭(Craft·Enhance), 확인 창의 성공률·비용, 결과 */
+#craftList[hidden],#enhList[hidden]{display:none}
+.enh-who{font-size:12.5px;color:var(--mu);margin-right:auto}
+.enh-step{margin:14px 0 8px;font-size:15px;text-align:center}.enh-step b{color:var(--ac);font-size:18px}
+.enh-big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.enh-big>div{border:1px solid var(--bd);border-radius:8px;padding:10px 8px;text-align:center}
+.enh-big span{display:block;font-size:12.5px;color:var(--mu)}.enh-big b{display:block;font-size:24px;line-height:1.3}
+.enh-warn{color:var(--bad);font-weight:700;margin:10px 0 0}.enh-safe{color:var(--ok);font-weight:700;margin:10px 0 0}
+.enh-gain{margin:12px 0 0;font-size:13px}.enh-gain-h{color:var(--mu);font-size:12.5px;margin-bottom:2px}.enh-gain span{color:var(--mu)}
+.enh-res{text-align:center;margin:4px 0 10px}.enh-res b{font-size:30px}.enh-res.ok b{color:var(--ac)}.enh-res.bad b{color:var(--bad)}
 .sell-hint{font-size:12.5px;color:var(--mu);margin:0 0 4px}#innSell .av-head{margin-top:6px}
 .sell-opt{font-size:12.5px;margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}.sell-opt .item-core{display:inline-flex;gap:8px}
 .shop-qty.one{display:inline-block;width:56px;text-align:center;color:var(--mu);font-size:13px}.sell-btn{min-width:5.2em}.sell-row.zero .shop-price{color:var(--mu)}
@@ -478,7 +488,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v420 · 2026-10-29 00:51</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v421 · 2026-10-29 01:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -581,7 +591,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="roster town-grid">
       <button type="button" class="roster-unit" onclick="showView('inn')"><span class="sprite-slot" data-town="INN" aria-hidden="true"></span><span class="unit-name">Inn</span><span class="unit-meta">캐릭터 영입</span></button>
       <button type="button" class="roster-unit" onclick="showView('appraise')"><span class="sprite-slot" data-town="APPRAISAL" aria-hidden="true"></span><span class="unit-name">Appraisal Clan</span><span class="unit-meta">Unknown 감정</span></button>
-      <button type="button" class="roster-unit" onclick="showView('craft')"><span class="sprite-slot" data-town="SMITHY" aria-hidden="true"></span><span class="unit-name">Smithy</span><span class="unit-meta">장비 제작</span></button>
+      <button type="button" class="roster-unit" onclick="showView('craft')"><span class="sprite-slot" data-town="SMITHY" aria-hidden="true"></span><span class="unit-name">Smithy</span><span class="unit-meta">장비 제작·강화</span></button>
     </div>
   </div>
 </div>
@@ -597,8 +607,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 <div id="craftView" class="view">
   <div class="card">
     <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Smithy</span><button type="button" class="help-btn" onclick="openMaterialHelp()" aria-label="재료 도움말">?</button></div>
-    <div class="npc"><span class="sprite-slot" data-npc="BLACKSMITH" aria-hidden="true"></span><div class="npc-talk"><p>뭐야. 구경이면 저리 비켜. 불 식는다.</p><p><b>재료</b> 가져왔으면 내놔. 쇠든 가죽이든 두드려서 못 만드는 건 없다.</p><p><b>레시피</b>가 있으면 적힌 대로 뽑아 준다. 한 치도 안 틀리게.</p><p>옵션 하나 없는 <b>일반 장비</b>? 그런 밋밋한 건 내가 다시 두드려 주지.</p><p>만들 수 있는 것만 꺼내 놨다. 재료가 모자란 건 입에도 안 올려.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(?).</a></p></div></div></div>
+    <div class="npc"><span class="sprite-slot" data-npc="BLACKSMITH" aria-hidden="true"></span><div class="npc-talk"><p>뭐야. 구경이면 저리 비켜. 불 식는다.</p><p><b>재료</b> 가져왔으면 내놔. 쇠든 가죽이든 두드려서 못 만드는 건 없다.</p><p><b>레시피</b>가 있으면 적힌 대로 뽑아 준다. 한 치도 안 틀리게.</p><p>옵션 하나 없는 <b>일반 장비</b>? 그런 밋밋한 건 내가 다시 두드려 주지.</p><p>만들 수 있는 것만 꺼내 놨다. 재료가 모자란 건 입에도 안 올려.</p><p>쓰던 장비를 <b>강화</b>해 달라고? 골드만 내면 두드려 주지. 단, 선을 넘으면 쇠가 못 버티고 깨진다.</p><div class="npc-note"><p>※ 지금 만들 수 있는 것만 보입니다. 레시피는 가지고 있으면 재료가 모자라도 보입니다.</p><p>※ 만든 장비에는 랜덤 옵션이 붙을 수 있습니다(안 붙으면 일반 장비). 리메이크는 일반 장비만 할 수 있습니다.</p><p>※ <a href="#" role="button" class="note-link" onclick="openMaterialHelp();return false">재료마다 더 잘 붙는 랜덤 옵션이 있습니다(?).</a></p><p>※ 강화는 안전 강화까지 반드시 성공합니다. 그 위에서 실패하면 장비가 사라지고, 쓴 골드는 돌려받지 않습니다.</p></div></div></div>
+    <div class="seg shop-tabs" id="smithTabs"><button type="button" class="seg-btn on" data-t="craft" onclick="setSmithTab('craft')"><span>Craft</span></button><button type="button" class="seg-btn" data-t="enhance" onclick="setSmithTab('enhance')"><span>Enhance</span></button></div>
     <div id="craftList"><div class="empty">불러오는 중…</div></div>
+    <div id="enhList" hidden></div>
   </div>
 </div>
 
@@ -1028,7 +1040,7 @@ async function loadSell(){
  const defs={};itemsData.forEach(i=>{if(i.item_defs)defs[i.def_id]=i.item_defs});
  const miss=[...new Set(list.map(x=>x.def_id).filter(d=>!defs[d]))];
  if(miss.length){const r=await sb.from("item_defs").select("id,name,name_final,slot,item_type,material,base_bonuses,note,ammo_cap,item_categories(ammo_kind)").in("id",miss);(r.data||[]).forEach(d=>{defs[d.id]=d;noteFinal(d)})}
- sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));renderSell();
+ sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));await loadEnhBonus(sellList);renderSell();
 }
 function renderSell(){
  if(!sellList.length){$("innSell").innerHTML=`<div class="empty">팔 수 있는 아이템이 없습니다.</div>`;return}
@@ -1037,16 +1049,16 @@ function renderSell(){
  const rest=sellList.filter(i=>!known.has(i.item_defs.slot));if(rest.length)secs.push(["Etc",rest]);
  const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i);
   return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
-  <div class="shop-main"><div class="shop-name"><b>${esc(d.name)}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}</div>
-  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(d.name)} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">판매</button></div>
+  <div class="shop-main"><div class="shop-name"><b>${esc(itemName(i))}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}</div>
+  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(itemName(i))} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">판매</button></div>
  </div>`};
  $("innSell").innerHTML=`<div class="sell-hint">장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
 }
 function sellPick(id,btn){
  const i=sellList.find(x=>x.id===id);if(!i)return;
  const q=Number(i.qty)||1,p=Number(i.price)||0,inp=btn.parentElement.querySelector("input.shop-qty"),n=inp?Math.max(1,Math.min(q,Math.floor(Number(inp.value))||1)):1;if(inp)inp.value=n;
- const nm=`<b>${esc(i.item_defs.name)}</b>${unkTag(i)}`,opt=!i.unknown&&Object.values(i.rolled_bonuses||{}).some(v=>Number(v));
- const html=`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}판 아이템은 되살 수 없습니다.</p>`;
+ const nm=`<b>${esc(itemName(i))}</b>${unkTag(i)}`,enh=enhOf(i),opt=!i.unknown&&Object.values(i.rolled_bonuses||{}).some(v=>Number(v));
+ const html=`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}${enh?`+${enh} 강화 장비입니다. 강화에 쓴 골드는 돌려받지 않습니다. `:""}판 아이템은 되살 수 없습니다.</p>`;
  openConfirm("판매",html,[["취소",null,false],["판매",()=>sellGo(id,n),true]],"sell");
 }
 async function sellGo(id,n){
@@ -1056,7 +1068,7 @@ async function sellGo(id,n){
   loadSell();return}
  log("sell_items 성공","ok");
  if(data?.gold!=null){gold=Number(data.gold);renderGold()}
- const s=(data?.sold||[])[0],g=Number(data?.gained)||0,nm=s?.name||sellList.find(x=>x.id===id)?.item_defs.name||"";
+ const s=(data?.sold||[])[0],g=Number(data?.gained)||0,sl=sellList.find(x=>x.id===id),nm=sl?itemName(sl):s?.name||"";
  openNotice(`${nm} ${n}개를 팔아 ${g.toLocaleString()}골드를 받았습니다.`);
  // Bag·골드·캐릭터(낀 소모품 칸 수량)를 다시 받는다
  load();
@@ -2065,7 +2077,16 @@ function itemCat(d){return vis(d?.item_type||d?.slot||"").toLowerCase()}
 // 아이템 옵션: 기본 옵션 + 랜덤 옵션 합산
 // 옵션 색: 물공 · 마공 · 물방 · 마방 · HP · MP · SPD · 퍼센트(증폭, 경감)
 function optClass(k){if(k==="KARMA")return "karma-red";if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
-function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i.rolled_bonuses])for(const [k,v] of Object.entries(src||{}))o[k]=(o[k]||0)+Number(v);return o}
+// 강화: 장비마다 강(items.enhance, 0~20). 이름 앞에 +강(0강은 없음). 강화로 오른 몫(item_enh_bonus: 기본 옵션 증가분 + 특수 옵션)은 기본 옵션에 더해 보인다
+const enhBonusCache={};
+function enhOf(i){return Math.max(0,Math.floor(Number(i?.enhance)||0))}
+function enhKey(i){return `${i.def_id}|${enhOf(i)}`}
+function itemName(i){const n=enhOf(i);return (n?`+${n} `:"")+(i?.item_defs?.name||i?.def_id||"")}
+async function loadEnhBonus(list){
+ const need=[...new Set((list||[]).filter(i=>enhOf(i)>0).map(enhKey))].filter(k=>!enhBonusCache[k]);
+ await Promise.all(need.map(async k=>{const [d,n]=k.split("|");const {data,error}=await sb.rpc("item_enh_bonus",{p_def:d,p_enh:Number(n)});if(error){log("item_enh_bonus 실패: "+error.message,"bad");return}enhBonusCache[k]=data||{}}));
+}
+function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i.rolled_bonuses,enhOf(i)?enhBonusCache[enhKey(i)]:null])for(const [k,v] of Object.entries(src||{}))o[k]=(o[k]||0)+Number(v);return o}
 const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"]);
 const PCT_BONUS=new Set(["MIT","MMIT","SUPPORT_AMP","DMG_AMP","PARRY","PIERCE","FINAL_AMP","FINAL_REDUCE"]);
 // 아이템 옵션 표기(영어)
@@ -2106,7 +2127,7 @@ function itemBodyParts(i){
  return [all?`<div class="item-core">${all}</div>`:"",(note||rand)?`<div class="item-note">${esc(note)}${note&&rand?" ":""}${rand}</div>`:""];
 }
 function unkTag(i){return i&&i.unknown?` <span class="item-unk">(Unknown)</span>`:""}
-function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="item-head"><b class="item-name">${esc(d.name||i.def_id)}${unkTag(i)}</b>${Number(i.qty)>1&&!i.equipped_character?`<b class="item-count">x${i.qty}</b>`:""}${itemTagsHtml(d)}</span>`,i)}
+function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${Number(i.qty)>1&&!i.equipped_character?`<b class="item-count">x${i.qty}</b>`:""}${itemTagsHtml(d)}</span>`,i)}
 // 직업 계열(전직 전 직업 포함). 장착 가능 직업 판정에 쓴다.
 function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from}return out}
 // 퍼센트 표시: 소수 둘째 자리까지, 끝의 0은 지움 (예: 74.07%, 0%)
@@ -2578,7 +2599,7 @@ function renderBag(){
  }
  if(!groups.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
  // 아이콘(19-skill-icons의 ITEM_ICONS)이 있는 아이템은 줄 앞에 32px 도트를 붙인다
- const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(i.item_defs?.name||i.def_id)}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
+ const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
  const sections=ITEM_GROUPS.map(([t,sl])=>[t,groups.filter(g=>sl.includes(g.item.item_defs?.slot))]);
  const rest=groups.filter(g=>!known.has(g.item.item_defs?.slot));if(rest.length)sections.push(["Etc",rest]);
@@ -2842,13 +2863,14 @@ async function loadGold(){const {data,error}=await sb.rpc("get_gold");if(error){
 function renderGold(){const b=$("tabGold");if(!b)return;const h=gold==null?"":`<span class="sp-k">GOLD</span><span class="sp-v"><b>${gold.toLocaleString()}</b></span>`;if(b.dataset.h!==h){b.dataset.h=h;b.innerHTML=h}}
 async function loadItems(){
  loadGold();
- const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,name_final,sort_order,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind,sort_order))").order("created_at").order("id");
+ const {data,error}=await sb.from("items").select("id,def_id,qty,unknown,enhance,rolled_bonuses,equipped_character,equipped_slot,item_defs(name,name_final,sort_order,slot,item_type,material,jobs,base_bonuses,note,use_skill,ammo_cap,item_categories(wear_group,only_jobs,two_handed,alt_slot,overall,ammo_kind,sort_order))").order("created_at").order("id");
  if(error){log("아이템 불러오기 실패: "+error.message,"bad");itemsData=[];}else itemsData=data||[];
  // 목록 순서: 장비 종류(item_categories.sort_order, 계열끼리 붙여 매김) → 같은 종류 안은 아이템을 넣은 순(item_defs.sort_order) → 같으면 서버가 준 순서
  const ord=v=>v==null?1e9:Number(v),catOrd=i=>ord(i.item_defs?.item_categories?.sort_order),defOrd=i=>ord(i.item_defs?.sort_order);
  itemsData=itemsData.map((i,n)=>[i,n]).sort((x,y)=>catOrd(x[0])-catOrd(y[0])||defOrd(x[0])-defOrd(y[0])||x[1]-y[1]).map(x=>x[0]);
  itemsData.forEach(i=>noteFinal(i.item_defs));
- renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise();
+ await loadEnhBonus(itemsData);
+ renderBag(); renderCharacterDetail(); if(currentView==="appraise")loadAppraise(); if(currentView==="craft"&&smithTab==="enhance")renderEnhance();
 }
 function setRecruitMsg(t){$("recruitMsg").textContent=t;$("recruitMsg").style.display=t?"block":"none"}
 // 영입 요청 번호: 영입이 끝날 때까지 같은 번호를 쓴다. 서버가 같은 번호의 영입은 한 번만 처리하므로
@@ -4024,8 +4046,8 @@ function equipOut(it,charId,slot){
 // 빠지는 장비 안내 한 줄(없으면 빈 글). pre = 줄 앞에 붙일 말
 function equipOutHtml(out,pre){
  if(!out.length)return "";
- const names=out.map(x=>x.item_defs?.name||x.def_id),last=names[names.length-1];
- return `<p>${pre||""}<b>${names.map(esc).join(", ")}</b>${josaOf(last,"은","는")} 해제되어 Bag으로 돌아갑니다.</p>`;
+ const names=out.map(itemName),last=out[out.length-1];
+ return `<p>${pre||""}<b>${names.map(esc).join(", ")}</b>${josaOf(last.item_defs?.name||last.def_id,"은","는")} 해제되어 Bag으로 돌아갑니다.</p>`;
 }
 // 장착하면 KARMA 합계가 한도를 넘게 되는지(지금보다 늘어날 때만). 빠지는 장비는 equipOut
 // slot = 끼울 칸(안 주면 장비의 기본 칸). 같은 캐릭터 안에서 칸만 옮기면 그 장비는 이미 합계에 들어 있다
@@ -4034,18 +4056,18 @@ function karmaAfterEquip(it,charId,slot){
  const d=i.item_defs||{},kv=x=>Number(itemBonuses(x).KARMA||0);
  const out=equipOut(it,charId,slot);
  const cur=Number(k.TOTAL||0),lim=Number(k.LIMIT||0),next=cur-out.reduce((s,x)=>s+kv(x),0)+(i.equipped_character===charId?0:kv(i));
- return {cur,lim,next,over:next-lim,name:d.name||i.def_id};
+ return {cur,lim,next,over:next-lim,name:itemName(i)};
 }
 // 주무기·보조무기 어느 쪽에도 낄 수 있는 장비(권총)의 칸 이름
 const HAND_SLOT_NAME={WEAPON:"주무기",SHIELD:"보조무기"};
 // ok = 칸 고르기 창에서 이미 확인했다(다시 묻지 않는다). KARMA가 한도를 넘으면 그 안내 창이 확인 창을 겸한다
 function equipTo(it,charId,slot,ok){
- const i=itemsData.find(x=>x.id===it),d=i?.item_defs||{},alt=d.item_categories?.alt_slot,nm=d.name||i?.def_id||"";if(!i)return;
+ const i=itemsData.find(x=>x.id===it),d=i?.item_defs||{},alt=d.item_categories?.alt_slot,nm=itemName(i),jn=d.name||i?.def_id||"";if(!i)return;
  if(idleLocked(charId)||idleLocked(i.equipped_character))return;
  // 다른 칸에도 낄 수 있는 장비는 낄 칸을 먼저 고른다(한 자루는 한 칸에만 들어간다). 칸마다 빠지는 장비를 함께 적는다
  if(!slot&&alt){
   const outs=[d.slot,alt].map(sl=>equipOutHtml(equipOut(it,charId,sl),`${HAND_SLOT_NAME[sl]||sl}에 끼면 `)).join("");
-  openConfirm("장착할 칸",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 어느 칸에 낄까요?</p>${outs}`,[["취소",null],[HAND_SLOT_NAME[d.slot]||d.slot,()=>equipTo(it,charId,d.slot,true)],[HAND_SLOT_NAME[alt]||alt,()=>equipTo(it,charId,alt,true),true]],"equip");return}
+  openConfirm("장착할 칸",`<p><b>${esc(nm)}</b>${josaOf(jn,"을","를")} 어느 칸에 낄까요?</p>${outs}`,[["취소",null],[HAND_SLOT_NAME[d.slot]||d.slot,()=>equipTo(it,charId,d.slot,true)],[HAND_SLOT_NAME[alt]||alt,()=>equipTo(it,charId,alt,true),true]],"equip");return}
  const go=async()=>{if(await rpc("equip_item",slot?{p_char:charId,p_item:it,p_slot:slot}:{p_char:charId,p_item:it}))load()};
  const k=karmaAfterEquip(it,charId,slot);
  if(k&&k.next>k.lim&&k.next>k.cur){
@@ -4057,19 +4079,75 @@ function equipTo(it,charId,slot,ok){
  // 같은 캐릭터 안에서 칸만 옮기기(권총: 주무기 ↔ 보조무기)
  if(i.equipped_character===charId){
   const to=HAND_SLOT_NAME[slot]||slot;
-  return openConfirm("칸 옮기기",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} ${esc(to)} 칸으로 옮깁니다.</p>${out}`,[["취소",null,false],["옮기기",go,true]],"equip");
+  return openConfirm("칸 옮기기",`<p><b>${esc(nm)}</b>${josaOf(jn,"을","를")} ${esc(to)} 칸으로 옮깁니다.</p>${out}`,[["취소",null,false],["옮기기",go,true]],"equip");
  }
  const cn=chars.find(x=>x.id===charId)?.display_name||"";
- openConfirm("장착",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} <b>${esc(cn)}</b>에게 장착합니다.</p>${out}`,[["취소",null,false],["장착",go,true]],"equip");
+ openConfirm("장착",`<p><b>${esc(nm)}</b>${josaOf(jn,"을","를")} <b>${esc(cn)}</b>에게 장착합니다.</p>${out}`,[["취소",null,false],["장착",go,true]],"equip");
 }
 // 해제: 확인 창을 먼저 띄운다. Pattern 옵션이 있는 장비는 패턴 줄 수가 바뀌는 것을 알린다
 function unequip(it){
  const i=itemsData.find(x=>x.id===it);if(!i)return;
  if(idleLocked(i.equipped_character))return;
- const nm=i.item_defs?.name||i.def_id,p=Math.round(Number(itemBonuses(i).PATTERN||0));
+ const nm=itemName(i),jn=i.item_defs?.name||i.def_id,p=Math.round(Number(itemBonuses(i).PATTERN||0));
  const note=p>0?`<p class="help-note">패턴 줄이 ${p}줄 줄어, 넘는 줄은 비활성이 됩니다.</p>`:p<0?`<p class="help-note">패턴 줄이 ${-p}줄 늘어납니다.</p>`:"";
- openConfirm("해제",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 해제합니다. Bag으로 돌아갑니다.</p>${note}`,
+ openConfirm("해제",`<p><b>${esc(nm)}</b>${josaOf(jn,"을","를")} 해제합니다. Bag으로 돌아갑니다.</p>${note}`,
   [["취소",null,false],["해제",async()=>{if(await rpc("unequip_item",{p_item:it}))load()},true]],"unequip");
+}
+// ===== 강화 (Smithy의 Enhance 탭) =====
+// 목록은 감정을 마친 장비(Bag·장착 모두). 성공률·비용·실패 시 파괴는 누를 때 서버(get_enhance_info)에 묻는다. 시도는 enhance_item
+let smithTab="craft",enhancing=false;
+function setSmithTab(t){smithTab=t;document.querySelectorAll("#smithTabs .seg-btn").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("craftList").hidden=t!=="craft";$("enhList").hidden=t!=="enhance";if(t==="enhance")renderEnhance();else loadCraft()}
+const ENH_ERR={NOT_ENOUGH_GOLD:"골드가 모자랍니다.",MAX_ENHANCE:"이미 최대 강화입니다.",CHARACTER_ON_IDLE:IDLE_LOCK_MSG,RATE_LIMITED:"너무 빨리 눌렀습니다. 잠시 뒤에 다시 해 주세요.",ITEM_UNKNOWN:"Unknown 장비는 감정한 뒤에 강화할 수 있습니다.",NOT_ENHANCEABLE:"강화할 수 없는 장비입니다.",ITEM_NOT_FOUND:"이미 없는 장비입니다."};
+function enhErr(fn,error){const m=String(error?.message||"");log(fn+" 실패: "+m,"bad");if(m.includes("CHARACTER_ON_IDLE"))checkIdle(true);const k=Object.keys(ENH_ERR).find(x=>m.includes(x));openNotice(k?ENH_ERR[k]:"강화하지 못했습니다.")}
+function renderEnhance(){
+ const box=$("enhList");if(!box)return;
+ const eq=new Set(EQUIP_SLOTS.map(s=>s[0])),list=itemsData.filter(i=>!i.unknown&&eq.has(i.item_defs?.slot));
+ if(!list.length){box.innerHTML=`<div class="empty">강화할 장비가 없습니다.</div>`;return}
+ const who=id=>chars.find(c=>c.id===id)?.display_name||"";
+ const row=i=>`<div class="item-card">${itemDetailHtml(i)}<div class="cr-act">${i.equipped_character?`<span class="enh-who">${esc(who(i.equipped_character))} 장착 중</span>`:""}<button class="pri fm-btn" onclick="openEnhance('${esc(i.id)}')"><span>강화</span></button></div></div>`;
+ box.innerHTML=ITEM_GROUPS.map(([t,sl])=>[t,list.filter(i=>sl.includes(i.item_defs?.slot))]).filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
+}
+// 강화로 바뀌는 수치: 지금 강화 몫 → 다음 강 강화 몫(바뀌는 항목만)
+function enhGainHtml(cur,nx){
+ const keys=[...new Set([...Object.keys(cur||{}),...Object.keys(nx||{})])].filter(k=>Number(cur?.[k]||0)!==Number(nx?.[k]||0));
+ if(!keys.length)return "";
+ const f=(k,v)=>{v=Number(v)||0;return `${v<0?"":"+"}${v}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}`},lab=k=>vis(ITEM_OPT_LABEL[k]||BUFF_LABEL[k]||k);
+ return `<div class="enh-gain"><div class="enh-gain-h">강화로 더해지는 수치</div>${keys.map(k=>`<div><span>${esc(lab(k))}</span> ${Number(cur?.[k]||0)?f(k,cur[k]):"없음"} → <b>${f(k,nx[k]||0)}</b></div>`).join("")}</div>`;
+}
+async function openEnhance(id){
+ const i=itemsData.find(x=>x.id===id);if(!i)return;
+ if(i.equipped_character&&idleLocked(i.equipped_character))return;
+ const {data:info,error}=await sb.rpc("get_enhance_info",{p_item:id});if(error)return enhErr("get_enhance_info",error);
+ if(info?.gold!=null){gold=Number(info.gold);renderGold()}
+ const nx=info?.next,nm=itemName(i);
+ if(!nx)return openNotice(`${nm}: 이미 최대 강화(+${Number(info?.max)||20})입니다.`);
+ const rate=Number(nx.rate)||0,cost=Number(nx.cost)||0,have=Number(info.gold)||0,short=have<cost;
+ const html=`<div class="item-card">${itemDetailHtml(i)}</div>
+ <div class="enh-step">+${enhOf(i)} → <b>+${Number(nx.level)}</b></div>
+ <div class="enh-big"><div><span>성공률</span><b>${+rate.toFixed(2)}%</b></div><div><span>비용</span><b>${cost.toLocaleString()} G</b></div></div>
+ ${nx.destroy_on_fail?`<p class="enh-warn">실패하면 장비가 사라집니다.</p>`:`<p class="enh-safe">안전 강화: 반드시 성공합니다.</p>`}
+ ${enhGainHtml(info.bonus,nx.bonus)}
+ <p class="help-note">보유 골드 ${have.toLocaleString()} G${short?" · 골드가 모자랍니다":""}. 쓴 골드는 돌려받지 않습니다.</p>`;
+ openConfirm("강화",html,short?[["닫기",null,true]]:[["취소",null,false],["강화",()=>doEnhance(id),true]],"enhance");
+}
+async function doEnhance(id){
+ if(enhancing)return;const before=itemsData.find(x=>x.id===id);if(!before)return;
+ enhancing=true;const {data:r,error}=await sb.rpc("enhance_item",{p_item:id});enhancing=false;
+ if(error){enhErr("enhance_item",error);await loadItems();return}
+ log("enhance_item 성공","ok");
+ if(r?.gold!=null){gold=Number(r.gold);renderGold()}
+ // 장착 중인 장비는 캐릭터 능력치도 바뀌므로 전부 다시 받는다
+ if(r?.equipped_character)await load();else await loadItems();
+ showEnhanceResult(r,before);
+}
+// 결과 창(연출은 시안 뒤에 바꾼다)
+function showEnhanceResult(r,before){
+ const base=before.item_defs?.name||before.def_id,cost=Number(r?.cost)||0;
+ if(r?.result==="SUCCESS"){
+  const it=itemsData.find(x=>x.id===r.id)||{...before,enhance:r.enhance,qty:1};
+  return openConfirm("강화 성공",`<div class="enh-res ok"><b>+${Number(r.enhance)}</b></div><div class="item-card">${itemDetailHtml(it)}</div><p><b>${esc(itemName(it))}</b>${josaOf(base,"이","가")} 되었습니다.</p>`,r.id?[["확인",null,false],["한 번 더",()=>openEnhance(r.id),true]]:[["확인",null,true]],"enhance");
+ }
+ openConfirm("강화 실패",`<div class="enh-res bad"><b>파괴</b></div><p class="enh-warn"><b>${esc(itemName(before))}</b>${josaOf(base,"이","가")} 깨져 사라졌습니다.</p><p class="help-note">쓴 골드 ${cost.toLocaleString()} G는 돌려받지 않습니다.${r?.equipped_character?" 장착하던 칸이 비었습니다.":""}</p>`,[["확인",null,true]],"enhance");
 }
 renderThemeToggle();
 init();
