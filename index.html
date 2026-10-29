@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v427 · 갱신 2026-10-29 14:28 KST -->
+<!-- ProjectGY-test-console v428 · 갱신 2026-10-29 15:33 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -312,7 +312,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .enh-big span{display:block;font-size:12.5px;color:var(--mu)}.enh-big b{display:block;font-size:24px;line-height:1.3}
 .enh-warn{color:var(--bad);font-weight:700;margin:10px 0 0}.enh-safe{color:var(--ok);font-weight:700;margin:10px 0 0}
 .enh-gain{margin:12px 0 0;font-size:13px}.enh-gain-h{color:var(--mu);font-size:12.5px;margin-bottom:2px}.enh-gain span{color:var(--mu)}
-.enh-target{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0 0;font-size:13px}.enh-target>span:first-child{color:var(--mu)}.enh-n{font-size:13px;color:var(--mu)}.enh-res.run b{color:var(--ac)}
+.enh-target button:disabled{opacity:.45;cursor:not-allowed}.enh-target{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0 0;font-size:13px}.enh-target>span:first-child{color:var(--mu)}.enh-n{font-size:13px;color:var(--mu)}.enh-res.run b{color:var(--ac)}
 .enh-hit{text-align:center;padding:14px 0 6px}.enh-hit b{display:inline-block;font-size:30px;color:var(--ac);animation:enhHit .4s ease-in-out infinite}
 @keyframes enhHit{0%,100%{transform:rotate(0) scale(1)}30%{transform:rotate(-8deg) scale(1.12)}60%{transform:rotate(4deg) scale(.96)}}
 .enh-res.ok b{display:inline-block;animation:enhGold 1s ease-out}
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v427 · 2026-10-29 14:28</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v428 · 2026-10-29 15:33</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -4149,9 +4149,9 @@ async function openEnhance(id){
  if(info?.gold!=null){gold=Number(info.gold);renderGold()}
  enhInfo=info;const nx=info?.next,nm=itemName(i),cur=Number(info?.enhance)||0;
  if(!nx)return openNotice(`${nm}: 이미 최대 강화(+${enhMax()})입니다.`);
- const short=(Number(info.gold)||0)<Number(nx.cost);enhTo=cur+1;
+ const short=(Number(info.gold)||0)<Number(nx.cost),safe=Math.min(enhMax(),Number(info.safe)||0);enhTo=cur+1;
  const html=`<div class="item-card">${itemDetailHtml(i)}</div>
- <label class="enh-target"><span>목표 강</span><span class="rush-box"><input id="enhTo" class="rush-n" type="number" inputmode="numeric" min="${cur+1}" max="${enhMax()}" step="1" value="${cur+1}" aria-label="목표 강" oninput="enhTargetInput(this)" onchange="this.value=enhTargetInput(this)"></span><button type="button" class="mini-btn rush-max" onclick="$('enhTo').value=${enhMax()};enhTargetInput($('enhTo'))">최대</button></label>
+ <label class="enh-target"><span>목표 강</span><span class="rush-box"><input id="enhTo" class="rush-n" type="number" inputmode="numeric" min="${cur+1}" max="${enhMax()}" step="1" value="${cur+1}" aria-label="목표 강" oninput="enhTargetInput(this)" onchange="this.value=enhTargetInput(this)"></span><button type="button" class="mini-btn rush-max" onclick="$('enhTo').value=${enhMax()};enhTargetInput($('enhTo'))">최대</button><button type="button" class="mini-btn rush-max" onclick="$('enhTo').value=${safe};enhTargetInput($('enhTo'))"${cur>=safe?" disabled":""}>안전 +${safe}</button></label>
  <div id="enhPlan">${enhPlanHtml(cur,cur+1)}</div>
  ${enhGainHtml(info.bonus,nx.bonus)}`;
  openConfirm("강화",html,short?[["닫기",null,true]]:[["취소",null,false],["강화",()=>runEnhance(id,enhTo),true]],"enhance");
