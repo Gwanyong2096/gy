@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v428 · 갱신 2026-10-29 15:33 KST -->
+<!-- ProjectGY-test-console v429 · 갱신 2026-10-29 15:55 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -150,7 +150,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .cs-u{position:relative}.cs-dot .bl-tk{position:static}.cs-dot .bl-tk,.bl-psn>.bl-tk,.bl-bld>.bl-tk{margin-bottom:-1px}.cs-side.r .cs-col:last-child .bl-pop{left:auto;right:0}@media(max-width:520px){.cs-side.r .bl-pop{left:auto;right:0}}
 .bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
-.bl-wind{color:var(--mu);font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-pimm{color:var(--tag-delaypush);font-weight:700}.bl-pimm.end{font-weight:400}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
+.bl-wind{color:var(--mu);font-size:12.5px}.bl-cry{color:var(--ac);font-weight:700;font-size:15px}.bl-cry .bl-sub{font-weight:400;font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-pimm{color:var(--tag-delaypush);font-weight:700}.bl-pimm.end{font-weight:400}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
 
 .bl-srow .cs-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 30px;padding:8px 0;min-width:0}
 .cs-col{align-self:center;min-width:0}
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v428 · 2026-10-29 15:33</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v429 · 2026-10-29 15:55</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2086,7 +2086,7 @@ const vis=x=>String(x??"").replace(/_/g," ");
 function itemCat(d){return vis(d?.item_type||d?.slot||"").toLowerCase()}
 // 아이템 옵션: 기본 옵션 + 랜덤 옵션 합산
 // 옵션 색: 물공 · 마공 · 물방 · 마방 · HP · MP · SPD · 퍼센트(증폭, 경감)
-function optClass(k){if(k==="KARMA")return "karma-red";if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k))return "o-pct";return ""}
+function optClass(k){if(k==="KARMA")return "karma-red";if(k==="HP"||k==="HP_PCT")return "o-hp";if(k==="MP"||k==="MP_PCT")return "o-mp";if(k==="SPD_B_PCT")return "o-spd";if(k==="ATK_PCT")return "o-atk";if(k==="MATK_PCT")return "o-matk";if(PCT_BONUS.has(k)||OPT_NEG.has(k)||k==="POISON_DMG_PCT"||k==="CRY_PCT"||k==="MP_REGEN_PCT")return "o-pct";return ""}
 // 강화: 장비마다 강(items.enhance, 0~20). 이름 앞에 +강(0강은 없음). 강화로 오른 몫(item_enh_bonus: 기본 옵션 증가분 + 특수 옵션)은 기본 옵션에 더해 보인다
 const enhBonusCache={};
 function enhOf(i){return Math.max(0,Math.floor(Number(i?.enhance)||0))}
@@ -2100,7 +2100,10 @@ function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i
 const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"]);
 const PCT_BONUS=new Set(["MIT","MMIT","SUPPORT_AMP","DMG_AMP","PARRY","PIERCE","FINAL_AMP","FINAL_REDUCE"]);
 // 아이템 옵션 표기(영어)
-const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD_B:"Back SPD",SPD_B_PCT:"Back SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"Pattern"};
+const ITEM_OPT_LABEL={HP:"HP",HP_PCT:"HP",MP:"MP",MP_PCT:"MP",SPD_B:"Back SPD",SPD_B_PCT:"Back SPD",ATK_PCT:"ATK",MATK_PCT:"MATK",DMG_AMP:"DMG AMP",SUPPORT_AMP:"SUPPORT AMP",PARRY:"PARRY",PIERCE:"PIERCE",FINAL_AMP:"FINAL AMP",FINAL_REDUCE:"FINAL REDUCE",MIT:"MIT",MMIT:"MMIT",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"Pattern",FIRST_DELAY_CUT:"FIRST DELAY",POISON_DMG_PCT:"POISON DMG",CRY_PCT:"BATTLE CRY",MP_REGEN_PCT:"MP REGEN"};
+// 보스 장비 고유 옵션(엔진 0.39.0): 첫 행동 딜레이는 줄어드는 %라 -로, 함성은 % 옆에 턴(CRY_TURNS는 따로 안 보임)
+const OPT_NEG=new Set(["FIRST_DELAY_CUT"]),OPT_HIDE=new Set(["CRY_TURNS"]);
+function optText(k,v,b){v=Number(v);const neg=OPT_NEG.has(k),pct=PCT_BONUS.has(k)||k.endsWith("_PCT")||neg;const sv=neg?-v:v;return `${vis(ITEM_OPT_LABEL[k]||k)}${sv>0?"+":sv<0?"":" "}${sv}${pct?"%":""}${k==="CRY_PCT"&&b?.CRY_TURNS?` ${Number(b.CRY_TURNS)}턴`:""}`}
 // 앞+뒤 표기(DEF, MDEF, SPD): 뒤가 음수면 DEF 5-3. 소수는 둘째 자리까지
 function fbText(f,b){f=Number((Number(f)||0).toFixed(2));b=Number((Number(b)||0).toFixed(2));return `${f}${b<0?"":"+"}${b}`}
 function itemTagsHtml(d){const t=[itemCat(d),String(d?.material||"").toLowerCase()].filter(Boolean);return t.length?`<span class="item-cat item-tags">(${t.map(esc).join(`<span class="tag-dot">·</span>`)})</span>`:""}
@@ -2126,7 +2129,7 @@ function itemBodyParts(i){
  const sg=x=>x>0?`+${x}`:`${x}`;
  const parts=[n("ATK")?val("o-atk","ATK",sg(n("ATK"))):"",n("MATK")?val("o-matk","MATK",sg(n("MATK"))):"",(n("DEF_F")||n("DEF_B"))?val("o-def","DEF",fbText(n("DEF_F"),n("DEF_B"))):"",(n("MDEF_F")||n("MDEF_B"))?val("o-mdef","MDEF",fbText(n("MDEF_F"),n("MDEF_B"))):"",(n("SPD_F")||n("SPD_B"))?val("o-spd","SPD",fbText(n("SPD_F"),n("SPD_B"))):""].filter(Boolean);
  // 기본 옵션과 그 밖의 옵션을 순서대로 한 줄(가로)에 나열
- const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(vis(ITEM_OPT_LABEL[k]||k))}${v>0?"+":" "}${esc(v)}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}</b>`);
+ const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&!OPT_HIDE.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(optText(k,v,b))}</b>`);
  const all=[...parts,...extra].join("");
  // 화살·탄약 수는 설명 맨 왼쪽에, 랜덤 옵션은 설명 맨 오른쪽에 붙인다(종류의 ammo_kind가 ARROW면 화살, AMMO면 장탄수)
  // ammo_kind가 없는 튜토리얼 무대 자료(v334에 찍음)만 예전처럼 종류 QUIVER로 가른다. 무대를 다시 찍으면 이 대체는 지운다
@@ -3336,6 +3339,8 @@ function calcText(c,kind,tick){
  else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
  if(!tick&&c.pierce>1)parts.push(`관통 ×${q(c.pierce)}`);
  if(c.karma!=null&&c.karma!==1)parts.push(`KARMA ×${q(c.karma)}`);
+ // 독 피해 %(엔진 0.39.0, calc.pdmg): 틱에 마지막으로 곱한다
+ if(tick&&c.pdmg)parts.push(`독 피해 +${q(c.pdmg)}%`);
  // 한 항목은 줄바꿈으로 쪼개지지 않게
  return parts.map(x=>`<span class="nw">${esc(x)}</span>`).join(" → ");
 }
@@ -3459,8 +3464,9 @@ function battleLogHtml(b){
  // 상성 줄: 때린 스킬의 원소에 따라(배율은 적지 않는다)
  const ELEM_LINE={FIRE:"불타오른다!",EARTH:"굳어간다!",WATER:"꺼져간다!",ELECTRIC:"튀겨진다!",WIND:"깎여나간다!"};
  // 한 줄(row) = 왼쪽(적) | 가운데 선 | 오른쪽(아군). 행동은 행동한 쪽에 놓는다
- const rows=[];let cur=null;
- const flush=()=>{if(cur){rows.push(row(cur.side,cur.html.join("")));cur=null}};
+ const rows=[],later=[];let cur=null;
+ // later = BATTLE START 장면 아래로 미루는 묶음(전투 시작 함성은 엔진이 첫 상태 줄보다 먼저 남긴다)
+ const flush=()=>{if(cur){(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}};
  const row=(sd,html,mid="")=>`<div class="bl-row"><div class="bl-side bl-l">${sd==="E"?html:""}</div><div class="bl-mid">${mid}</div><div class="bl-side bl-r">${sd==="A"?html:""}</div></div>`;
  // 독 표시: 머리가 위쪽에 몰린 그림이라 글자와 눈높이가 맞게 살짝 내린다(스타일의 psn-ico)
  const PSN_ICO=`<span class="psn-ico">☠</span>`;
@@ -3515,7 +3521,10 @@ function battleLogHtml(b){
   else if(e.t==="short"&&cur)cur.html.push(`<div class="bl-cancel">${AK[e.kind]||"화살"}이 부족하다!</div>`);
   else if(e.t==="hesitate"&&cur)cur.html.push(`<div class="bl-cancel">망설이다 기회를 놓쳤다!</div>`);
   else if(e.t==="heal"&&cur&&e.regen&&e.parts)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal bl-tk" ${tkOpen}>재생(${tkCnt(e.parts)}건) <b>${e.amt}</b> 회복${tkPop(e.parts,"재생","회복",e.amt)}</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
-  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">MP ${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
+  // 전투 시작 함성(엔진 0.39.0): 눈에 띄는 한 줄, 뒤따르는 buff 줄은 이 묶음 안에
+  else if(e.t==="cry"){flush();cur={side:side[e.u],later:true,html:[`<div class="bl-cry">${who(e.u)}${josa(e.u,"이","가")} 함성을 내지른다! <span class="bl-sub nw">(아군 ATK·MATK +${e.pct}% · ${e.turns}턴)</span></div>`]}}
+  // 장비 MP 회복(엔진 0.39.0, gear): 자기 턴 끝, MP 재생과 구분
+  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.gear?"장비 MP ":`MP ${e.regen?"재생 ":""}`}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   // 엔진 0.35.0: MP 재생 걸림, 대미지 무효 걸림
   // 출혈 터뜨리기(엔진 0.36.0): 그 타격 줄 바로 다음. 남은 출혈 총량(total)을 지우고 그 일부를 방어 없이 바로 깎는다
@@ -3552,9 +3561,9 @@ function battleLogHtml(b){
   else if(e.t==="status"){flush();
    rows.push(`<div class="bl-scene-row"><span class="sc-turnmark">${e===lastStatus?`${e.n} TURN END`:e.n===0?"BATTLE START!":`${e.n} TURN`}</span>${sceneHtml(e.n,e.units,info,id=>nm[id]||id,b.dungeon)}</div>`);
    const su=e.units;
-   rows.push(`<div class="bl-row bl-srow">${statusSide("E",su.filter(x=>side[x.u]==="E"))}<div class="bl-mid"></div>${statusSide("A",su.filter(x=>side[x.u]==="A"))}</div>`)}
+   rows.push(`<div class="bl-row bl-srow">${statusSide("E",su.filter(x=>side[x.u]==="E"))}<div class="bl-mid"></div>${statusSide("A",su.filter(x=>side[x.u]==="A"))}</div>`);rows.push(...later.splice(0))}
  });
- flush();
+ flush();rows.push(...later);
  const csv=Math.max(5,...units.flatMap(u=>[`${u.mhp}/${u.mhp}`.length,u.mmp>0?`${u.mmp}/${u.mmp}`.length:0]));
  const rw=b.rewards||{};const rwParts=[];
  if(b.mode==="MOCK")rwParts.push("Mock Battle이라 보상이 없습니다.");
