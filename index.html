@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v429 · 갱신 2026-10-29 15:55 KST -->
+<!-- ProjectGY-test-console v430 · 갱신 2026-10-31 00:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v429 · 2026-10-29 15:55</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v430 · 2026-10-31 00:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1625,12 +1625,12 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpOverlay").h
 // 패턴 줄은 유저가 직접 고른다(목록에서 고를 줄만 남기고 나머지는 잠깐 선택 불가로 흐리게 한다). 편집 중인 다른 줄은 건드리지 않는다.
 // 임시: 과제 중에 구석에 항상 떠 있는 "튜토리얼 종료하기" 버튼. 뺄 때는 이 값을 false로 바꾼다(서버의 tutorial_skip과 스타일의 tut-exit도 같이 지우면 된다)
 const TUT_EXIT_BUTTON=true;
-// 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 끝
-// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6을 마침)
-let tut={step:null,last:7},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false;
+// 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 KARMA가 한도를 넘은 Mage의 Karma Limit을 TP로 올리기, 8 끝
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7을 마침)
+let tut={step:null,last:8},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false;
 const tutSeen=new Set();
 // 챕터: 단계 묶음(to = 그 챕터가 끝나는 단계). 끝낸 챕터는 무대에서 다시 볼 수 있다. 서버의 챕터 시작·끝 단계와 같이 고친다
-const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:7}];
+const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8}];
 // tutPractice: 무대에서 챕터를 다시 보는 중이면 {ch, end(끝나는 단계)}. tutAskOpen: 챕터 다시 보기 확인 창이 떠 있는 동안 짚기를 멈춘다
 let tutPractice=null,tutAskOpen=false,practiceBusy=false;
 // ===== 무대(챕터 다시 보기) =====
@@ -1670,7 +1670,8 @@ function stageAnswer(kind,name,body){
   const arr=D.reads[key];if(!arr)return {s:400,b:{message:"STAGE_NO_DATA "+key}};
   let hit=arr[0];for(const x of arr){if(x[0]<=stage.pos)hit=x;else break}
   let b=stageBlob(hit[1]);
-  if(name==="get_tutorial"&&b&&typeof b==="object")b={...b,practice:stage.ch,practice_end:(TUT_CHAPTERS.find(c=>c.n===stage.ch)||{}).to};
+  // 끝나는 단계는 그 판을 찍을 때의 마지막 단계를 넘지 않는다(단계가 늘기 전에 찍은 판은 그때의 끝에서 마친다)
+  if(name==="get_tutorial"&&b&&typeof b==="object"){const to=(TUT_CHAPTERS.find(c=>c.n===stage.ch)||{}).to;b={...b,practice:stage.ch,practice_end:b.last!=null&&to!=null?Math.min(to,b.last):to}}
   return {s:200,b};
  }
  // 값을 바꾸는 요청: 같은 요청(함수와 값)이 이 챕터의 남은 순서에 있으면 거기까지 간다. 이미 지나온 요청을 되풀이하면 그때의 답을 다시 준다(전투는 빼고).
@@ -1733,7 +1734,7 @@ async function loadTutorial(){
  if(error){log("get_tutorial 실패: "+error.message,"bad");return}
  const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
  tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
- if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";
+ if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";else if(prev===7&&tut.step>=8)tutCongrats="karma";
 }
 async function tutAck(key){
  if(tutAcking)return;tutAcking=true;
@@ -1750,6 +1751,8 @@ function tutUnlimit(except){document.querySelectorAll("select[data-tut-lim]").fo
 const TUT_MEND={c:"allyHpLtePct",v:70,a:"cleric_mend"};
 // 둘째 던전을 처음 이기면 받는 장비 중 직접 끼워 보는 것(나머지는 서버가 끼워 준다)
 const TUT_GEAR={job:"ARCHER",def:"scrap_bow"};
+// 단계 7: 장비 KARMA가 한도를 넘은 직업. 마치면 서버가 주는 골드(tutorial_set과 같이 고친다)
+const TUT_KARMA={job:"MAGE",gold:50};
 // 단계 3에서 직업마다 패턴에 넣는 공격 스킬. full = 설명을 자세히(첫 캐릭터), resheaf = 그 위 줄에 넣는 화살 채우는 스킬
 const TUT_SKILLS=[{job:"FOOTMAN",a:"footman_shield_slam",full:true},{job:"ARCHER",a:"archer_double_shot",resheaf:"archer_resheaf"},{job:"THIEF",a:"thief_backstab"},{job:"MAGE",a:"mage_stone_spike"}];
 // 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
@@ -1772,7 +1775,9 @@ function tutResolve(){
   if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
   if(!dungeons.length&&!tutDgAsked){tutDgAsked=true;sb.rpc("get_dungeons").then(r=>{if(!r.error&&!dungeons.length)dungeons=r.data||[]})}
   const door=i=>{const n=dungeons[i]?.name;return n?`다음 던전 ${n}의 문이 열렸습니다.`:"다음 던전이 열렸습니다."};
-  if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.\n${door(2)}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  if(tutCongrats==="karma")return mid("done4",`잘하셨습니다!\n이제 KARMA가 한도 안에 들어왔습니다.\n보상으로 ${TUT_KARMA.gold}골드를 받았습니다.\n${door(2)}`,{btn:"확인",fn:()=>{tutCongrats=null;loadGold();if(currentView==="adventure")loadAdventure()}});
+  // 단계 7을 건너뛰고 바로 끝난 계정(넘은 Mage가 없음)은 여기서 다음 던전을 알린다
+  if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.${tut.step>=tut.last?`\n${door(2)}`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(tut.step>=tut.last){loadGold();if(currentView==="adventure")loadAdventure()}}});
   if(tutCongrats==="skills")return mid("done2",`잘하셨습니다!\n이제 네 명이 공격 스킬을 씁니다.\n${door(1)}`,{btn:"확인",fn:()=>{tutCongrats=null}});
   return mid("done","잘하셨습니다!\n이제 Cleric이 다친 아군을 회복합니다.",{btn:"확인",fn:()=>{tutCongrats=null}});
  }
@@ -1984,6 +1989,35 @@ function tutResolve(){
   const btn=[...document.querySelectorAll("#charDetail .equip-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`equipTo('${bow.id}'`));
   if(!tutSeen.has("g2"))return page("g2",btn?.closest(".equip-row"),"새로 받은 활입니다.\n이름 옆에 장비의 능력치가 보입니다.\nATK(공격력)가 지금 낀 활보다 높습니다.");
   return say("s6equip",btn,"장착을 눌러 주세요.\n끼고 있던 활은 Bag으로 돌아갑니다.",{holdId:true});
+ }
+ // 단계 7: 장비를 다 끼자 KARMA가 한도를 넘은 Mage를 열어 KARMA를 보여 주고, TP로 Karma Limit을 1 올린다
+ if(s===7){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(cfm==="tp")return say("s7tpok",priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:"s7alloc"});
+  if(modal)return okBtn?savedOk():say("s7close",q(".help-close"),"닫기를 눌러 주세요.");
+  const mg=chars.find(c=>c.job===TUT_KARMA.job),k=mg?.stats?.KARMA,t=mg?tpCur(mg):null;
+  const cost=t?tpBandSum(pubCfg.TP_KARMA_BANDS,t.k+1)-tpBandSum(pubCfg.TP_KARMA_BANDS,t.k):0;
+  // 한도를 넘지 않았거나(이미 올림) 한 점 올릴 TP가 없으면 서버 단계를 다시 묻는다(서버도 같은 조건으로 넘긴다)
+  if(!mg||!k||!(Number(k.TOTAL)>Number(k.LIMIT))||Number(mg.tp||0)<cost){tutRefresh();return wait()}
+  const lim=Number(k.LIMIT);
+  if(!tutSeen.has("m0"))return mid("m0","장비가 내뿜는 업에 짓눌려 힘들어하는 파티원이 있는 것 같습니다.\n살펴봅시다.",{btn:"다음",fn:()=>tutSeen.add("m0")});
+  if(currentView!=="camp")return say("s7tab",$("tabCamp"),"Camp를 눌러 주세요.");
+  if(selectedCharId!==mg.id){
+   if(selectedCharId)return say("s7back",$("tabCamp"),"Camp를 눌러 목록으로 돌아가 주세요.");
+   return say("s7pick",q(`#chars .roster-unit[data-id="${mg.id}"]`),"Mage가 힘들어 보입니다.\nMage를 눌러 주세요.");
+  }
+  const w=sec("status");if(w?.classList.contains("collapsed"))return say("s7sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+  const line=q("#charDetail .karma-red")?.parentElement||q("#charDetail .main-st");
+  if(!tutSeen.has("m1"))return page("m1",line,`KARMA ${k.TOTAL}/${k.LIMIT}에서 앞은 장착한 장비의 KARMA 합계, 뒤는 한도입니다.\n장비마다 KARMA가 있고, 방금 낀 장비 때문에 합계가 한도를 넘었습니다.`);
+  if(!tutSeen.has("m2"))return page("m2",line,"합계가 한도를 넘으면 과업 상태가 됩니다.\n넘은 1점마다 최종 대미지와 속도가 -5%입니다.\n0부터 한도까지는 평온이고 효과가 없습니다.",{back:"m1"});
+  const box=$("alloc-"+mg.id),f=box?.querySelector('input[data-tp="k"]'),fw=f?.closest(".alloc-f")||f;
+  if(!f)return wait();
+  if(!tutSeen.has("m3"))return page("m3",fw,`한도는 레벨이 오를 때 받는 TP로 올립니다.\nKarma Limit 1점에 ${cost} TP를 쓰고, 한도가 ${lim} → ${lim+1}${josaOf(lim+1,"이","가")} 됩니다.`,{back:"m2"});
+  // 숫자 칸: 1이 아니면 다음을 누를 때 1로 맞춘다(다른 칸은 0)
+  const fill=()=>{box.querySelectorAll("input[data-tp]").forEach(i=>{const v=i===f?"1":"0";if(i.value!==v)i.value=v});tpPreview(mg.id)};
+  if(!tutSeen.has("m4"))return say("m4",fw,"Karma Limit 칸에 1을 입력하고 다음을 눌러 주세요.",{btn:"다음",hole:true,nohold:true,prev:()=>tutSeen.delete("m3"),fn:()=>{fill();tutSeen.add("m4")}});
+  if(f.value!=="1")fill();
+  return say("s7alloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
  }
  return null;
 }
