@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v431 · 갱신 2026-10-31 12:22 KST -->
+<!-- ProjectGY-test-console v432 · 갱신 2026-10-31 12:53 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -150,7 +150,7 @@ textarea{width:100%;box-sizing:border-box;font:12px monospace;height:70px}
 .cs-u{position:relative}.cs-dot .bl-tk{position:static}.cs-dot .bl-tk,.bl-psn>.bl-tk,.bl-bld>.bl-tk{margin-bottom:-1px}.cs-side.r .cs-col:last-child .bl-pop{left:auto;right:0}@media(max-width:520px){.cs-side.r .bl-pop{left:auto;right:0}}
 .bl-expired{margin-top:18px;color:var(--mu);font-size:12.5px}
 .bl-death,.bl-cancel{color:var(--bad)}.bl-log .nw{white-space:nowrap}
-.bl-wind{color:var(--mu);font-size:12.5px}.bl-cry{color:var(--ac);font-weight:700;font-size:15px}.bl-cry .bl-sub{font-weight:400;font-size:12.5px}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-pimm{color:var(--tag-delaypush);font-weight:700}.bl-pimm.end{font-weight:400}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
+.bl-wind{color:var(--mu);font-size:12.5px}.bl-cry{color:var(--ac);font-weight:700;font-size:15px}.bl-cry .bl-sub{font-weight:400;font-size:12.5px}.bl-gim{color:var(--ac);font-weight:700}.bl-talk{margin:2px 0 4px}.bl-talk-nm,.bl-talk-sk{text-decoration:underline;text-underline-offset:3px}.bl-talk-sk{color:var(--mu)}.bl-talk-spr{display:block;width:min(calc(150px*var(--aw,1)),100%);height:auto;image-rendering:pixelated;margin:4px 0}.bl-talk-say{font-weight:700;word-break:keep-all}@media (max-width:640px){.bl-talk-spr{width:min(calc(90px*var(--aw,1)),100%)}}.bl-cover{color:var(--cv);font-size:12.5px}.bl-parry{color:var(--pry);font-weight:700}.bl-heal{color:var(--ok)}.bl-heal b{color:var(--ok)}.bl-pierce{color:var(--prc);font-weight:700}.bl-wk{color:var(--ac);font-weight:700}.bl-sub{font-size:11.5px}.bl-delay{color:var(--ac)}.bl-buff{color:var(--ok)}.bl-debuff{color:var(--bad)}.bl-buffend{color:var(--mu)}.bl-item{color:var(--ac)}.bl-form{color:var(--ac);font-weight:700}.bl-move{color:var(--ac)}.bl-deaf{color:var(--mu)}.bl-deaf b{color:var(--mu)}.bl-item b{color:var(--ac)}.bl-psn{color:var(--psn)}.bl-psn b{color:var(--psn)}.bl-bld{color:var(--bld)}.bl-pimm{color:var(--tag-delaypush);font-weight:700}.bl-pimm.end{font-weight:400}.bl-bld b{color:var(--bld)}.cs-dot{font-size:11.5px;margin-top:2px}
 
 .bl-srow .cs-side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 30px;padding:8px 0;min-width:0}
 .cs-col{align-self:center;min-width:0}
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v431 · 2026-10-31 12:22</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v432 · 2026-10-31 12:53</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3375,6 +3375,8 @@ function calcText(c,kind,tick){
  else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
  if(!tick&&c.pierce>1)parts.push(`관통 ×${q(c.pierce)}`);
  if(c.karma!=null&&c.karma!==1)parts.push(`KARMA ×${q(c.karma)}`);
+ // 비틀거림(엔진 0.41.0, calc.stagger): 캐스팅이 끊긴 뒤 후딜 동안 받는 피해 +%
+ if(c.stagger>0)parts.push(`비틀거림 +${q(c.stagger)}%`);
  // 독 피해 %(엔진 0.39.0, calc.pdmg): 틱에 마지막으로 곱한다
  if(tick&&c.pdmg)parts.push(`독 피해 +${q(c.pdmg)}%`);
  // 한 항목은 줄바꿈으로 쪼개지지 않게
@@ -3479,6 +3481,12 @@ function usedItems(b){const rw=b.rewards||{};
  const used=[];for(const e of b.log||[])if(e.t==="item"){const k=e.def||e.name,g=used.find(x=>x.k===k);if(g)g.n++;else used.push({k,def:e.def,name:e.name,n:1})}return used}
 async function loadItemNames(defs){const need=defs.filter(d=>d&&!itemNameCache[d]&&!itemsData.some(i=>i.def_id===d));if(!need.length)return false;
  let r;try{r=await sb.from("item_defs").select("id,name").in("id",need)}catch(e){return false}const {data,error}=r||{};if(error||!data?.length)return false;data.forEach(x=>itemNameCache[x.id]=x.name);return true}
+// 기믹 멘트 글(엔진 0.41.0 gimmick): 스킬 id → phase(fail은 cause dmg·hits로 fail_dmg·fail_hits, 끊긴 뒤 fail_after, 비틀거림 중 맞은 타격 stagger)
+const GIMMICK_TEXT={
+ monster_slag_skin:{start:"{u:이} 끓는 슬래그를 온몸에 두르기 시작한다!",ok:"끓던 슬래그가 굳어, 모든 상처를 메웠다!",
+  fail_dmg:"식어 버린 슬래그가 굳지 못하고 흘러내린다!",fail_hits:"쏟아지는 공격에 껍질이 버티지 못하고 부서졌다!",fail_after:"갈라진 껍질 사이로 맨살이 드러났다! {u:이} 비틀거린다!",
+  hit:"슬래그가 식고 있다!",stagger:"드러난 맨살에 공격이 깊이 박힌다!",end:"{u:이} 몸을 털어 식은 슬래그를 떨궈 냈다."}};
+const JOSA_PAIR={"이":["이","가"],"은":["은","는"],"을":["을","를"]};
 function battleLogHtml(b){
  // 계산 내역과 턴 번호 켜기는 관리자만(서버도 관리자에게만 calc를 보낸다). 일반 유저는 10턴마다와 끝의 턴 표시만 본다
  const showCalc=adminView();
@@ -3495,14 +3503,25 @@ function battleLogHtml(b){
  const eulReul=id=>josa(id,"을","를");
  const who=id=>`${info[id]?.boss?BOSS_TAG+" ":""}<b class="bl-${side[id]==="A"?"ally":"foe"}">${esc(nm[id]||id)}</b>`;
  const WIND={CHARGE:["⟡","차징 중","차징"],CAST:["✧","캐스팅 중","캐스팅"]};
- const CANCEL_TEXT={NO_ITEM:"소모품이 없다!",NO_TARGET:"대상이 없다!",MP:"MP가 부족했다!",COOLDOWN:"아직 쿨타임이다!",USES:"더 이상 쓸 수 없다!",ARROW:"화살이 없다!",AMMO:"장전이 필요하다!"};
+ const CANCEL_TEXT={INTERRUPT:"캐스팅이 끊겼다!",NO_ITEM:"소모품이 없다!",NO_TARGET:"대상이 없다!",MP:"MP가 부족했다!",COOLDOWN:"아직 쿨타임이다!",USES:"더 이상 쓸 수 없다!",ARROW:"화살이 없다!",AMMO:"장전이 필요하다!"};
  const AK={ARROW:"화살",AMMO:"탄약"};
  // 상성 줄: 때린 스킬의 원소에 따라(배율은 적지 않는다)
  const ELEM_LINE={FIRE:"불타오른다!",EARTH:"굳어간다!",WATER:"꺼져간다!",ELECTRIC:"튀겨진다!",WIND:"깎여나간다!"};
  // 한 줄(row) = 왼쪽(적) | 가운데 선 | 오른쪽(아군). 행동은 행동한 쪽에 놓는다
  const rows=[],later=[];let cur=null;
+ // tail = 지금 행동 묶음 뒤에 붙일 다른 쪽 줄. brk = 남의 타격에 캐스팅이 끊긴 개체의 묶음(그 타격까지의 묶음 바로 뒤, 남은 타격 앞). stag = 끊겨 비틀거리는 개체 → 기믹 스킬
+ const tail=[],stag={};let brk=null;
  // later = BATTLE START 장면 아래로 미루는 묶음(전투 시작 함성은 엔진이 첫 상태 줄보다 먼저 남긴다)
- const flush=()=>{if(cur){(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}};
+ const endBrk=()=>{if(brk){rows.push(row(brk.side,brk.html.join("")));brk=null}};
+ const flush=()=>{endBrk();if(cur){if(cur.html.length)(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}rows.push(...tail.splice(0))};
+ // 그 개체 쪽에 넣는다: 지금 묶음이 그 쪽이면 거기, 다른 쪽 묶음 중이면 그 묶음 뒤, 묶음이 없으면 바로
+ const put=(u,h)=>{if(!h)return;if(cur&&cur.side===side[u])cur.html.push(h);else if(cur)tail.push(row(side[u],h));else rows.push(row(side[u],h))};
+ // 기믹 멘트 글: {u}는 이름, {u:이}처럼 쓰면 이름에 조사를 붙인다
+ const gimText=(id,key,u)=>{const t=GIMMICK_TEXT[id]?.[key];return t?esc(t).replace(/\{u(?::([^}]+))?\}/g,(m,j)=>who(u)+(j?josa(u,...JOSA_PAIR[j]):"")):""};
+ // 보스 대사(엔진 0.42.0 talk, 글은 line): - 보스 이름 → Skill : 아이콘·스킬 이름 → 보스 그림 크게(그림에 든 그림자) → 따옴표 대사. 서술 멘트(gimmick)는 뒤에 붙는다
+ const talkHtml=e=>{const sp=sprOf(info[e.u]?.name);
+  return `<div class="bl-talk"><div class="bl-talk-nm">- ${who(e.u)}</div><div class="bl-talk-sk">Skill : <span class="bl-sk">${skillNameHtml(e.name)}</span></div>${sp?`<img class="bl-talk-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:""}<div class="bl-talk-say">“${esc(e.line)}”</div></div>`};
+ const gimLine=(id,key,u)=>{const t=gimText(id,key,u);return t?`<div class="bl-gim">${t}</div>`:""};
  const row=(sd,html,mid="")=>`<div class="bl-row"><div class="bl-side bl-l">${sd==="E"?html:""}</div><div class="bl-mid">${mid}</div><div class="bl-side bl-r">${sd==="A"?html:""}</div></div>`;
  // 독 표시: 머리가 위쪽에 몰린 그림이라 글자와 눈높이가 맞게 살짝 내린다(스타일의 psn-ico)
  const PSN_ICO=`<span class="psn-ico">☠</span>`;
@@ -3545,13 +3564,25 @@ function battleLogHtml(b){
  const tkListPop=(l,lab)=>l&&l.length?tkPop(l,lab,"대미지",l.reduce((s,p)=>s+p.d*p.n,0)):"";
  const tkOpen=`tabindex="0"`;
  LOG.forEach((e,li)=>{
+  // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
+  if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
-  else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
+  else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
   else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>`);
+  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
+  // 캐스팅 끊기(엔진 0.41.0): interrupt → gimmick fail → cancel INTERRUPT → post는 끊긴 개체 묶음(brk)에 모은다. 끊은 쪽 묶음은 거기서 나눠 남은 줄을 그 뒤에 잇는다
+  else if(e.t==="interrupt"){endBrk();if(cur){rows.push(row(cur.side,cur.html.join("")));cur={side:cur.side,html:[]}}brk={u:e.u,side:side[e.u],html:[`<div class="bl-turn">${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
+  else if(e.t==="cancel"&&brk&&brk.u===e.u&&e.reason==="INTERRUPT")brk.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT.INTERRUPT)}</div>`);
+  // 보스 대사(엔진 0.42.0 talk): 끊김이면 끊긴 개체 묶음의 머리를, 발동이면 바로 위 행동 줄(이름·스킬)을 대신한다
+  else if(e.t==="talk"){const h=talkHtml(e);if(brk&&brk.u===e.u&&brk.html.length===1)brk.html=[h];else if(e.phase==="ok"&&cur&&cur.side===side[e.u]&&cur.html.length===1)cur.html[0]=h;else put(e.u,h)}
+  // 기믹 멘트(엔진 0.41.0 gimmick): start 캐스팅 시작, ok 발동, hit 센 타격(그 타격 줄 다음), fail 끊김(+ 비틀거림), end 비틀거림 풀림
+  else if(e.t==="gimmick"){const id=e.skill;
+   if(e.phase==="fail"){const h=gimLine(id,e.cause==="hits"?"fail_hits":"fail_dmg",e.u)+gimLine(id,"fail_after",e.u);if(brk&&brk.u===e.u)brk.html.push(h);else put(e.u,h);stag[e.u]=id}
+   else if(e.phase==="hit"){if(cur)cur.html.push(gimLine(id,"hit",e.u))}
+   else{if(e.phase==="end")delete stag[e.u];put(e.u,gimLine(id,e.phase,e.u))}}
   else if(e.t==="cancel"&&cur)cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`);
   else if(e.t==="item"&&cur)cur.html.push(`<div class="bl-item">◈ <span class="nw">${esc(e.name)} 사용</span> <span class="bl-sub nw">(남은 ${e.left})</span></div>`);
   else if(e.t==="short"&&cur)cur.html.push(`<div class="bl-cancel">${AK[e.kind]||"화살"}이 부족하다!</div>`);
