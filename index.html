@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v430 · 갱신 2026-10-31 00:13 KST -->
+<!-- ProjectGY-test-console v431 · 갱신 2026-10-31 12:22 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v430 · 2026-10-31 00:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v431 · 2026-10-31 12:22</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3366,6 +3366,8 @@ function calcText(c,kind,tick){
  if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
  parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
+ // 표식이 덜 뺀 뒷방(엔진 0.40.0, calc.mark_back): 방어 바로 뒤
+ if(c.mark_back>0)parts.push(`표식 뒷방 무시 ${q(c.mark_back)}`);
  if(c.floored)parts.push(`바닥 ${q(c.floor)} 적용`);
  if(c.finalAmp>0)parts.push(`최종 +${q(c.finalAmp)}%`);
  if(c.finalReduce>0)parts.push(`최종 -${q(c.finalReduce)}%`);
@@ -3582,7 +3584,7 @@ function battleLogHtml(b){
   else if(e.t==="taunt"){const h=!e.end?`<div class="bl-parry">⚑ ${who(e.u)}${josa(e.u,"이","가")} 적을 도발했다! <span class="bl-sub nw">(${e.turns}턴)</span></div>`:e.dead?`<div class="bl-buffend">◇ ${who(e.u)}${josa(e.u,"이","가")} 쓰러져 도발이 풀렸다</div>`:`<div class="bl-buffend">◇ ${who(e.u)} 도발 효과 끝</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   // 딜밀 면역(엔진 0.30.0부터): 시작 줄은 마지막으로 민 쪽 카드 안(그 타격 바로 밑), 끝 줄은 면역이 풀린 개체 칸
   else if(e.t==="push_immune"){const dp=`<span class="nw">Delay Push</span>`;const h=e.on?`<div class="bl-pimm">${who(e.u)} 인내심이 다했다! ${dp} 면역 <span class="bl-sub nw">(${e.turns}턴)</span></div>`:`<div class="bl-pimm end">${who(e.u)} 인내심을 되찾았다. ${dp} 면역 종료</div>`;if(e.on&&cur)cur.html.push(h);else rows.push(row(side[e.on&&e.by?e.by:e.u],h))}
-  // Hunter's Mark 같은 표식(엔진 0.29.0부터): 걸림·갱신은 건 쪽 카드 안, 끝은 표식이 풀린 개체 칸. 깎임·되돌림은 뒤따르는 buff 줄
+  // Hunter's Mark 같은 표식(엔진 0.29.0부터): 걸림·갱신은 건 쪽 카드 안, 끝은 표식이 풀린 개체 칸. 엔진 0.40.0부터 뒷방을 깎지 않고 계산 내역 mark_back으로 남는다(그 전 로그는 뒤따르는 buff 줄)
   else if(e.t==="mark"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-debuff">◎ ${who(e.tg)} ${n}${e.refresh?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur&&!e.end)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="taunt_ignored"&&cur)cur.html.push(`<div class="bl-cancel">도발을 무시했다!</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
@@ -3591,6 +3593,8 @@ function battleLogHtml(b){
   else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=`${tv>0?"+":""}${tv}${u}`,d=`${dv>0?"+":dv<0?"":(up===(sg>0)?"+":"-")}${dv}${u}`;
    /* 턴 있는 버프: 걸 때 turns(자기 턴 수), 끝나 되돌릴 때 end */
    const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)} ${esc(lab)} 효과 끝 <span class="bl-sub nw">(누적 ${tot})</span></div>`:`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(누적 ${tot}${e.cap?" · 한계":""}${e.turns?` · ${e.turns}턴`:""})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
+  // 죽어서 소모품 효과가 사라짐(엔진 0.40.0, item_end): death 줄 다음, 이어서 그 개체의 buff end 줄들
+  else if(e.t==="item_end"){const h=`<div class="bl-buffend">◇ ${who(e.u)}의 ${esc(e.name||e.skill||"")} 효과가 사라졌다</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   else if(e.t==="death"){const h=`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>${dropHtml(e)}`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   else if(e.t==="status"){flush();
    rows.push(`<div class="bl-scene-row"><span class="sc-turnmark">${e===lastStatus?`${e.n} TURN END`:e.n===0?"BATTLE START!":`${e.n} TURN`}</span>${sceneHtml(e.n,e.units,info,id=>nm[id]||id,b.dungeon)}</div>`);
