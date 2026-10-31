@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v432 · 갱신 2026-10-31 12:53 KST -->
+<!-- ProjectGY-test-console v433 · 갱신 2026-10-31 13:24 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v432 · 2026-10-31 12:53</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v433 · 2026-10-31 13:24</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1545,7 +1545,8 @@ function coverText(r){const m=COVER_MODES.find(x=>x[0]===r?.mode)||COVER_MODES[1
 const HELP={
  party:{title:"Party",html:()=>`<p>던전에 함께 들어갈 캐릭터를 최대 ${Number(pubCfg.PARTY_MAX)||5}명까지 고릅니다. 파티는 서버에 바로 저장됩니다.</p><p>전방/후방은 각 캐릭터의 Formation에서 정한 시작 위치를 그대로 씁니다.</p>`},
  // 숫자는 서버 값(SUPPLY: get_supply, Auto Battle: get_idle_info, 열리는 횟수: get_dungeons)을 연 때 읽는다. 아직 못 읽었으면 숫자를 뺀다. get_dungeons는 보이는 던전만 주므로 최대 횟수는 적지 않는다
- dungeon:{title:"Dungeon",html:()=>{const sp=supplyState,ii=idleInfo,need=(dungeons||[]).map(d=>Number(d.auto_unlock_clears)).filter(n=>n>0);return `<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!을 누릅니다. ${sp?`Battle!을 누를 때마다 SUPPLY ${sp.per_run}${josaOf(sp.per_run,"을","를")} 씁니다. SUPPLY는 ${durWord(sp.regen_sec)}마다 1씩 차고 최대 ${sp.max}입니다.`:"Battle!을 누를 때마다 SUPPLY를 씁니다. SUPPLY는 시간이 지나면 다시 찹니다."}</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다${need.length?`(첫 던전 ${need[0]}회${need.some(n=>n>need[0])?", 뒤 던전일수록 늘어납니다":""})`:""}. 파티마다 ${ii?durWord(ii.run_minutes*60):"정해진 시간"}에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}이고 골드는 받지 않으며, 판마다 파견비${ii?`(직접 보상 골드의 ${ii.fee_pct}%)`:""}를 냅니다. ${ii?`${ii.subscribed?"지금은":"무료는"} ${ii.slots}파티까지, 접속하지 않은 동안 ${ii.cap_hours!=null?`${ii.cap_hours}시간까지`:"제한 없이"} 쌓입니다.`:""}</p>`}},
+ // 해금 횟수는 유저가 들어가는 던전만 본다(테스트 던전 test_는 관리자에게만 와서 뺀다)
+ dungeon:{title:"Dungeon",html:()=>{const sp=supplyState,ii=idleInfo,need=(dungeons||[]).filter(d=>!/^test_/i.test(d.id)).map(d=>Number(d.auto_unlock_clears)).filter(n=>n>0);return `<p>던전 하나는 전투 한 번입니다. 입장하면 그 던전 화면에서 파티를 고르고 Battle!을 누릅니다. ${sp?`Battle!을 누를 때마다 SUPPLY ${sp.per_run}${josaOf(sp.per_run,"을","를")} 씁니다. SUPPLY는 ${durWord(sp.regen_sec)}마다 1씩 차고 최대 ${sp.max}입니다.`:"Battle!을 누를 때마다 SUPPLY를 씁니다. SUPPLY는 시간이 지나면 다시 찹니다."}</p><p>던전은 위에서부터 차례로 열립니다. 앞 던전을 한 번 이기면 다음 던전이 열립니다.</p><p>이기면 경험치와 골드를 받고, 아이템이 떨어질 수 있습니다. 장비는 일반 장비나 Unknown으로 떨어지고, Unknown은 Town의 Appraisal Clan에서 골드를 내고 감정하면 랜덤 옵션이 붙을 수 있습니다. 재료는 그 던전의 몬스터가 떨구고, 보스는 더 귀한 핵심 재료를 떨굽니다(장착할 수 없고, Town의 Smithy에서 제작에 씁니다). 지거나 턴 제한으로 무승부가 되면 아무것도 받지 못하고, SUPPLY는 돌려받지 못합니다.</p><p>경험치는 파티 전원이 똑같이 받습니다.</p><p><b>Auto Battle</b>: 던전을 직접 일정 횟수 이기면 그 던전에 파티를 파견해 자동으로 돌릴 수 있습니다${need.length?`(첫 던전 ${need[0]}회${need.some(n=>n>need[0])?", 뒤 던전일수록 늘어납니다":""})`:""}. 파티마다 ${ii?durWord(ii.run_minutes*60):"정해진 시간"}에 한 판, 실제로 싸우므로 질 수도 있습니다. 경험치와 아이템 드랍율은 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}이고 골드는 받지 않으며, 판마다 파견비${ii?`(직접 보상 골드의 ${ii.fee_pct}%)`:""}를 냅니다. ${ii?`${ii.subscribed?"지금은":"무료는"} ${ii.slots}파티까지, 접속하지 않은 동안 ${ii.cap_hours!=null?`${ii.cap_hours}시간까지`:"제한 없이"} 쌓입니다.`:""}</p>`}},
  idle:{title:"Auto Battle",html:()=>{const ii=idleInfo;return `<p>Auto Battle이 열린 던전에 입장해 <b>Auto Battle!</b>을 누르면 지금 파티를 그 던전에 보냅니다.</p>
   <ul><li>파티마다 ${ii?durWord(ii.run_minutes*60):"정해진 시간"}에 한 판을 실제로 싸웁니다. 질 수도 있습니다.</li>
   <li>이긴 판만 경험치와 아이템을 받습니다. 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}이고 골드는 받지 않습니다.</li>
