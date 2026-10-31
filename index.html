@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v434 · 갱신 2026-10-31 14:09 KST -->
+<!-- ProjectGY-test-console v435 · 갱신 2026-10-31 14:20 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,7 +498,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v434 · 2026-10-31 14:09</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v435 · 2026-10-31 14:20</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3564,12 +3564,15 @@ function battleLogHtml(b){
  // 지금 걸려 있는 건 목록(엔진 0.23.0부터 dot.list·status psl·bll)을 같은 팝업으로: 합계 = 턴마다 들어가는 대미지. 목록이 없는 옛 로그는 팝업 없이 그대로
  const tkListPop=(l,lab)=>l&&l.length?tkPop(l,lab,"대미지",l.reduce((s,p)=>s+p.d*p.n,0)):"";
  const tkOpen=`tabindex="0"`;
+ // 소모품 사용 스킬은 스킬 아이콘 대신 쓴 아이템의 아이콘(로그 item의 def로 개체·스킬 → 아이템을 잇는다. 그 판에 item 줄이 없거나 아이템 아이콘이 없으면 스킬 그대로)
+ const itemDefOf={};for(const x of LOG)if(x.t==="item"&&x.skill&&x.def)itemDefOf[x.u+"|"+x.skill]=x.def;
+ const turnSkillHtml=e=>{const src=ITEM_ICONS[itemDefOf[e.u+"|"+e.skill]];if(!src)return skillNameHtml(e.name);const n=String(e.name),i=n.indexOf(" "),a=i<0?n:n.slice(0,i),b=i<0?"":n.slice(i);return `<span class="nw">${skillIconImg(src)}${esc(a)}</span>${esc(b)}`};
  LOG.forEach((e,li)=>{
   // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
   if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
-  else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
+  else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
