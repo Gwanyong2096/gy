@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v439 · 갱신 2026-10-31 17:12 KST -->
+<!-- ProjectGY-test-console v440 · 갱신 2026-10-31 18:11 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v439 · 2026-10-31 17:12</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v440 · 2026-10-31 18:11</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2765,9 +2765,15 @@ const AMMO_CONDITION_OPTIONS={
     ["ammo","탄약이 있을 때",false],["noAmmo","탄약이 없을 때",false]
   ]
 };
+// 정령 조건(엔진 0.37.0·0.46.0): 계열에 부르기 스킬(effect.spirit)이 있는 캐릭터만. spiritOn·spiritOff는 그 줄 행동이 부르기 스킬일 때만(넷째 칸 "sp" = 줄 행동에 따라 보이고 숨김)
+const SPIRIT_COUNT_CONDS=new Set(["spiritGte","spiritLte","spiritEq"]);
+const SPIRIT_ROW_CONDS=new Set(["spiritOn","spiritOff"]);
+const isSpiritSkill=(charId,sid)=>!!skillData(charId).find(s=>s.id===sid)?.effect?.spirit;
 function jobConditionOptions(charId){
-  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark),mj=mk&&josaOf(mk.name,"이","가");
-  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name}${mj} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name}${mj} 걸린 적군이 없을 때`,false]]:[])];
+  const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark),mj=mk&&josaOf(mk.name,"이","가"),sp=skillData(charId).some(s=>s.effect?.spirit);
+  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name}${mj} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name}${mj} 걸린 적군이 없을 때`,false]]:[]),
+   ...(sp?[["spiritOn","이 줄 정령이 곁에 있을 때",false,"sp"],["spiritOff","이 줄 정령이 곁에 없을 때",false,"sp"],["elemSpirit","속성 정령이 곁에 있을 때",false],["noElemSpirit","속성 정령이 곁에 없을 때",false],
+    ["spiritGte","곁에 있는 정령이 OO마리 이상일 때",true],["spiritLte","곁에 있는 정령이 OO마리 이하일 때",true],["spiritEq","곁에 있는 정령이 OO마리일 때",true]]:[])];
 }
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
 // 줄은 [조건, 행동]. OO는 유저가 정할 값.
@@ -2810,18 +2816,19 @@ const VALUE_CONDS=new Set([
   "arrowEq","arrowGte","arrowLte","ammoEq","ammoGte","ammoLte","enemyPoisonGte","enemyPoisonLte","enemyBleedGte","enemyBleedLte","enemyBleedAmtGte","enemyBleedAmtLte","chancePct","everyNTurns","enemyWindupGte","enemyWindupLte","itemGte","itemLte",
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
   "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
-  "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq"
+  "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq",
+  ...SPIRIT_COUNT_CONDS
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
 // 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
 const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte"]);
 // 조건별 기본 수치: 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
-function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)?1:0}
+function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
 const pctUnit=c=>PERCENT_CONDS.has(c)||c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte";
 const condMin=c=>c==="everyNTurns"||c==="chancePct"?1:0;
-const condMax=c=>PERCENT_CONDS.has(c)?100:COUNT_CONDS.has(c)?1000:999999;
+const condMax=c=>SPIRIT_COUNT_CONDS.has(c)?2:PERCENT_CONDS.has(c)?100:COUNT_CONDS.has(c)?1000:999999;
 const PERCENT_CONDS=new Set([
   "selfHpGtePct","selfHpLtePct","allyHpLtePct","allyHpGtePct","allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpGtePct",
   "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct","chancePct"
@@ -2829,13 +2836,15 @@ const PERCENT_CONDS=new Set([
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
 function conditionOptionsFor(charId){return CONDITION_GROUPS.flatMap(g=>g.options).concat(COOLDOWN_GROUP.options,jobConditionOptions(charId));}
-function conditionSelectOptions(charId,current){
-  const jo=jobConditionOptions(charId);
+function conditionSelectOptions(charId,current,act){
+  const jo=jobConditionOptions(charId),spRow=isSpiritSkill(charId,act);
   return CONDITION_GROUPS.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")
     + `<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`
-    + (jo.length?`<optgroup label="직업 전용">${options(jo,current)}</optgroup>`:"");
+    + (jo.length?`<optgroup label="직업 전용">${options(jo,current,spRow)}</optgroup>`:"");
 }
-function options(list,current){return list.map(([v,n])=>`<option value="${v}" ${current===v?"selected":""}>${n}</option>`).join("")}
+function options(list,current,spRow){return list.map(([v,n,,f])=>`<option value="${v}" ${current===v?"selected":""}${f==="sp"?` data-sp${spRow?"":" hidden"}`:""}>${n}</option>`).join("")}
+// 줄 행동이 바뀌면 그 줄 부르기 스킬 조건(spiritOn·spiritOff)을 보이거나 숨긴다
+function actionChanged(sel){const row=sel.closest(".pattern-row"),charId=row.closest(".pattern-list").id.replace("pat-",""),on=isSpiritSkill(charId,sel.value);row.querySelectorAll(".pattern-cond option[data-sp]").forEach(o=>o.hidden=!on)}
 // 패턴 줄: 활성 줄 = 스탯의 PATTERN_LINES(기본 3 + TP의 Pattern + 장비 옵션, 최소 1). 저장된 줄이 더 많으면 넘는 줄은 비활성으로 보관
 function patLines(charId){const c=chars.find(x=>x.id===charId);return Math.max(1,Number(c?.stats?.PATTERN_LINES)||3)}
 function patShown(charId){const c=chars.find(x=>x.id===charId);return Math.max(patLines(charId),Array.isArray(c?.pattern)?c.pattern.length:0)}
@@ -2855,9 +2864,9 @@ function renderPatternRow(p,i,job,charId){
   return `<div class="pattern-row${off?" pattern-off":""}" data-index="${i}">
     <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span><span class="pattern-off-tag"${off?"":" hidden"}>비활성</span></div>
     <div class="pattern-controls">
-      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(charId,c)}</select>
+      <select class="pattern-cond" onchange="conditionChanged(this)">${conditionSelectOptions(charId,c,a)}</select>
       <span class="pattern-value-wrap" style="${has?"display:inline-flex":"display:none"}"><input class="pattern-value" type="number" min="${condMin(c)}" max="${condMax(c)}" step="1" value="${esc(v)}" aria-label="수치"><span>${suffix}</span></span>
-      <select class="pattern-action">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
+      <select class="pattern-action" onchange="actionChanged(this)">${acts.map(s=>`<option value="${esc(s.id)}"${s.id===a?" selected":""}>${esc(skillName(charId,s.id))}</option>`).join("")}</select>
     </div>
     <div class="pattern-order" data-ctl-row><button onclick="movePattern(this,-1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg><span>위로</span></button><button onclick="movePattern(this,1)"><svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg><span>아래로</span></button><button onclick="resetPatternRow(this)"><span>리셋</span></button></div>
   </div>`;
@@ -2881,7 +2890,7 @@ function resetPatternRow(btn){
   const no=[...list.querySelectorAll(".pattern-row")].indexOf(row)+1;
   const name=[...action.options].find(o=>o.value===basic)?.textContent.trim()||"기본 공격";
   openConfirm("패턴 리셋",`<p>패턴 ${no}의 조건과 행동을 처음 상태(<b>반드시 → ${esc(name)}</b>)로 되돌립니다.</p><p class="help-note">패턴 저장을 눌러야 적용됩니다.</p>`,
-   [["취소",null,false],["확인",()=>{cond.value="always"; action.value=basic; conditionChanged(cond)},true]]);
+   [["취소",null,false],["확인",()=>{cond.value="always"; action.value=basic; conditionChanged(cond); actionChanged(action)},true]]);
 }
 function movePattern(btn,dir){
   const row=btn.closest(".pattern-row"),box=row.parentElement,rows=[...box.querySelectorAll(".pattern-row")],i=rows.indexOf(row),j=i+dir;
@@ -2900,6 +2909,7 @@ function collectPattern(id){
     if(!acts.has(a)) throw new Error("배우지 않은 스킬은 쓸 수 없습니다.");
     if(acts.get(a).kind==="LINK"&&idx===rows.length-1) throw new Error("마지막 줄에는 AND를 쓸 수 없습니다.");
     if(acts.get(a).kind==="LINK"&&COOLDOWN_CONDS.has(cond)) throw new Error("AND 줄에는 쿨타임 조건을 쓸 수 없습니다.");
+    if(SPIRIT_ROW_CONDS.has(cond)&&!isSpiritSkill(id,a)) throw new Error("이 줄 정령 조건은 정령을 부르는 스킬 줄에만 쓸 수 있습니다.");
     const out={c:cond,a};
     if(VALUE_CONDS.has(cond)){
       let v=Number(row.querySelector(".pattern-value").value);
