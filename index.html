@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v438 · 갱신 2026-10-31 15:58 KST -->
+<!-- ProjectGY-test-console v439 · 갱신 2026-10-31 17:12 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -496,9 +496,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .equip-pair .slot-label>span+span{border-top:1px solid var(--bd)}
 @media(max-width:520px){.equip-row.equip-pair{min-height:0}.equip-pair .slot-label{flex-direction:row;margin:0;gap:0}.equip-pair .slot-label>span{flex:0 0 auto;padding:0;justify-content:flex-start}.equip-pair .slot-label>span+span{border-top:0}.equip-pair .slot-label>span+span::before{content:"·";margin:0 6px}}
 .stat-pt b.over{color:#e53935}
+.bl-spirit{color:var(--cv);font-weight:700}.cs-sst{font-size:11.5px;margin-bottom:2px}.skill-subs{margin-top:4px;padding-left:8px;border-left:2px solid var(--bd)}.skill-sub{font-size:12px;margin-top:2px}.skill-sub-k,.skill-sub-m{color:var(--mu)}
+.sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v438 · 2026-10-31 15:58</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v439 · 2026-10-31 17:12</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2180,10 +2182,13 @@ function itemDetailHtml(i){const d=i.item_defs||{};return itemTop(`<span class="
 function jobLine(job){const out=[];let j=job,guard=0;while(j&&guard++<5){out.unshift(j);j=templates.find(t=>t.job===j)?.promotes_from}return out}
 // 퍼센트 표시: 소수 둘째 자리까지, 끝의 0은 지움 (예: 74.07%, 0%)
 function pctText(v){const n=Number(v)||0;return `${Number(n.toFixed(2))}%`}
-const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
+const STAT_LABEL={MIT:"물리 경감",MMIT:"마법 경감",SUPPORT_AMP:"지원 증폭",SUPPORT_TAKEN:"받는 지원",DMG_AMP:"피해 증폭",PARRY:"패링",PIERCE:"관통",FINAL_AMP:"최종 증폭",FINAL_REDUCE:"최종 경감",WINDUP_AMP:"선딜 타격 증폭",KARMA:"KARMA",SPD_F:"Front SPD",PATTERN:"패턴 줄",HP_PCT:"최대 HP",MP_PCT:"최대 MP",ATK_PCT:"ATK",MATK_PCT:"MATK",DEF_PCT:"DEF",MDEF_PCT:"MDEF",SPD_B_PCT:"Back SPD",HP:"최대 HP",MP:"최대 MP",ATK:"ATK",MATK:"MATK",DEF:"DEF",MDEF:"MDEF",SPD_B:"Back SPD"};
 const DOT_LABEL={POISON:"독",BLEED:"출혈"};
 const BUFF_LABEL={ATK:"ATK",MATK:"MATK",SPD_B:"Back SPD",DEF_F:"Front DEF",MDEF_F:"Front MDEF",DEF_B:"Back DEF",MDEF_B:"Back MDEF",SUPPORT_TAKEN:"SUPPORT TAKEN",FINAL_AMP:"주는 피해",FINAL_REDUCE:"받는 피해"};
 function buffLabel(k){return BUFF_LABEL[k]||k}
+// 편 상태(엔진 0.44.0 side_state): 개체가 아니라 편에 붙는 항목. 받는 지원은 버프 줄과 같은 이름, 값은 모두 %
+const SIDE_LABEL={DMG_TAKEN:"받는 피해",SUPPORT_TAKEN:"SUPPORT TAKEN",PUSH_TAKEN:"받는 Delay Push"};
+function sideStateText(k,v){return `${SIDE_LABEL[k]||k} ${v>0?"+":""}${v}%`}
 // 버프·디버프는 전부 수치다. 받는 지원·주는 피해·받는 피해만 %
 function buffUnit(k){return k==="SUPPORT_TAKEN"||k==="FINAL_AMP"||k==="FINAL_REDUCE"?"%":""}
 // 받는 피해(FINAL_REDUCE)는 버프 수치가 클수록 덜 받으므로 부호를 뒤집어 보여 준다
@@ -2241,9 +2246,29 @@ function skillEffectText(s,ak){
  if(e.gold_bonus_pct)out.push(`전투 보상 골드 +${e.gold_bonus_pct}%`);
  if(e.element_scan)out.push("적 전체의 원소 파악");
  if(e.formation){const to={FRONT:"전방으로",BACK:"후방으로",START:"시작 위치로"}[e.formation.to];if(to)out.push(e.formation.self?`자신을 ${to} 이동`:`살아 있는 아군 전원을 ${to} 이동`)}
+ // 정령(엔진 0.37.0): 부르기 칸, Invocatio의 두 칸 타격, 처음 붙을 때 자기 버프. main·follow 스킬은 스킬 줄 아래 부속 스킬 목록(skillSubsHtml)
+ if(e.spirit)out.push(`정령 소환 (${e.spirit.slot==="NEUTRAL"?"무속성":"속성"} 칸)`);
+ if(e.invoke){const dm=e.invoke.dual_mult,st=e.power?.stat||"MATK";out.push(`속성 정령이 있으면 그 원소로 침`);out.push(`두 칸이 다 차면 타수 2배${dm!=null?` (${Array.isArray(dm)?`무속성 ${coef({stat:st,mult:dm[0]},1)} → 속성 ${coef({stat:st,mult:dm[1]},1)}`:`타마다 ${coef({stat:st,mult:dm},1)}`})`:" (무속성 → 속성)"}`)}
+ if(e.spirit_buff)e.spirit_buff.forEach(b=>out.push(`처음 정령이 붙을 때 자신 ${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`));
+ // 편 상태(엔진 0.44.0): 쓴 쪽 기준 FOE = 적 편, ALLY = 아군 편. 전투 끝까지
+ if(e.side_state)e.side_state.forEach(x=>out.push(`${x.to==="ALLY"?"아군 편":"적 편"} ${sideStateText(x.k,x.v)}`));
+ if(e.support_to_windup)out.push("지원 증폭이 모두 선딜 중인 적 타격 증폭으로 바뀜");
+ // 몰입·MP(엔진 0.45.0)
+ if(e.zone){const z=e.zone;out.push(`몰입 ${z.turns}턴 (${[z.matk_pct?`MATK +${z.matk_pct}%`:"",z.delay_mult!=null?`Delay ×${z.delay_mult}`:"",z.mp_mult!=null?`MP ×${z.mp_mult}`:""].filter(Boolean).join(" · ")})`)}
+ if(e.cooldown_after_buff)out.push("몰입이 끝난 뒤부터 쿨타임");
+ if(e.mmp_grow)out.push(`최대 MP +시작의 ${e.mmp_grow.pct}%${e.mmp_grow.cap_mult?` (시작의 ${e.mmp_grow.cap_mult}배까지)`:""}`);
+ if(e.mana_shield)out.push(`받는 타격 대미지의 ${e.mana_shield.hp_pct}%를 MP로 막음 (막은 양의 ${e.mana_shield.mp_mult}배 MP 소모)`);
+ // 자기 도트 지우기(엔진 0.43.0)
+ if(e.cleanse)out.push(`자신의 ${(e.cleanse.kinds||[]).map(k=>DOT_LABEL[k]||k).join("·")} 정화`);
  if(e.ammo_refill)out.push(`${ak==="AMMO"?"탄약":"화살"} ${e.ammo_refill==="FULL"?"가득 채움":"+"+e.ammo_refill}`);
  return out.join(" · ");
 }
+// 부속 스킬(get_character_skills subs, 정령의 main·follow): 부르기 스킬 줄 아래. main = 붙은 채로 다시 부르면 쓰는 스킬, follow = 따라 치기(차례대로)
+function skillSubsHtml(s,ak){const subs=s.subs||[];if(!subs.length)return "";const sp=s.effect?.spirit||{},fl=sp.follow||[];
+ const lab=b=>b.id===sp.main?"다시 부르면":fl.includes(b.id)?`따라 치기${fl.length>1?` ${fl.indexOf(b.id)+1}`:""}`:"";
+ const ord=b=>b.id===sp.main?-1:fl.includes(b.id)?fl.indexOf(b.id):99;
+ return `<div class="skill-subs">${[...subs].sort((a,b)=>ord(a)-ord(b)).map(b=>{const m=[skillEffectText(b,ak),b.id===sp.main&&b.pre_delay!=null?`Delay ${b.pre_delay}:${b.post_delay}`:""].filter(Boolean).join(" · ");
+  return `<div class="skill-sub">${lab(b)?`<span class="skill-sub-k">${esc(lab(b))}</span> `:""}<b>${skillIcon(b.id)}${esc(b.name)}</b>${m?` <span class="skill-sub-m">${esc(m)}</span>`:""}</div>`}).join("")}</div>`}
 function skillTags(s){
  const t=[],e=s.effect||{};
  if(s.kind)t.push(s.kind.toLowerCase());
@@ -2274,7 +2299,7 @@ function renderSkills(c){
   const eff=skillEffectText(s,d.ammo_kind);
   const state=s.known?`<span class="skill-state">${s.auto?"기본":"습득"}</span>`
    :(d.sp_free>=s.sp_cost?`<button class="mini-btn pri" onclick="confirmLearn('${c.id}','${esc(s.id)}',this)">배우기</button>`:`<span class="skill-state dim">SP 부족</span>`);
-  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${skillIcon(s.id)}${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}</div>`;
+  return `<div class="skill-row ${s.known?"known":"unlearned"}"><div class="skill-head"><span class="skill-left"><b class="skill-name">${skillIcon(s.id)}${esc(s.name)}</b>${skillTags(s).map(t=>`<span class="tag ${["active","passive","link"].includes(t)?"tag-kind ":""}tag-${t}">${esc(t)}</span>`).join("")}</span><span class="skill-right">${state}</span></div><div class="skill-desc">${esc(s.description)}</div>${meta.length||eff?`<div class="skill-meta">${[...meta,eff].filter(Boolean).map(esc).join(" · ")}</div>`:""}${skillSubsHtml(s,d.ammo_kind)}</div>`;
  };
  const known=d.skills.filter(s=>s.known),rest=d.skills.filter(s=>!s.known);
  const rows=`<div class="skill-group known-g">배운 스킬 <b>${known.length}</b></div>${known.map(row).join("")}`
@@ -2572,7 +2597,7 @@ function renderCharacterDetail(){
    <div class="char-title"><span class="nm">${esc(c.display_name)}</span>${hasIdentificationTag?`<button class="mini-btn" onclick="renamePrompt('${c.id}')">이름 변경</button>`:""}</div>
    <div class="char-meta">${esc(c.job_name||c.job)} · Lv.${c.level} · ${Number(c.exp_next)>0?`EXP ${c.exp??0}/${c.exp_next}`:"EXP MAX"}</div>
    <div class="st" style="margin-top:10px"><span>HP <b>${s.HP??"-"}</b></span><span>MP <b>${s.MP??"-"}</b></span><span>ATK <b>${s.ATK??"-"}</b></span><span>MATK <b>${s.MATK??"-"}</b></span><span>DEF <b>${fbText(s.DEF?.F,s.DEF?.B)}</b></span><span>MDEF <b>${fbText(s.MDEF?.F,s.MDEF?.B)}</b></span><span>SPD <b>${fbText(s.SPD?.F,s.SPD?.B)}</b></span></div>
-   <div class="st" style="margin-top:4px"><span>피해 증폭 <b>${Number(s.DMG_AMP)<0?"":"+"}${pctText(s.DMG_AMP)}</b></span><span>패링 <b>${pctText(s.PARRY)}</b></span><span>관통 <b>${pctText(s.PIERCE)}</b></span>${Number(s.SUPPORT_AMP)>0?`<span>지원 증폭 <b>+${pctText(s.SUPPORT_AMP)}</b></span>`:""}${Number(s.SUPPORT_TAKEN)?`<span>받는 지원 <b>${Number(s.SUPPORT_TAKEN)<0?"":"+"}${pctText(s.SUPPORT_TAKEN)}</b></span>`:""}<span>물리 경감 <b>${pctText(s.MIT)}</b></span><span>마법 경감 <b>${pctText(s.MMIT)}</b></span>${Number(s.FINAL_AMP)>0?`<span>최종 증폭 <b>+${pctText(s.FINAL_AMP)}</b></span>`:""}${Number(s.FINAL_REDUCE)>0?`<span>최종 경감 <b>${pctText(s.FINAL_REDUCE)}</b></span>`:""}</div>
+   <div class="st" style="margin-top:4px"><span>피해 증폭 <b>${Number(s.DMG_AMP)<0?"":"+"}${pctText(s.DMG_AMP)}</b></span><span>패링 <b>${pctText(s.PARRY)}</b></span><span>관통 <b>${pctText(s.PIERCE)}</b></span>${Number(s.SUPPORT_AMP)>0?`<span>지원 증폭 <b>+${pctText(s.SUPPORT_AMP)}</b></span>`:""}${Number(s.WINDUP_AMP)>0?`<span>${STAT_LABEL.WINDUP_AMP} <b>+${pctText(s.WINDUP_AMP)}</b></span>`:""}${Number(s.SUPPORT_TAKEN)?`<span>받는 지원 <b>${Number(s.SUPPORT_TAKEN)<0?"":"+"}${pctText(s.SUPPORT_TAKEN)}</b></span>`:""}<span>물리 경감 <b>${pctText(s.MIT)}</b></span><span>마법 경감 <b>${pctText(s.MMIT)}</b></span>${Number(s.FINAL_AMP)>0?`<span>최종 증폭 <b>+${pctText(s.FINAL_AMP)}</b></span>`:""}${Number(s.FINAL_REDUCE)>0?`<span>최종 경감 <b>${pctText(s.FINAL_REDUCE)}</b></span>`:""}</div>
    <div class="k" style="margin-top:8px"><span class="karma-red">KARMA ${k.TOTAL}/${k.LIMIT}</span> — <span class="ks-${k.STATE}">${LB[k.STATE]}</span>${+k.MULT!==1?` <span class="nw">(최종 대미지와 속도 x${(+k.MULT).toFixed(2)})</span>`:""}</div>
    ${renderTalent(c)}
    </div>
@@ -2750,7 +2775,11 @@ const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
     rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["이 줄 스킬이 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]},
   GUNNER:{design:"Gunner는 탄을 쓰는 사격 스킬로 딜을 넣는 직업입니다. 탄이 넉넉하고 El Presidente가 쿨타임이 아니면 El Presidente를 먼저 쓰고, 남은 탄에 맞춰 Bill Drill·Box Drill을 쏜 뒤, 탄이 모자라면 Reload로 채웁니다.",
-    rows:[["자신의 탄약 수가 13 이상일 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill"],["자신의 탄약 수가 8 이상일 때","Box Drill"],["반드시","Reload"]]}
+    rows:[["자신의 탄약 수가 13 이상일 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill"],["자신의 탄약 수가 8 이상일 때","Box Drill"],["반드시","Reload"]]},
+  SUMMONER:{design:"Summoner는 정령을 곁에 불러 두고 Invocatio에 정령의 원소를 실어 치는 직업입니다. Gnome이 쿨타임이 아니면 부르고(이미 곁에 있으면 Landslide), 남는 턴에는 Invocatio로 칩니다.",
+    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Gnome"],["반드시","Invocatio"]]},
+  EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. 쿨타임이 아닌 Ecce Crucem·Excommunicatio·Anathema·Exorcizamus를 차례로 쓰고(Ecce Crucem은 한 전투에 한 번), 남는 턴에는 Adjuro로 칩니다.",
+    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Ecce Crucem"],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema"],["이 줄 스킬이 쿨타임이 아닐 때","Exorcizamus"],["반드시","Adjuro"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
@@ -3358,20 +3387,22 @@ function calcText(c,kind,tick){
  const adds=(c.bleed?.add>0?c.bleed.add:0)+(c.def_scale?.add>0?c.def_scale.add:0);
  // Double Tap 추가 타 배율(엔진 0.36.1, calc.extra)도 mult에 곱해져 온다
  const coef=c.skill_mult!=null?q(c.skill_mult*100):Math.round((c.mult/(c.elem>0?c.elem:1)/(c.extra>0?c.extra:1)-(c.power>0?adds/c.power:0))*100);
- const parts=[`${mag?"MATK":"ATK"} ${q(c.power)} × ${coef}%`];
+ // 몰입(엔진 0.45.0 calc.zone): power에 이미 곱해진 MATK %
+ const parts=[`${mag?"MATK":"ATK"} ${q(c.power)}${c.zone?` (몰입 +${q(c.zone)}%)`:""} × ${coef}%`];
  if(c.bleed&&c.bleed.add>0)parts.push(`출혈 비례 +${q(c.bleed.add)}`);
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  if(c.extra>0&&c.extra!==1)parts.push(`추가 타 ×${q(c.extra)}`);
- // 증폭 − 경감 = 결과(한계 적용 뒤). 증폭에 이미 들어 있는 표식(calc.mark)·연사(Mag Dump, calc.mag, 엔진 0.37.0)는 괄호로 나눠 보인다. 기본 피해 × (1 + 결과) = 원래 피해
- if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
+ // 증폭 − 경감 = 결과(한계 적용 뒤). 증폭에 이미 들어 있는 표식(calc.mark)·연사(Mag Dump, calc.mag, 엔진 0.37.0)·선딜 타격(calc.windup, 엔진 0.44.0)은 괄호로 나눠 보인다. 기본 피해 × (1 + 결과) = 원래 피해
+ if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:"",c.windup>0?`선딜 타격 +${q(c.windup)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
  parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
  // 표식이 덜 뺀 뒷방(엔진 0.40.0, calc.mark_back): 방어 바로 뒤
  if(c.mark_back>0)parts.push(`표식 뒷방 무시 ${q(c.mark_back)}`);
  if(c.floored)parts.push(`바닥 ${q(c.floor)} 적용`);
  if(c.finalAmp>0)parts.push(`최종 +${q(c.finalAmp)}%`);
- if(c.finalReduce>0)parts.push(`최종 -${q(c.finalReduce)}%`);
+ // 편 받는 피해(엔진 0.44.0 calc.taken): finalReduce에 이미 빠져 있어 음수면 더 맞는다(최종 +)
+ if(c.finalReduce||c.taken)parts.push(`최종 ${c.finalReduce<0?"+":"-"}${q(Math.abs(c.finalReduce||0))}%${c.taken?` (편 받는 피해 ${c.taken>0?"+":""}${q(c.taken)}%p)`:""}`);
  if(tick){if(c.res)parts.push(`독 저항 ${q(c.res)}%`)}
  else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
  if(!tick&&c.pierce>1)parts.push(`관통 ×${q(c.pierce)}`);
@@ -3456,8 +3487,13 @@ function sceneHtml(n,stList,info,nameOf,dg){
   let y0=yMid-step*(col.length-1)/2;if(y0<yTop)y0=yTop;if(y0+step*(col.length-1)>yBot)y0=yBot-step*(col.length-1);
   col.forEach((x,i)=>{const y=y0+i*step;const dx=(sd==="E"?-1:1)*(i-(col.length-1)/2)*Math.min(2,8/Math.max(1,col.length-1));place.push({x:baseX+dx,y,st:x,u:info[x.u]})});
  }
- const units=place.sort((a,b)=>a.y-b.y).map(p=>{const dead=p.st.st==="DEAD",sp=sprOf(p.u.side==="E"?p.u.name:p.u.job);
-  return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":sp&&sp.sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%;--ps:${(1+(p.y-72)*.005).toFixed(3)}" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:sp?`<img class="sc-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
+ // 붙은 정령(엔진 0.37.0 상태표 spr = 부르기 스킬 id): id 끝 낱말을 붙인 그림(직업_정령, 예: 정령이 붙은 소환사)이 있으면 그 그림, 그 낱말의 그림 이펙트(SPR_FX)가 있으면 그림 뒤·앞에 겹쳐 번갈아 보인다
+ const sprTail=id=>String(id).split("_").pop().toUpperCase();
+ const fxHtml=(fx,k)=>`<span class="sc-fx ${k}" style="background-image:url(${fx[k]});background-size:${fx.n*100}% 100%;--tsx:${fx.n/(fx.n-1)*100}%;animation:townspr ${fx.n*400}ms steps(${fx.n}) infinite"></span>`;
+ const units=place.sort((a,b)=>a.y-b.y).map(p=>{const dead=p.st.st==="DEAD",tails=(p.st.spr||[]).map(sprTail),base=p.u.side==="E"?p.u.name:p.u.job;
+  const alt=tails.map(t=>sprOf(base+"_"+t)).find(Boolean),sp=alt||sprOf(base),fxs=sp&&typeof SPR_FX!=="undefined"?tails.map(t=>SPR_FX[t]).filter(f=>f&&f.n>1):[];
+  const img=sp?`<img class="sc-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:"";
+  return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":sp&&sp.sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%;--ps:${(1+(p.y-72)*.005).toFixed(3)}" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:sp?(fxs.length?`<span class="sc-sprw"${sprAwStyle(sp)}>${fxs.map(f=>fxHtml(f,"back")).join("")}${img}${fxs.map(f=>fxHtml(f,"front")).join("")}</span>`:img):SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
  return `<div class="bl-scene${sceneBgClass(dg)}" aria-label="${n}턴 전투 장면">${units}</div>`;
 }
 // 드랍 옵션 한 줄: 앞방+뒷방은 DEF 3+87처럼 묶는다
@@ -3516,7 +3552,7 @@ function battleLogHtml(b){
  const tail=[],stag={};let brk=null;
  // later = BATTLE START 장면 아래로 미루는 묶음(전투 시작 함성은 엔진이 첫 상태 줄보다 먼저 남긴다)
  const endBrk=()=>{if(brk){rows.push(row(brk.side,brk.html.join("")));brk=null}};
- const flush=()=>{endBrk();if(cur){if(cur.html.length)(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}rows.push(...tail.splice(0))};
+ const flush=()=>{endBrk();if(cur){if(cur.postH)cur.html.push(cur.postH);if(cur.html.length)(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}rows.push(...tail.splice(0))};
  // 그 개체 쪽에 넣는다: 지금 묶음이 그 쪽이면 거기, 다른 쪽 묶음 중이면 그 묶음 뒤, 묶음이 없으면 바로
  const put=(u,h)=>{if(!h)return;if(cur&&cur.side===side[u])cur.html.push(h);else if(cur)tail.push(row(side[u],h));else rows.push(row(side[u],h))};
  // 기믹 멘트 글: {u}는 이름, {u:이}처럼 쓰면 이름에 조사를 붙인다
@@ -3529,13 +3565,13 @@ function battleLogHtml(b){
  // 독 표시: 머리가 위쪽에 몰린 그림이라 글자와 눈높이가 맞게 살짝 내린다(스타일의 psn-ico)
  const PSN_ICO=`<span class="psn-ico">☠</span>`;
  const BLEED_ICO=`<svg class="bld-ico" viewBox="0 0 14 16" shape-rendering="crispEdges" aria-hidden="true"><path class="bld-blade" d="M6 7h1v1h-1zM7 6h1v1h-1zM7 7h1v1h-1zM8 5h1v1h-1zM8 6h1v1h-1zM9 0h1v1h-1zM9 4h1v1h-1zM9 5h1v1h-1zM10 1h1v1h-1zM10 3h1v1h-1zM10 4h1v1h-1zM11 2h1v1h-1zM12 1h1v1h-1zM12 3h1v1h-1zM13 0h1v1h-1zM13 4h1v1h-1z"/><path d="M0 15h1v1h-1zM1 12h1v1h-1zM1 14h1v1h-1zM1 15h1v1h-1zM2 11h1v1h-1zM3 10h1v1h-1zM3 11h1v1h-1zM3 13h1v1h-1zM4 9h1v1h-1zM4 10h1v1h-1zM5 8h1v1h-1zM5 9h1v1h-1zM6 8h1v1h-1z"/></svg>`;
- // 상태표 한 명(안 A): 이름 줄, HP 줄, MP 줄, 차징/캐스팅 또는 쓰러졌다!. 적·아군 모두 왼쪽에서 시작(좌우 뒤집기 없음). 차징/캐스팅은 이름 오른쪽
+ // 상태표 한 명(안 A): 이름 줄, HP 줄, MP 줄(최대는 지금 최대 MP st.mmp, 엔진 0.45.0), 차징/캐스팅 또는 쓰러졌다!, 독·출혈, 붙은 정령(spr)·남은 몰입 턴(zn). 적·아군 모두 왼쪽에서 시작(좌우 뒤집기 없음). 차징/캐스팅은 이름 오른쪽
  const entry=(st)=>{const u=info[st.u]||{};const dead=st.st==="DEAD";const w=WIND[st.st];
   const line=(k,v,m,cls)=>`<div class="cs-line"><span class="cs-k">${k}</span><span class="cs-bar ${cls}"><i style="width:${m>0?Math.max(0,Math.min(100,v/m*100)):0}%"></i></span><span class="cs-v">${Math.max(0,v)}/${m}</span></div>`;
   const meta=u.boss?"":(u.job||"");
   return `<div class="cs-u${dead?" dead":""}${u.boss?" boss":""}"><div class="cs-name"><span class="cs-id">${who(st.u)}</span>${dead?"":w?`<span class="cs-st">${w[1]}...</span>`:""}${meta?`<span class="cs-meta">${esc(meta)}</span>`:""}</div>
-  ${line("HP",st.hp,mhp[st.u],"hp")}${mmp[st.u]>0?line("MP",st.mp,mmp[st.u],"mp"):""}${dead?"":`<div class="cs-line"><span class="cs-k"></span><span class="cs-bar fd"><i style="width:${w?Math.max(0,Math.min(100,+st.fp||0)):0}%"></i></span><span class="cs-v"></span></div>`}
-  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw${st.psl?" bl-tk":""}"${st.psl?` ${tkOpen}`:""}><span class="psn-ico">☠</span> 독 ${st.ps}${tkListPop(st.psl,"독")}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw${st.bll?" bl-tk":""}"${st.bll?` ${tkOpen}`:""}>${BLEED_ICO}출혈 ${st.bl}턴${tkListPop(st.bll,"출혈")}</span>`:""}</div>`:""}</div>`};
+  ${line("HP",st.hp,mhp[st.u],"hp")}${mmp[st.u]>0?line("MP",st.mp,st.mmp||mmp[st.u],"mp"):""}${dead?"":`<div class="cs-line"><span class="cs-k"></span><span class="cs-bar fd"><i style="width:${w?Math.max(0,Math.min(100,+st.fp||0)):0}%"></i></span><span class="cs-v"></span></div>`}
+  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw${st.psl?" bl-tk":""}"${st.psl?` ${tkOpen}`:""}><span class="psn-ico">☠</span> 독 ${st.ps}${tkListPop(st.psl,"독")}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw${st.bll?" bl-tk":""}"${st.bll?` ${tkOpen}`:""}>${BLEED_ICO}출혈 ${st.bl}턴${tkListPop(st.bll,"출혈")}</span>`:""}</div>`:""}${!dead&&(st.spr?.length||st.zn)?`<div class="cs-dot">${st.spr?.length?`<span class="bl-spirit nw">✦ ${st.spr.map(id=>esc(spName[id]||id)).join(" · ")}</span>`:""}${st.spr?.length&&st.zn?" ":""}${st.zn?`<span class="bl-buff nw">몰입 ${st.zn}턴</span>`:""}</div>`:""}</div>`};
  // 한쪽 = 전방/후방 두 줄. 전방 줄이 가운데 선 쪽(적: back | front, 아군: front | back). 사람이 적은 줄은 세로 가운데에 선다
  const statusSide=(sd,list)=>{const order=sd==="E"?["BACK","FRONT"]:["FRONT","BACK"];
   return `<div class="cs-side ${sd==="E"?"l":"r"}">${order.map(pos=>{const us=list.filter(x=>(x.pos||info[x.u]?.pos||"BACK")===pos);
@@ -3551,13 +3587,15 @@ function battleLogHtml(b){
  const DL=ph=>ph==="PRE"?"Front Delay":"Back Delay";
  const dlLine=(ph,a,c)=>`<div class="bl-dl">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></div>`;
  const dlk=(ph,a,c)=>`<span class="bl-dlk">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></span>`;
+ // 편 받는 Delay Push(엔진 0.44.0 delay.taken)
+ const dTk=e=>e.taken?` <span class="bl-sub nw">(편 ${e.taken>0?"+":""}${e.taken}%)</span>`:"";
  const delayHtml=e=>{const ar=e.kind==="PUSH"?"⇥":"⇤";
   // 헛방(엔진 0.10.0부터): 딜밀은 차징·캐스팅 중이 아닐 때, 딜땡은 글로벌 쿨타임 중일 때
   if(e.miss)return `<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(${e.kind==="PUSH"?"차징·캐스팅 중이 아님":"글로벌 쿨타임 중"})</span></div>`;
-  if(!e.ph)return e.item?`<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`:`<div class="bl-delay">${ar} ${who(e.tg)} Delay <b>${e.kind==="PUSH"?"+":"-"}${e.amt}</b>${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}</div>`;
+  if(!e.ph)return e.item?`<div class="bl-delay">${ar} ${who(e.tg)} Delay 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`:`<div class="bl-delay">${ar} ${who(e.tg)} Delay <b>${e.kind==="PUSH"?"+":"-"}${e.amt}</b>${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}${dTk(e)}</div>`;
   if(e.item)return `<div class="bl-delay">${ar} ${who(e.tg)} <span class="bl-dlk">${DL(e.ph)}</span> 변화 없음 <span class="bl-sub nw">(소모품 사용 중)</span></div>`;
   const m=e.ph==="PRE"?fr:bk,a=m[e.tg]||0,c=e.kind==="PUSH"?a+e.amt:Math.max(0,a-e.amt);m[e.tg]=c;
-  return `<div class="bl-delay">${ar} ${who(e.tg)} ${dlk(e.ph,a,c)}${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}</div>`};
+  return `<div class="bl-delay">${ar} ${who(e.tg)} ${dlk(e.ph,a,c)}${e.res>=100?` <span class="bl-sub nw">(면역)</span>`:e.res>0?` <span class="bl-sub nw">(저항 ${Math.round(e.res)}%)</span>`:""}${dTk(e)}</div>`};
  // 독·출혈·재생 틱(엔진 0.8.0부터): 종류별 한 줄에 합계, 누르거나 대면 내역. 값과 남은 턴이 같은 건은 ×N으로 묶는다
  const tkPop=(parts,lab,unit,total)=>{const g=[];for(const p of parts||[]){const x=g.find(y=>y.d===p.d&&y.t===p.t);if(x)x.n+=p.n;else g.push({d:p.d,t:p.t,n:p.n})}
   g.sort((a,b)=>b.t-a.t||b.d-a.d);
@@ -3567,20 +3605,27 @@ function battleLogHtml(b){
  const tkListPop=(l,lab)=>l&&l.length?tkPop(l,lab,"대미지",l.reduce((s,p)=>s+p.d*p.n,0)):"";
  const tkOpen=`tabindex="0"`;
  // 소모품 사용 스킬은 스킬 아이콘 대신 쓴 아이템의 아이콘(로그 item의 def로 개체·스킬 → 아이템을 잇는다. 그 판에 item 줄이 없거나 아이템 아이콘이 없으면 스킬 그대로)
+ // 정령 이름(엔진 0.37.0): 상태표 spr는 부르기 스킬 id라 spirit 줄의 이름으로 바꾼다
+ let started=false;const startSide=[];
+ const spName={};for(const x of LOG)if(x.t==="spirit")spName[x.skill]=x.name;
+ // 편 상태(엔진 0.44.0): 그 편에 좋은 쪽이면 ▲(받는 피해·받는 Delay Push는 낮을수록, 받는 지원은 높을수록)
+ const sideUp=(k,v)=>k==="SUPPORT_TAKEN"?v>0:v<0;
+ const sideNm=sd=>sd==="A"?"아군 편":"적 편";
+ const sstHtml=o=>{const l=Object.entries(o||{}).filter(([,v])=>v);return l.length?`<div class="cs-sst">${l.map(([k,v])=>`<span class="${sideUp(k,v)?"bl-buff":"bl-debuff"} nw">${esc(sideStateText(k,v))}</span>`).join(" · ")}</div>`:""};
  const itemDefOf={};for(const x of LOG)if(x.t==="item"&&x.skill&&x.def)itemDefOf[x.u+"|"+x.skill]=x.def;
  const turnSkillHtml=e=>{const src=ITEM_ICONS[itemDefOf[e.u+"|"+e.skill]];if(!src)return skillNameHtml(e.name);const n=String(e.name),i=n.indexOf(" "),a=i<0?n:n.slice(0,i),b=i<0?"":n.slice(i);return `<span class="nw">${skillIconImg(src)}${esc(a)}</span>${esc(b)}`};
  LOG.forEach((e,li)=>{
   // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
   if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
-  else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u])cur.html.push(h);else rows.push(row(side[e.u],h))}}
+  else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u]){cur.html.push(h);cur.postI=cur.html.length-1}else rows.push(row(side[e.u],h))}}
   else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
-  // 캐스팅 끊기(엔진 0.41.0): interrupt → gimmick fail → cancel INTERRUPT → post는 끊긴 개체 묶음(brk)에 모은다. 끊은 쪽 묶음은 거기서 나눠 남은 줄을 그 뒤에 잇는다
-  else if(e.t==="interrupt"){endBrk();if(cur){rows.push(row(cur.side,cur.html.join("")));cur={side:cur.side,html:[]}}brk={u:e.u,side:side[e.u],html:[`<div class="bl-turn">${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
+  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg-(e.shield?.hp||0)} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${e.shield?`<div class="bl-parry">◈ MP로 ${e.shield.hp} 대미지를 막아냈다! <span class="bl-sub nw">(MP ${e.shield.left+e.shield.mp} &gt; ${e.shield.left})</span></div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
+  // 캐스팅 끊기(엔진 0.41.0): interrupt → gimmick fail → cancel INTERRUPT → post는 끊긴 개체 묶음(brk)에 모은다. 끊은 쪽 묶음은 거기서 나눠 남은 줄을 그 뒤에 잇는다(따라 치기로 옮겨 둔 Back Delay는 남은 묶음 맨 아래로)
+  else if(e.t==="interrupt"){endBrk();if(cur){rows.push(row(cur.side,cur.html.join("")));cur={side:cur.side,html:[],postH:cur.postH}}brk={u:e.u,side:side[e.u],html:[`<div class="bl-turn">${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
   else if(e.t==="cancel"&&brk&&brk.u===e.u&&e.reason==="INTERRUPT")brk.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT.INTERRUPT)}</div>`);
   // 보스 대사(엔진 0.42.0 talk): 끊김이면 끊긴 개체 묶음의 머리를, 발동이면 바로 위 행동 줄(이름·스킬)을 대신한다
   else if(e.t==="talk"){const h=talkHtml(e);if(brk&&brk.u===e.u&&brk.html.length===1)brk.html=[h];else if(e.phase==="ok"&&cur&&cur.side===side[e.u]&&cur.html.length===1)cur.html[0]=h;else put(e.u,h)}
@@ -3597,7 +3642,9 @@ function battleLogHtml(b){
   // 전투 시작 함성(엔진 0.39.0): 눈에 띄는 한 줄, 뒤따르는 buff 줄은 이 묶음 안에
   else if(e.t==="cry"){flush();cur={side:side[e.u],later:true,html:[`<div class="bl-cry">${who(e.u)}${josa(e.u,"이","가")} 함성을 내지른다! <span class="bl-sub nw">(아군 ATK·MATK +${e.pct}% · ${e.turns}턴)</span></div>`]}}
   // 장비 MP 회복(엔진 0.39.0, gear): 자기 턴 끝, MP 재생과 구분
-  else if(e.t==="mp"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.gear?"장비 MP ":`MP ${e.regen?"재생 ":""}`}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
+  // 최대 MP 늘리기(엔진 0.45.0, mmp·grow·cap): 회복 줄 다음에 최대 MP 줄. 회복 없이 늘리기만 한 줄(amt 0)은 회복 줄을 빼고 최대 MP 줄만
+  else if(e.t==="mp"&&cur){if(!(e.amt===0&&e.mmp!=null))cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.gear?"장비 MP ":`MP ${e.regen?"재생 ":""}`}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
+   if(e.mmp!=null)cur.html.push(`<div class="bl-buff">▲ ${who(e.tg)} 최대 MP <b>+${e.grow||0}</b> <span class="bl-sub nw">(${e.mmp-(e.grow||0)} &gt; ${e.mmp}${e.cap?" · 한계":""})</span></div>`)}
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   // 엔진 0.35.0: MP 재생 걸림, 대미지 무효 걸림
   // 출혈 터뜨리기(엔진 0.36.0): 그 타격 줄 바로 다음. 남은 출혈 총량(total)을 지우고 그 일부를 방어 없이 바로 깎는다
@@ -3630,13 +3677,27 @@ function battleLogHtml(b){
   else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=`${tv>0?"+":""}${tv}${u}`,d=`${dv>0?"+":dv<0?"":(up===(sg>0)?"+":"-")}${dv}${u}`;
    /* 턴 있는 버프: 걸 때 turns(자기 턴 수), 끝나 되돌릴 때 end */
    const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)} ${esc(lab)} 효과 끝 <span class="bl-sub nw">(누적 ${tot})</span></div>`:`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(누적 ${tot}${e.cap?" · 한계":""}${e.turns?` · ${e.turns}턴`:""})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
+  // 자기 도트 지우기(엔진 0.43.0 cleanse): 회복 줄 다음. 지운 종류만, 건수는 괄호
+  else if(e.t==="cleanse"){const ks=[["독",e.poison],["출혈",e.bleed]].filter(x=>x[1]>0);if(ks.length)put(e.u,`<div class="bl-heal">⟳ ${who(e.u)}의 몸에서 ${ks.map(x=>x[0]).join("·")}이 씻겨 나갔다 <span class="bl-sub nw">(${ks.map(x=>`${x[0]} ${x[1]}건`).join(" · ")})</span></div>`)}
+  // 편 상태(엔진 0.44.0 side): 쓴 쪽 묶음 안(패시브는 전투 시작 때 그 개체 칸, BATTLE START 장면 아래 함성 다음). 누적은 다른 스킬과 합쳐질 때만
+  else if(e.t==="side"){const tv=Number(e.total)||0,sh=(`<div class="${sideUp(e.k,e.v)?"bl-buff":"bl-debuff"}">${sideUp(e.k,e.v)?"▲":"▼"} ${sideNm(e.side)} ${esc(sideStateText(e.k,e.v))} <span class="bl-sub nw">(${esc(e.name)}${e.re?" 갱신":""}${tv!==e.v?` · 누적 ${tv>0?"+":""}${tv}%`:""})</span></div>`);if(!started&&!cur)startSide.push(row(side[e.u],sh));else put(e.u,sh)}
+  // 패시브 편 상태가 사라짐(엔진 0.44.1 side_end): 쓰러졌다 줄 다음
+  else if(e.t==="side_end"){const h=`<div class="bl-buffend">◇ ${who(e.u)}${josa(e.u,"이","가")} 쓰러져 ${esc(e.name)} 효과가 사라졌다 <span class="bl-sub nw">(${sideNm(e.side)} ${esc(SIDE_LABEL[e.k]||e.k)})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
+  // 정령(엔진 0.37.0): spirit = 붙음(prev면 교체), spirit_act = 따라 치기·작별 일격의 머리(다음 hit들이 그 타격)
+  else if(e.t==="spirit"&&cur)cur.html.push(`<div class="bl-spirit">✦ ${e.prev?`정령 교체: ${esc(spName[e.prev]||e.prev)} → ${esc(e.name)}`:`정령 소환: ${esc(e.name)}`}</div>`);
+  // 따라 치기는 행동이 끝난 뒤라 Back Delay 줄 다음에 오지만, Back Delay는 묶음 맨 아래로 옮긴다
+  else if(e.t==="spirit_act"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}cur.html.push(`<div class="bl-spirit">✦ ${skillNameHtml(e.name)}${e.bye?` <span class="bl-sub nw">(떠나며)</span>`:""}</div>`)}
+  // 몰입(엔진 0.45.0 zone): 걸림·갱신은 쓴 쪽 묶음 안, 끝은 그 개체 칸(쓰러져 끝나면 쓰러졌다 줄 다음)
+  else if(e.t==="zone"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.u)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-buff">◎ ${who(e.u)} ${n}${e.re?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   // 죽어서 소모품 효과가 사라짐(엔진 0.40.0, item_end): death 줄 다음, 이어서 그 개체의 buff end 줄들
   else if(e.t==="item_end"){const h=`<div class="bl-buffend">◇ ${who(e.u)}의 ${esc(e.name||e.skill||"")} 효과가 사라졌다</div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   else if(e.t==="death"){const h=`<div class="bl-death">${who(e.u)}${josa(e.u,"은","는")} 쓰러졌다!</div>${dropHtml(e)}`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   else if(e.t==="status"){flush();
    rows.push(`<div class="bl-scene-row"><span class="sc-turnmark">${e===lastStatus?`${e.n} TURN END`:e.n===0?"BATTLE START!":`${e.n} TURN`}</span>${sceneHtml(e.n,e.units,info,id=>nm[id]||id,b.dungeon)}</div>`);
    const su=e.units;
-   rows.push(`<div class="bl-row bl-srow">${statusSide("E",su.filter(x=>side[x.u]==="E"))}<div class="bl-mid"></div>${statusSide("A",su.filter(x=>side[x.u]==="A"))}</div>`);rows.push(...later.splice(0))}
+   // 편 상태(엔진 0.44.0 status.side): 그 편 상태 칸 위에 한 줄
+   if(e.side&&(sstHtml(e.side.E)||sstHtml(e.side.A)))rows.push(`<div class="bl-row bl-sst"><div class="bl-side bl-l">${sstHtml(e.side.E)}</div><div class="bl-mid"></div><div class="bl-side bl-r">${sstHtml(e.side.A)}</div></div>`);
+   rows.push(`<div class="bl-row bl-srow">${statusSide("E",su.filter(x=>side[x.u]==="E"))}<div class="bl-mid"></div>${statusSide("A",su.filter(x=>side[x.u]==="A"))}</div>`);rows.push(...later.splice(0));if(!started){started=true;rows.push(...startSide.splice(0))}}
  });
  flush();rows.push(...later);
  const csv=Math.max(5,...units.flatMap(u=>[`${u.mhp}/${u.mhp}`.length,u.mmp>0?`${u.mmp}/${u.mmp}`.length:0]));
