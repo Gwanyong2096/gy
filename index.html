@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v443 · 갱신 2026-11-01 16:09 KST -->
+<!-- ProjectGY-test-console v444 · 갱신 2026-11-01 16:16 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v443 · 2026-11-01 16:09</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v444 · 2026-11-01 16:16</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3650,8 +3650,8 @@ function battleLogHtml(b){
   if(e.t==="hit"&&e.share)for(const x of e.share)shareOf[x.u]=x;
   // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
   if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
-  // 물결 피하기로 더해진 선딜(엔진 0.49.0 windup.dodge, add에 포함): Front Delay 줄 끝에 괄호. 원래 선딜이 0인 스킬(dodge = add)은 차징·캐스팅 대신 대기로(처리 방식은 사용자 결정 전)
-  if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST,dg=Number(e.dodge)||0,idle=dg>0&&dg>=e.add;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${idle?`${who(e.u)} 대기`:`${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!`}</div>${dg?dlLine("PRE",0,e.add).replace(/<\/div>$/,` <span class="bl-sub nw">(물결 피하기 +${dg})</span></div>`):dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
+  // 물결 피하기로 더해진 선딜(엔진 0.49.0 windup.dodge, add에 포함): Front Delay 줄 끝에 괄호. 원래 선딜이 0인 스킬도 차징·캐스팅(엔진 0.49.1)
+  if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST,dg=Number(e.dodge)||0;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dg?dlLine("PRE",0,e.add).replace(/<\/div>$/,` <span class="bl-sub nw">(물결 피하기 +${dg})</span></div>`):dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u]){cur.html.push(h);cur.postI=cur.html.length-1}else rows.push(row(side[e.u],h))}}
   else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
