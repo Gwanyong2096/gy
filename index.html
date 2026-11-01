@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v450 · 갱신 2026-11-01 20:06 KST -->
+<!-- ProjectGY-test-console v451 · 갱신 2026-11-01 20:15 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v450 · 2026-11-01 20:06</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v451 · 2026-11-01 20:15</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2823,7 +2823,9 @@ function openPatternGuide(charId){
 // 패턴 행동 = 알고 있는 ACTIVE 스킬 + AND. 기본 공격은 그 직업의 자동 습득 ACTIVE 스킬.
 function skillData(id){return skillsByChar[id]?.skills||[]}
 function actionSkills(charId){return skillData(charId).filter(s=>s.known&&(s.kind==="ACTIVE"||s.kind==="LINK"))}
-function basicSkill(charId){const c=chars.find(x=>x.id===charId);return skillData(charId).find(s=>s.auto&&s.kind==="ACTIVE"&&s.job===c?.job)?.id||""}
+// 기본 공격 = 서버 basic_skill과 같게: 지금 직업부터 전직 이전 직업 쪽으로, 그 직업의 자동 습득 액티브 중 순서가 앞선 것
+// (스킬을 초기화하지 않는 직업 Man-at-Arms·Chaplain·Rogue·Elementalist는 이전 직업 것. 초기화하는 직업의 이전 것은 서버가 목록에서 뺀다)
+function basicSkill(charId){const c=chars.find(x=>x.id===charId),sk=skillData(charId);for(const j of jobLine(c?.job).reverse()){const s=sk.find(s=>s.auto&&s.kind==="ACTIVE"&&s.job===j);if(s)return s.id}return ""}
 function skillName(charId,sid){if(sid==="common_use_item"){const c=chars.find(x=>x.id===charId);return `Use Item (${c?.consumable_name||"소모품 없음"})`}return skillData(charId).find(s=>s.id===sid)?.name||sid}
 const COOLDOWN_CONDS=new Set(["skillReady","skillCooldown"]);
 const VALUE_CONDS=new Set([
