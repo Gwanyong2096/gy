@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v449 · 갱신 2026-11-01 18:12 KST -->
+<!-- ProjectGY-test-console v450 · 갱신 2026-11-01 20:06 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v449 · 2026-11-01 18:12</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v450 · 2026-11-01 20:06</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2217,6 +2217,7 @@ function skillEffectText(s,ak){
  if(e.heal_self_flat||e.heal_self_pct)out.push(`자신의 HP ${[e.heal_self_flat?`${e.heal_self_flat}`:"",e.heal_self_pct?`최대 HP ${e.heal_self_pct}%`:""].filter(Boolean).join(" + ")} 회복`);
  if(e.heal_lost_pct)out.push(`자신의 잃은 HP ${e.heal_lost_pct}% 회복`);
  if(e.sure_parry)out.push(`다음 ${e.sure_parry.hits}회 피격 확정 패링${e.sure_parry.buff?.length?` (패링하면 ${e.sure_parry.buff.map(b=>`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`).join(" · ")})`:""}`);
+ if(e.sure_evade)out.push(`다음 ${e.sure_evade.hits}회 피격 확정 회피${e.sure_evade.buff?.length?` (회피하면 ${e.sure_evade.buff.map(b=>`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`).join(" · ")})`:""}`);
  if(e.taunt)out.push(`도발 ${e.taunt.turns}턴 (적의 Valid 스킬이 자신을 노림)`);
  // 다른 능력치에 비례해 오르는 패시브(Bulwark: Front DEF와 Front MDEF 합만큼 Back DEF·Back MDEF)
  if(e.scale)e.scale.forEach(x=>out.push(`${buffLabel(x.k)} +(${SCALE_STAT[x.stat]||x.stat}의 ${x.pct}%)`));
@@ -3433,7 +3434,7 @@ function calcText(c,kind,tick){
  // 편 받는 피해(엔진 0.44.0 calc.taken): finalReduce에 이미 빠져 있어 음수면 더 맞는다(최종 +)
  if(c.finalReduce||c.taken)parts.push(`최종 ${c.finalReduce<0?"+":"-"}${q(Math.abs(c.finalReduce||0))}%${c.taken?` (편 받는 피해 ${c.taken>0?"+":""}${q(c.taken)}%p)`:""}`);
  if(tick){if(c.res)parts.push(`독 저항 ${q(c.res)}%`)}
- else if(c.parryPct===100)parts.push("확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
+ else if(c.parryPct===100)parts.push(c.evade?"확정 회피":"확정 패링");else if(c.parryPct>0)parts.push(`패링 ${q(c.parryPct)}%`);else if(c.piercePct>0)parts.push(`관통 ${q(c.piercePct)}%`);
  if(!tick&&c.pierce>1)parts.push(`관통 ×${q(c.pierce)}`);
  if(c.karma!=null&&c.karma!==1)parts.push(`KARMA ×${q(c.karma)}`);
  // 비틀거림(엔진 0.41.0, calc.stagger): 캐스팅이 끊긴 뒤 후딜 동안 받는 피해 +%
@@ -3664,7 +3665,7 @@ function battleLogHtml(b){
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg-(e.shield?.hp||0)-(e.share||[]).reduce((a,x)=>a+(Number(x.dmg)||0),0)} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${e.shield?`<div class="bl-parry">◈ MP로 ${e.shield.hp} 대미지를 막아냈다! <span class="bl-sub nw">(MP ${e.shield.left+e.shield.mp} &gt; ${e.shield.left})</span></div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
+  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg-(e.shield?.hp||0)-(e.share||[]).reduce((a,x)=>a+(Number(x.dmg)||0),0)} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.evade?`<div class="bl-parry">가볍게 피했다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${e.shield?`<div class="bl-parry">◈ MP로 ${e.shield.hp} 대미지를 막아냈다! <span class="bl-sub nw">(MP ${e.shield.left+e.shield.mp} &gt; ${e.shield.left})</span></div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
   // 캐스팅 끊기(엔진 0.41.0): interrupt → gimmick fail → cancel INTERRUPT → post는 끊긴 개체 묶음(brk)에 모은다. 끊은 쪽 묶음은 거기서 나눠 남은 줄을 그 뒤에 잇는다(따라 치기로 옮겨 둔 Back Delay는 남은 묶음 맨 아래로)
   else if(e.t==="interrupt"){endBrk();if(cur){rows.push(row(cur.side,cur.html.join("")));cur={side:cur.side,html:[],postH:cur.postH}}brk={u:e.u,side:side[e.u],html:[`<div class="bl-turn">${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
   else if(e.t==="cancel"&&brk&&brk.u===e.u&&e.reason==="INTERRUPT")brk.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT.INTERRUPT)}</div>`);
@@ -3715,6 +3716,7 @@ function battleLogHtml(b){
   else if(e.t==="mark"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.tg)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-debuff">◎ ${who(e.tg)} ${n}${e.refresh?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur&&!e.end)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="taunt_ignored"&&cur)cur.html.push(`<div class="bl-cancel">도발을 무시했다!</div>`);
   else if(e.t==="sure_parry"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 쳐낼 준비를 했다!</div>`);
+  else if(e.t==="sure_evade"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 피할 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
   // 물결 피하기(엔진 0.47.0 dodge): 빗나간 스킬 묶음의 Back Delay 다음. 쓴 쪽 선딜·후딜 중인 개체마다 늘어난 Delay, 행동 사이(ph GCD, 엔진 0.49.0)는 다음 선딜에 더해짐, 그 스킬 쿨타임
   else if(e.t==="dodge"){const h=(e.units||[]).map(x=>{if(x.ph==="GCD")return `<div class="bl-delay">⇥ ${who(x.u)} 다음 선딜 <b>+${Number(e.amt)||0}</b></div>`;const m=x.ph==="PRE"?fr:bk,a=m[x.u]||0,c=a+(Number(e.amt)||0);m[x.u]=c;return `<div class="bl-delay">⇥ ${who(x.u)} ${dlk(x.ph,a,c)}</div>`}).join("")+(e.cd?`<div class="bl-sub">${skillNameHtml(e.name)} <span class="nw">쿨타임 ${e.cd}턴</span></div>`:"");put(e.u,h)}
