@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v447 · 갱신 2026-11-01 17:40 KST -->
+<!-- ProjectGY-test-console v448 · 갱신 2026-11-01 18:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v447 · 2026-11-01 17:40</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v448 · 2026-11-01 18:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2348,8 +2348,10 @@ function confirmSkillReset(charId){
   [["취소",null,false],["마시기",async()=>{if(await rpc("use_skill_reset",{p_char:charId})){delete patternDraft[charId];load()}},true]]);
 }
 // 전직 선택지는 서버(get_promote_options)가 준다. 숨겨진 조건을 못 채운 직업은 이름이 가려져(masked) 온다.
+// 카드 순서: 1차 전직 → 2차 전직 → 특수 전직(같은 단계 안은 서버 순서 그대로)
+const promoteRank=t=>t.special?2:t.tier==="FIRST"?0:1;
 function renderPromoteCards(c){
- const opts=promoteByChar[c.id]||[];if(!opts.length)return "";
+ const opts=(promoteByChar[c.id]||[]).map((t,i)=>({t,i})).sort((a,b)=>promoteRank(a.t)-promoteRank(b.t)||a.i-b.i).map(x=>x.t);if(!opts.length)return "";
  const multi=opts.length>1?" multi":"";
  return `<div class="promote-cards${multi}">${opts.map(t=>{
   const tier=t.special?"특수 전직":t.tier==="FIRST"?"1차 전직":"2차 전직";
