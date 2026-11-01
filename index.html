@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v444 · 갱신 2026-11-01 16:16 KST -->
+<!-- ProjectGY-test-console v445 · 갱신 2026-11-01 17:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v444 · 2026-11-01 16:16</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v445 · 2026-11-01 17:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2252,13 +2252,17 @@ function skillEffectText(s,ak){
  if(e.first_action_no_pre)out.push("전투 첫 행동 Front Delay 0");
  if(e.gold_bonus_pct)out.push(`전투 보상 골드 +${e.gold_bonus_pct}%`);
  if(e.element_scan)out.push("적 전체의 원소 파악");
- if(e.formation){const to={FRONT:"전방으로",BACK:"후방으로",START:"시작 위치로"}[e.formation.to];if(to)out.push(e.formation.self?`자신을 ${to} 이동`:`살아 있는 아군 전원을 ${to} 이동`)}
+ if(e.formation){const to={FRONT:"전방으로",BACK:"후방으로",START:"시작 위치로",FLIP:"반대 줄로"}[e.formation.to];/* FLIP은 자신만(엔진 0.51.0) */if(to&&(e.formation.to!=="FLIP"||e.formation.self))out.push(e.formation.self?`자신을 ${to} 이동`:`살아 있는 아군 전원을 ${to} 이동`)}
  // 정령(엔진 0.37.0): 부르기 칸, Invocatio의 두 칸 타격, 처음 붙을 때 자기 버프. main·follow 스킬은 스킬 줄 아래 부속 스킬 목록(skillSubsHtml)
  if(e.spirit)out.push(`정령 소환 (${e.spirit.slot==="NEUTRAL"?"무속성":"속성"} 칸)`);
  if(e.invoke){const dm=e.invoke.dual_mult,st=e.power?.stat||"MATK";out.push(`속성 정령이 있으면 그 원소로 침`);out.push(`두 칸이 다 차면 타수 2배${dm!=null?` (${Array.isArray(dm)?`무속성 ${coef({stat:st,mult:dm[0]},1)} → 속성 ${coef({stat:st,mult:dm[1]},1)}`:`타마다 ${coef({stat:st,mult:dm},1)}`})`:" (무속성 → 속성)"}`)}
  if(e.spirit_buff)e.spirit_buff.forEach(b=>out.push(`처음 정령이 붙을 때 자신 ${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`));
  // 편 상태(엔진 0.44.0): 쓴 쪽 기준 FOE = 적 편, ALLY = 아군 편. 전투 끝까지
  if(e.side_state)e.side_state.forEach(x=>out.push(`${x.to==="ALLY"?"아군 편":"적 편"} ${sideStateText(x.k,x.v)}`));
+ // Shinobi(엔진 0.51.0): 인법 atk_to_matk, 그림자 shadow_strike, 자기 이동 증폭 move_amp
+ if(e.atk_to_matk)out.push("MATK 계수로 치는 피해·회복에 지금 ATK를 더함 (마법 피해)");
+ if(e.shadow_strike)out.push(`자신의 스킬로 자리를 옮기면 그때마다 분신이 적 하나(전방 우선)를 MATK ${Math.round(Number(e.shadow_strike.mult)*100)}×1로 침`);
+ if(e.move_amp)out.push(`자신의 스킬로 자리를 옮긴 횟수마다 피해 증폭 +${e.move_amp.pct}% (최대 ${e.move_amp.max}%${e.move_amp.consume?", 쓰면 0으로":""})`);
  // 대신 받기(엔진 0.48.0 dmg_share): 같은 편 다른 개체가 맞은 타격 대미지의 pct%를 대신 받는다(보유자 방어는 안 봄, 독·출혈 틱·출혈 터뜨리기는 안 나눔)
  if(e.dmg_share)out.push(`같은 편이 맞은 대미지의 ${e.dmg_share.pct}%를 대신 받음 (보유자가 여럿이면 나눠 받음, 독·출혈 제외)`);
  if(e.support_to_windup)out.push("지원 증폭이 모두 선딜 중인 적 타격 증폭으로 바뀜");
@@ -3416,8 +3420,8 @@ function calcText(c,kind,tick){
  if(c.def_scale&&c.def_scale.add>0)parts.push(`Back DEF·MDEF ${q(c.def_scale.back)} 비례 +${q(c.def_scale.add)}`);
  if(c.elem>0)parts.push(`상성 ×${q(c.elem)}`);
  if(c.extra>0&&c.extra!==1)parts.push(`추가 타 ×${q(c.extra)}`);
- // 증폭 − 경감 = 결과(한계 적용 뒤). 증폭에 이미 들어 있는 표식(calc.mark)·연사(Mag Dump, calc.mag, 엔진 0.37.0)·선딜 타격(calc.windup, 엔진 0.44.0)은 괄호로 나눠 보인다. 기본 피해 × (1 + 결과) = 원래 피해
- if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:"",c.windup>0?`선딜 타격 +${q(c.windup)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
+ // 증폭 − 경감 = 결과(한계 적용 뒤). 증폭에 이미 들어 있는 표식(calc.mark)·연사(Mag Dump, calc.mag, 엔진 0.37.0)·선딜 타격(calc.windup, 엔진 0.44.0)·자기 이동(calc.move, 엔진 0.51.0 Kage Nui)은 괄호로 나눠 보인다. 기본 피해 × (1 + 결과) = 원래 피해
+ if(c.amp||c.mit){const ampIn=[c.mark>0?`표식 +${q(c.mark)}%p`:"",c.mag>0?`연사 +${q(c.mag)}%p`:"",c.windup>0?`선딜 타격 +${q(c.windup)}%p`:"",c.move>0?`이동 +${q(c.move)}%p`:""].filter(Boolean);parts.push(`증폭 ${sg(c.amp)}%${ampIn.length?` (${ampIn.join(" · ")})`:""}`);parts.push(`${mag?"마법 ":""}경감 ${q(c.mit)}%`);parts.push(`결과 ${sg(c.net??(c.amp-c.mit))}%`)}
  parts.push(`원래 피해 ${q(c.raw)}`);
  parts.push(`${mag?"MDEF":"DEF"} ${q(c.front)}%+${q(c.back)}`);
  // 표식이 덜 뺀 뒷방(엔진 0.40.0, calc.mark_back): 방어 바로 뒤
@@ -3580,7 +3584,7 @@ function battleLogHtml(b){
  // 한 줄(row) = 왼쪽(적) | 가운데 선 | 오른쪽(아군). 행동은 행동한 쪽에 놓는다
  const rows=[],later=[];let cur=null;
  // tail = 지금 행동 묶음 뒤에 붙일 다른 쪽 줄. brk = 남의 타격에 캐스팅이 끊긴 개체의 묶음(그 타격까지의 묶음 바로 뒤, 남은 타격 앞). stag = 끊겨 비틀거리는 개체 → 기믹 스킬
- const tail=[],stag={},shareOf={};let brk=null;
+ const tail=[],stag={},shareOf={};let brk=null,shadowHead=null;
  // later = BATTLE START 장면 아래로 미루는 묶음(전투 시작 함성은 엔진이 첫 상태 줄보다 먼저 남긴다)
  const endBrk=()=>{if(brk){rows.push(row(brk.side,brk.html.join("")));brk=null}};
  const flush=()=>{endBrk();if(cur){if(cur.postH)cur.html.push(cur.postH);if(cur.html.length)(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}rows.push(...tail.splice(0))};
@@ -3648,12 +3652,13 @@ function battleLogHtml(b){
  LOG.forEach((e,li)=>{
   // 대신 받기(엔진 0.48.0 hit.share): 보유자가 받은 몫과 받은 뒤 HP. 뒤따르는 gimmick share 줄이 쓴다
   if(e.t==="hit"&&e.share)for(const x of e.share)shareOf[x.u]=x;
+  if(e.t==="hit"&&e.sp==="SHADOW"&&shadowHead&&cur){cur.html.push(`<div class="bl-spirit">✦ ${skillNameHtml(shadowHead)}: 분신이 ${who(e.tg)}${eulReul(e.tg)} 쳤다</div>`);shadowHead=null}
   // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
   if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
   // 물결 피하기로 더해진 선딜(엔진 0.49.0 windup.dodge, add에 포함): Front Delay 줄 끝에 괄호. 원래 선딜이 0인 스킬도 차징·캐스팅(엔진 0.49.1)
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST,dg=Number(e.dodge)||0;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dg?dlLine("PRE",0,e.add).replace(/<\/div>$/,` <span class="bl-sub nw">(물결 피하기 +${dg})</span></div>`):dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u]){cur.html.push(h);cur.postI=cur.html.length-1}else rows.push(row(side[e.u],h))}}
-  else if(e.t==="turn"){flush();cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
+  else if(e.t==="turn"){flush();shadowHead=null;cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
@@ -3724,6 +3729,8 @@ function battleLogHtml(b){
   // 정령(엔진 0.37.0): spirit = 붙음(prev면 교체), spirit_act = 따라 치기·작별 일격의 머리(다음 hit들이 그 타격)
   else if(e.t==="spirit"&&cur)cur.html.push(`<div class="bl-spirit">✦ ${e.prev?`정령 교체: ${esc(spName[e.prev]||e.prev)} → ${esc(e.name)}`:`정령 소환: ${esc(e.name)}`}</div>`);
   // 따라 치기는 행동이 끝난 뒤라 Back Delay 줄 다음에 오지만, Back Delay는 묶음 맨 아래로 옮긴다
+  // 그림자(엔진 0.51.0 spirit_act sp SHADOW): 머리 줄은 뒤따르는 그림자 타격(hit sp SHADOW)의 대상을 넣어 그 타격 줄 앞에 찍는다
+  else if(e.t==="spirit_act"&&e.sp==="SHADOW"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}shadowHead=e.name||e.skill}
   else if(e.t==="spirit_act"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}cur.html.push(`<div class="bl-spirit">✦ ${skillNameHtml(e.name)}${e.bye?` <span class="bl-sub nw">(떠나며)</span>`:""}</div>`)}
   // 몰입(엔진 0.45.0 zone): 걸림·갱신은 쓴 쪽 묶음 안, 끝은 그 개체 칸(쓰러져 끝나면 쓰러졌다 줄 다음)
   else if(e.t==="zone"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.u)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-buff">◎ ${who(e.u)} ${n}${e.re?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
