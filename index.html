@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v441 · 갱신 2026-11-01 02:56 KST -->
+<!-- ProjectGY-test-console v442 · 갱신 2026-11-01 15:59 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v441 · 2026-11-01 02:56</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v442 · 2026-11-01 15:59</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2259,6 +2259,8 @@ function skillEffectText(s,ak){
  if(e.spirit_buff)e.spirit_buff.forEach(b=>out.push(`처음 정령이 붙을 때 자신 ${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`));
  // 편 상태(엔진 0.44.0): 쓴 쪽 기준 FOE = 적 편, ALLY = 아군 편. 전투 끝까지
  if(e.side_state)e.side_state.forEach(x=>out.push(`${x.to==="ALLY"?"아군 편":"적 편"} ${sideStateText(x.k,x.v)}`));
+ // 대신 받기(엔진 0.48.0 dmg_share): 같은 편 다른 개체가 맞은 타격 대미지의 pct%를 대신 받는다(보유자 방어는 안 봄, 독·출혈 틱·출혈 터뜨리기는 안 나눔)
+ if(e.dmg_share)out.push(`같은 편이 맞은 대미지의 ${e.dmg_share.pct}%를 대신 받음 (보유자가 여럿이면 나눠 받음, 독·출혈 제외)`);
  if(e.support_to_windup)out.push("지원 증폭이 모두 선딜 중인 적 타격 증폭으로 바뀜");
  // 몰입·MP(엔진 0.45.0)
  if(e.zone){const z=e.zone;out.push(`몰입 ${z.turns}턴 (${[z.matk_pct?`MATK +${z.matk_pct}%`:"",z.delay_mult!=null?`Delay ×${z.delay_mult}`:"",z.mp_mult!=null?`MP ×${z.mp_mult}`:""].filter(Boolean).join(" · ")})`)}
@@ -3545,7 +3547,9 @@ async function loadItemNames(defs){const need=defs.filter(d=>d&&!itemNameCache[d
 const GIMMICK_TEXT={
  monster_slag_skin:{start:"{u:이} 끓는 슬래그를 온몸에 두르기 시작한다!",ok:"끓던 슬래그가 굳어, 모든 상처를 메웠다!",
   fail_dmg:"식어 버린 슬래그가 굳지 못하고 흘러내린다!",fail_hits:"쏟아지는 공격에 껍질이 버티지 못하고 부서졌다!",fail_after:"갈라진 껍질 사이로 맨살이 드러났다! {u:이} 비틀거린다!",
-  hit:"슬래그가 식고 있다!",stagger:"드러난 맨살에 공격이 깊이 박힌다!",end:"{u:이} 몸을 털어 식은 슬래그를 떨궈 냈다."}};
+  hit:"슬래그가 식고 있다!",stagger:"드러난 맨살에 공격이 깊이 박힌다!",end:"{u:이} 몸을 털어 식은 슬래그를 떨궈 냈다."},
+ // 대신 받기(엔진 0.48.0 gimmick phase share): {dmg}는 보유자가 대신 받은 양
+ monster_acolyte_sacrifice:{share:"희생의 장막이 일렁인다. {u:이} 대신 {dmg:을} 받았다"}};
 // 부활 절반(엔진 0.47.0 revive.half): 새 시작 수치. 앞·뒤로 나뉘는 능력치는 DEF 20+8처럼 묶는다
 function halfText(o){const out=[],k=Object.keys(o);if(o.HP!=null)out.push(`최대 HP ${o.HP}`);
  for(const s of ["ATK","MATK"])if(o[s]!=null)out.push(`${s} ${o[s]}`);
@@ -3576,18 +3580,18 @@ function battleLogHtml(b){
  // 한 줄(row) = 왼쪽(적) | 가운데 선 | 오른쪽(아군). 행동은 행동한 쪽에 놓는다
  const rows=[],later=[];let cur=null;
  // tail = 지금 행동 묶음 뒤에 붙일 다른 쪽 줄. brk = 남의 타격에 캐스팅이 끊긴 개체의 묶음(그 타격까지의 묶음 바로 뒤, 남은 타격 앞). stag = 끊겨 비틀거리는 개체 → 기믹 스킬
- const tail=[],stag={};let brk=null;
+ const tail=[],stag={},shareOf={};let brk=null;
  // later = BATTLE START 장면 아래로 미루는 묶음(전투 시작 함성은 엔진이 첫 상태 줄보다 먼저 남긴다)
  const endBrk=()=>{if(brk){rows.push(row(brk.side,brk.html.join("")));brk=null}};
  const flush=()=>{endBrk();if(cur){if(cur.postH)cur.html.push(cur.postH);if(cur.html.length)(cur.later?later:rows).push(row(cur.side,cur.html.join("")));cur=null}rows.push(...tail.splice(0))};
  // 그 개체 쪽에 넣는다: 지금 묶음이 그 쪽이면 거기, 다른 쪽 묶음 중이면 그 묶음 뒤, 묶음이 없으면 바로
  const put=(u,h)=>{if(!h)return;if(cur&&cur.side===side[u])cur.html.push(h);else if(cur)tail.push(row(side[u],h));else rows.push(row(side[u],h))};
- // 기믹 멘트 글: {u}는 이름, {u:이}처럼 쓰면 이름에 조사를 붙인다
- const gimText=(id,key,u)=>{const t=GIMMICK_TEXT[id]?.[key];return t?esc(t).replace(/\{u(?::([^}]+))?\}/g,(m,j)=>who(u)+(j?josa(u,...JOSA_PAIR[j]):"")):""};
+ // 기믹 멘트 글: {u}는 이름, {u:이}처럼 쓰면 이름에 조사를 붙인다. {dmg}·{dmg:을}은 그 줄의 dmg
+ const gimText=(id,key,u,e)=>{const t=GIMMICK_TEXT[id]?.[key];return t?esc(t).replace(/\{u(?::([^}]+))?\}/g,(m,j)=>who(u)+(j?josa(u,...JOSA_PAIR[j]):"")).replace(/\{dmg(?::([^}]+))?\}/g,(m,j)=>`<b>${Number(e?.dmg)||0}</b>`+(j?josaOf(String(Number(e?.dmg)||0),...JOSA_PAIR[j]):"")):""};
  // 보스 대사(엔진 0.42.0 talk, 글은 line): - 보스 이름 → Skill : 아이콘·스킬 이름 → 보스 그림 크게(그림에 든 그림자) → 따옴표 대사. 서술 멘트(gimmick)는 뒤에 붙는다
  const talkHtml=e=>{const sp=sprOf(info[e.u]?.name);
   return `<div class="bl-talk"><div class="bl-talk-nm">- ${who(e.u)}</div><div class="bl-talk-sk">Skill : <span class="bl-sk">${skillNameHtml(e.name)}</span></div>${sp?`<img class="bl-talk-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:""}<div class="bl-talk-say">“${esc(e.line)}”</div></div>`};
- const gimLine=(id,key,u)=>{const t=gimText(id,key,u);return t?`<div class="bl-gim">${t}</div>`:""};
+ const gimLine=(id,key,u,e)=>{const t=gimText(id,key,u,e);return t?`<div class="bl-gim">${t}</div>`:""};
  const row=(sd,html,mid="")=>`<div class="bl-row"><div class="bl-side bl-l">${sd==="E"?html:""}</div><div class="bl-mid">${mid}</div><div class="bl-side bl-r">${sd==="A"?html:""}</div></div>`;
  // 독 표시: 머리가 위쪽에 몰린 그림이라 글자와 눈높이가 맞게 살짝 내린다(스타일의 psn-ico)
  const PSN_ICO=`<span class="psn-ico">☠</span>`;
@@ -3642,6 +3646,8 @@ function battleLogHtml(b){
  const itemDefOf={};for(const x of LOG)if(x.t==="item"&&x.skill&&x.def)itemDefOf[x.u+"|"+x.skill]=x.def;
  const turnSkillHtml=e=>{const src=ITEM_ICONS[itemDefOf[e.u+"|"+e.skill]];if(!src)return skillNameHtml(e.name);const n=String(e.name),i=n.indexOf(" "),a=i<0?n:n.slice(0,i),b=i<0?"":n.slice(i);return `<span class="nw">${skillIconImg(src)}${esc(a)}</span>${esc(b)}`};
  LOG.forEach((e,li)=>{
+  // 대신 받기(엔진 0.48.0 hit.share): 보유자가 받은 몫과 받은 뒤 HP. 뒤따르는 gimmick share 줄이 쓴다
+  if(e.t==="hit"&&e.share)for(const x of e.share)shareOf[x.u]=x;
   // 끊긴 개체 묶음은 그 줄들(talk·gimmick fail·cancel·post)이 끝나면 닫는다
   if(brk&&!(e.u===brk.u&&((e.t==="gimmick"&&e.phase==="fail")||e.t==="talk"||e.t==="cancel"||e.t==="post")))endBrk();
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
@@ -3650,7 +3656,7 @@ function battleLogHtml(b){
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
-  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg-(e.shield?.hp||0)} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${e.shield?`<div class="bl-parry">◈ MP로 ${e.shield.hp} 대미지를 막아냈다! <span class="bl-sub nw">(MP ${e.shield.left+e.shield.mp} &gt; ${e.shield.left})</span></div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
+  else if(e.t==="hit"&&cur)cur.html.push(`${e.dt?`<div class="bl-pierce">Double Tap!</div>`:""}${e.hs?`<div class="bl-pierce">Headshot!</div>`:""}${ELEM_LINE[e.el]?`<div class="bl-elem">${who(e.tg)}의 약점이 ${ELEM_LINE[e.el]}</div>`:""}${e.pierce?`<div class="bl-pierce">꿰뚫었다! 대미지 ${+(+e.pierce).toFixed(2)}배!</div>`:""}<div class="bl-hit"><span class="nw"><b>${e.dmg}</b> 대미지</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.hp+e.dmg-(e.shield?.hp||0)-(e.share||[]).reduce((a,x)=>a+(Number(x.dmg)||0),0)} &gt; ${e.hp})</span>${e.orig?`<div class="bl-cover">⛨ ${who(e.orig)}${eulReul(e.orig)} 대신하여 막아섰다!</div>`:""}${e.parry?`<div class="bl-parry">완벽히 쳐냈다!</div>`:""}${e.nul?`<div class="bl-parry">대미지 무효로 막아냈다!</div>`:""}${e.shield?`<div class="bl-parry">◈ MP로 ${e.shield.hp} 대미지를 막아냈다! <span class="bl-sub nw">(MP ${e.shield.left+e.shield.mp} &gt; ${e.shield.left})</span></div>`:""}${showCalc&&e.calc?`<div class="bl-calc">${calcText(e.calc,e.kind)}</div>`:""}</div>${stag[e.tg]&&e.dmg>0?gimLine(stag[e.tg],"stagger",e.tg):""}`);
   // 캐스팅 끊기(엔진 0.41.0): interrupt → gimmick fail → cancel INTERRUPT → post는 끊긴 개체 묶음(brk)에 모은다. 끊은 쪽 묶음은 거기서 나눠 남은 줄을 그 뒤에 잇는다(따라 치기로 옮겨 둔 Back Delay는 남은 묶음 맨 아래로)
   else if(e.t==="interrupt"){endBrk();if(cur){rows.push(row(cur.side,cur.html.join("")));cur={side:cur.side,html:[],postH:cur.postH}}brk={u:e.u,side:side[e.u],html:[`<div class="bl-turn">${who(e.u)} <span class="bl-sk">${skillNameHtml(e.name)}</span></div>`]}}
   else if(e.t==="cancel"&&brk&&brk.u===e.u&&e.reason==="INTERRUPT")brk.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT.INTERRUPT)}</div>`);
@@ -3660,6 +3666,7 @@ function battleLogHtml(b){
   else if(e.t==="gimmick"){const id=e.skill;
    if(e.phase==="fail"){const h=gimLine(id,e.cause==="hits"?"fail_hits":"fail_dmg",e.u)+gimLine(id,"fail_after",e.u);if(brk&&brk.u===e.u)brk.html.push(h);else put(e.u,h);stag[e.u]=id}
    else if(e.phase==="hit"){if(cur)cur.html.push(gimLine(id,"hit",e.u))}
+   else if(e.phase==="share"){const sh=shareOf[e.u],h=gimLine(id,"share",e.u,e);const hp=sh?` <span class="bl-hp hpv nw">(${sh.hp+(Number(sh.dmg)||0)} &gt; ${sh.hp})</span>`:"";const line=h?h.replace(/<\/div>$/,hp+"</div>"):"";if(cur)cur.html.push(line);else put(e.u,line)}
    else{if(e.phase==="end")delete stag[e.u];put(e.u,gimLine(id,e.phase,e.u))}}
   else if(e.t==="cancel"&&cur)cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`);
   else if(e.t==="item"&&cur)cur.html.push(`<div class="bl-item">◈ <span class="nw">${esc(e.name)} 사용</span> <span class="bl-sub nw">(남은 ${e.left})</span></div>`);
