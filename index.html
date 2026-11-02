@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v465 · 갱신 2026-11-02 14:35 KST -->
+<!-- ProjectGY-test-console v466 · 갱신 2026-11-02 14:42 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v465 · 2026-11-02 14:35</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v466 · 2026-11-02 14:42</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2797,7 +2797,12 @@ const CONDITION_GROUPS=[
   ]},
   {label:"버프", options:[
     ["skillBuffRoom","이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때",false],
-    ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
+    ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false],
+    ["allyAtkOnlyBuffRoom","아군에 ATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false],["allyMatkBuffRoom","아군에 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false],
+    ["selfSkillBuffRoom","자신이 이 줄 스킬의 버프를 더 받을 수 있을 때",false],["selfSkillBuffNoRoom","자신이 이 줄 스킬의 버프를 더 받을 수 없을 때",false],
+    ["selfAtkBuffRoom","자신이 ATK나 MATK 버프를 더 받을 수 있을 때",false],["selfAtkBuffNoRoom","자신이 ATK나 MATK 버프를 더 받을 수 없을 때",false],
+    ["selfAtkOnlyBuffRoom","자신이 ATK 버프를 더 받을 수 있을 때",false],["selfAtkOnlyBuffNoRoom","자신이 ATK 버프를 더 받을 수 없을 때",false],
+    ["selfMatkBuffRoom","자신이 MATK 버프를 더 받을 수 있을 때",false],["selfMatkBuffNoRoom","자신이 MATK 버프를 더 받을 수 없을 때",false]
   ]}
 ];
 // 쓴 횟수(엔진 0.54.0): 이 전투에서 그 줄 스킬(AND 줄이면 묶음 끝 줄 스킬)을 쓴 횟수. 값 0~1000, 기본 1. AND 줄에도 쓸 수 있다(쿨타임 조건과 다름)
