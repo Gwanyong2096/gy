@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v467 · 갱신 2026-11-02 15:29 KST -->
+<!-- ProjectGY-test-console v468 · 갱신 2026-11-02 17:41 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v467 · 2026-11-02 15:29</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v468 · 2026-11-02 17:41</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2257,7 +2257,7 @@ function skillEffectText(s,ak){
  if(e.formation){const to={FRONT:"전방으로",BACK:"후방으로",START:"시작 위치로",FLIP:"반대 줄로"}[e.formation.to];/* FLIP은 자신만(엔진 0.51.0) */if(to&&(e.formation.to!=="FLIP"||e.formation.self))out.push(e.formation.self?`자신을 ${to} 이동`:`살아 있는 아군 전원을 ${to} 이동`)}
  // 정령(엔진 0.37.0): 부르기 칸, Invocatio의 두 칸 타격, 처음 붙을 때 자기 버프. main·follow 스킬은 스킬 줄 아래 부속 스킬 목록(skillSubsHtml)
  if(e.spirit)out.push(`정령 소환 (${e.spirit.slot==="NEUTRAL"?"무속성":"속성"} 칸)`);
- if(e.invoke){const dm=e.invoke.dual_mult,st=e.power?.stat||"MATK";out.push(`속성 정령이 있으면 그 원소로 침`);out.push(`두 칸이 다 차면 타수 2배${dm!=null?` (${Array.isArray(dm)?`무속성 ${coef({stat:st,mult:dm[0]},1)} → 속성 ${coef({stat:st,mult:dm[1]},1)}`:`타마다 ${coef({stat:st,mult:dm},1)}`})`:" (무속성 → 속성)"}`)}
+ if(e.invoke){const dm=e.invoke.dual_mult,st=e.power?.stat||"MATK";out.push(`속성 정령이 있으면 그 원소로 침`);out.push(`두 칸이 다 차면 타수 2배${dm!=null?` (${Array.isArray(dm)?`속성 ${coef({stat:st,mult:dm[1]},1)} → 무속성 ${coef({stat:st,mult:dm[0]},1)}`:`타마다 ${coef({stat:st,mult:dm},1)}`})`:" (속성 → 무속성)"}`)}
 // 쌓기(엔진 0.55.0, Pactum): spirit_stack {부르기 스킬 id: [{k, v}]}. 정령 이름은 그 부르기 스킬 이름(받아 둔 스킬 목록에서, 없으면 코드 끝 낱말)
  if(e.spirit_stack&&typeof e.spirit_stack==="object"){const nm=id=>{for(const c of Object.values(skillsByChar||{})){const f=(c?.skills||[]).find(x=>x.id===id);if(f)return f.name}const w=String(id).split("_").pop();return w.charAt(0).toUpperCase()+w.slice(1)};
   const parts=Object.entries(e.spirit_stack).map(([id,l])=>`${nm(id)} ${(Array.isArray(l)?l:[]).map(b=>`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`).join(" · ")}`);
@@ -2282,7 +2282,7 @@ function skillEffectText(s,ak){
  if(e.ammo_refill)out.push(`${ak==="AMMO"?"탄약":"화살"} ${e.ammo_refill==="FULL"?"가득 채움":"+"+e.ammo_refill}`);
  return out.join(" · ");
 }
-// 부속 스킬(get_character_skills subs, 정령의 main·follow): 부르기 스킬 줄 아래. main = 붙은 채로 다시 부르면 쓰는 스킬, follow = 따라 치기(차례대로)
+// 부속 스킬(get_character_skills subs, 정령의 main·follow): 부르기 스킬 줄 아래. main = 부를 때마다 쓰는 스킬(Recast), follow = 따라 치기(차례대로)
 function skillSubsHtml(s,ak){const subs=s.subs||[];if(!subs.length)return "";const sp=s.effect?.spirit||{},fl=sp.follow||[];
  const lab=b=>b.id===sp.main?"Recast":fl.includes(b.id)?`Follow-up${fl.length>1?` ${fl.indexOf(b.id)+1}`:""}`:"";
  const ord=b=>b.id===sp.main?-1:fl.includes(b.id)?fl.indexOf(b.id):99;
@@ -2844,8 +2844,12 @@ const PATTERN_GUIDE={
     rows:[["Delay Push 면역인 적이 없을 때","AND","enemyNoPushImmune","common_and"],["차징이나 캐스팅 중인 적이 1명 이상","Garrote","enemyWindupGte","thief_rogue_garrote",1],["이 줄 스킬이 쿨타임이 아닐 때","Eviscerate","skillReady","thief_rogue_eviscerate"],["반드시","Gash","always","thief_rogue_gash"]]},
   SUMMONER:{design:"Summoner는 정령을 곁에 불러 두고 Invocatio에 정령의 원소를 실어 치는 직업입니다. Numen과 Gnome을 먼저 부르고, MATK 버프가 가득 차면 Invocatio로 칩니다. 아직 버프를 더 받을 수 있으면 Salamander·Fulgur를 불러 쌓고(이미 곁에 있으면 Inferno·Thunderclap), 남는 턴에는 Invocatio로 칩니다.",
     rows:[["이 줄 스킬이 쿨타임이 아닐 때","Numen","skillReady","mage_summoner_numen"],["이 줄 스킬이 쿨타임이 아닐 때","Gnome","skillReady","mage_summoner_gnome"],["자신이 MATK 버프를 더 받을 수 없을 때","Invocatio","selfMatkBuffNoRoom","mage_summoner_invocatio"],["이 줄 스킬이 쿨타임이 아닐 때","Salamander","skillReady","mage_summoner_salamander"],["이 줄 스킬이 쿨타임이 아닐 때","Fulgur","skillReady","mage_summoner_fulgur"],["반드시","Invocatio","always","mage_summoner_invocatio"]]},
-  EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. Ecce Crucem은 한 전투에 한 번 먼저 쓰고, 쿨타임이 아닌 Excommunicatio·Anathema를 차례로 쓴 뒤, 적이 4명 이상 남아 있으면 Exorcizamus로 모두 늦추고, 남는 턴에는 Adjuro로 칩니다.",
-    rows:[["이 스킬을 1회까지 반드시","Ecce Crucem","skillUsesLt","cleric_exorcist_ecce_crucem",1],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["상대방 생존자가 4명 이상","Exorcizamus","enemyAliveGte","cleric_exorcist_exorcizamus",4],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]}
+  EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. Ecce Crucem은 한 전투에 한 번 먼저 쓰고, 쿨타임이 아닌 Excommunicatio·Anathema를 차례로 쓴 뒤, 적이 6명 이상 남아 있으면 Exorcizamus로 모두 늦추고, 남는 턴에는 Adjuro로 칩니다.",
+    rows:[["이 스킬을 1회까지 반드시","Ecce Crucem","skillUsesLt","cleric_exorcist_ecce_crucem",1],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["상대방 생존자가 6명 이상","Exorcizamus","enemyAliveGte","cleric_exorcist_exorcizamus",6],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]},
+  ELEMENTALIST:{design:"Elementalist는 큰 원소 마법으로 여러 적을 한꺼번에 치는 직업입니다. MP가 60% 이하로 떨어지면 Transcendence로 채우고, 쿨타임이 아닌 In the Zone으로 몰입한 뒤, 적이 8명 이상이면 Earthquake, 4명 이상이면 Chain Lightning, 남는 턴에는 Meteor Strike로 칩니다.",
+    rows:[["자신의 MP가 60% 이하","Transcendence","selfMpLtePct","mage_elementalist_transcendence",60],["이 줄 스킬이 쿨타임이 아닐 때","In the Zone","skillReady","mage_elementalist_in_the_zone"],["상대방 생존자가 8명 이상","Earthquake","enemyAliveGte","mage_elementalist_earthquake",8],["상대방 생존자가 4명 이상","Chain Lightning","enemyAliveGte","mage_elementalist_chain_lightning",4],["반드시","Meteor Strike","always","mage_elementalist_meteor_strike"]]},
+  SHINOBI:{design:"Shinobi는 앞뒤를 오가며 표창과 인법으로 치는 직업입니다. 전방에 있으면 Shunshin으로 치고 자리를 바꾸고, 쿨타임이 아닌 Kage Nui를 쓰고, 남는 턴에는 Kunai로 칩니다.",
+    rows:[["자신이 전방일 때","Shunshin","selfFront","thief_shinobi_shunshin"],["이 줄 스킬이 쿨타임이 아닐 때","Kage Nui","skillReady","thief_shinobi_kage_nui"],["반드시","Kunai","always","thief_shinobi_kunai"]]},
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
@@ -3748,7 +3752,7 @@ function battleLogHtml(b){
   // 물결 피하기로 더해진 선딜(엔진 0.49.0 windup.dodge, add에 포함): Front Delay 줄 끝에 괄호. 원래 선딜이 0인 스킬도 차징·캐스팅(엔진 0.49.1)
   if(e.t==="windup"){flush();const w=WIND[e.kind]||WIND.CAST,dg=Number(e.dodge)||0;fr[e.u]=e.add;rows.push(row(side[e.u],`<div class="bl-wind">${who(e.u)}${josa(e.u,"이","가")} ${w[2]}을 시작한다!</div>${dg?dlLine("PRE",0,e.add).replace(/<\/div>$/,` <span class="bl-sub nw">(물결 피하기 +${dg})</span></div>`):dlLine("PRE",0,e.add)}<div class="bl-calc">Front Delay ${e.add} → 실제 ${Math.round(e.real)}</div>`))}
   else if(e.t==="post"){bk[e.u]=e.amt;fr[e.u]=0;const h=dlLine("POST",0,e.amt);if(brk&&brk.u===e.u)brk.html.push(h);else if(h){if(cur&&cur.side===side[e.u]){cur.html.push(h);cur.postI=cur.html.length-1}else rows.push(row(side[e.u],h))}}
-  else if(e.t==="turn"){flush();shadowHead=null;cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`]}}
+  else if(e.t==="turn"){flush();shadowHead=null;cur={side:side[e.u],html:[`<div class="bl-turn"><span class="bl-n">${e.n} TURN</span>${who(e.u)} <span class="bl-sk">${turnSkillHtml(e)}</span></div>`],te:e}}
   else if(e.t==="scan"&&cur)cur.html.push(`<div class="bl-scan">◎ 원소를 파악했다!${(e.units||[]).map(x=>`<div>${who(x.u)} ${x.el&&EL_KO[x.el]?`<b class="el-${String(x.el).toLowerCase()}">${EL_KO[x.el]}</b>`:"원소 없음"}</div>`).join("")}</div>`);
   else if(e.t==="stance"&&cur)cur.html.push(`<div class="bl-parry">${e.on?"저지 자세를 취했다!":"저지 자세를 풀었다!"}</div>`);
   else if(e.t==="counter"&&cur){if(e.ok)cur.html.push(`<div class="bl-parry">재빠른 찌르기에 저지당했다!</div>`);if(showCalc)cur.html.push(`<div class="bl-calc">${esc(e.name)} 판정 ${e.ok?"성공":"실패"} · MP −${e.cost} (남은 ${e.mp})</div>`)}
@@ -3764,6 +3768,8 @@ function battleLogHtml(b){
    else if(e.phase==="hit"){if(cur)cur.html.push(gimLine(id,"hit",e.u))}
    else if(e.phase==="share"){const sh=shareOf[e.u],h=gimLine(id,"share",e.u,e);const hp=sh?` <span class="bl-hp hpv nw">(${sh.hp+(Number(sh.dmg)||0)} &gt; ${sh.hp})</span>`:"";const line=h?h.replace(/<\/div>$/,hp+"</div>"):"";if(cur)cur.html.push(line);else put(e.u,line)}
    else{if(e.phase==="end")delete stag[e.u];put(e.u,gimLine(id,e.phase,e.u))}}
+  // 정령 Recast(엔진 0.56.0): 부르기가 MP·쿨 등으로 시작도 못 하면 turn 줄은 main 이름(예 Landslide)이라, 머리 줄을 부르기 스킬 이름(예 Gnome)으로 바꾼다. 캐스팅이 끊긴 건 main을 쓴 것이라 그대로
+  else if(e.t==="cancel"&&cur&&e.reason!=="INTERRUPT"&&cur.te&&/_main$/.test(cur.te.skill||"")&&typeof SKILL_ICONS!=="undefined"&&SKILL_ICONS[cur.te.skill.replace(/_main$/,"")]?.name){cur.html[0]=cur.html[0].replace(turnSkillHtml(cur.te),skillNameHtml(SKILL_ICONS[cur.te.skill.replace(/_main$/,"")].name));cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`)}
   else if(e.t==="cancel"&&cur)cur.html.push(`<div class="bl-cancel">${esc(CANCEL_TEXT[e.reason]||"발동하지 못했다!")}</div>`);
   else if(e.t==="item"&&cur)cur.html.push(`<div class="bl-item">◈ <span class="nw">${esc(e.name)} 사용</span> <span class="bl-sub nw">(남은 ${e.left})</span></div>`);
   else if(e.t==="short"&&cur)cur.html.push(`<div class="bl-cancel">${AK[e.kind]||"화살"}이 부족하다!</div>`);
