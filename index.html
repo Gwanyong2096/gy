@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v456 · 갱신 2026-11-02 12:58 KST -->
+<!-- ProjectGY-test-console v457 · 갱신 2026-11-02 13:25 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v456 · 2026-11-02 12:58</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v457 · 2026-11-02 13:25</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1057,7 +1057,7 @@ async function loadSell(){
 function renderSell(){
  if(!sellList.length){$("innSell").innerHTML=`<div class="empty">팔 수 있는 아이템이 없습니다.</div>`;return}
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
- const secs=ITEM_GROUPS.map(([t,sl])=>[t,sellList.filter(i=>sl.includes(i.item_defs.slot))]);
+ const secs=itemSections(sellList,i=>i.item_defs);
  const rest=sellList.filter(i=>!known.has(i.item_defs.slot));if(rest.length)secs.push(["Etc",rest]);
  const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i);
   return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
@@ -2599,11 +2599,11 @@ function renderCharacterDetail(){
  const conHtml=`<div class="equip-row${c.consumable?"":" empty-slot"}"><span class="slot-label">소모품</span><span class="slot-item">${c.consumable?(h=>conItem?itemTop(h,conItem):h)(`<span class="item-head"><b class="item-name">${esc(c.consumable_name||c.consumable)}</b><b class="item-count">x${conCount(c.consumable)}</b><span class="item-cat item-tags">(consumable)</span></span>`):"비어 있음"}</span>${c.consumable?`<button onclick="setConsumable('${c.id}',null)">해제</button>`:""}</div>`;
  const conKinds=[];for(const i of itemsData){const d=i.item_defs;if(d?.slot==="CONSUMABLE"&&d.use_skill&&i.def_id!==c.consumable&&!conKinds.some(x=>x.def_id===i.def_id))conKinds.push(i)}
  const conAvail=conKinds.map(i=>`<div class="equip-row"><span class="slot-item">${itemTop(`<span class="item-head"><b class="item-name">${esc(i.item_defs.name)}</b><b class="item-count">x${conCount(i.def_id)}</b><span class="item-cat item-tags">(consumable)</span></span>`,i)}</span><button onclick="setConsumable('${c.id}','${esc(i.def_id)}')">장착</button></div>`).join("");
- // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / Sub Weapon / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
+ // Allowed to Equip(보유 아이템 장착) 목록을 무기 종류마다(Sword, Bow … 무기 칸 다음 방패/보조무기 칸) / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
  const availRow=i=>`<div class="equip-row"><span class="slot-item">${itemDetailHtml(i)}</span><button onclick="equipTo('${i.id}','${c.id}')">장착</button></div>`;
  const AV_GROUPS=ITEM_GROUPS.filter(([t])=>t!=="Consumable"&&t!=="Material");
  const avSec=(t,h)=>h?`<div class="av-head"><span>${t}</span></div>${h}`:"";
- const availableHtml=available.length||conAvail?AV_GROUPS.map(([t,sl])=>avSec(t,available.filter(i=>sl.includes(i.item_defs.slot)).map(availRow).join(""))).join("")+avSec("Consumable",conAvail):"<div class=\"empty\">장착할 아이템이 없습니다.</div>";
+ const availableHtml=available.length||conAvail?itemSections(available,i=>i.item_defs,AV_GROUPS).map(([t,l])=>avSec(t,l.map(availRow).join(""))).join("")+avSec("Consumable",conAvail):"<div class=\"empty\">장착할 아이템이 없습니다.</div>";
  box.innerHTML=`${renderQuickSwitch(c.id)} <div class="detail-grid">
   <div class="detail-side">
    <div class="section-title sec-line">Status</div>
@@ -2673,9 +2673,25 @@ function handMoveBtn(i,charId){
  const to=i.equipped_slot===alt?base:alt;
  return `<button onclick="equipTo('${i.id}','${charId}','${to}')">${HAND_SLOT_NAME[to]||to}로</button>`;
 }
-// 아이템 구분: Equipment의 Allowed to Equip과 Bag·Sell이 같은 방식으로 나눈다. 무기와 방어구는 칸마다(무기 칸 Weapon, 방패/보조무기 칸 Sub Weapon. 한 벌 옷은 상의 칸 장비라 Top에 든다)
+// 아이템 구분: Equipment의 Allowed to Equip과 Bag·Sell·Enhance가 같은 방식으로 나눈다. 방어구는 칸마다(한 벌 옷은 상의 칸 장비라 Top에 든다), 무기 칸(Weapon)·방패/보조무기 칸(Sub Weapon)은 무기 종류마다
 const ARMOR_GROUPS=[["Head",["HEAD"]],["Shoulder",["SHOULDER"]],["Top",["TOP"]],["Bottom",["BOTTOM"]],["Belt",["BELT"]],["Shoes",["SHOES"]],["Cape",["CAPE"]]];
 const ITEM_GROUPS=[["Weapon",["WEAPON"]],["Sub Weapon",["SHIELD"]],...ARMOR_GROUPS,["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
+// 무기·보조무기 칸은 무기 종류(item_type)마다 다시 나눈다(Sword, Bow …). 순서는 아래 표, 표에 없는 종류는 그 뒤 이름순, 종류가 없으면 칸 이름(Weapon·Sub Weapon)
+const TYPE_SPLIT_GROUPS=new Set(["Weapon","Sub Weapon"]);
+const ITEM_TYPE_ORDER=["SWORD","TWO_HANDED_SWORD","AXE","MACE","DAGGER","BOW","HANDGUN","STAFF","ONE_HANDED_STAFF","SHIELD","GUARDER","PARRY_DAGGER","BOOK","QUIVER"];
+const itemTypeTitle=t=>String(t).toLowerCase().split("_").map(w=>w[0].toUpperCase()+w.slice(1)).join(" ");
+// list를 구분([제목, 항목들])으로 나눈다. defOf는 항목에서 item_defs를 꺼내는 함수. 빈 구분도 돌려준다(거르는 건 부르는 쪽)
+function itemSections(list,defOf,groups=ITEM_GROUPS){
+ const out=[];
+ for(const [t,sl] of groups){
+  const inG=list.filter(x=>sl.includes(defOf(x)?.slot));
+  if(!TYPE_SPLIT_GROUPS.has(t)){out.push([t,inG]);continue}
+  const types=[...new Set(inG.map(x=>defOf(x)?.item_type||""))].sort((a,b)=>{const ia=ITEM_TYPE_ORDER.indexOf(a),ib=ITEM_TYPE_ORDER.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib)||a.localeCompare(b)});
+  if(!types.length){out.push([t,[]]);continue}
+  for(const ty of types)out.push([ty?itemTypeTitle(ty):t,inG.filter(x=>(defOf(x)?.item_type||"")===ty)]);
+ }
+ return out;
+}
 function renderBag(){
  const box=$("items");
  if(!itemsData.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
@@ -2690,13 +2706,13 @@ function renderBag(){
  // 아이콘(19-skill-icons의 ITEM_ICONS)이 있는 아이템은 줄 앞에 32px 도트를 붙인다
  const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
- const sections=ITEM_GROUPS.map(([t,sl])=>[t,groups.filter(g=>sl.includes(g.item.item_defs?.slot))]);
+ const sections=itemSections(groups,g=>g.item.item_defs);
  const rest=groups.filter(g=>!known.has(g.item.item_defs?.slot));if(rest.length)sections.push(["Etc",rest]);
  box.innerHTML=sections.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(card).join("")}`).join("");
 }
 
 const CONDITION_GROUPS=[
-  {label:"기본", options:[["always","반드시",false],["everyNTurns","OO턴마다 반드시",true],["chancePct","OO(%) 확률로",true]]},
+  {label:"기본", options:[["always","반드시",false],["skillUsesLt","이 스킬을 OO회까지 반드시",true],["everyNTurns","OO턴마다 반드시",true],["chancePct","OO(%) 확률로",true]]},
   {label:"HP", options:[
     ["selfHpGtePct","자신의 HP가 OO(%) 이상",true],["selfHpLtePct","자신의 HP가 OO(%) 이하",true],
     ["selfHpGte","자신의 HP가 OO 이상",true],["selfHpLte","자신의 HP가 OO 이하",true],
@@ -2777,8 +2793,9 @@ const CONDITION_GROUPS=[
   ]}
 ];
 // 쓴 횟수(엔진 0.54.0): 이 전투에서 그 줄 스킬(AND 줄이면 묶음 끝 줄 스킬)을 쓴 횟수. 값 0~1000, 기본 1. AND 줄에도 쓸 수 있다(쿨타임 조건과 다름)
+// 목록에는 skillUsesLt만 `이 스킬을 OO회까지 반드시`로 기본 묶음(OO턴마다 반드시 위)에 둔다(사용자 H "하나로 압축"). skillUsesGte는 엔진·서버에 남아 있어 수치 조건으로만 다룬다
 const USES_CONDS=new Set(["skillUsesLt","skillUsesGte"]);
-const COOLDOWN_GROUP={label:"쿨타임·횟수", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false],["skillUsesLt","이 스킬을 OO회 쓸 때까지",true],["skillUsesGte","이 스킬을 OO회 이상 썼음",true]]};
+const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false]]};
 // 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때, 표식 조건은 표식을 거는 스킬(effect.mark)이 있을 때
 const AMMO_CONDITION_OPTIONS={
   ARROW:[
@@ -2919,7 +2936,8 @@ function renderPatternRows(pattern,job,charId){
 // data-ctl-row: 줄 안에서 쓰는 조작 버튼 묶음 표시(버튼 위 간격 18 규칙의 예외. 화면 점검 스크립트가 이 표시만 건너뛴다)
 function renderPatternRow(p,i,job,charId){
   const acts=actionSkills(charId), basic=basicSkill(charId);
-  const c=p?.c||"always", a=acts.some(s=>s.id===p?.a)?p.a:basic, has=VALUE_CONDS.has(c);
+  // 목록에 없는 조건(예: 목록에서 뺀 skillUsesGte)은 반드시로 보인다(저장하면 반드시로 바뀜)
+  const c=p?.c&&conditionOptionsFor(charId).some(o=>o[0]===p.c)?p.c:"always", a=acts.some(s=>s.id===p?.a)?p.a:basic, has=VALUE_CONDS.has(c);
   const v=Number.isFinite(Number(p?.v))?Number(p.v):condDefault(c);
   const suffix=pctUnit(c)?" %":"";
   const off=i>=patLines(charId);
@@ -3189,7 +3207,7 @@ const MON_CONDITION_GROUP={label:"부활(몬스터)", options:[
  ["allyRevivableGte","일으킬 수 있는 쓰러진 아군이 OO명 이상",true],["allyRevivableLte","일으킬 수 있는 쓰러진 아군이 OO명 이하",true],["allyRevivableEq","일으킬 수 있는 쓰러진 아군이 OO명",true]]};
 function monCondOptions(current){
  const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품").flatMap(g=>g.label==="생존·사망"?[g,MON_CONDITION_GROUP]:[g]);
- const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_GROUP.options.some(o=>o[0]===current);
+ const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_CONDS.has(current);
  return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`;
 }
 const MON_UP=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>`,MON_DOWN=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>`;
@@ -4365,7 +4383,7 @@ function renderEnhance(){
  if(!list.length){box.innerHTML=`<div class="empty">강화할 장비가 없습니다.</div>`;return}
  const who=id=>chars.find(c=>c.id===id)?.display_name||"";
  const row=i=>`<div class="item-card">${itemDetailHtml(i)}<div class="cr-act">${i.equipped_character?`<span class="enh-who">${esc(who(i.equipped_character))} 장착 중</span>`:""}<button class="pri fm-btn" onclick="openEnhance('${esc(i.id)}')"><span>강화</span></button></div></div>`;
- box.innerHTML=ITEM_GROUPS.map(([t,sl])=>[t,list.filter(i=>sl.includes(i.item_defs?.slot))]).filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
+ box.innerHTML=itemSections(list,i=>i.item_defs).filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
 }
 // 강화로 바뀌는 수치: 지금 강화 몫 → 다음 강 강화 몫(바뀌는 항목만)
 function enhGainHtml(cur,nx){
