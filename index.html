@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v454 · 갱신 2026-11-02 12:31 KST -->
+<!-- ProjectGY-test-console v455 · 갱신 2026-11-02 12:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v454 · 2026-11-02 12:31</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v455 · 2026-11-02 12:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2599,7 +2599,7 @@ function renderCharacterDetail(){
  const conHtml=`<div class="equip-row${c.consumable?"":" empty-slot"}"><span class="slot-label">소모품</span><span class="slot-item">${c.consumable?(h=>conItem?itemTop(h,conItem):h)(`<span class="item-head"><b class="item-name">${esc(c.consumable_name||c.consumable)}</b><b class="item-count">x${conCount(c.consumable)}</b><span class="item-cat item-tags">(consumable)</span></span>`):"비어 있음"}</span>${c.consumable?`<button onclick="setConsumable('${c.id}',null)">해제</button>`:""}</div>`;
  const conKinds=[];for(const i of itemsData){const d=i.item_defs;if(d?.slot==="CONSUMABLE"&&d.use_skill&&i.def_id!==c.consumable&&!conKinds.some(x=>x.def_id===i.def_id))conKinds.push(i)}
  const conAvail=conKinds.map(i=>`<div class="equip-row"><span class="slot-item">${itemTop(`<span class="item-head"><b class="item-name">${esc(i.item_defs.name)}</b><b class="item-count">x${conCount(i.def_id)}</b><span class="item-cat item-tags">(consumable)</span></span>`,i)}</span><button onclick="setConsumable('${c.id}','${esc(i.def_id)}')">장착</button></div>`).join("");
- // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
+ // Allowed to Equip(보유 아이템 장착) 목록을 Weapon / Sub Weapon / 방어구 칸마다(Head, Shoulder, Top, Bottom, Belt, Shoes, Cape) / Accessory / Consumable 구분선으로 나눈다
  const availRow=i=>`<div class="equip-row"><span class="slot-item">${itemDetailHtml(i)}</span><button onclick="equipTo('${i.id}','${c.id}')">장착</button></div>`;
  const AV_GROUPS=ITEM_GROUPS.filter(([t])=>t!=="Consumable"&&t!=="Material");
  const avSec=(t,h)=>h?`<div class="av-head"><span>${t}</span></div>${h}`:"";
@@ -2673,9 +2673,9 @@ function handMoveBtn(i,charId){
  const to=i.equipped_slot===alt?base:alt;
  return `<button onclick="equipTo('${i.id}','${charId}','${to}')">${HAND_SLOT_NAME[to]||to}로</button>`;
 }
-// 아이템 구분: Equipment의 Allowed to Equip과 Bag·Sell이 같은 방식으로 나눈다. 방어구는 칸마다(한 벌 옷은 상의 칸 장비라 Top에 든다)
+// 아이템 구분: Equipment의 Allowed to Equip과 Bag·Sell이 같은 방식으로 나눈다. 무기와 방어구는 칸마다(무기 칸 Weapon, 방패/보조무기 칸 Sub Weapon. 한 벌 옷은 상의 칸 장비라 Top에 든다)
 const ARMOR_GROUPS=[["Head",["HEAD"]],["Shoulder",["SHOULDER"]],["Top",["TOP"]],["Bottom",["BOTTOM"]],["Belt",["BELT"]],["Shoes",["SHOES"]],["Cape",["CAPE"]]];
-const ITEM_GROUPS=[["Weapon",["WEAPON","SHIELD"]],...ARMOR_GROUPS,["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
+const ITEM_GROUPS=[["Weapon",["WEAPON"]],["Sub Weapon",["SHIELD"]],...ARMOR_GROUPS,["Accessory",["EARRING","NECKLACE","RING"]],["Consumable",["CONSUMABLE"]],["Material",["MATERIAL"]]];
 function renderBag(){
  const box=$("items");
  if(!itemsData.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
