@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v455 · 갱신 2026-11-02 12:50 KST -->
+<!-- ProjectGY-test-console v456 · 갱신 2026-11-02 12:58 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v455 · 2026-11-02 12:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v456 · 2026-11-02 12:58</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2610,7 +2610,7 @@ function renderCharacterDetail(){
    <div class="status-body">
    <span class="sprite-slot status-sprite" aria-hidden="true">${sprImg(c.job)}</span>
    <div class="status-info">
-   <div class="char-title"><span class="nm">${esc(c.display_name)}</span>${hasIdentificationTag?`<button class="mini-btn" onclick="renamePrompt('${c.id}')">이름 변경</button>`:""}</div>
+   <div class="char-title"><span class="nm">${esc(c.display_name)}</span>${hasIdentificationTag?`<button class="mini-btn" onclick="renamePrompt('${c.id}')">이름 변경</button>`:""}${stage?"":`<button class="mini-btn" onclick="releasePrompt('${c.id}')">방출</button>`}</div>
    <div class="char-meta">${esc(c.job_name||c.job)} · Lv.${c.level} · ${Number(c.exp_next)>0?`EXP ${c.exp??0}/${c.exp_next}`:"EXP MAX"}</div>
    <div class="st" style="margin-top:10px"><span>HP <b>${s.HP??"-"}</b></span><span>MP <b>${s.MP??"-"}</b></span><span>ATK <b>${s.ATK??"-"}</b></span><span>MATK <b>${s.MATK??"-"}</b></span><span>DEF <b>${fbText(s.DEF?.F,s.DEF?.B)}</b></span><span>MDEF <b>${fbText(s.MDEF?.F,s.MDEF?.B)}</b></span><span>SPD <b>${fbText(s.SPD?.F,s.SPD?.B)}</b></span></div>
    <div class="st" style="margin-top:4px"><span>피해 증폭 <b>${Number(s.DMG_AMP)<0?"":"+"}${pctText(s.DMG_AMP)}</b></span><span>패링 <b>${pctText(s.PARRY)}</b></span><span>관통 <b>${pctText(s.PIERCE)}</b></span>${Number(s.SUPPORT_AMP)>0?`<span>지원 증폭 <b>+${pctText(s.SUPPORT_AMP)}</b></span>`:""}${Number(s.WINDUP_AMP)>0?`<span>${STAT_LABEL.WINDUP_AMP} <b>+${pctText(s.WINDUP_AMP)}</b></span>`:""}${Number(s.SUPPORT_TAKEN)?`<span>받는 지원 <b>${Number(s.SUPPORT_TAKEN)<0?"":"+"}${pctText(s.SUPPORT_TAKEN)}</b></span>`:""}<span>물리 경감 <b>${pctText(s.MIT)}</b></span><span>마법 경감 <b>${pctText(s.MMIT)}</b></span>${Number(s.FINAL_AMP)>0?`<span>최종 증폭 <b>+${pctText(s.FINAL_AMP)}</b></span>`:""}${Number(s.FINAL_REDUCE)>0?`<span>최종 경감 <b>${pctText(s.FINAL_REDUCE)}</b></span>`:""}</div>
@@ -2776,7 +2776,9 @@ const CONDITION_GROUPS=[
     ["allyAtkBuffRoom","아군에 ATK나 MATK 버프를 더 받을 수 있는 캐릭터가 있을 때",false]
   ]}
 ];
-const COOLDOWN_GROUP={label:"쿨타임", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false]]};
+// 쓴 횟수(엔진 0.54.0): 이 전투에서 그 줄 스킬(AND 줄이면 묶음 끝 줄 스킬)을 쓴 횟수. 값 0~1000, 기본 1. AND 줄에도 쓸 수 있다(쿨타임 조건과 다름)
+const USES_CONDS=new Set(["skillUsesLt","skillUsesGte"]);
+const COOLDOWN_GROUP={label:"쿨타임·횟수", options:[["skillReady","이 줄 스킬이 쿨타임이 아닐 때",false],["skillCooldown","이 줄 스킬이 쿨타임일 때",false],["skillUsesLt","이 스킬을 OO회 쓸 때까지",true],["skillUsesGte","이 스킬을 OO회 이상 썼음",true]]};
 // 직업 전용 조건: 직업 이름이 아니라 서버 값으로 고른다. 화살·탄약 조건은 get_character_skills의 ammo_kind, 태세 조건은 계열 스킬에 반격 태세(effect.stance)가 있을 때, 표식 조건은 표식을 거는 스킬(effect.mark)이 있을 때
 const AMMO_CONDITION_OPTIONS={
   ARROW:[
@@ -2877,12 +2879,12 @@ const VALUE_CONDS=new Set([
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
   "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
   "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq",
-  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS
+  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS,...USES_CONDS
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
 // 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
-const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte"]);
+const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte",...USES_CONDS]);
 // 조건별 기본 수치: 딜레이 밀기 저항 50·면역 남은 턴 3, 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
 function condDefault(c){return c==="enemyPushResGte"||c==="enemyPushResLte"?50:c==="enemyPushImmTurnsGte"||c==="enemyPushImmTurnsLte"?3:PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
@@ -3040,6 +3042,18 @@ async function doRecruit(selectedJob,name){
   $("nm").value="";load();
  }
 }
+// 방출: 캐릭터를 영구 삭제(서버 release_character, 보상 없음, 낀 장비는 가방으로). 메인 파티·Auto Battle·연습 파티에 든 캐릭터는 서버가 막는다
+const RELEASE_ERR={CHARACTER_IN_PARTY:"파티에 들어 있는 캐릭터는 방출할 수 없습니다. 먼저 파티에서 빼 주세요.",CHARACTER_NOT_FOUND:"캐릭터를 찾지 못했습니다."};
+function releasePrompt(id){
+ const c=chars.find(x=>x.id===id);if(!c)return;
+ openConfirm("방출",`<p><b>${esc(c.display_name)}</b>${josaOf(c.display_name,"을","를")} 방출합니다.</p><p class="help-note">방출한 캐릭터는 되돌릴 수 없고 보상도 없습니다. 끼고 있는 장비는 가방으로 돌아갑니다.</p>${draftWarnHtml(id)}`,
+  [["취소",null,false],["방출",async()=>{
+   const {error}=await sb.rpc("release_character",{p_char:id});
+   if(error){const m=String(error.message),k=Object.keys(RELEASE_ERR).find(x=>m.includes(x));log("release_character 실패: "+m,"bad");
+    if(m.includes("CHARACTER_ON_IDLE")){checkIdle(true);openNotice(IDLE_LOCK_MSG)}else if(k)openNotice(RELEASE_ERR[k]);return}
+   log("release_character 성공","ok");delete patternDraft[id];if(selectedCharId===id)selectedCharId=null;
+   await load();openNotice(`${c.display_name}${josaOf(c.display_name,"을","를")} 방출했습니다.`)},true]]);
+}
 function renamePrompt(id){
  const c=chars.find(x=>x.id===id);
  openConfirm("이름 변경",`<p>새 이름을 입력하세요. 2~12자, 한글/영문/숫자만 쓸 수 있습니다.</p>
@@ -3175,7 +3189,7 @@ const MON_CONDITION_GROUP={label:"부활(몬스터)", options:[
  ["allyRevivableGte","일으킬 수 있는 쓰러진 아군이 OO명 이상",true],["allyRevivableLte","일으킬 수 있는 쓰러진 아군이 OO명 이하",true],["allyRevivableEq","일으킬 수 있는 쓰러진 아군이 OO명",true]]};
 function monCondOptions(current){
  const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품").flatMap(g=>g.label==="생존·사망"?[g,MON_CONDITION_GROUP]:[g]);
- const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_CONDS.has(current);
+ const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_GROUP.options.some(o=>o[0]===current);
  return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`;
 }
 const MON_UP=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>`,MON_DOWN=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg>`;
