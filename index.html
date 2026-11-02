@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v457 · 갱신 2026-11-02 13:25 KST -->
+<!-- ProjectGY-test-console v458 · 갱신 2026-11-02 13:41 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v457 · 2026-11-02 13:25</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v458 · 2026-11-02 13:41</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2831,8 +2831,8 @@ const PATTERN_GUIDE={
     rows:[["Delay Push 면역인 적이 없을 때","AND","enemyNoPushImmune","common_and"],["차징이나 캐스팅 중인 적이 1명 이상","Garrote","enemyWindupGte","thief_rogue_garrote",1],["이 줄 스킬이 쿨타임이 아닐 때","Eviscerate","skillReady","thief_rogue_eviscerate"],["반드시","Gash","always","thief_rogue_gash"]]},
   SUMMONER:{design:"Summoner는 정령을 곁에 불러 두고 Invocatio에 정령의 원소를 실어 치는 직업입니다. Gnome이 쿨타임이 아니면 부르고(이미 곁에 있으면 Landslide), 남는 턴에는 Invocatio로 칩니다.",
     rows:[["이 줄 스킬이 쿨타임이 아닐 때","Gnome","skillReady","mage_summoner_gnome"],["반드시","Invocatio","always","mage_summoner_invocatio"]]},
-  EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. 쿨타임이 아닌 Ecce Crucem·Excommunicatio·Anathema·Exorcizamus를 차례로 쓰고(Ecce Crucem은 한 전투에 한 번), 남는 턴에는 Adjuro로 칩니다.",
-    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Ecce Crucem","skillReady","cleric_exorcist_ecce_crucem"],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["이 줄 스킬이 쿨타임이 아닐 때","Exorcizamus","skillReady","cleric_exorcist_exorcizamus"],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]}
+  EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. Ecce Crucem은 한 전투에 한 번 먼저 쓰고, 쿨타임이 아닌 Excommunicatio·Anathema를 차례로 쓴 뒤, 적이 4명 이상 남아 있으면 Exorcizamus로 모두 늦추고, 남는 턴에는 Adjuro로 칩니다.",
+    rows:[["이 스킬을 1회까지 반드시","Ecce Crucem","skillUsesLt","cleric_exorcist_ecce_crucem",1],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["상대방 생존자가 4명 이상","Exorcizamus","enemyAliveGte","cleric_exorcist_exorcizamus",4],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
