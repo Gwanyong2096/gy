@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v459 · 갱신 2026-11-02 13:47 KST -->
+<!-- ProjectGY-test-console v460 · 갱신 2026-11-02 13:51 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v459 · 2026-11-02 13:47</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v460 · 2026-11-02 13:51</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3809,7 +3809,7 @@ function battleLogHtml(b){
   // 따라 치기는 행동이 끝난 뒤라 Back Delay 줄 다음에 오지만, Back Delay는 묶음 맨 아래로 옮긴다
   // 그림자(엔진 0.51.0 spirit_act sp SHADOW): 머리 줄은 뒤따르는 그림자 타격(hit sp SHADOW)의 대상을 넣어 그 타격 줄 앞에 찍는다
   else if(e.t==="spirit_act"&&e.sp==="SHADOW"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}shadowHead=e.name||e.skill}
-  else if(e.t==="spirit_act"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}cur.html.push(`<div class="bl-spirit">✦ ${skillNameHtml(e.name)}${e.bye?` <span class="bl-sub nw">(떠나며)</span>`:""}</div>`)}
+  else if(e.t==="spirit_act"&&cur){if(cur.postI!=null&&!cur.postH){cur.postH=cur.html.splice(cur.postI,1)[0];cur.postI=null}cur.html.push(`<div class="bl-spirit">✦ ${spiritActNameHtml(e)}${e.bye?` <span class="bl-sub nw">(떠나며)</span>`:""}</div>`)}
   // 몰입(엔진 0.45.0 zone): 걸림·갱신은 쓴 쪽 묶음 안, 끝은 그 개체 칸(쓰러져 끝나면 쓰러졌다 줄 다음)
   else if(e.t==="zone"){const n=esc(e.name||e.skill||"");const h=e.end?`<div class="bl-buffend">◇ ${who(e.u)}${e.dead?" 쓰러져":""} ${n} 효과 끝</div>`:`<div class="bl-buff">◎ ${who(e.u)} ${n}${e.re?" 갱신":""} <span class="bl-sub nw">(${e.turns}턴)</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.u],h))}
   // 죽어서 소모품 효과가 사라짐(엔진 0.40.0, item_end): death 줄 다음, 이어서 그 개체의 buff end 줄들
@@ -3960,6 +3960,10 @@ function openRushResult(g){
  $("helpBody").innerHTML=rushResultHtml(g);const bx=document.querySelector(".help-box");bx.classList.remove("fit","notice");bx.style.width="";bx.classList.add("wide");$("helpOverlay").hidden=false;document.querySelector(".help-close").focus();
 }
 function openRushGroup(id){const runs=rushRunsOf(id);if(!runs.length)return;openRushResult({dungeon:runs[0].dungeon,requested:null,stopped:null,runs:runs.map(r=>({battle_id:r.id,result:r.result,turns:r.turns,rewards:r.rewards,has_log:r.has_log}))})}
+// 정령 따라 치기·작별 일격 머리 줄의 아이콘: 로그의 행 코드(spirit_act.skill, 예 mage_summoner_gnome_1)로 먼저 찾고, 없으면 부르기 스킬(끝의 _숫자를 뗀 코드, 정령 아이콘), 그래도 없으면 이름으로 찾는다.
+// 따라 치기 행은 정령과 다른 이름(Flint, Gust …)을 가져서 이름으로는 아이콘을 못 찾는다
+function spiritActNameHtml(e){const src=(typeof SKILL_ICONS!=="undefined"&&(SKILL_ICONS[e.skill]?.src||SKILL_ICONS[String(e.skill||"").replace(/_\d+$/,"")]?.src))||SKILL_ICON_BY_NAME[e.name];
+ if(!src)return esc(e.name||e.skill||"");const n=String(e.name||e.skill),i=n.indexOf(" "),a=i<0?n:n.slice(0,i),b=i<0?"":n.slice(i);return `<span class="nw">${skillIconImg(src)}${esc(a)}</span>${esc(b)}`}
 // ===== Auto Battle: 파견 · 정산 · 회수 =====
 // 정산은 서버(전투 함수)가 한 번에 한다. 접속할 때와 Adventure를 열 때, 다음 판 시간이 됐을 때(어느 탭에서든) 부른다.
 // 화면: 퀘스트 리모콘과 같은 모양의 떠 있는 리모콘(본문 왼쪽). 어느 화면에서든 열어 진행을 보고 회수한다.
