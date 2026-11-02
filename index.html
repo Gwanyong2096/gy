@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v463 · 갱신 2026-11-02 14:10 KST -->
+<!-- ProjectGY-test-console v464 · 갱신 2026-11-02 14:26 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -496,11 +496,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .equip-pair .slot-label>span+span{border-top:1px solid var(--bd)}
 @media(max-width:520px){.equip-row.equip-pair{min-height:0}.equip-pair .slot-label{flex-direction:row;margin:0;gap:0}.equip-pair .slot-label>span{flex:0 0 auto;padding:0;justify-content:flex-start}.equip-pair .slot-label>span+span{border-top:0}.equip-pair .slot-label>span+span::before{content:"·";margin:0 6px}}
 .stat-pt b.over{color:#e53935}
-.bl-spirit{color:var(--cv);font-weight:700}.cs-sst{font-size:11.5px;margin-bottom:2px}.skill-subs{margin-top:4px;padding-left:8px;border-left:2px solid var(--bd)}.skill-sub{font-size:12px;margin-top:2px}.skill-sub-k,.skill-sub-m{color:var(--mu)}
+.bl-spirit{color:var(--cv);font-weight:700}.cs-sst{font-size:11.5px;margin-bottom:2px}.skill-subs{margin-top:4px;padding-left:8px;border-left:2px solid var(--bd)}.skill-sub{font-size:12px;margin-top:2px}.skill-sub .tag{margin-left:5px}.skill-sub-k,.skill-sub-m{color:var(--mu)}
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v463 · 2026-11-02 14:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v464 · 2026-11-02 14:26</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2287,7 +2287,10 @@ function skillSubsHtml(s,ak){const subs=s.subs||[];if(!subs.length)return "";con
  const lab=b=>b.id===sp.main?"다시 부르면":fl.includes(b.id)?`따라 치기${fl.length>1?` ${fl.indexOf(b.id)+1}`:""}`:"";
  const ord=b=>b.id===sp.main?-1:fl.includes(b.id)?fl.indexOf(b.id):99;
  return `<div class="skill-subs">${[...subs].sort((a,b)=>ord(a)-ord(b)).map(b=>{const m=[skillEffectText(b,ak),b.id===sp.main&&b.pre_delay!=null?`Delay ${b.pre_delay}:${b.post_delay}`:""].filter(Boolean).join(" · ");
-  return `<div class="skill-sub">${lab(b)?`<span class="skill-sub-k">${esc(lab(b))}</span> `:""}<b>${skillIcon(b.id)}${esc(b.name)}</b>${m?` <span class="skill-sub-m">${esc(m)}</span>`:""}</div>`}).join("")}</div>`}
+  return `<div class="skill-sub">${lab(b)?`<span class="skill-sub-k">${esc(lab(b))}</span> `:""}<span class="nw"><b>${skillIcon(b.id)}${esc(b.name)}</b>${subTags(b)}</span>${m?` <span class="skill-sub-m">${esc(m)}</span>`:""}</div>`}).join("")}</div>`}
+// 부속 스킬 줄 배지: 목표·방식만(종류·valid·원소는 위 부르기 스킬 줄에 있음)
+const SUB_TAG_KEEP=new Set(["self","ally","enemy","others","everyone","all","multi","personal"]);
+function subTags(b){return skillTags(b).filter(t=>SUB_TAG_KEEP.has(t)).map(t=>`<span class="tag tag-${t}">${esc(t)}</span>`).join("")}
 function skillTags(s){
  const t=[],e=s.effect||{};
  if(s.kind)t.push(s.kind.toLowerCase());
