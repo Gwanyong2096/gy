@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v464 · 갱신 2026-11-02 14:26 KST -->
+<!-- ProjectGY-test-console v465 · 갱신 2026-11-02 14:35 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v464 · 2026-11-02 14:26</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v465 · 2026-11-02 14:35</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2284,7 +2284,7 @@ function skillEffectText(s,ak){
 }
 // 부속 스킬(get_character_skills subs, 정령의 main·follow): 부르기 스킬 줄 아래. main = 붙은 채로 다시 부르면 쓰는 스킬, follow = 따라 치기(차례대로)
 function skillSubsHtml(s,ak){const subs=s.subs||[];if(!subs.length)return "";const sp=s.effect?.spirit||{},fl=sp.follow||[];
- const lab=b=>b.id===sp.main?"다시 부르면":fl.includes(b.id)?`따라 치기${fl.length>1?` ${fl.indexOf(b.id)+1}`:""}`:"";
+ const lab=b=>b.id===sp.main?"Recast":fl.includes(b.id)?`Follow-up${fl.length>1?` ${fl.indexOf(b.id)+1}`:""}`:"";
  const ord=b=>b.id===sp.main?-1:fl.includes(b.id)?fl.indexOf(b.id):99;
  return `<div class="skill-subs">${[...subs].sort((a,b)=>ord(a)-ord(b)).map(b=>{const m=[skillEffectText(b,ak),b.id===sp.main&&b.pre_delay!=null?`Delay ${b.pre_delay}:${b.post_delay}`:""].filter(Boolean).join(" · ");
   return `<div class="skill-sub">${lab(b)?`<span class="skill-sub-k">${esc(lab(b))}</span> `:""}<span class="nw"><b>${skillIcon(b.id)}${esc(b.name)}</b>${subTags(b)}</span>${m?` <span class="skill-sub-m">${esc(m)}</span>`:""}</div>`}).join("")}</div>`}
