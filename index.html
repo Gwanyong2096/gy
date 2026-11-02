@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v470 · 갱신 2026-11-02 17:56 KST -->
+<!-- ProjectGY-test-console v471 · 갱신 2026-11-02 18:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v470 · 2026-11-02 17:56</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v471 · 2026-11-02 18:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2725,29 +2725,25 @@ const CONDITION_GROUPS=[
     ["selfHpGtePct","자신의 HP가 OO(%) 이상",true],["selfHpLtePct","자신의 HP가 OO(%) 이하",true],
     ["selfHpGte","자신의 HP가 OO 이상",true],["selfHpLte","자신의 HP가 OO 이하",true],
     ["maxHpGte","최대 HP가 OO 이상",true],["maxHpLte","최대 HP가 OO 이하",true],
-    ["allyHpLtePct","아군에 HP가 OO(%) 이하인 캐릭터가 있을 때",true],["allyHpGtePct","아군에 HP가 OO(%) 이상인 캐릭터가 있을 때",true],
+    ["allyHpGtePct","아군에 HP가 OO(%) 이상인 캐릭터가 있을 때",true],["allyHpLtePct","아군에 HP가 OO(%) 이하인 캐릭터가 있을 때",true],
     ["allyAvgHpGtePct","아군의 평균 HP가 OO(%) 이상",true],["allyAvgHpLtePct","아군의 평균 HP가 OO(%) 이하",true]
   ]},
   {label:"HP(적)", options:[
     ["enemyAvgHpGtePct","적군의 평균 HP가 OO(%) 이상",true],["enemyAvgHpLtePct","적군의 평균 HP가 OO(%) 이하",true],
-    ["enemyHpLtePct","적군에 HP가 OO(%) 이하인 캐릭터가 있을 때",true],
-    ["enemyHpLte","적군에 HP가 OO 이하인 캐릭터가 있을 때",true],
-    ["enemyHpGtePct","적군에 HP가 OO(%) 이상인 캐릭터가 있을 때",true],
-    ["enemyHpGte","적군에 HP가 OO 이상인 캐릭터가 있을 때",true]
+    ["enemyHpGtePct","적군에 HP가 OO(%) 이상인 캐릭터가 있을 때",true],["enemyHpLtePct","적군에 HP가 OO(%) 이하인 캐릭터가 있을 때",true],
+    ["enemyHpGte","적군에 HP가 OO 이상인 캐릭터가 있을 때",true],["enemyHpLte","적군에 HP가 OO 이하인 캐릭터가 있을 때",true]
   ]},
   {label:"MP", options:[
     ["selfMpGtePct","자신의 MP가 OO(%) 이상",true],["selfMpLtePct","자신의 MP가 OO(%) 이하",true],
     ["selfMpGte","자신의 MP가 OO 이상",true],["selfMpLte","자신의 MP가 OO 이하",true],
     ["maxMpGte","최대 MP가 OO 이상",true],["maxMpLte","최대 MP가 OO 이하",true],
-    ["allyMpLtePct","아군에 MP가 OO(%) 이하인 캐릭터가 있을 때",true],["allyMpGtePct","아군에 MP가 OO(%) 이상인 캐릭터가 있을 때",true],
+    ["allyMpGtePct","아군에 MP가 OO(%) 이상인 캐릭터가 있을 때",true],["allyMpLtePct","아군에 MP가 OO(%) 이하인 캐릭터가 있을 때",true],
     ["allyAvgMpGtePct","아군의 평균 MP가 OO(%) 이상",true],["allyAvgMpLtePct","아군의 평균 MP가 OO(%) 이하",true]
   ]},
   {label:"MP(적)", options:[
     ["enemyAvgMpGtePct","적군의 평균 MP가 OO(%) 이상",true],["enemyAvgMpLtePct","적군의 평균 MP가 OO(%) 이하",true],
-    ["enemyMpLtePct","적군에 MP가 OO(%) 이하인 캐릭터가 있을 때",true],
-    ["enemyMpLte","적군에 MP가 OO 이하인 캐릭터가 있을 때",true],
-    ["enemyMpGtePct","적군에 MP가 OO(%) 이상인 캐릭터가 있을 때",true],
-    ["enemyMpGte","적군에 MP가 OO 이상인 캐릭터가 있을 때",true]
+    ["enemyMpGtePct","적군에 MP가 OO(%) 이상인 캐릭터가 있을 때",true],["enemyMpLtePct","적군에 MP가 OO(%) 이하인 캐릭터가 있을 때",true],
+    ["enemyMpGte","적군에 MP가 OO 이상인 캐릭터가 있을 때",true],["enemyMpLte","적군에 MP가 OO 이하인 캐릭터가 있을 때",true]
   ]},
   {label:"스탯", options:[
     ["selfAtkGte","자신의 ATK가 OO 이상",true],["selfAtkLte","자신의 ATK가 OO 이하",true],["allyAtkGte","아군에 ATK가 OO 이상인 캐릭터가 있을 때",true],["allyAtkLte","아군에 ATK가 OO 이하인 캐릭터가 있을 때",true],
