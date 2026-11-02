@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v462 · 갱신 2026-11-02 14:03 KST -->
+<!-- ProjectGY-test-console v463 · 갱신 2026-11-02 14:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v462 · 2026-11-02 14:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v463 · 2026-11-02 14:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2258,6 +2258,10 @@ function skillEffectText(s,ak){
  // 정령(엔진 0.37.0): 부르기 칸, Invocatio의 두 칸 타격, 처음 붙을 때 자기 버프. main·follow 스킬은 스킬 줄 아래 부속 스킬 목록(skillSubsHtml)
  if(e.spirit)out.push(`정령 소환 (${e.spirit.slot==="NEUTRAL"?"무속성":"속성"} 칸)`);
  if(e.invoke){const dm=e.invoke.dual_mult,st=e.power?.stat||"MATK";out.push(`속성 정령이 있으면 그 원소로 침`);out.push(`두 칸이 다 차면 타수 2배${dm!=null?` (${Array.isArray(dm)?`무속성 ${coef({stat:st,mult:dm[0]},1)} → 속성 ${coef({stat:st,mult:dm[1]},1)}`:`타마다 ${coef({stat:st,mult:dm},1)}`})`:" (무속성 → 속성)"}`)}
+// 쌓기(엔진 0.55.0, Pactum): spirit_stack {부르기 스킬 id: [{k, v}]}. 정령 이름은 그 부르기 스킬 이름(받아 둔 스킬 목록에서, 없으면 코드 끝 낱말)
+ if(e.spirit_stack&&typeof e.spirit_stack==="object"){const nm=id=>{for(const c of Object.values(skillsByChar||{})){const f=(c?.skills||[]).find(x=>x.id===id);if(f)return f.name}const w=String(id).split("_").pop();return w.charAt(0).toUpperCase()+w.slice(1)};
+  const parts=Object.entries(e.spirit_stack).map(([id,l])=>`${nm(id)} ${(Array.isArray(l)?l:[]).map(b=>`${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`).join(" · ")}`);
+  if(parts.length)out.push(`정령을 부를 때마다 쌓임(다시 불러 큰 기술 포함): ${parts.join(", ")}`)}
  if(e.spirit_buff)e.spirit_buff.forEach(b=>out.push(`처음 정령이 붙을 때 자신 ${buffLabel(b.k)} +${b.v}${buffUnit(b.k)}`));
  // 편 상태(엔진 0.44.0): 쓴 쪽 기준 FOE = 적 편, ALLY = 아군 편. 전투 끝까지
  if(e.side_state)e.side_state.forEach(x=>out.push(`${x.to==="ALLY"?"아군 편":"적 편"} ${sideStateText(x.k,x.v)}`));
