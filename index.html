@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v451 · 갱신 2026-11-01 20:15 KST -->
+<!-- ProjectGY-test-console v452 · 갱신 2026-11-02 11:40 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v451 · 2026-11-01 20:15</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v452 · 2026-11-02 11:40</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2755,6 +2755,12 @@ const CONDITION_GROUPS=[
     ["enemyCastingAny","캐스팅 중인 적이 있을 때",false],["enemyCastingNone","캐스팅 중인 적이 없을 때",false],
     ["bossWindup","보스가 차징이나 캐스팅 중일 때",false],["bossNoWindup","보스가 차징이나 캐스팅 중이 아닐 때",false]
   ]},
+  {label:"Delay Push(적)", options:[
+    ["enemyPushImmune","면역인 적이 있음",false],["enemyNoPushImmune","면역인 적이 없음",false],
+    ["enemyPushImmuneGte","면역인 적이 OO명 이상",true],["enemyPushImmuneLte","면역인 적이 OO명 이하",true],
+    ["enemyPushResGte","저항 OO(%) 이상인 적이 있음",true],["enemyPushResLte","저항 OO(%) 이하인 적이 있음",true],
+    ["enemyPushImmTurnsGte","면역 남은 턴 OO 이상인 적이 있음",true],["enemyPushImmTurnsLte","면역 남은 턴 OO 이하인 적이 있음",true]
+  ]},
   {label:"소모품", options:[
     ["itemUsable","이 줄의 소모품을 쓸 수 있을 때",false],["itemAny","장착한 소모품이 남아 있을 때",false],["itemNone","장착한 소모품이 없을 때",false],
     ["itemGte","장착한 소모품이 OO개 이상",true],["itemLte","장착한 소모품이 OO개 이하",true]
@@ -2785,6 +2791,8 @@ const AMMO_CONDITION_OPTIONS={
 const SPIRIT_COUNT_CONDS=new Set(["spiritGte","spiritLte","spiritEq"]);
 // 일으킬 수 있는 수(엔진 0.47.0, 몬스터 패턴만): 그 묶음 마지막 줄 스킬의 부활이 고를 수 있는 쓰러진 아군 수. 조건 목록은 몬스터 상세(MON_CONDITION_GROUP)에만
 const REVIVABLE_CONDS=new Set(["allyRevivableGte","allyRevivableLte","allyRevivableEq"]);
+// 딜레이 밀기 면역·저항 조건(엔진 0.53.0): 면역인 적 수(0~1000, 기본 1), 저항 %(0~100, 기본 50, 면역이면 100), 면역 남은 턴(기본 3)
+const PUSH_VALUE_CONDS=new Set(["enemyPushImmuneGte","enemyPushImmuneLte","enemyPushResGte","enemyPushResLte","enemyPushImmTurnsGte","enemyPushImmTurnsLte"]);
 const SPIRIT_ROW_CONDS=new Set(["spiritOn","spiritOff"]);
 const isSpiritSkill=(charId,sid)=>!!skillData(charId).find(s=>s.id===sid)?.effect?.spirit;
 function jobConditionOptions(charId){
@@ -2794,16 +2802,16 @@ function jobConditionOptions(charId){
     ["spiritGte","곁에 있는 정령이 OO마리 이상일 때",true],["spiritLte","곁에 있는 정령이 OO마리 이하일 때",true],["spiritEq","곁에 있는 정령이 OO마리일 때",true]]:[])];
 }
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
-// 줄은 [조건, 행동]. OO는 유저가 정할 값.
+// 줄은 [조건 글, 행동 이름, 조건 코드, 스킬 ID, 수치]. 글의 OO는 유저가 정할 값이고, 적용 버튼은 수치 칸의 값을 넣는다.
 const PATTERN_GUIDE={
   CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
-    rows:[["MP가 OO 이하","Solace"],["HP가 OO 이하","Sanctuary"],["아군 사망자가 1명 이상","Resurrection"],["이 줄 스킬이 쿨타임이 아닐 때","Bless"],["버프를 더 받을 수 있는 아군이 있을 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire"],["반드시","Renew"]]},
+    rows:[["MP가 OO 이하","Solace","selfMpLtePct","cleric_solace",30],["HP가 OO 이하","Sanctuary","allyHpLtePct","cleric_sanctuary",50],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["이 줄 스킬이 쿨타임이 아닐 때","Bless","skillReady","cleric_bless"],["ATK나 MATK 버프를 더 받을 수 있는 아군이 있을 때","AND","allyAtkBuffRoom","common_and"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire","skillReady","cleric_inspire"],["반드시","Renew","always","cleric_renew"]]},
   GUNNER:{design:"Gunner는 탄을 쓰는 사격 스킬로 딜을 넣는 직업입니다. 탄이 넉넉하고 El Presidente가 쿨타임이 아니면 El Presidente를 먼저 쓰고, 남은 탄에 맞춰 Bill Drill·Box Drill을 쏜 뒤, 탄이 모자라면 Reload로 채웁니다.",
-    rows:[["자신의 탄약 수가 13 이상일 때","AND"],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill"],["자신의 탄약 수가 8 이상일 때","Box Drill"],["반드시","Reload"]]},
+    rows:[["자신의 탄약 수가 13 이상일 때","AND","ammoGte","common_and",13],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente","skillReady","archer_gunner_el_presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill","ammoGte","archer_gunner_bill_drill",12],["자신의 탄약 수가 8 이상일 때","Box Drill","ammoGte","archer_gunner_box_drill",8],["반드시","Reload","always","archer_gunner_reload"]]},
   SUMMONER:{design:"Summoner는 정령을 곁에 불러 두고 Invocatio에 정령의 원소를 실어 치는 직업입니다. Gnome이 쿨타임이 아니면 부르고(이미 곁에 있으면 Landslide), 남는 턴에는 Invocatio로 칩니다.",
-    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Gnome"],["반드시","Invocatio"]]},
+    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Gnome","skillReady","mage_summoner_gnome"],["반드시","Invocatio","always","mage_summoner_invocatio"]]},
   EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. 쿨타임이 아닌 Ecce Crucem·Excommunicatio·Anathema·Exorcizamus를 차례로 쓰고(Ecce Crucem은 한 전투에 한 번), 남는 턴에는 Adjuro로 칩니다.",
-    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Ecce Crucem"],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema"],["이 줄 스킬이 쿨타임이 아닐 때","Exorcizamus"],["반드시","Adjuro"]]}
+    rows:[["이 줄 스킬이 쿨타임이 아닐 때","Ecce Crucem","skillReady","cleric_exorcist_ecce_crucem"],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["이 줄 스킬이 쿨타임이 아닐 때","Exorcizamus","skillReady","cleric_exorcist_exorcizamus"],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]}
 };
 // 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
 let patGuideFlag=false;
@@ -2819,6 +2827,36 @@ function openPatternGuide(charId){
   const jobName=c.job_name||c.job,g=PATTERN_GUIDE[c.job];
   const body=g?`<p>${esc(g.design)}</p><h4>패턴 순서</h4><ol class="pat-guide-list">${g.rows.map(([c,a])=>`<li><span>${esc(c)}</span><b>${esc(a)}</b></li>`).join("")}</ol>`:`<p>${esc(jobName)}의 범용 패턴은 준비 중입니다.</p>`;
   showHelp(`범용 패턴 · ${jobName}`,body+`<p class="pat-guide-tip">던전에 기믹이 있으면 이 패턴의 위나 아래에 그 기믹에 대응하는 줄을 넣으면 됩니다.</p>`);
+  if(g){const box=$("helpActions");box.innerHTML="";box.hidden=false;box.dataset.kind="patguide";box.classList.remove("many");
+   const b=document.createElement("button");b.type="button";b.className="fm-btn pri";b.innerHTML="<span>바로 적용</span>";b.onclick=()=>{closeHelp();confirmPatternGuide(charId)};box.appendChild(b)}
+}
+// 범용 패턴 적용: 줄을 묶음(AND 줄들 + 끝 줄)으로 나눠 배우지 않은 스킬이 든 묶음은 뺀다.
+// 줄 수(보이는 줄)를 넘으면 맨 끝 "반드시" 묶음은 남기고 그 앞 묶음을 뒤에서부터 뺀다. 남는 줄은 반드시 → 기본 공격.
+function patternGuideRows(charId){
+  const c=chars.find(x=>x.id===charId),g=PATTERN_GUIDE[c?.job];if(!g)return null;
+  const known=new Set(actionSkills(charId).map(s=>s.id)),groups=[];let cur=[];
+  for(const [,name,cond,a,v] of g.rows){cur.push({c:cond,a,name,...(v!=null?{v}:{})});if(a!=="common_and"){groups.push(cur);cur=[]}}
+  const ok=[],miss=[];for(const gr of groups)(gr.every(r=>known.has(r.a))?ok:miss).push(gr);
+  const n=patShown(charId),last=ok.length&&ok[ok.length-1].length===1&&ok[ok.length-1][0].c==="always"?ok.pop():null,cut=[];
+  const room=n-(last?1:0);let used=0;const keep=[];
+  for(const gr of ok){if(used+gr.length<=room){keep.push(gr);used+=gr.length}else cut.push(gr)}
+  if(last)keep.push(last);
+  const tail=gr=>gr[gr.length-1].name;
+  return {rows:keep.flat().map(({c,a,v})=>({c,a,...(v!=null?{v}:{})})),miss:miss.map(tail),cut:cut.map(tail),n};
+}
+function confirmPatternGuide(charId){
+  const r=patternGuideRows(charId);if(!r)return;
+  const c=chars.find(x=>x.id===charId),nm=c?.name||c?.job_name||c?.job;
+  const note=[r.miss.length?`<p class="help-note">배우지 않은 스킬 줄은 뺍니다: ${r.miss.map(esc).join(", ")}</p>`:"",
+   r.cut.length?`<p class="help-note">패턴 줄이 ${r.n}줄이라 넣지 못하는 줄: ${r.cut.map(esc).join(", ")}</p>`:""].join("");
+  openConfirm("범용 패턴 적용",`<p><b>${esc(nm)}</b>의 패턴을 범용 패턴으로 바꿔 저장합니다. 지금 패턴은 사라집니다.</p>${note}${draftWarnHtml(charId)}<p class="help-note">OO 수치는 기본값으로 들어갑니다. 저장한 뒤 패턴에서 바꿀 수 있습니다.</p>`,
+   [["취소",null,false],["적용",()=>applyPatternGuide(charId,r.rows),true]],"patguide");
+}
+async function applyPatternGuide(charId,rows){
+  const list=$("pat-"+charId);if(!list){log("패턴 화면을 찾지 못했습니다.","bad");return}
+  const c=chars.find(x=>x.id===charId);
+  list.innerHTML=renderPatternRows(rows,c?.job,charId);
+  if(await pattern(charId,true))openNotice("범용 패턴을 적용했습니다.");
 }
 // 패턴 행동 = 알고 있는 ACTIVE 스킬 + AND. 기본 공격은 그 직업의 자동 습득 ACTIVE 스킬.
 function skillData(id){return skillsByChar[id]?.skills||[]}
@@ -2837,21 +2875,21 @@ const VALUE_CONDS=new Set([
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
   "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
   "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq",
-  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS
+  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
 // 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
-const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS]);
-// 조건별 기본 수치: 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
-function condDefault(c){return PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
+const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte"]);
+// 조건별 기본 수치: 딜레이 밀기 저항 50·면역 남은 턴 3, 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
+function condDefault(c){return c==="enemyPushResGte"||c==="enemyPushResLte"?50:c==="enemyPushImmTurnsGte"||c==="enemyPushImmTurnsLte"?3:PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
 const pctUnit=c=>PERCENT_CONDS.has(c)||c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte";
 const condMin=c=>c==="everyNTurns"||c==="chancePct"?1:0;
 const condMax=c=>SPIRIT_COUNT_CONDS.has(c)?2:PERCENT_CONDS.has(c)?100:COUNT_CONDS.has(c)?1000:999999;
 const PERCENT_CONDS=new Set([
   "selfHpGtePct","selfHpLtePct","allyHpLtePct","allyHpGtePct","allyAvgHpGtePct","allyAvgHpLtePct","enemyAvgHpGtePct","enemyAvgHpLtePct","enemyHpLtePct","enemyHpGtePct",
-  "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct","chancePct"
+  "selfMpGtePct","selfMpLtePct","allyMpLtePct","allyMpGtePct","allyAvgMpGtePct","allyAvgMpLtePct","enemyAvgMpGtePct","enemyAvgMpLtePct","enemyMpLtePct","enemyMpGtePct","chancePct","enemyPushResGte","enemyPushResLte"
 ]);
 
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
