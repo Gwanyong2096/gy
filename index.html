@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v453 · 갱신 2026-11-02 11:50 KST -->
+<!-- ProjectGY-test-console v454 · 갱신 2026-11-02 12:31 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v453 · 2026-11-02 11:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v454 · 2026-11-02 12:31</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2808,6 +2808,8 @@ const PATTERN_GUIDE={
     rows:[["MP가 OO 이하","Solace","selfMpLtePct","cleric_solace",30],["HP가 OO 이하","Sanctuary","allyHpLtePct","cleric_sanctuary",50],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["이 줄 스킬이 쿨타임이 아닐 때","Bless","skillReady","cleric_bless"],["ATK나 MATK 버프를 더 받을 수 있는 아군이 있을 때","AND","allyAtkBuffRoom","common_and"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire","skillReady","cleric_inspire"],["반드시","Renew","always","cleric_renew"]]},
   GUNNER:{design:"Gunner는 탄을 쓰는 사격 스킬로 딜을 넣는 직업입니다. 탄이 넉넉하고 El Presidente가 쿨타임이 아니면 El Presidente를 먼저 쓰고, 남은 탄에 맞춰 Bill Drill·Box Drill을 쏜 뒤, 탄이 모자라면 Reload로 채웁니다.",
     rows:[["자신의 탄약 수가 13 이상일 때","AND","ammoGte","common_and",13],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente","skillReady","archer_gunner_el_presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill","ammoGte","archer_gunner_bill_drill",12],["자신의 탄약 수가 8 이상일 때","Box Drill","ammoGte","archer_gunner_box_drill",8],["반드시","Reload","always","archer_gunner_reload"]]},
+  ROGUE:{design:"Rogue는 출혈을 쌓고 터뜨리는 직업입니다. Delay Push 면역인 적이 없고 차징이나 캐스팅 중인 적이 있으면 Garrote로 딜레이를 늘리고, Eviscerate가 쿨타임이 아니면 쌓인 출혈을 터뜨린 뒤, 남는 턴에는 Gash로 출혈을 쌓습니다.",
+    rows:[["Delay Push 면역인 적이 없을 때","AND","enemyNoPushImmune","common_and"],["차징이나 캐스팅 중인 적이 1명 이상","Garrote","enemyWindupGte","thief_rogue_garrote",1],["이 줄 스킬이 쿨타임이 아닐 때","Eviscerate","skillReady","thief_rogue_eviscerate"],["반드시","Gash","always","thief_rogue_gash"]]},
   SUMMONER:{design:"Summoner는 정령을 곁에 불러 두고 Invocatio에 정령의 원소를 실어 치는 직업입니다. Gnome이 쿨타임이 아니면 부르고(이미 곁에 있으면 Landslide), 남는 턴에는 Invocatio로 칩니다.",
     rows:[["이 줄 스킬이 쿨타임이 아닐 때","Gnome","skillReady","mage_summoner_gnome"],["반드시","Invocatio","always","mage_summoner_invocatio"]]},
   EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. 쿨타임이 아닌 Ecce Crucem·Excommunicatio·Anathema·Exorcizamus를 차례로 쓰고(Ecce Crucem은 한 전투에 한 번), 남는 턴에는 Adjuro로 칩니다.",
