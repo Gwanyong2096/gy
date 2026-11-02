@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v452 · 갱신 2026-11-02 11:40 KST -->
+<!-- ProjectGY-test-console v453 · 갱신 2026-11-02 11:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v452 · 2026-11-02 11:40</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v453 · 2026-11-02 11:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2831,15 +2831,15 @@ function openPatternGuide(charId){
    const b=document.createElement("button");b.type="button";b.className="fm-btn pri";b.innerHTML="<span>바로 적용</span>";b.onclick=()=>{closeHelp();confirmPatternGuide(charId)};box.appendChild(b)}
 }
 // 범용 패턴 적용: 줄을 묶음(AND 줄들 + 끝 줄)으로 나눠 배우지 않은 스킬이 든 묶음은 뺀다.
-// 줄 수(보이는 줄)를 넘으면 맨 끝 "반드시" 묶음은 남기고 그 앞 묶음을 뒤에서부터 뺀다. 남는 줄은 반드시 → 기본 공격.
+// 줄 수(활성 줄. 비활성 칸은 전투에서 안 쓰니 넣지 않는다)를 넘으면 맨 끝 "반드시" 묶음은 남기고 그 앞 묶음을 뒤에서부터 뺀다. 남는 줄은 반드시 → 기본 공격.
 function patternGuideRows(charId){
   const c=chars.find(x=>x.id===charId),g=PATTERN_GUIDE[c?.job];if(!g)return null;
   const known=new Set(actionSkills(charId).map(s=>s.id)),groups=[];let cur=[];
   for(const [,name,cond,a,v] of g.rows){cur.push({c:cond,a,name,...(v!=null?{v}:{})});if(a!=="common_and"){groups.push(cur);cur=[]}}
   const ok=[],miss=[];for(const gr of groups)(gr.every(r=>known.has(r.a))?ok:miss).push(gr);
-  const n=patShown(charId),last=ok.length&&ok[ok.length-1].length===1&&ok[ok.length-1][0].c==="always"?ok.pop():null,cut=[];
+  const n=patLines(charId),last=ok.length&&ok[ok.length-1].length===1&&ok[ok.length-1][0].c==="always"?ok.pop():null,cut=[];
   const room=n-(last?1:0);let used=0;const keep=[];
-  for(const gr of ok){if(used+gr.length<=room){keep.push(gr);used+=gr.length}else cut.push(gr)}
+  for(const gr of ok){if(!cut.length&&used+gr.length<=room){keep.push(gr);used+=gr.length}else cut.push(gr)}
   if(last)keep.push(last);
   const tail=gr=>gr[gr.length-1].name;
   return {rows:keep.flat().map(({c,a,v})=>({c,a,...(v!=null?{v}:{})})),miss:miss.map(tail),cut:cut.map(tail),n};
