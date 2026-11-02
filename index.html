@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v461 · 갱신 2026-11-02 14:00 KST -->
+<!-- ProjectGY-test-console v462 · 갱신 2026-11-02 14:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v461 · 2026-11-02 14:00</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v462 · 2026-11-02 14:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2226,6 +2226,7 @@ function skillEffectText(s,ak){
  // MP 회복: mult가 있으면 스킬 공격력 비례(엔진 0.35.0), 없으면 최대 MP의 pct%
  const mpWho=s.target==="SELF"?"자신":s.hit_type==="ALL"?"모든 아군":"MP가 가장 적은 아군";
  if(e.mp_restore)out.push(e.mp_restore.mult!=null?`${mpWho}의 MP ${coef({stat:e.mp_restore.stat||"MATK",mult:e.mp_restore.mult},1)} 회복`:s.target==="SELF"?`자신의 MP를 최대 MP의 ${e.mp_restore.pct}% 회복`:`${mpWho}의 MP를 각자 최대 MP의 ${e.mp_restore.pct}% 회복`);
+ if(e.mp_regen_pct!=null)out.push(`${e.mp_regen_spirit?"정령이 붙어 있는 동안 ":""}자기 턴 끝마다 최대 MP ${e.mp_regen_pct}% 회복`);
  if(e.mp_regen){const r=e.mp_regen;out.push(`${s.hit_type==="ALL"?"모든 아군 ":""}MP 재생 ${r.turns}턴 (턴마다 ${coef({stat:r.stat||"MATK",mult:r.mult},1)})`)}
  if(e.nullify)out.push(`${s.target==="SELF"?"자신":s.hit_type==="ALL"?"모든 아군":"아군 하나"} 다음 피격 1회 대미지 무효 (독·출혈 틱은 못 막음)`);
  if(e.regen){const r=e.regen,amt=[r.stat&&r.mult!=null?coef(r,1):"",r.flat?`HP ${r.flat}`:"",r.hp_pct?`최대 HP ${r.hp_pct}%`:""].filter(Boolean).join(" + ");out.push(`${s.hit_type==="ALL"?"모든 아군 ":""}재생 ${r.turns}턴 (턴마다 ${amt})`)}
@@ -3760,7 +3761,7 @@ function battleLogHtml(b){
   else if(e.t==="cry"){flush();cur={side:side[e.u],later:true,html:[`<div class="bl-cry">${who(e.u)}${josa(e.u,"이","가")} 함성을 내지른다! <span class="bl-sub nw">(아군 ATK·MATK +${e.pct}% · ${e.turns}턴)</span></div>`]}}
   // 장비 MP 회복(엔진 0.39.0, gear): 자기 턴 끝, MP 재생과 구분
   // 최대 MP 늘리기(엔진 0.45.0, mmp·grow·cap): 회복 줄 다음에 최대 MP 줄. 회복 없이 늘리기만 한 줄(amt 0)은 회복 줄을 빼고 최대 MP 줄만
-  else if(e.t==="mp"&&cur){if(!(e.amt===0&&e.mmp!=null))cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.gear?"장비 MP ":`MP ${e.regen?"재생 ":""}`}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
+  else if(e.t==="mp"&&cur){if(!(e.amt===0&&e.mmp!=null))cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.ps?`${e.gear?"장비·":""}${esc(e.psn||e.ps)} MP `:e.gear?"장비 MP ":`MP ${e.regen?"재생 ":""}`}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(MP ${e.from} &gt; ${e.mp})</span></div>`);
    if(e.mmp!=null)cur.html.push(`<div class="bl-buff">▲ ${who(e.tg)} 최대 MP <b>+${e.grow||0}</b> <span class="bl-sub nw">(${e.mmp-(e.grow||0)} &gt; ${e.mmp}${e.cap?" · 한계":""})</span></div>`)}
   else if(e.t==="heal"&&cur)cur.html.push(`<div class="bl-hit"><span class="nw bl-heal">${e.regen?"재생 ":""}<b>${e.amt}</b> 회복</span> <span class="bl-arr">→</span> ${who(e.tg)}<span class="bl-hp hpv nw">(${e.from} &gt; ${e.hp})</span></div>`);
   // 엔진 0.35.0: MP 재생 걸림, 대미지 무효 걸림
