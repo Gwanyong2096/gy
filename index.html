@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v471 · 갱신 2026-11-02 18:03 KST -->
+<!-- ProjectGY-test-console v472 · 갱신 2026-11-02 18:21 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v471 · 2026-11-02 18:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v472 · 2026-11-02 18:21</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2799,6 +2799,11 @@ const CONDITION_GROUPS=[
     ["selfAtkBuffRoom","자신이 ATK나 MATK 버프를 더 받을 수 있을 때",false],["selfAtkBuffNoRoom","자신이 ATK나 MATK 버프를 더 받을 수 없을 때",false],
     ["selfAtkOnlyBuffRoom","자신이 ATK 버프를 더 받을 수 있을 때",false],["selfAtkOnlyBuffNoRoom","자신이 ATK 버프를 더 받을 수 없을 때",false],
     ["selfMatkBuffRoom","자신이 MATK 버프를 더 받을 수 있을 때",false],["selfMatkBuffNoRoom","자신이 MATK 버프를 더 받을 수 없을 때",false]
+  ]},
+  // 디버프 여유(엔진 0.56.0): 이 줄 스킬의 디버프를 더 걸 수 있는(한도가 남은) 적. 있음·없음은 값 없음, 명 수는 0~1000
+  {label:"디버프", options:[
+    ["skillDebuffRoom","이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때",false],["skillDebuffNoRoom","이 줄 스킬의 디버프를 더 걸 수 있는 적이 없을 때",false],
+    ["skillDebuffRoomGte","이 줄 스킬의 디버프를 더 걸 수 있는 적이 OO명 이상일 때",true],["skillDebuffRoomLte","이 줄 스킬의 디버프를 더 걸 수 있는 적이 OO명 이하일 때",true]
   ]}
 ];
 // 쓴 횟수(엔진 0.54.0): 이 전투에서 그 줄 스킬(AND 줄이면 묶음 끝 줄 스킬)을 쓴 횟수. 값 0~1000, 기본 1. AND 줄에도 쓸 수 있다(쿨타임 조건과 다름)
@@ -2842,6 +2847,8 @@ const PATTERN_GUIDE={
     rows:[["이 줄 스킬이 쿨타임이 아닐 때","Numen","skillReady","mage_summoner_numen"],["이 줄 스킬이 쿨타임이 아닐 때","Gnome","skillReady","mage_summoner_gnome"],["자신이 MATK 버프를 더 받을 수 없을 때","Invocatio","selfMatkBuffNoRoom","mage_summoner_invocatio"],["이 줄 스킬이 쿨타임이 아닐 때","Salamander","skillReady","mage_summoner_salamander"],["이 줄 스킬이 쿨타임이 아닐 때","Fulgur","skillReady","mage_summoner_fulgur"],["반드시","Invocatio","always","mage_summoner_invocatio"]]},
   EXORCIST:{design:"Exorcist는 적 편을 저주하고 차징·캐스팅을 늦추는 직업입니다. Ecce Crucem은 한 전투에 한 번 먼저 쓰고, 쿨타임이 아닌 Excommunicatio·Anathema를 차례로 쓴 뒤, 적이 6명 이상 남아 있으면 Exorcizamus로 모두 늦추고, 남는 턴에는 Adjuro로 칩니다.",
     rows:[["이 스킬을 1회까지 반드시","Ecce Crucem","skillUsesLt","cleric_exorcist_ecce_crucem",1],["이 줄 스킬이 쿨타임이 아닐 때","Excommunicatio","skillReady","cleric_exorcist_excommunicatio"],["이 줄 스킬이 쿨타임이 아닐 때","Anathema","skillReady","cleric_exorcist_anathema"],["상대방 생존자가 6명 이상","Exorcizamus","enemyAliveGte","cleric_exorcist_exorcizamus",6],["반드시","Adjuro","always","cleric_exorcist_adjuro"]]},
+  ARCHER:{design:"Archer는 화살을 쏘아 여러 적을 치는 직업입니다. 화살이 5개 이하로 떨어지면 Resheaf로 채우고, 남는 턴에는 Arrow Rain으로 칩니다.",
+    rows:[["자신의 화살 수가 5 이하일 때","Resheaf","arrowLte","archer_resheaf",5],["반드시","Arrow Rain","always","archer_arrow_rain"]]},
   CHAPLAIN:{design:"Chaplain은 아군의 MP와 HP를 채우고 쓰러진 아군을 일으키며 버프를 거는 직업입니다. MP가 30% 이하인 아군이 있으면 Litany, HP가 60% 이하인 아군이 있으면 Restoration을 쓰고, 사망자가 있으면 Resurrection으로 일으킵니다. 버프를 더 받을 수 있는 아군이 있으면 Hymn·Vigil을 걸고, 남는 턴에는 Holy Lance로 칩니다.",
     rows:[["아군에 MP가 30% 이하인 캐릭터가 있을 때","Litany","allyMpLtePct","cleric_chaplain_litany",30],["아군에 HP가 60% 이하인 캐릭터가 있을 때","Restoration","allyHpLtePct","cleric_chaplain_restoration",60],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때","Hymn","skillBuffRoom","cleric_chaplain_hymn"],["이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때","Vigil","skillBuffRoom","cleric_chaplain_vigil"],["반드시","Holy Lance","always","cleric_chaplain_holy_lance"]]},
   ELEMENTALIST:{design:"Elementalist는 큰 원소 마법으로 여러 적을 한꺼번에 치는 직업입니다. MP가 60% 이하로 떨어지면 Transcendence로 채우고, 쿨타임이 아닌 In the Zone으로 몰입한 뒤, 적이 8명 이상이면 Earthquake, 4명 이상이면 Chain Lightning, 남는 턴에는 Meteor Strike로 칩니다.",
@@ -2911,12 +2918,12 @@ const VALUE_CONDS=new Set([
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
   "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
   "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq",
-  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS,...USES_CONDS
+  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS,...USES_CONDS,"skillDebuffRoomGte","skillDebuffRoomLte"
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
 // 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
-const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte",...USES_CONDS]);
+const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"skillDebuffRoomGte","skillDebuffRoomLte","allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte",...USES_CONDS]);
 // 조건별 기본 수치: 딜레이 밀기 저항 50·면역 남은 턴 3, 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
 function condDefault(c){return c==="enemyPushResGte"||c==="enemyPushResLte"?50:c==="enemyPushImmTurnsGte"||c==="enemyPushImmTurnsLte"?3:PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
@@ -3024,9 +3031,9 @@ function confirmPattern(id){
   const a=normPatternRows(j,id).split("\n"),b=normPatternRows(c?.pattern,id).split("\n");
   const diff=a.map((x,i)=>x!==b[i]?i+1:0).filter(Boolean);
   if(!diff.length)return pattern(id);
-  openConfirm("패턴 저장",`<p>패턴을 저장합니다. 바뀐 줄: <b>${diff.map(n=>`패턴 ${n}`).join(", ")}</b></p><p class="help-note">다음 전투부터 적용됩니다.</p>`,[["취소",null,false],["저장",()=>pattern(id,true),true]],"pattern");
+  openConfirm("패턴 저장",`<p>패턴을 저장합니다. 바뀐 줄: <b>${diff.map(n=>`패턴 ${n}`).join(", ")}</b></p><p class="help-note">다음 전투부터 적용됩니다.</p>`,[["취소",null,false],["저장",()=>pattern(id),true]],"pattern");
 }
-// quiet: 확인 창을 거쳤거나 저장하고 나가기처럼 곧바로 다른 화면으로 넘어갈 때는 저장 알림을 띄우지 않는다
+// quiet: 저장하고 나가기처럼 곧바로 다른 화면으로 넘어가거나 따로 알림을 띄울 때는 저장 알림을 띄우지 않는다(확인 창에서 저장하면 알림을 띄운다)
 async function pattern(id,quiet){
   let j;
   try{j=collectPattern(id)}catch(e){log(e.message,"bad");return false}
