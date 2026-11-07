@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v475 · 갱신 2026-11-06 23:29 KST -->
+<!-- ProjectGY-test-console v476 · 갱신 2026-11-07 13:04 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v475 · 2026-11-06 23:29</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v476 · 2026-11-07 13:04</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2828,9 +2828,13 @@ const REVIVABLE_CONDS=new Set(["allyRevivableGte","allyRevivableLte","allyReviva
 const PUSH_VALUE_CONDS=new Set(["enemyPushImmuneGte","enemyPushImmuneLte","enemyPushResGte","enemyPushResLte","enemyPushImmTurnsGte","enemyPushImmTurnsLte"]);
 const SPIRIT_ROW_CONDS=new Set(["spiritOn","spiritOff"]);
 const isSpiritSkill=(charId,sid)=>!!skillData(charId).find(s=>s.id===sid)?.effect?.spirit;
+// 확정 방어 스킬 상태 조건(엔진 0.57.0 …아닐 때, 0.58.0 …일 때 짝): 그 스킬을 배울 수 있는 캐릭터(받은 스킬 목록에 있는 직업)에만 `스킬 이름 상태일 때`·`…상태가 아닐 때`. 몬스터 hunkerOn·hunkerOff는 17-adventure.js
+const SURE_DEF_CONDS=[["deflectOn","deflectOff","footman_deflect"],["braceOn","braceOff","footman_man_at_arms_brace"],["shadowStepOn","shadowStepOff","thief_rogue_shadow_step"],["kawarimiOn","kawarimiOff","thief_shinobi_kawarimi"]];
+// Saint Aegis(엔진 0.58.0, 그 스킬이 있는 캐릭터만): 자신이 그 상태인지, 그 상태가 아닌 아군 수(0~1000, 이상이 위)
+const AEGIS_ID="cleric_chaplain_saint_aegis";
 function jobConditionOptions(charId){
   const d=skillsByChar[charId],st=skillData(charId).find(s=>s.effect?.stance),mk=skillData(charId).find(s=>s.effect?.mark),mj=mk&&josaOf(mk.name,"이","가"),sp=skillData(charId).some(s=>s.effect?.spirit);
-  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...(mk?[["enemyMarked",`${mk.name}${mj} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name}${mj} 걸린 적군이 없을 때`,false]]:[]),
+  return [...(AMMO_CONDITION_OPTIONS[d?.ammo_kind]||[]),...(st?[["stanceOn",`${st.name} 상태일 때`,false],["stanceOff",`${st.name} 상태가 아닐 때`,false]]:[]),...SURE_DEF_CONDS.flatMap(([on,off,id])=>{const k=skillData(charId).find(x=>x.id===id);return k?[[on,`${k.name} 상태일 때`,false],[off,`${k.name} 상태가 아닐 때`,false]]:[]}),...(ag=>ag?[["aegisOn",`${ag.name} 상태일 때`,false],["aegisOff",`${ag.name} 상태가 아닐 때`,false],["allyAegisOffGte",`${ag.name} 상태가 아닌 아군이 OO명 이상일 때`,true],["allyAegisOffLte",`${ag.name} 상태가 아닌 아군이 OO명 이하일 때`,true]]:[])(skillData(charId).find(x=>x.id===AEGIS_ID)),...(mk?[["enemyMarked",`${mk.name}${mj} 걸린 적군이 있을 때`,false],["enemyNoMark",`${mk.name}${mj} 걸린 적군이 없을 때`,false]]:[]),
    ...(sp?[["spiritOn","이 줄 정령이 곁에 있을 때",false,"sp"],["spiritOff","이 줄 정령이 곁에 없을 때",false,"sp"],["elemSpirit","속성 정령이 곁에 있을 때",false],["noElemSpirit","속성 정령이 곁에 없을 때",false],
     ["spiritGte","곁에 있는 정령이 OO마리 이상일 때",true],["spiritLte","곁에 있는 정령이 OO마리 이하일 때",true],["spiritEq","곁에 있는 정령이 OO마리일 때",true]]:[])];
 }
@@ -2851,6 +2855,16 @@ const PATTERN_GUIDE={
     rows:[["자신의 화살 수가 5 이하일 때","Resheaf","arrowLte","archer_resheaf",5],["반드시","Arrow Rain","always","archer_arrow_rain"]]},
   RANGER:{design:"Ranger는 화살로 적을 표시하고 출혈 화살과 연사로 몰아치는 직업입니다. 화살이 9개 이하면 Quick Resheaf로 채우고, 적이 2명 이상이면 Hail of Arrows로 함께 칩니다. 디버프를 더 걸 수 있는 적이 있으면 Barbed Arrow, Hunter's Mark가 걸린 적이 없으면 Hunter's Mark를 쓰고, 남는 턴에는 Rapid Fire로 칩니다.",
     rows:[["자신의 화살 수가 9 이하일 때","Quick Resheaf","arrowLte","archer_ranger_quick_resheaf",9],["상대방 생존자가 2명 이상","Hail of Arrows","enemyAliveGte","archer_ranger_hail_of_arrows",2],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Barbed Arrow","skillDebuffRoom","archer_ranger_barbed_arrow"],["Hunter's Mark가 걸린 적군이 없을 때","Hunter's Mark","enemyNoMark","archer_ranger_hunters_mark"],["반드시","Rapid Fire","always","archer_ranger_rapid_fire"]]},
+  CHEVALIER:{design:"Chevalier는 앞에서 버티며 칼마다 다른 디버프를 거는 결투가입니다. Coup d'Arrêt 태세가 꺼져 있으면 다시 켜고, 쿨타임이 아닌 Fendant를 쓴 뒤, Coup de Jarnac·Froissement·Battement·Maindroit를 5·4·3·2턴마다 섞어 쓰고, 남는 턴에는 Estoc으로 찌릅니다.",
+    rows:[["Coup d'Arrêt 상태가 아닐 때","Coup d'Arrêt","stanceOff","footman_chevalier_coup_d_arret"],["이 줄 스킬이 쿨타임이 아닐 때","Fendant","skillReady","footman_chevalier_fendant"],["5턴마다 반드시","Coup de Jarnac","everyNTurns","footman_chevalier_coup_de_jarnac",5],["4턴마다 반드시","Froissement","everyNTurns","footman_chevalier_froissement",4],["3턴마다 반드시","Battement","everyNTurns","footman_chevalier_battement",3],["2턴마다 반드시","Maindroit","everyNTurns","footman_chevalier_maindroit",2],["반드시","Estoc","always","footman_chevalier_estoc"]]},
+  FOOTMAN:{design:"Footman은 앞줄에서 버티며 적의 방어를 깎는 기본 전사입니다. HP가 40% 이하로 떨어지면 Patch Up으로 버티고, 디버프를 더 걸 수 있는 적이 있으면 Sunder·Rend로 PDEF·MDEF를 깎고, 남는 턴에는 Shield Slam으로 칩니다.",
+    rows:[["자신의 HP가 40% 이하","Patch Up","selfHpLtePct","footman_patch_up",40],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Sunder","skillDebuffRoom","footman_sunder"],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Rend","skillDebuffRoom","footman_rend"],["반드시","Shield Slam","always","footman_shield_slam"]]},
+  MAGE:{design:"Mage는 뒤에서 큰 마법을 쓰는 직업입니다. MP가 20% 이하면 Meditation으로 채우고, 캐스팅 중인 적이 있으면 Frost Shard로 늦추고, 적이 3명 이상이면 Firestorm, 디버프를 더 걸 수 있는 적이 있으면 Stone Spike를 쓰고, 남는 턴에는 Thunderbolt로 칩니다.",
+    rows:[["자신의 MP가 20% 이하","Meditation","selfMpLtePct","mage_meditation",20],["캐스팅 중인 적이 있을 때","Frost Shard","enemyCastingAny","mage_frost_shard"],["상대방 생존자가 3명 이상","Firestorm","enemyAliveGte","mage_firestorm",3],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Stone Spike","skillDebuffRoom","mage_stone_spike"],["반드시","Thunderbolt","always","mage_thunderbolt"]]},
+  MAN_AT_ARMS:{design:"Man-at-Arms는 방패를 든 탱커입니다. 후방에 있으면 Shield Charge로 앞으로 나오고, HP가 40% 이하면 Grit으로 버티고, 쿨타임이 아닌 Challenge로 적을 끌어옵니다. Brace 상태가 아니면 Brace로 막고, 쿨타임이 아닌 Overcommit을 쓴 뒤, 디버프를 더 걸 수 있는 적이 있으면 Sword Breaking·Blow로 깎고, 남는 턴에는 Smash로 칩니다.",
+    rows:[["자신이 후방일 때","Shield Charge","selfBack","footman_man_at_arms_shield_charge"],["자신의 HP가 40% 이하","Grit","selfHpLtePct","footman_man_at_arms_grit",40],["이 줄 스킬이 쿨타임이 아닐 때","Challenge","skillReady","footman_man_at_arms_challenge"],["Brace 상태가 아닐 때","Brace","braceOff","footman_man_at_arms_brace"],["이 줄 스킬이 쿨타임이 아닐 때","Overcommit","skillReady","footman_man_at_arms_overcommit"],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Sword Breaking","skillDebuffRoom","footman_man_at_arms_sword_breaking"],["이 줄 스킬의 디버프를 더 걸 수 있는 적이 있을 때","Blow","skillDebuffRoom","footman_man_at_arms_blow"],["반드시","Smash","always","footman_man_at_arms_smash"]]},
+  THIEF:{design:"Thief는 출혈을 쌓고 터뜨리는 기초 도적입니다. 차징이나 캐스팅 중인 적이 있고 Cutthroat가 쿨타임이 아니면 Cutthroat로 끊고, 출혈이 3건 이상 걸린 적이 있으면 Rupture로 터뜨리고, 남는 턴에는 Lacerate로 출혈을 쌓습니다.",
+    rows:[["차징이나 캐스팅 중인 적이 1명 이상","AND","enemyWindupGte","common_and",1],["이 줄 스킬이 쿨타임이 아닐 때","Cutthroat","skillReady","thief_cutthroat"],["적군에 출혈이 3건 이상 걸린 캐릭터가 있을 때","Rupture","enemyBleedGte","thief_rupture",3],["반드시","Lacerate","always","thief_lacerate"]]},
   CHAPLAIN:{design:"Chaplain은 아군의 MP와 HP를 채우고 쓰러진 아군을 일으키며 버프를 거는 직업입니다. MP가 30% 이하인 아군이 있으면 Litany, HP가 60% 이하인 아군이 있으면 Restoration을 쓰고, 사망자가 있으면 Resurrection으로 일으킵니다. 버프를 더 받을 수 있는 아군이 있으면 Hymn·Vigil을 걸고, 남는 턴에는 Holy Lance로 칩니다.",
     rows:[["아군에 MP가 30% 이하인 캐릭터가 있을 때","Litany","allyMpLtePct","cleric_chaplain_litany",30],["아군에 HP가 60% 이하인 캐릭터가 있을 때","Restoration","allyHpLtePct","cleric_chaplain_restoration",60],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때","Hymn","skillBuffRoom","cleric_chaplain_hymn"],["이 줄 스킬의 버프를 더 받을 수 있는 아군이 있을 때","Vigil","skillBuffRoom","cleric_chaplain_vigil"],["반드시","Holy Lance","always","cleric_chaplain_holy_lance"]]},
   ELEMENTALIST:{design:"Elementalist는 큰 원소 마법으로 여러 적을 한꺼번에 치는 직업입니다. MP가 60% 이하로 떨어지면 Transcendence로 채우고, 쿨타임이 아닌 In the Zone으로 몰입한 뒤, 적이 8명 이상이면 Earthquake, 4명 이상이면 Chain Lightning, 남는 턴에는 Meteor Strike로 칩니다.",
@@ -2920,12 +2934,12 @@ const VALUE_CONDS=new Set([
   "selfAtkGte","selfAtkLte","allyAtkGte","allyAtkLte","selfMatkGte","selfMatkLte","allyMatkGte","allyMatkLte","selfSpdBGte","selfSpdBLte","allySpdBGte","allySpdBLte","selfDefFGte","selfDefFLte","allyDefFGte","allyDefFLte","selfMDefFGte","selfMDefFLte","allyMDefFGte","allyMDefFLte",
   "allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq",
   "allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq",
-  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS,...USES_CONDS,"skillDebuffRoomGte","skillDebuffRoomLte"
+  ...SPIRIT_COUNT_CONDS,...REVIVABLE_CONDS,...PUSH_VALUE_CONDS,...USES_CONDS,"skillDebuffRoomGte","skillDebuffRoomLte","allyAegisOffGte","allyAegisOffLte"
 ]);
 // 대열 인원 조건(전방·후방의 생존자 수)
 const FORM_COUNT_CONDS=new Set(["allyFrontGte","allyFrontLte","allyFrontEq","allyBackGte","allyBackLte","allyBackEq","enemyFrontGte","enemyFrontLte","enemyFrontEq","enemyBackGte","enemyBackLte","enemyBackEq"]);
 // 인원을 세는 조건(대열 인원, 생존자·사망자, 차징·캐스팅 중인 적): 수치는 0~1000
-const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"skillDebuffRoomGte","skillDebuffRoomLte","allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte",...USES_CONDS]);
+const COUNT_CONDS=new Set([...FORM_COUNT_CONDS,"allyAegisOffGte","allyAegisOffLte","skillDebuffRoomGte","skillDebuffRoomLte","allyAliveGte","allyAliveLte","allyAliveEq","allyDeadGte","allyDeadLte","allyDeadEq","enemyAliveGte","enemyAliveLte","enemyAliveEq","enemyDeadGte","enemyDeadLte","enemyDeadEq","enemyWindupGte","enemyWindupLte",...REVIVABLE_CONDS,"enemyPushImmuneGte","enemyPushImmuneLte",...USES_CONDS]);
 // 조건별 기본 수치: 딜레이 밀기 저항 50·면역 남은 턴 3, 퍼센트 조건 30, 남은 출혈량 100, OO턴마다 2, 인원 조건과 출혈 건수 1, 나머지 0
 function condDefault(c){return c==="enemyPushResGte"||c==="enemyPushResLte"?50:c==="enemyPushImmTurnsGte"||c==="enemyPushImmTurnsLte"?3:PERCENT_CONDS.has(c)?30:c==="enemyBleedAmtGte"||c==="enemyBleedAmtLte"?100:c==="everyNTurns"?2:["enemyBleedGte","enemyBleedLte"].includes(c)||COUNT_CONDS.has(c)||SPIRIT_COUNT_CONDS.has(c)?1:0}
 // 수치 뒤에 %를 붙이는 조건(남은 출혈량은 100을 넘을 수 있어 퍼센트 조건과 따로 둔다), 수치가 1부터인 조건
@@ -3230,7 +3244,9 @@ function monSkillName(id){return monActs().find(s=>s.id===id)?.name||id}
 const MON_CONDITION_GROUP={label:"부활(몬스터)", options:[
  ["allyRevivableGte","일으킬 수 있는 쓰러진 아군이 OO명 이상",true],["allyRevivableLte","일으킬 수 있는 쓰러진 아군이 OO명 이하",true],["allyRevivableEq","일으킬 수 있는 쓰러진 아군이 OO명",true]]};
 function monCondOptions(current){
- const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품").flatMap(g=>g.label==="생존·사망"?[g,MON_CONDITION_GROUP]:[g]);
+ // Hunker(엔진 0.57.0·0.58.0): 그 스킬이 있는 몬스터만 `Hunker 상태일 때`·`…상태가 아닐 때`(값 없음)
+ const hk=(monData.skills||[]).find(x=>x.id==="monster_hunker");
+ const groups=CONDITION_GROUPS.filter(g=>g.label!=="소모품").flatMap(g=>g.label==="생존·사망"?[g,MON_CONDITION_GROUP]:[g]).concat(hk?[{label:"상태(몬스터)",options:[["hunkerOn",`${hk.name} 상태일 때`,false],["hunkerOff",`${hk.name} 상태가 아닐 때`,false]]}]:[]);
  const known=groups.some(g=>g.options.some(o=>o[0]===current))||COOLDOWN_CONDS.has(current);
  return (known?"":`<option value="${esc(current)}" selected>${esc(current)}</option>`)+groups.map(g=>`<optgroup label="${g.label}">${options(g.options,current)}</optgroup>`).join("")+`<optgroup label="${COOLDOWN_GROUP.label}">${options(COOLDOWN_GROUP.options,current)}</optgroup>`;
 }
