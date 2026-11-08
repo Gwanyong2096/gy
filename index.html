@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v481 · 갱신 2026-11-08 22:55 KST -->
+<!-- ProjectGY-test-console v482 · 갱신 2026-11-08 23:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v481 · 2026-11-08 22:55</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v482 · 2026-11-08 23:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1267,7 +1267,7 @@ function questGo(q,then){
  else window.scrollTo(0,0);
 }
 // 지금 보여야 하는지(튜토리얼·무대·설정·로그인을 한곳에서 판단)
-function questHidden(){return !loggedIn||!!stage||hideQuest||tut.step==null||(!questIntroPending&&tut.step<tut.last)||!!tutPractice}
+function questHidden(){return !loggedIn||!!stage||hideQuest||tut.step==null||(!questIntroPending&&tutBusy())||!!tutPractice}
 function questBodyRight(){const m=document.querySelector("main"),r=m.getBoundingClientRect();return r.right-parseFloat(getComputedStyle(m).paddingRight)}
 function questTarget(){const m=document.querySelector("main").getBoundingClientRect(),mt=m.top+scrollY,mb=m.bottom+scrollY,h=QR.el.offsetHeight;return Math.max(mt+8,Math.min(scrollY+(innerHeight-h)/2,mb-h-8))}
 function questPlace(jump){
@@ -1331,8 +1331,24 @@ const QUEST_GUIDE={
   const q=quests.find(x=>x.id===g.q.id)||g.q,ct=q.cleric_tp,stop=()=>{qGuide=null};
   if(!ct)return h.mid("qg-tnoc","Cleric 캐릭터가 있어야 이 퀘스트를 할 수 있습니다.",{btn:"확인",fn:stop});
   const c=chars.find(x=>x.id===ct.char),nm=c?.display_name||"Cleric";
-  // 패턴 줄을 늘렸으면(서버 셈이 찼으면) 끝 장
-  if(q.cur>=q.max&&c&&selectedCharId===c.id&&!h.modal)return h.page("qg-t9",h.q("#charDetail .pattern-count")||h.q("#charDetail .main-st"),`${nm}의 패턴 줄이 늘었습니다.\n줄이 늘면 상황마다 다른 행동을 넣을 수 있습니다.\n이 퀘스트를 마치면 총 패턴 ${patLines(c.id)}줄 옆에 범용 패턴(?)이 나타납니다.\n누르면 이 직업이 두루 쓰는 패턴을 볼 수 있습니다.`,{btn:"확인",fn:questGuideDone});
+  // 패턴 줄을 늘렸으면(서버 셈이 찼으면): 늘었다는 장 → 범용 패턴(?)을 열어(이 퀘스트 보상 전이라 안내 중에만 버튼을 미리 보인다) 바로 적용 → 적용 창의 적용 → 끝 장
+  if(q.cur>=q.max&&c&&selectedCharId===c.id){
+   if(h.modal&&!g.applied){
+    const kind=h.q("#helpActions:not([hidden])")?.dataset.kind;
+    if(kind==="patguide"&&$("helpTitle").textContent==="범용 패턴 적용")return h.say("qg-t11c",h.q("#helpActions button.pri"),"적용을 눌러 주세요.",{holdId:true});
+    if(kind==="patguide"){
+     if(!tutSeen.has("qg-t11"))return h.page("qg-t11",h.q("#helpBody"),"직업마다 두루 쓰는 패턴과 그 순서입니다.\n바로 적용을 누르면 지금 패턴 줄 수에 맞춰 위에서부터 넣고, 반드시 줄은 맨 끝에 둡니다.");
+     return h.say("qg-t11b",h.q("#helpActions button.pri"),"바로 적용을 눌러 주세요.",{holdId:true});
+    }
+   }
+   if(!h.modal){
+    if(g.applied)return h.page("qg-t12",h.q(`#pat-${c.id}`)||h.q("#charDetail .pattern-count"),`${nm}의 패턴이 범용 패턴으로 바뀌었습니다.\n던전에 기믹이 있으면 이 패턴의 위나 아래에 그 기믹에 대응하는 줄을 더하면 됩니다.`,{btn:"확인",fn:questGuideDone});
+    const showBtn=()=>{patGuideFlag=true;document.querySelectorAll("#charDetail .pat-guide").forEach(b=>b.hidden=false)};
+    if(!tutSeen.has("qg-t9"))return h.page("qg-t9",h.q("#charDetail .pattern-count")||h.q("#charDetail .main-st"),`${nm}의 패턴 줄이 늘었습니다.\n줄이 늘면 상황마다 다른 행동을 넣을 수 있습니다.\n이번에는 직업마다 두루 쓰는 범용 패턴을 넣어 봅니다.`,{fn:showBtn});
+    const pb=h.q("#charDetail .pat-guide");if(!pb)return h.wait();if(pb.hidden)showBtn();
+    return h.say("qg-t10",pb,`총 패턴 ${patLines(c.id)}줄 옆의 ?가 범용 패턴입니다.\n?를 눌러 주세요.`);
+   }
+  }
   // 창: TP 배분 확인이면 배분 버튼, TP 도움말이면 설명 장, 그 밖(저장 안 한 패턴 확인 등)은 막지 않는다
   if(h.modal&&h.q('#helpActions[data-kind="tp"]:not([hidden])'))return h.say("qg-tok",h.q("#helpActions button.pri"),"배분을 눌러 주세요.",{holdId:true,holdAs:"qg-t4"});
   if(h.modal&&h.q('#helpActions[data-kind="tpfree"]:not([hidden])'))return h.say("qg-tfree",h.q("#helpActions button.pri"),"되돌리기를 눌러 주세요.",{holdId:true});
@@ -1361,27 +1377,6 @@ const QUEST_GUIDE={
   if(!tutSeen.has("qg-t2"))return h.say("qg-t1",help,"레벨이 오를 때마다 TP를 받습니다.\nTP로 무엇을 올리는지 봅시다.\n?를 눌러 주세요.");
   if(!tutSeen.has("qg-t3"))return h.page("qg-t3",h.q(`#alloc-${c.id}`)||st,"여기에 숫자를 넣고 배분을 누르면 TP를 씁니다.\n쓴 TP는 보통 Unwinding Draught를 마셔야 되돌릴 수 있습니다.");
   return h.say("qg-t4",h.q(`#alloc-${c.id}`)||st,`${nm}의 패턴 줄을 TP로 하나 늘려 보세요.\nPattern 칸에 1을 넣고 배분을 눌러 주세요.`,{nohold:true});
- },
- // KARMA: 캐릭터를 열고 KARMA 합계/한도 줄과 세 상태를 알려 준 뒤 TP 배분 칸의 Karma Limit을 짚는다
- karma(g,h){
-  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
-  const c=chars.find(x=>x.id===selectedCharId);
-  if(!c)return h.say("qg-k0",h.q("#chars .roster-unit"),"KARMA는 캐릭터마다 따로 셉니다.\n캐릭터를 하나 눌러 주세요.");
-  const w=h.q('#charDetail .sec-wrap[data-sec="status"]');if(w?.classList.contains("collapsed"))return h.say("qg-ksec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
-  const k=c.stats?.KARMA||{},line=h.q("#charDetail .karma-red")?.parentElement||h.q("#charDetail .main-st");
-  if(!tutSeen.has("qg-k1"))return h.page("qg-k1",line,`KARMA ${k.TOTAL??"-"}/${k.LIMIT??"-"}에서 앞은 장착한 장비의 KARMA 합계, 뒤는 한도입니다.\n장비마다 KARMA가 있습니다.\n처음 얻는 장비는 모두 1이라 다 끼면 12입니다.`);
-  if(!tutSeen.has("qg-k2"))return h.page("qg-k2",line,"합계가 0보다 작으면 축복입니다. 1점마다 최종 대미지와 속도가 +1%입니다.\n0부터 한도까지는 평온이고 효과가 없습니다.\n한도를 넘으면 과업입니다. 넘은 1점마다 최종 대미지와 속도가 -5%입니다.",{back:"qg-k1"});
-  const t=tpCur(c),b=pubCfg.TP_KARMA_BANDS,cost=tpBandSum(b,t.k+1)-tpBandSum(b,t.k),lim=Number(k.LIMIT);
-  const up=`한도는 TP의 Karma Limit으로 올립니다.\n1점에 ${cost} TP를 쓰고, 한도가 ${lim} → ${lim+1}${josaOf(lim+1,"이","가")} 됩니다.`;
-  const f=h.q(`#alloc-${c.id} input[data-tp="k"]`);
-  if(!f)return h.page("qg-k3",h.q("#charDetail .main-st"),`${up}\n이 캐릭터는 남은 TP가 없습니다.\n레벨을 올리거나 Unwinding Draught로 되돌린 뒤 찍습니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
-  return h.page("qg-k3",f.closest(".alloc-f")||f,`${up}\n숫자를 넣고 배분을 누르면 찍힙니다.`,{back:"qg-k2",btn:"확인",fn:questGuideDone});
- },
- mock(g,h){
-  const r=qgRoom(g,h);if(!r.d)return r.stop;const d=r.d;
-  const el=h.q('#roomActs button[onclick*="MOCK"]')||h.q("#roomActs");
-  if(!tutSeen.has("qg-m1"))return h.page("qg-m1",el,"Mock Battle은 연습 전투입니다.\nSUPPLY를 쓰지 않습니다.\n이기거나 져도 경험치와 보상이 없습니다.");
-  return h.page("qg-m2",el,`던전마다 하루 ${d.mock_limit??3}번까지 할 수 있습니다.\n버튼 아래 숫자가 오늘 남은 횟수입니다.\n패턴을 고친 뒤 시험해 볼 때 쓰면 좋습니다.`,{back:"qg-m1",btn:"확인",fn:questGuideDone});
  },
  // Auto Battle: 단계(g.phase)는 21-idle.js가 바꾼다. 없음(보내기 전 ①~④) → sending(연습 한 판 정산 중) → sent(⑤~⑦) → back(회수 뒤 ⑧)
  idle(g,h){
@@ -1432,10 +1427,18 @@ const QUEST_GUIDE={
   if(g.free&&!g.res&&!ff)g.free=false;
   if(g.free&&tutSeen.has("qg-a3"))return qgFreeAppraise(g,h,ff);
   const q=quests.find(x=>x.id===g.q.id),filled=!g.free&&q&&q.cur>=q.max;
-  const end=g.free?{btn:"다음"}:filled?{add:"\n이미 감정을 해 봤으니 이 퀘스트는 깬 것으로 칩니다.",btn:"확인",fn:async()=>{const then=g.then;await questGuideDone();if(!then){await questLoad();questClaim([g.q.id])}}}:null;
+  const fin=filled?async()=>{const then=g.then;await questGuideDone();if(!then){await questLoad();questClaim([g.q.id])}}:questGuideDone;
+  if(!g.free&&!h.modal&&tutSeen.has("qg-a3"))return qgSellPage(h,"qg-a3",fin);
+  const end=g.free?{btn:"다음"}:filled?{add:"\n이미 감정을 해 봤으니 이 퀘스트는 깬 것으로 칩니다.",btn:"다음"}:{btn:"다음"};
   return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.",end);
  },
- craft(g,h){return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않습니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.")}
+ // 제작: Enhance 탭에 있으면 Craft 탭으로 돌려놓고 목록을 짚는다(숨은 목록을 짚지 않게). 목록 장 다음에 Enhance 탭 한 장
+ craft(g,h){
+  if(currentView==="craft"&&!h.modal&&tutSeen.has("qg-c3")){const t=h.q('#smithTabs .seg-btn[data-t="enhance"]')||h.q("#smithTabs");
+   return h.page("qg-c4",t,`Enhance 탭에서는 감정을 마친 장비를 골드로 강화합니다.\n안전 강(무기 7강, 방어구·방패 5강, 장신구 4강)까지는 늘 성공하지만, 그 위에서 실패하면 장비가 깨져 사라집니다.\n쓴 골드는 성공하든 실패하든 돌려받지 못합니다.`,{back:"qg-c3",btn:"확인",fn:questGuideDone})}
+  if(currentView==="craft"&&smithTab!=="craft")setSmithTab("craft");
+  return qgTown(g,h,"craft","Smithy에서 만든 장비에도 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","만들 때","지금 만들 수 있는 장비가 여기에 나옵니다.\n재료가 모자란 것은 보이지 않지만, 레시피가 있는 장비는 재료가 모자라도 보입니다.\n옵션이 하나도 안 붙으면 일반 장비가 됩니다.",{btn:"다음"});
+ }
 };
 // 감정·제작: 이름 옆 ?를 눌러 재료별 옵션 창을 보고, 닫은 뒤 목록을 짚는다
 function qgTown(g,h,view,askMsg,when,listMsg,end){
@@ -1462,8 +1465,12 @@ function qgFreeAppraise(g,h,ff){
  }
  const el=h.modal?h.q("#helpBody .item-card")||h.q("#helpBody"):$("appraiseList"),p=pubCfg.ITEM_OPT_SLOT_PCT||[95,30];
  if(!tutSeen.has("qg-af2"))return h.page("qg-af2",el,`감정하면 장비에 랜덤 옵션이 붙습니다.\n첫 칸은 ${p[0]}%, 둘째 칸은 ${p[1]}%처럼 칸이 늘수록 붙기 어렵습니다.\n붙은 옵션마다 종류와 값을 무작위로 정하고, 가끔은 값이 깎이는 나쁜 옵션도 붙습니다.`);
- return h.page("qg-af3",el,"붙은 옵션은 장비 이름 옆에 보입니다.\n옵션 값은 장비의 기본 능력치에 더해집니다.\n옵션이 붙지 않을 때도 있습니다.",{back:"qg-af2",btn:"확인",fn:questGuideDone});
+ if(!tutSeen.has("qg-af3"))return h.page("qg-af3",el,"붙은 옵션은 장비 이름 옆에 보입니다.\n옵션 값은 장비의 기본 능력치에 더해집니다.\n옵션이 붙지 않을 때도 있습니다.",{back:"qg-af2"});
+ if(h.modal)return h.say("qg-afx2",h.q(".help-close"),"닫기를 눌러 주세요.");
+ return qgSellPage(h,"qg-af3",questGuideDone);
 }
+// 감정 안내 끝 장: 남는 장비는 Inn의 Goods에서 판다(아이템 룰 팔기)
+function qgSellPage(h,back,fn){return h.page("qg-a4",$("appraiseList"),"쓰지 않는 장비나 남는 아이템은 Town의 Inn에서 Goods의 Sell로 골드를 받고 팝니다.\n끼고 있는 장비는 풀어야 목록에 나오고, 판 것은 되살 수 없습니다.",{back,btn:"확인",fn})}
 // 퀘스트 보상 소모품 중 따로 설명을 둔 것
 const QUEST_ITEM_NOTE={
  reset_draught:`<p>한 병을 마시면 한 캐릭터의 <b>TP를 모두 돌려받거나</b>, <b>배운 스킬을 모두 초기화하고 SP를 돌려받습니다</b>. 둘 중 하나만 고릅니다.</p><p>Camp에서 캐릭터를 열어 Status의 <b>TP 초기화</b>나 Skill의 <b>스킬 초기화</b>를 누르면 마십니다.</p><p class="help-note">잘못 나눈 TP나 SP를 다시 나눌 때 씁니다. 보스가 드물게 떨구기도 합니다.</p>`
@@ -3048,7 +3055,7 @@ async function applyPatternGuide(charId,rows){
   const list=$("pat-"+charId);if(!list){log("패턴 화면을 찾지 못했습니다.","bad");return}
   const c=chars.find(x=>x.id===charId);
   list.innerHTML=renderPatternRows(rows,c?.job,charId);
-  if(await pattern(charId,true))openNotice("범용 패턴을 적용했습니다.");
+  if(await pattern(charId,true)){if(qGuide?.key==="tp")qGuide.applied=true;openNotice("범용 패턴을 적용했습니다.")}
 }
 // 패턴 행동 = 알고 있는 ACTIVE 스킬 + AND. 기본 공격은 그 직업의 자동 습득 ACTIVE 스킬.
 function skillData(id){return skillsByChar[id]?.skills||[]}
@@ -4147,7 +4154,7 @@ function spiritActNameHtml(e){const src=(typeof SKILL_ICONS!=="undefined"&&(SKIL
 let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0,idleOpen=true;
 const IR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,sig:""},I_FOLD_KEY="pgy_idle_fold";
 function idleRemoteOn(){if(!idleInfo)return false;const g=idleInfo.guide,n=(idleInfo.parties||[]).length;return g==="DONE"||g==="SKIPPED"||(g==="ACTIVE"||g==null)&&n>0}
-function idleHidden(){return !loggedIn||!!stage||tut.step==null||tut.step<tut.last||!!tutPractice||!idleRemoteOn()}
+function idleHidden(){return !loggedIn||!!stage||tut.step==null||tutBusy()||!!tutPractice||!idleRemoteOn()}
 function idleEnsure(){
  if(IR.el)return IR.el;
  const d=document.createElement("div");d.className="q-remote i-remote hidden";d.id="idleRemote";
