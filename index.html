@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v482 · 갱신 2026-11-08 23:10 KST -->
+<!-- ProjectGY-test-console v483 · 갱신 2026-11-08 23:19 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v482 · 2026-11-08 23:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v483 · 2026-11-08 23:19</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1432,6 +1432,46 @@ const QUEST_GUIDE={
   const end=g.free?{btn:"다음"}:filled?{add:"\n이미 감정을 해 봤으니 이 퀘스트는 깬 것으로 칩니다.",btn:"다음"}:{btn:"다음"};
   return qgTown(g,h,"appraise","Unknown 장비를 감정하면 랜덤 옵션이 붙습니다.\n어떤 옵션이 잘 붙는지는 ?에서 봅니다.\n?를 눌러 주세요.","감정할 때","Unknown 장비는 여기에 나옵니다.\n감정을 누르면 골드를 내고 랜덤 옵션을 굴립니다.\n하나도 안 붙으면 일반 장비가 됩니다.",end);
  },
+ // Inn 영입(q_ch2_13): Town이면 Inn을 짚고, Inn에서 영입 방법과 서브 파티 쓰임을 알려 준다
+ recruit(g,h){
+  if(currentView==="town"&&!h.modal)return h.say("qg-n0",h.q(`#townView [onclick="showView('inn')"]`),"Inn을 눌러 주세요.");
+  if(currentView!=="inn"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal)return null;
+  return qgPages(h,[["qg-n1",h.q("#innJobs"),"Inn에서는 골드를 내고 동료를 영입합니다.\n직업을 고르고 이름을 적은 뒤 영입을 누릅니다."],
+   ["qg-n2",h.q("#innJobs"),"영입한 캐릭터는 직접 싸우는 파티에 넣지 않아도 됩니다.\n서브 파티를 꾸려 Auto Battle로 보내면, 직접 싸우는 동안에도 경험치와 아이템이 쌓입니다.\n한 명을 영입해 보세요."]]);
+ },
+ // 1차 전직(q_ch2_14): 캐릭터의 Skill 아래 전직 카드를 짚고 전직 때 바뀌는 것을 알려 준다
+ promote(g,h){
+  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal)return null;
+  if(!selectedCharId)return h.say("qg-p0",h.q("#chars .roster-unit"),"Lv.20이 된 캐릭터를 눌러 주세요.");
+  const w=h.q('#charDetail .sec-wrap[data-sec="skill"]');if(w?.classList.contains("collapsed"))return h.say("qg-psec",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
+  const card=h.q("#charDetail .promote-card:not(.locked)");
+  if(!card)return h.page("qg-p0n",h.q("#charDetail .main-st"),"이 캐릭터는 아직 전직할 수 없습니다.\nLv.20이 되면 Skill 아래에 전직 카드가 나옵니다.\nLv.20이 된 캐릭터를 골라 퀘스트를 다시 눌러 주세요.",{btn:"확인",fn:()=>{qGuide=null}});
+  return qgPages(h,[["qg-p1",card,"Lv.20이 되면 여기서 1차 전직을 고릅니다.\n전직은 되돌릴 수 없으니 직업 설명을 보고 고르세요."],
+   ["qg-p2",card,"전직하면 끼고 있던 장비가 모두 풀려 Bag으로 돌아갑니다.\n전직한 뒤 Equipment에서 다시 끼워 주세요.\n직업에 따라 배운 스킬이 초기화되고 SP를 돌려받기도 합니다."],
+   ["qg-p3",card,"특수전직 직업은 한 파티에 같은 직업을 한 명만 넣을 수 있습니다.\n카드를 눌러 전직해 보세요."]]);
+ },
+ // 소모품(q_ch2_15): 소모품 칸 → 패턴의 Use Item 줄과 '쓸 수 있을 때' 조건 → 끼우기
+ consumable(g,h){
+  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal)return null;
+  if(!selectedCharId)return h.say("qg-u0",h.q("#chars .roster-unit"),"소모품을 끼울 캐릭터를 눌러 주세요.");
+  const w=h.q('#charDetail .sec-wrap[data-sec="equipment"]');if(w?.classList.contains("collapsed"))return h.say("qg-usec",w.querySelector(".sec-toggle"),"Equipment를 눌러 펼쳐 주세요.");
+  const slot=[...document.querySelectorAll("#charDetail .equip-row .slot-label")].find(x=>x.textContent.trim()==="소모품")?.closest(".equip-row")||h.q("#charDetail .main-st");
+  const pat=h.q("#charDetail .pattern-count")||slot;
+  return qgPages(h,[["qg-u1",slot,"여기가 소모품 칸입니다.\nHealing Potion 같은 소모품을 끼우면 전투에서 쓸 수 있습니다."],
+   ["qg-u2",pat,"전투에서는 패턴의 Use Item 줄로 씁니다.\n조건을 '이 줄의 소모품을 쓸 수 있을 때'로 두면 쓸 수 있을 때만 씁니다.\nHP 조건과 AND로 묶으면 위급할 때만 쓰게 할 수 있습니다."],
+   ["qg-u3",slot,"소모품 칸에 Healing Potion을 끼워 주세요."]]);
+ },
+ // Ashen Mine(q_ch2_16): Mine Golem은 출혈로, Forge Wyrm의 Slag Skin은 캐스팅을 끊어서
+ ashen(g,h){
+  const r=qgRoom(g,h);if(!r.d)return r.stop;
+  if(h.modal)return null;
+  const el=h.q("#roomActs");
+  return qgPages(h,[["qg-s1",el,"Ashen Mine의 Mine Golem은 앞방어가 아주 높아 타격이 잘 들어가지 않습니다.\n출혈은 앞방어를 무시하니, 출혈을 쌓아 뚫으세요."],
+   ["qg-s2",el,"보스 Forge Wyrm은 HP가 절반 아래로 떨어지면 Slag Skin을 캐스팅해 HP를 모두 채우고 독·출혈을 지웁니다.\n캐스팅하는 동안 물 원소 타격으로 최대 HP의 10% 이상을 넣거나 10번을 맞히면 끊깁니다.\n끊긴 Forge Wyrm은 한동안 움직이지 못하고 받는 피해가 늘어납니다."]]);
+ },
  // 제작: Enhance 탭에 있으면 Craft 탭으로 돌려놓고 목록을 짚는다(숨은 목록을 짚지 않게). 목록 장 다음에 Enhance 탭 한 장
  craft(g,h){
   if(currentView==="craft"&&!h.modal&&tutSeen.has("qg-c3")){const t=h.q('#smithTabs .seg-btn[data-t="enhance"]')||h.q("#smithTabs");
@@ -1469,6 +1509,11 @@ function qgFreeAppraise(g,h,ff){
  if(h.modal)return h.say("qg-afx2",h.q(".help-close"),"닫기를 눌러 주세요.");
  return qgSellPage(h,"qg-af3",questGuideDone);
 }
+// 여러 장을 차례로 넘기는 안내(마지막 장의 확인에서 끝)
+function qgPages(h,pages,done){for(let i=0;i<pages.length;i++){const [id,el,msg]=pages[i];if(tutSeen.has(id))continue;
+  const last=i===pages.length-1,o={back:i?pages[i-1][0]:null,...(last?{btn:"확인",fn:done||questGuideDone}:{})};
+  return el?h.page(id,el,msg,o):{...h.page(id,null,msg,o),center:true}}
+ return h.wait()}
 // 감정 안내 끝 장: 남는 장비는 Inn의 Goods에서 판다(아이템 룰 팔기)
 function qgSellPage(h,back,fn){return h.page("qg-a4",$("appraiseList"),"쓰지 않는 장비나 남는 아이템은 Town의 Inn에서 Goods의 Sell로 골드를 받고 팝니다.\n끼고 있는 장비는 풀어야 목록에 나오고, 판 것은 되살 수 없습니다.",{back,btn:"확인",fn})}
 // 퀘스트 보상 소모품 중 따로 설명을 둔 것
