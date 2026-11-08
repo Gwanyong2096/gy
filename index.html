@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v480 · 갱신 2026-11-08 13:56 KST -->
+<!-- ProjectGY-test-console v481 · 갱신 2026-11-08 22:55 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v480 · 2026-11-08 13:56</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v481 · 2026-11-08 22:55</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -897,7 +897,7 @@ async function startGuest(){
 async function signOut(){
  if(isGuest)return openConfirm("로그아웃",`<p>손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.</p>`,[["취소",null,false],["로그아웃",async()=>{await sb.auth.signOut();init()},true]]);
  await sb.auth.signOut();init()}
-async function init(){stageBoot();if(!stage)await practiceResume();const {data:{user}}=await sb.auth.getUser();const now=!!user;
+async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();const now=!!user;
  setTabsForLogin(now);
  $("loginForm").style.display=now?"none":"block";$("alreadyLogged").style.display=now?"block":"none";
  isGuest=!!(user&&user.is_anonymous);
@@ -1628,12 +1628,17 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpOverlay").h
 // 패턴 줄은 유저가 직접 고른다(목록에서 고를 줄만 남기고 나머지는 잠깐 선택 불가로 흐리게 한다). 편집 중인 다른 줄은 건드리지 않는다.
 // 임시: 과제 중에 구석에 항상 떠 있는 "튜토리얼 종료하기" 버튼. 뺄 때는 이 값을 false로 바꾼다(서버의 tutorial_skip과 스타일의 tut-exit도 같이 지우면 된다)
 const TUT_EXIT_BUTTON=true;
-// 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 KARMA가 한도를 넘은 Mage의 Karma Limit을 TP로 올리기, 8 끝
-// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7을 마침)
-let tut={step:null,last:8},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false;
+// 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 KARMA가 한도를 넘은 Mage의 Karma Limit을 TP로 올리기,
+//   8 대기(TUT_WAIT: 셋째 던전을 처음 이겨 넷째 던전이 열릴 때까지. 짚지도 막지도 않는다), 9 대열(시작 위치·엄호) 보기, 10 Footman 패턴 맨 위에 Move Back·Move Forward(보스가 차징·캐스팅하면 물러섰다 돌아오기),
+//   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트), 13 끝
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12를 마침)
+// tutChapelLost·tutChapelFree: 단계 11에서 지면 한 번 알리고, 그 뒤로는 넷째 던전을 이길 때까지 화면을 놓아 둔다(이 탭에서만. 새로 고치면 다시 짚는다)
+let tut={step:null,last:13},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
 const tutSeen=new Set();
+// 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다
+const TUT_WAIT=8;
 // 챕터: 단계 묶음(to = 그 챕터가 끝나는 단계). 끝낸 챕터는 무대에서 다시 볼 수 있다. 서버의 챕터 시작·끝 단계와 같이 고친다
-const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8}];
+const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8},{n:3,to:13}];
 // tutPractice: 무대에서 챕터를 다시 보는 중이면 {ch, end(끝나는 단계)}. tutAskOpen: 챕터 다시 보기 확인 창이 떠 있는 동안 짚기를 멈춘다
 let tutPractice=null,tutAskOpen=false,practiceBusy=false;
 // ===== 무대(챕터 다시 보기) =====
@@ -1715,16 +1720,6 @@ function practiceEnd(){
  try{sessionStorage.removeItem(STAGE_KEY)}catch(e){}
  location.reload();
 }
-// 예전 방식(연습 계정)으로 보던 브라우저 정리: 연습 계정을 지우고 기억해 둔 원래 로그인으로 돌아온다. 서버의 연습 계정 함수를 없앨 때 같이 지운다
-const PRACTICE_KEY="pgy_practice";
-async function practiceResume(){
- let s=null;try{s=JSON.parse(localStorage.getItem(PRACTICE_KEY)||"null")}catch(e){}
- if(!s)return;
- const {error}=await sb.rpc("tutorial_practice_end");if(error)log("tutorial_practice_end 실패: "+error.message,"bad");
- try{localStorage.removeItem(PRACTICE_KEY);sessionStorage.removeItem(PRACTICE_KEY)}catch(e){}
- const r=await sb.auth.setSession({access_token:s.at,refresh_token:s.rt});
- if(r.error){log("원래 계정으로 돌아오기 실패: "+r.error.message,"bad");await sb.auth.signOut({scope:"local"})}
-}
 // Setting의 "튜토리얼 다시 보기": 끝낸 챕터만 버튼이 나온다
 function renderTutReplay(){
  const card=$("tutReplayCard");if(!card)return;
@@ -1736,17 +1731,29 @@ async function loadTutorial(){
  const {data,error}=await sb.rpc("get_tutorial");
  if(error){log("get_tutorial 실패: "+error.message,"bad");return}
  const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
+ // practice(무대 챕터)는 무대 자료가 답할 때만 들어 있다(stageAnswer)
  tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
+ tutStepMoved(prev);
+}
+// 단계가 넘어간 직후: 과제 묶음을 마쳤으면 축하 장을 띄운다
+function tutStepMoved(prev){
  if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";else if(prev===7&&tut.step>=8)tutCongrats="karma";
+ else if(prev===10&&tut.step>=11)tutCongrats="move";else if(prev===12&&tut.step>=13)tutCongrats="chapel";
+ if(tut.step!==11){tutChapelLost=false;tutChapelFree=false}
 }
 async function tutAck(key){
  if(tutAcking)return;tutAcking=true;
  const {data,error}=await sb.rpc("tutorial_ack",{p_key:key});tutAcking=false;
  if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
- tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
+ const prev=tut.step;tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
+ tutStepMoved(prev);
 }
+// 대기 단계와, 넷째 던전에서 진 뒤 놓아 둔 동안은 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
+function tutFreeStep(){return tut.step===TUT_WAIT||(tut.step===11&&tutChapelFree)}
+// 과제가 화면을 쓰는 중(다른 조각이 리모콘을 숨길 때 쓴다). 끝났거나 대기 단계면 false
+function tutBusy(){return tut.step!=null&&tut.step<tut.last&&!tutFreeStep()}
 // 퀘스트 설명(06의 qGuide)도 같은 짚기 화면을 쓴다
-function tutActive(){return !!loggedIn&&tut.step!=null&&(tut.step<tut.last||tutCongrats||!!tutPractice||questIntroPending||!!qGuide)}
+function tutActive(){return !!loggedIn&&tut.step!=null&&(tutBusy()||tutCongrats||!!tutPractice||questIntroPending||!!qGuide)}
 function tutVisible(el){return !!el&&el.isConnected&&el.getClientRects().length>0}
 // 목록에서 고를 줄 하나만 남기고 나머지는 선택 불가(브라우저가 흐리게 그린다). 단계가 끝나면 바로 푼다
 function tutLimit(sel,keep){if(!sel||sel.dataset.tutLim===keep)return;[...sel.options].forEach(o=>o.disabled=o.value!==keep);sel.dataset.tutLim=keep}
@@ -1758,6 +1765,9 @@ const TUT_GEAR={job:"ARCHER",def:"scrap_bow"};
 const TUT_KARMA={job:"MAGE",gold:50};
 // 단계 3에서 직업마다 패턴에 넣는 공격 스킬. full = 설명을 자세히(첫 캐릭터), resheaf = 그 위 줄에 넣는 화살 채우는 스킬
 const TUT_SKILLS=[{job:"FOOTMAN",a:"footman_shield_slam",full:true},{job:"ARCHER",a:"archer_double_shot",resheaf:"archer_resheaf"},{job:"THIEF",a:"thief_backstab"},{job:"MAGE",a:"mage_stone_spike"}];
+// 단계 10: 이 직업 줄기(전직 포함) 캐릭터의 패턴 맨 위 두 줄(서버 tutorial_eval과 같이 고친다). 단계 11·12: 넷째 던전(목록 순서)과 보스의 줄 전원 스킬 이름(로그에서 찾는다)
+const TUT_MOVE={job:"FOOTMAN",rows:[{c:"bossWindup",a:"common_move_back"},{c:"selfBack",a:"common_move_forward"}]};
+const TUT_CHAPEL={i:3,wave:"Tidal Wave"};
 // 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
 function tutRefresh(fn){if(Date.now()-tutPoll>2500){tutPoll=Date.now();(fn||loadTutorial)()}}
 // 지금 짚을 곳: {id, el, msg(문장은 줄바꿈으로 나눔, 빈 줄은 강제 줄바꿈), btn(말풍선 버튼 글자), fn, prev(이전 버튼), hole(버튼이 있어도 짚은 곳을 누를 수 있음), limit(목록에서 남길 값), above, nohold, holdId(누른 뒤 버튼이 새로 그려져도 잠깐 막는다), holdAs(누른 뒤 이 장으로 돌아와도 잠깐 막는다: 확인 창의 강조 버튼을 누른 뒤 원래 버튼 장), wait, center}. null이면 못 찾은 것(막지 않는다)
@@ -1774,13 +1784,33 @@ function tutResolve(){
  const savedOk=()=>say("savedok",okBtn,"확인을 눌러 주세요.");
  const sec=k=>q(`#charDetail .sec-wrap[data-sec="${k}"]`);
  if(qGuide)return questGuideResolve({say,mid,page,wait,modal,q});
+ // 던전 이름을 쓰는 장(축하 장, 단계 8부터)은 목록이 아직 없으면 받아 온다
+ if((tutCongrats||tut.step>=TUT_WAIT)&&!dungeons.length&&!tutDgAsked){tutDgAsked=true;sb.rpc("get_dungeons").then(r=>{if(!r.error&&!dungeons.length)dungeons=r.data||[]})}
+ const dgName=i=>dungeons[i]?.name||"";
+ const door=i=>{const n=dgName(i);return n?`다음 던전 ${n}의 문이 열렸습니다.`:"다음 던전이 열렸습니다."};
+ // 챕터 3: Footman 줄기(전직 포함) 캐릭터
+ const fmLine=()=>chars.find(c=>jobLine(c.job).includes(TUT_MOVE.job))||null;
+ // 여러 장을 차례로 넘기는 설명(마지막 장의 다음에서 done)
+ const runPages=(pages,done)=>{for(let i=0;i<pages.length;i++){const [id,el,msg]=pages[i];if(tutSeen.has(id))continue;
+   const o={back:i?pages[i-1][0]:null,fn:i===pages.length-1?done:null};
+   return el?page(id,el,msg,o):{...page(id,null,msg,o),center:true}}
+  return wait()};
+ // 캐릭터 상세까지 데려간다(이미 그 캐릭터면 null)
+ const toChar=(k,c,msg)=>{
+  if(currentView!=="camp")return say(k+"tab",$("tabCamp"),"Camp를 눌러 주세요.");
+  if(selectedCharId===c.id)return null;
+  if(selectedCharId)return say(k+"back",$("tabCamp"),"Camp를 눌러 목록으로 돌아가 주세요.");
+  return say(k+"pick",q(`#chars .roster-unit[data-id="${c.id}"]`),msg);
+ };
  if(tutCongrats){
   if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
-  if(!dungeons.length&&!tutDgAsked){tutDgAsked=true;sb.rpc("get_dungeons").then(r=>{if(!r.error&&!dungeons.length)dungeons=r.data||[]})}
-  const door=i=>{const n=dungeons[i]?.name;return n?`다음 던전 ${n}의 문이 열렸습니다.`:"다음 던전이 열렸습니다."};
-  if(tutCongrats==="karma")return mid("done4",`잘하셨습니다!\n이제 KARMA가 한도 안에 들어왔습니다.\n보상으로 ${TUT_KARMA.gold}골드를 받았습니다.\n${door(2)}`,{btn:"확인",fn:()=>{tutCongrats=null;loadGold();if(currentView==="adventure")loadAdventure()}});
+  if(tutCongrats==="chapel")return mid("done6",`잘하셨습니다!\n튜토리얼을 모두 마쳤습니다.\n${door(4)}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  if(tutCongrats==="move"){const c=fmLine();return mid("done5",`잘하셨습니다!\n이제 보스가 차징이나 캐스팅을 시작하면 ${c?(c.job_name||c.job):"캐릭터"}의 차례에 후방으로 물러섰다가 돌아옵니다.\n${dgName(TUT_CHAPEL.i)||"다음 던전"}에 도전해 봅시다.`,{btn:"확인",fn:()=>{tutCongrats=null}})}
+  // 대기 단계로 넘어가는 계정(무대가 아닌 진짜 진행)은 다음 과제가 언제 이어지는지 알린다
+  const waitNote=tut.step===TUT_WAIT&&tut.step<tut.last&&dgName(2)?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n${dgName(2)}에서 이기면 다음 과제가 이어집니다.`:"";
+  if(tutCongrats==="karma")return mid("done4",`잘하셨습니다!\n이제 KARMA가 한도 안에 들어왔습니다.\n보상으로 ${TUT_KARMA.gold}골드를 받았습니다.\n${door(2)}${waitNote}`,{btn:"확인",fn:()=>{tutCongrats=null;loadGold();if(currentView==="adventure")loadAdventure()}});
   // 단계 7을 건너뛰고 바로 끝난 계정(넘은 Mage가 없음)은 여기서 다음 던전을 알린다
-  if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.${tut.step>=tut.last?`\n${door(2)}`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(tut.step>=tut.last){loadGold();if(currentView==="adventure")loadAdventure()}}});
+  if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.${tut.step>=TUT_WAIT?`\n${door(2)}${waitNote}`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(tut.step>=TUT_WAIT){loadGold();if(currentView==="adventure")loadAdventure()}}});
   if(tutCongrats==="skills")return mid("done2",`잘하셨습니다!\n이제 네 명이 공격 스킬을 씁니다.\n${door(1)}`,{btn:"확인",fn:()=>{tutCongrats=null}});
   return mid("done","잘하셨습니다!\n이제 Cleric이 다친 아군을 회복합니다.",{btn:"확인",fn:()=>{tutCongrats=null}});
  }
@@ -1798,8 +1828,8 @@ function tutResolve(){
  const s=tut.step,logOpen=modal&&!!q("#helpBody .bl-result"),openBtn=q("#helpBody .bl-open");
  const expandMsg="전투가 끝났습니다.\n어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.";
  const expandMsg2="이겼습니다!\n이번에는 스킬이 어떻게 쓰였는지 봅시다.\n로그 보기를 눌러 주세요.";
- // 던전 목록에서 그 던전의 방까지 들어가 전투를 누르게 한다(단계 0과 4가 같이 쓴다)
- const toFight=(d,k,tabMsg,openMsg)=>{
+ // 던전 목록에서 그 던전의 방까지 들어가 전투를 누르게 한다(단계 0, 4, 11이 같이 쓴다). fightMsg: Battle! 장의 글(없으면 기본)
+ const toFight=(d,k,tabMsg,openMsg,fightMsg)=>{
   if(currentView!=="adventure")return say(k+"tab",$("tabAdventure"),tabMsg);
   if(!d)return null;
   if(!d.unlocked){tutRefresh(loadAdventure);return wait()}
@@ -1810,7 +1840,7 @@ function tutResolve(){
   }
   const need=Math.min(partyMax,chars.length),have=party.filter(id=>chars.some(c=>c.id===id)).length;
   if(have<need)return say(k+"party",q("#partyPick .roster-unit:not(.in-party):not([disabled])"),`함께 싸울 캐릭터를 파티에 넣어야 합니다.\n\n밝게 표시된 캐릭터를 눌러 주세요. (${have}/${need})`);
-  return say(k+"fight",q("#roomActs .pill.pri:not([disabled])"),"준비가 끝났습니다.\nBattle!을 눌러 주세요.");
+  return say(k+"fight",q("#roomActs .pill.pri:not([disabled])"),fightMsg||"준비가 끝났습니다.\nBattle!을 눌러 주세요.");
  };
  // Log 탭에서 방금 전투를 여는 데까지(단계 1과 5가 같이 쓴다)
  const toLog=k=>{
@@ -1822,8 +1852,10 @@ function tutResolve(){
   if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
   if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s1expand",openBtn,expandMsg,{wait:true});
   if(modal)return say("s0close",q(".help-close"),"닫기를 눌러 주세요.");
-  const d=dungeons[0];
-  return toFight(d,"s0","첫 모험을 떠나 봅시다.\nAdventure를 눌러 주세요.",`첫 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
+  const d=dungeons[0],sp=supplyState,cost=d?.supply_cost??sp?.per_run;
+  // SUPPLY 값은 get_supply(서버 game_config)가 준 값. 아직 못 받았으면 숫자를 뺀다(도움말과 같음)
+  const supLine=sp&&cost!=null?`Battle!을 누를 때마다 SUPPLY ${cost}${josaOf(cost,"을","를")} 씁니다(${durWord(sp.regen_sec)}마다 1씩 차고 최대 ${sp.max}).`:"Battle!을 누를 때마다 SUPPLY를 씁니다(시간이 지나면 다시 찹니다).";
+  return toFight(d,"s0","첫 모험을 떠나 봅시다.\nAdventure를 눌러 주세요.",`첫 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`,`준비가 끝났습니다.\n${supLine}\nBattle!을 눌러 주세요.`);
  }
  if(s===1){
   if(!logOpen)return toLog("s1");
@@ -2022,6 +2054,107 @@ function tutResolve(){
   if(f.value!=="1")fill();
   return say("s7alloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
  }
+ // 단계 8(대기)은 짚지 않는다(tutActive가 거른다)
+ // 단계 9: 셋째 던전을 이겨 챕터 3이 열렸다. Footman의 Formation에서 시작 위치와 엄호를 보여 준다
+ if(s===9){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(modal)return okBtn?savedOk():say("s9close",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=fmLine()||chars.find(x=>(x.start_position||"BACK")==="FRONT")||chars[0];if(!c)return null;
+  const jn=c.job_name||c.job;
+  if(!tutSeen.has("w1"))return mid("w1",`${dgName(2)?`${dgName(2)}에서 이겼습니다!\n`:""}${door(TUT_CHAPEL.i)}\n\n들어가기 전에 대열을 알아 둡시다.`,{btn:"다음",fn:()=>tutSeen.add("w1")});
+  const go=toChar("s9",c,`${jn}부터 봅시다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  const w=sec("formation");if(w?.classList.contains("collapsed"))return say("s9sec",w.querySelector(".sec-toggle"),"Formation을 눌러 펼쳐 주세요.");
+  const rows=w?[...w.querySelectorAll(".fm-row")]:[];if(rows.length<2)return null;
+  const pos=c.start_position||"BACK",cr=c.cover_rule||{mode:"NEVER"},ct=coverText(cr);
+  return runPages([
+   ["fm1",rows[0],`Formation은 전투를 시작할 때 서는 자리입니다.\n전방(Front)과 후방(Back)이 있고, 전투 중에는 스킬로만 바뀝니다.\n${jn}의 시작 위치는 ${pos==="FRONT"?"전방":"후방"}입니다.`],
+   ["fm2",rows[1],"엄호(Cover)는 다른 아군이 공격받을 때 대신 막아서는 설정입니다.\n후방 아군이 공격받으면 전방이 먼저 막아섭니다.\n후방은 전방을 막아설 수 없습니다."],
+   ["fm3",rows[1],cr.mode==="ALWAYS"?`${jn}의 엄호는 '${ct}'입니다.\n그래서 후방을 노린 공격도 대부분 ${jn}에게 갑니다.`:`${jn}의 엄호는 '${ct}'입니다.\n설정을 눌러 언제 막아설지 바꿀 수 있습니다.`],
+   ["fm4",null,"하지만 막아설 수 없는 공격도 있습니다.\n줄 전원을 한꺼번에 덮치는 공격이 그렇습니다.\n그런 공격은 줄을 옮겨서 피합니다."]],()=>tutAck("formation"));
+ }
+ // 단계 10: Footman 패턴 맨 위 두 줄에 '보스가 차징이나 캐스팅 중 → Move Back', '자신이 후방 → Move Forward'
+ if(s===10){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(cfm==="pattern")return say("s10saveok",priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:"s10save"});
+  if(modal)return okBtn?savedOk():say("s10close",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=fmLine();if(!c){tutRefresh();return wait()}
+  const jn=c.job_name||c.job,wv=TUT_CHAPEL.wave,d3=dgName(TUT_CHAPEL.i),boss=(dungeons[TUT_CHAPEL.i]?.monsters||[]).find(m=>m.is_boss)?.name;
+  if(!tutSeen.has("mv0"))return mid("mv0",`${d3&&boss?`${d3}의 보스는 ${boss}입니다.\n`:""}${wv}로 전방 전원을 한꺼번에 덮치고 후방으로 밀어냅니다.\n하지만 ${wv}를 준비하는 동안 전방이 비면 물결은 빈자리만 휩쓸고 지나갑니다.\n${jn}의 패턴에 물러섰다가 돌아오는 줄을 넣어 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("mv0")});
+  const go=toChar("s10",c,`${jn}의 패턴을 고칩니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  const sk=id=>(skillsByChar[c.id]?.skills||[]).find(x=>x.id===id),mb=sk(TUT_MOVE.rows[0].a),mf=sk(TUT_MOVE.rows[1].a);if(!mb||!mf)return null;
+  // 이미 저장된 패턴에 둘 다 들어 있으면(서버 단계가 곧 넘어간다) 다시 묻는다
+  if(!patternDraft[c.id]&&TUT_MOVE.rows.every(x=>(c.pattern||[]).some(r=>r.a===x.a))){tutRefresh();return wait()}
+  const n=patLines(c.id);
+  if(n<2){tutAck("move");return wait()} // 넣을 칸이 두 줄이 안 되면 넘긴다(서버도 tutorial_ack 'move'로 넘긴다)
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say("s10pattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const list=$("pat-"+c.id);let rows=list?[...list.querySelectorAll(".pattern-row")]:[];if(rows.length<n)return null;
+  const isRow=(row,x)=>row.querySelector(".pattern-cond").value===x.c&&row.querySelector(".pattern-action").value===x.a;
+  // 처음 한 번: 맨 위 두 줄을 비우고 원래 줄을 두 칸씩 내린다. 줄 수는 그대로라 두 줄을 빼야 한다:
+  // 반드시 줄 뒤의 줄(읽히지 않는다)을 아래에서부터 먼저 빼고, 모자라면 맨 아래 줄을 뺀다. 비활성 줄은 그대로 둔다
+  if(!tutSeen.has("mvshift")){
+   tutSeen.add("mvshift");tutMvLost=[];
+   if(!TUT_MOVE.rows.every((x,i)=>isRow(rows[i],x))){
+    const raw=readPatternRaw(c.id),act=raw.slice(0,n),rest=raw.slice(n),ai=act.findIndex(r=>r.c==="always"),keep=act.slice();let cut=0;
+    for(let i=keep.length-1;ai>=0&&i>ai&&cut<2;i--){keep.splice(i,1);cut++}
+    while(cut<2&&keep.length){tutMvLost.unshift(skillName(c.id,keep.pop().a));cut++}
+    const blank={c:"always",a:basicSkill(c.id)};
+    list.innerHTML=renderPatternRows([blank,blank,...keep,...rest],c.job,c.id);capturePatternDraft(c.id);
+    rows=[...list.querySelectorAll(".pattern-row")];
+   }else tutSeen.add("mv1");
+  }
+  if(!tutSeen.has("mv1"))return page("mv1",list,`맨 위 두 줄을 비우고, 원래 있던 줄은 아래로 두 칸씩 내렸습니다.${tutMvLost.length?`\n칸이 모자라 맨 아래 줄(${tutMvLost.join(", ")})은 뺐습니다.\nTP로 Pattern 줄을 늘리면 다시 넣을 수 있습니다.`:""}`);
+  for(let i=0;i<2;i++){
+   const x=TUT_MOVE.rows[i],row=rows[i],cond=row.querySelector(".pattern-cond"),act=row.querySelector(".pattern-action"),id="mv"+i,s1=i?mf:mb;
+   const opt=cond.querySelector(`option[value="${x.c}"]`),lab=opt?.textContent.trim()||"",grp=opt?.parentElement?.label||"";
+   if(cond.value!==x.c)return say("c-"+id,cond,`${i?"둘째":"첫"} 줄 조건 칸에서 '${lab}'${josaOf(lab,"을","를")} 골라 주세요.${grp?`\n목록의 ${grp} 묶음에 있습니다.`:""}`,{limit:x.c,above:true,nohold:true});
+   if(act.value!==x.a)return say("x-"+id,act,`스킬 칸에서 ${s1.name}${josaOf(s1.name,"을","를")} 골라 주세요.\n자신을 ${i?"전방":"후방"}으로 옮기는 공용 스킬입니다.${i?"":"\n공용 스킬은 SP 없이 처음부터 배워 둡니다."}`,{limit:x.a,above:true,nohold:true});
+  }
+  if(!tutSeen.has("mv2"))return page("mv2",list,`보스가 차징이나 캐스팅을 시작하면 첫 줄이 맞아 후방으로 물러납니다.\n준비가 끝나면 첫 줄이 맞지 않으니 둘째 줄을 읽고 전방으로 돌아옵니다.\n전방에 있으면 둘째 줄도 맞지 않아 원래 하던 공격을 합니다.`);
+  if(!tutSeen.has("mv3"))return page("mv3",rows[0],`${mb.name}${josaOf(mb.name,"과","와")} ${mf.name}${josaOf(mf.name,"은","는")} Front Delay와 Back Delay가 없습니다.\n물러서고 돌아오는 데 시간을 거의 쓰지 않습니다.\n보스가 다른 스킬을 준비할 때도 물러나니, 무엇을 준비했는지는 전투가 끝난 뒤 로그에서 봅시다.`,{back:"mv2"});
+  return say("s10save",q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 11: 넷째 던전을 이길 때까지 전투로 데려간다. 지면 한 번 알리고 화면을 놓아 둔다(이길 때까지 자유롭게 준비)
+ if(s===11){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s12expand",openBtn,"이겼습니다!\n이번에는 보스와 어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.",{wait:true});
+  if(modal){
+   const lost=logOpen&&!!openedBattle&&openedBattle.result!=="WIN";if(lost)tutChapelLost=true;
+   return okBtn?savedOk():say("s11close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
+  }
+  const d=dungeons[TUT_CHAPEL.i];
+  if(tutChapelLost&&!tutSeen.has("cl1"))return mid("cl1",`이번에는 이기지 못했습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl1");tutChapelFree=true}});
+  return toFight(d,"s11",`${d?.name?`${d.name}에 `:""}도전해 봅시다.\nAdventure를 눌러 주세요.`,`넷째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
+ }
+ // 단계 12: 넷째 던전 로그에서 보스 대사, 물러선 줄, 물결 피하기, 돌아온 줄, 기믹 멘트를 짚는다(없는 줄은 건너뛴다)
+ if(s===12){
+  if(!logOpen)return toLog("s12");
+  if(!openBtn){tutAck("log3");return wait()} // 로그가 지워진 판은 건너뛴다
+  if(openBtn.getAttribute("aria-expanded")!=="true")return say("s12expand",openBtn,"이겼습니다!\n이번에는 보스와 어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.");
+  const c=fmLine();
+  if(c&&!skillsByChar[c.id]){if(!tutSkAsk){tutSkAsk=true;loadSkills(c.id).finally(()=>{tutSkAsk=false})}return wait()}
+  const jn=c?(c.job_name||c.job):"",wv=TUT_CHAPEL.wave,sk=id=>c?(skillsByChar[c.id]?.skills||[]).find(x=>x.id===id):null;
+  const mbN=sk(TUT_MOVE.rows[0].a)?.name,mfN=sk(TUT_MOVE.rows[1].a)?.name;
+  const after=(a,b)=>!!(a&&b&&(a.compareDocumentPosition(b)&Node.DOCUMENT_POSITION_FOLLOWING));
+  const mine=[...document.querySelectorAll("#battleLog .bl-row:not(.bl-srow)")].map(x=>x.querySelector(".bl-r")).filter(Boolean);
+  // 그 캐릭터가 그 스킬로 실제로 줄을 옮긴 묶음
+  const moves=nm=>nm?mine.filter(x=>x.querySelector(".bl-turn .bl-sk")?.textContent===nm&&x.querySelector(".bl-move")&&(!c?.name||x.querySelector(".bl-turn b")?.textContent===c.name)):[];
+  // 대사·물결 피하기·기믹 멘트는 그 줄만 짚는다(묶음 칸째 짚으면 폰에서 화면을 거의 다 덮는다)
+  const wave=[...document.querySelectorAll("#battleLog .bl-talk")].find(t=>(t.querySelector(".bl-talk-sk")?.textContent||"").includes(wv))||null;
+  const dodge=[...document.querySelectorAll("#battleLog .bl-sub")].find(x=>x.textContent.includes(wv)&&x.textContent.includes("쿨타임"))||null;
+  const backs=moves(mbN),mbRow=dodge?backs.filter(x=>after(x,dodge)).pop()||backs[0]:backs[0];
+  const mfRow=moves(mfN).find(x=>!mbRow||after(mbRow,x));
+  const gim=q("#battleLog .bl-gim");
+  const pages=[];
+  if(wave)pages.push(["t1",wave,`보스가 ${wv}를 준비하며 한 말입니다.\n보스는 큰 스킬을 쓸 때 대사를 합니다.\n대사에 피하는 법의 힌트가 숨어 있기도 합니다.`]);
+  else pages.push(["t0",null,`이번 전투에는 보스가 ${wv}를 쓰지 않았습니다.\n보스가 ${wv}를 준비하면 패턴대로 물러섭니다.`]);
+  if(mbRow)pages.push(["t2",mbRow,`${jn}의 ${mbN} 줄입니다.\n보스가 준비를 시작하자 패턴 첫 줄대로 후방으로 물러났습니다.`]);
+  if(dodge)pages.push(["t3",dodge,`전방이 비어 ${wv}가 빈자리만 휩쓸었습니다.\n그 대가로 적 모두의 Delay가 늘어나고, ${wv}는 쿨타임에 들어갔습니다.\n그동안 우리 편이 먼저 움직입니다.`]);
+  else if(wave)pages.push(["t3x",wave,`이번에는 물결을 피하지 못했습니다.\n${wv}를 준비하는 동안 ${jn||"전방 캐릭터"}의 차례가 와야 물러설 수 있습니다.\nSPD가 높으면 차례가 더 자주 옵니다.`]);
+  if(mfRow)pages.push(["t4",mfRow,`${mfN} 줄입니다.\n보스의 준비가 끝나자 패턴 둘째 줄대로 전방에 돌아왔습니다.`]);
+  if(gim)pages.push(["t5",gim,"기믹 멘트입니다.\n몬스터가 특별한 힘을 쓰면 로그에 이렇게 적힙니다.\n어떤 몬스터부터 쓰러뜨릴지 정할 때 참고하세요."]);
+  pages.push(["t6",null,"보스 대사와 기믹 멘트를 읽으면 공략법이 보입니다.\n막히는 던전이 있으면 로그를 열어 보세요."]);
+  return runPages(pages,()=>tutAck("log3"));
+ }
  return null;
 }
 function tutEnsure(){
@@ -2089,7 +2222,7 @@ function tutRender(st){
  ui.cur=st;ui.key=st.id;ui.shown=true;document.documentElement.classList.add("tut-on");
 }
 function tutTick(){
- if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;renderTutReplay()}qGuide=null;tutHide();return}
+ if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;tutChapelLost=false;tutChapelFree=false;renderTutReplay()}qGuide=null;tutHide();return}
  if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
  if(!tutActive()){tutHide();return}
  let st=null;try{st=tutResolve()}catch(e){st=null}
@@ -3835,7 +3968,7 @@ function battleLogHtml(b){
   else if(e.t==="sure_evade"&&cur)cur.html.push(`<div class="bl-parry">다음 공격 ${e.n}회를 피할 준비를 했다!</div>`);
   else if((e.t==="refill"||e.t==="ammo")&&cur){const am=`${AK[info[e.u]?.ak]||"화살"}${e.from===e.to?`(${e.from})`:`(${e.from} &gt; ${e.to})`}`;cur.html[0]=cur.html[0].replace(/<\/div>$/,` <span class="bl-hp nw">${am}</span></div>`)}
   // 물결 피하기(엔진 0.47.0 dodge): 빗나간 스킬 묶음의 Back Delay 다음. 쓴 쪽 선딜·후딜 중인 개체마다 늘어난 Delay, 행동 사이(ph GCD, 엔진 0.49.0)는 다음 선딜에 더해짐, 그 스킬 쿨타임
-  else if(e.t==="dodge"){const h=(e.units||[]).map(x=>{if(x.ph==="GCD")return `<div class="bl-delay">⇥ ${who(x.u)} 다음 선딜 <b>+${Number(e.amt)||0}</b></div>`;const m=x.ph==="PRE"?fr:bk,a=m[x.u]||0,c=a+(Number(e.amt)||0);m[x.u]=c;return `<div class="bl-delay">⇥ ${who(x.u)} ${dlk(x.ph,a,c)}</div>`}).join("")+(e.cd?`<div class="bl-sub">${skillNameHtml(e.name)} <span class="nw">쿨타임 ${e.cd}턴</span></div>`:"");put(e.u,h)}
+  else if(e.t==="dodge"){const h=(e.units||[]).map(x=>{if(x.ph==="GCD")return `<div class="bl-delay">⇥ ${who(x.u)} 다음 Front Delay <b>+${Number(e.amt)||0}</b></div>`;const m=x.ph==="PRE"?fr:bk,a=m[x.u]||0,c=a+(Number(e.amt)||0);m[x.u]=c;return `<div class="bl-delay">⇥ ${who(x.u)} ${dlk(x.ph,a,c)}</div>`}).join("")+(e.cd?`<div class="bl-sub">${skillNameHtml(e.name)} <span class="nw">쿨타임 ${e.cd}턴</span></div>`:"");put(e.u,h)}
   else if(e.t==="delay"){const h=delayHtml(e);if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=`${tv>0?"+":""}${tv}${u}`,d=`${dv>0?"+":dv<0?"":(up===(sg>0)?"+":"-")}${dv}${u}`;
    /* 턴 있는 버프: 걸 때 turns(자기 턴 수), 끝나 되돌릴 때 end */
