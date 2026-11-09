@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v490 · 갱신 2026-11-10 04:42 KST -->
+<!-- ProjectGY-test-console v491 · 갱신 2026-11-10 04:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v490 · 2026-11-10 04:42</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v491 · 2026-11-10 04:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -3418,18 +3418,21 @@ function patternGuideRows(charId){
   const known=new Set(actionSkills(charId).map(s=>s.id)),groups=[];let cur=[];
   for(const [,name,cond,a,v] of g.rows){cur.push({c:cond,a,name,...(v!=null?{v}:{})});if(a!=="common_and"){groups.push(cur);cur=[]}}
   const ok=[],miss=[];for(const gr of groups)(gr.every(r=>known.has(r.a))?ok:miss).push(gr);
-  const n=patLines(charId),last=ok.length&&ok[ok.length-1].length===1&&ok[ok.length-1][0].c==="always"?ok.pop():null,cut=[];
+  const n=patLines(charId),cut=[];let last=ok.length&&ok[ok.length-1].length===1&&ok[ok.length-1][0].c==="always"?ok.pop():null,basicEnd=null;
+  // 끝 "반드시" 묶음을 못 넣으면(그 스킬을 안 배움) 맨 끝 한 줄은 반드시 → 기본 공격으로 남긴다(조건 줄이 다 거짓이면 머뭇거리지 않게)
+  if(!last){const b=basicSkill(charId);if(b){last=[{c:"always",a:b,name:skillName(charId,b)}];basicEnd=last[0].name}}
   const room=n-(last?1:0);let used=0;const keep=[];
   for(const gr of ok){if(!cut.length&&used+gr.length<=room){keep.push(gr);used+=gr.length}else cut.push(gr)}
   if(last)keep.push(last);
   const tail=gr=>gr[gr.length-1].name;
-  return {rows:keep.flat().map(({c,a,v})=>({c,a,...(v!=null?{v}:{})})),miss:miss.map(tail),cut:cut.map(tail),n};
+  return {rows:keep.flat().map(({c,a,v})=>({c,a,...(v!=null?{v}:{})})),miss:miss.map(tail),cut:cut.map(tail),n,basicEnd};
 }
 function confirmPatternGuide(charId){
   const r=patternGuideRows(charId);if(!r)return;
   const c=chars.find(x=>x.id===charId),nm=c?.name||c?.job_name||c?.job;
   const note=[r.miss.length?`<p class="help-note">배우지 않은 스킬 줄은 뺍니다: ${r.miss.map(esc).join(", ")}</p>`:"",
-   r.cut.length?`<p class="help-note">패턴 줄이 ${r.n}줄이라 넣지 못하는 줄: ${r.cut.map(esc).join(", ")}</p>`:""].join("");
+   r.cut.length?`<p class="help-note">패턴 줄이 ${r.n}줄이라 넣지 못하는 줄: ${r.cut.map(esc).join(", ")}</p>`:"",
+   r.basicEnd?`<p class="help-note">맨 끝 줄은 반드시 → ${esc(r.basicEnd)}(기본 공격)로 둡니다.</p>`:""].join("");
   openConfirm("범용 패턴 적용",`<p><b>${esc(nm)}</b>의 패턴을 범용 패턴으로 바꿔 저장합니다. 지금 패턴은 사라집니다.</p>${note}${draftWarnHtml(charId)}<p class="help-note">OO 수치는 기본값으로 들어갑니다. 저장한 뒤 패턴에서 바꿀 수 있습니다.</p>`,
    [["취소",null,false],["적용",()=>applyPatternGuide(charId,r.rows),true]],"patguide");
 }
