@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v484 · 갱신 2026-11-09 14:58 KST -->
+<!-- ProjectGY-test-console v485 · 갱신 2026-11-09 15:08 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v484 · 2026-11-09 14:58</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v485 · 2026-11-09 15:08</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -868,8 +868,6 @@ async function signIn(){
  init();
 }
 // 로그인 저장 옵션: 로그인 전에 쓰므로 이 브라우저에만 저장한다(서버 저장 안 함).
-// 로그인한 계정 id(브라우저에 계정마다 따로 기억할 때 키로 쓴다)
-let authUid=null;
 const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 function applySaveOpts(){
  const se=LS.get("pgy_save_email")==="1",sp=LS.get("pgy_save_pw")==="1";
@@ -899,7 +897,7 @@ async function startGuest(){
 async function signOut(){
  if(isGuest)return openConfirm("로그아웃",`<p>손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.</p>`,[["취소",null,false],["로그아웃",async()=>{await sb.auth.signOut();init()},true]]);
  await sb.auth.signOut();init()}
-async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();const now=!!user;authUid=user?.id||null;
+async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();const now=!!user;
  setTabsForLogin(now);
  $("loginForm").style.display=now?"none":"block";$("alreadyLogged").style.display=now?"block":"none";
  isGuest=!!(user&&user.is_anonymous);
@@ -1687,9 +1685,10 @@ const TUT_EXIT_BUTTON=true;
 //   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트), 13 끝
 // tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12를 마침)
 // tutChapelLost·tutChapelFree: 단계 11에서 지면 한 번 알리고, 그 뒤로는 넷째 던전을 이길 때까지 화면을 놓아 둔다
-// 풀린 상태는 브라우저에 계정마다 기억한다(새로 고침·다시 로그인해도 유지, 단계 11을 벗어나면 지운다. 다른 기기에서는 처음 진 뒤 다시 켜진다)
-const tutChapelKey=()=>authUid?"pgy_chapel_free_"+authUid:null;
-function tutChapelFreeSet(on){tutChapelFree=on;const k=tutChapelKey();if(!k||stage)return;if(on)LS.set(k,"1");else LS.del(k)}
+// 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11을 벗어나면 서버가 끈다). 무대에서는 화면에서만
+function tutChapelFromServer(data){if(stage)return;tutChapelFree=tut.step===11&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add("cl1")}
+// 예전에 브라우저에 기억하던 키(pgy_chapel_free_계정)는 지운다
+try{Object.keys(localStorage).filter(k=>k.startsWith("pgy_chapel_free_")).forEach(k=>localStorage.removeItem(k))}catch(e){}
 let tut={step:null,last:13},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
 const tutSeen=new Set();
 // 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다
@@ -1790,21 +1789,20 @@ async function loadTutorial(){
  const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
  // practice(무대 챕터)는 무대 자료가 답할 때만 들어 있다(stageAnswer)
  tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
- tutStepMoved(prev);
+ tutStepMoved(prev);tutChapelFromServer(data);
 }
 // 단계가 넘어간 직후: 과제 묶음을 마쳤으면 축하 장을 띄운다
 function tutStepMoved(prev){
  if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";else if(prev===7&&tut.step>=8)tutCongrats="karma";
  else if(prev===10&&tut.step>=11)tutCongrats="move";else if(prev===12&&tut.step>=13)tutCongrats="chapel";
- if(tut.step!==11){tutChapelLost=false;if(tut.step!=null)tutChapelFreeSet(false);else tutChapelFree=false}
- else if(!tutChapelFree&&!stage&&tutChapelKey()&&LS.get(tutChapelKey())==="1"){tutChapelFree=true;tutSeen.add("cl1")}
+ if(tut.step!==11){tutChapelLost=false;tutChapelFree=false}
 }
 async function tutAck(key){
  if(tutAcking)return;tutAcking=true;
  const {data,error}=await sb.rpc("tutorial_ack",{p_key:key});tutAcking=false;
  if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
  const prev=tut.step;tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
- tutStepMoved(prev);
+ tutStepMoved(prev);tutChapelFromServer(data);
 }
 // 대기 단계와, 넷째 던전에서 진 뒤 놓아 둔 동안은 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
 function tutFreeStep(){return tut.step===TUT_WAIT||(tut.step===11&&tutChapelFree)}
@@ -2180,7 +2178,7 @@ function tutResolve(){
    return okBtn?savedOk():say("s11close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
   }
   const d=dungeons[TUT_CHAPEL.i];
-  if(tutChapelLost&&!tutSeen.has("cl1"))return mid("cl1",`이번에는 이기지 못했습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl1");tutChapelFreeSet(true)}});
+  if(tutChapelLost&&!tutSeen.has("cl1"))return mid("cl1",`이번에는 이기지 못했습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl1");tutChapelFree=true;if(!stage)tutAck("chapel_free")}});
   return toFight(d,"s11",`${d?.name?`${d.name}에 `:""}도전해 봅시다.\nAdventure를 눌러 주세요.`,`넷째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
  }
  // 단계 12: 넷째 던전 로그에서 보스 대사, 물러선 줄, 물결 피하기, 돌아온 줄, 기믹 멘트를 짚는다(없는 줄은 건너뛴다)
