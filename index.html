@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v487 · 갱신 2026-11-10 01:37 KST -->
+<!-- ProjectGY-test-console v488 · 갱신 2026-11-10 01:39 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v487 · 2026-11-10 01:37</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v488 · 2026-11-10 01:39</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -4353,10 +4353,11 @@ function renderIdle(){
  const d=idleEnsure(),info=idleInfo,ps=info?.parties||[];
  if(!info){idlePlace(true);return}
  $("idleCount").textContent=`${ps.length}/${info.slots}`;$("iTabCnt").textContent=ps.length;
- // 손잡이 점·깜빡임: 골드가 모자라 멈춘 파티가 있을 때
- d.classList.toggle("has-done",ps.some(p=>p.halted));
- // cap_hours가 null이면 쌓이는 시간 무제한
- $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · ${info.cap_hours==null?"쌓이는 시간 제한 없음":`최대 ${info.cap_hours}시간까지 쌓임`}`;
+ // 손잡이 점·깜빡임: 골드가 모자라 멈춘 파티나 판을 다 돈 파티가 있을 때
+ d.classList.toggle("has-done",ps.some(p=>p.halted||p.done));
+ // 보낸 때부터 cap_hours시간만 돈다(판 수 = 시간×60÷판 분). cap_hours가 null·0이면 판 수 제한 없음
+ const capH=Number(info.cap_hours)||0,capN=capH&&info.run_minutes?Math.floor(capH*60/info.run_minutes):0;
+ $("idleTop").textContent=`${info.run_minutes}분마다 한 판 · ${capH?`보낸 뒤 ${capH}시간(${capN}판)`:"판 수 제한 없음"}`;
  idleNeedSlots();
  $("idleList").innerHTML=ps.map(p=>{
   const s=p.summary||{};
@@ -4375,7 +4376,7 @@ function renderIdle(){
   return `<div class="idle-card">
    <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
    ${mem?`<div class="idle-line dim">${mem}</div>`:""}
-   ${p.halted?`<div class="idle-line idle-warn">골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.</div>`:`<div class="idle-line dim" data-idle-next="${esc(p.id)}"></div>`}
+   ${p.done?`<div class="idle-line idle-warn">판을 다 돌았습니다 · 회수해 주세요.</div>`:p.halted?`<div class="idle-line idle-warn">골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.</div>`:`<div class="idle-line dim" data-idle-next="${esc(p.id)}"></div>`}
    <div class="idle-line">${s.runs>0?idleRunsText(s):"아직 끝난 판이 없습니다."}</div>
    ${exp?`<div class="idle-line">EXP · ${exp}</div>`:""}
    ${drops?`<div class="idle-line">전리품 · ${drops}</div>`:""}
@@ -4401,8 +4402,9 @@ function idleDrops(id,on){if(on)idleDropsOpen.add(id);else idleDropsOpen.delete(
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
  if(!idleInfo)return;
- const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false,soon=null,halted=0;
+ const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false,soon=null,halted=0,done=0;
  for(const p of ps){
+  if(p.done){done++;continue}
   if(p.halted){halted++;continue}
   const left=Number(p.next_sec||0)-el;
   if(left<=0)due=true;
@@ -4414,6 +4416,7 @@ function tickIdle(){
  // 접었을 때 제목 아래 한 줄: 가장 가까운 다음 판까지 남은 시간, 멈춘 파티
  const brief=$("idleBrief");
  if(brief){const a=[];if(soon!=null)a.push(soon>0?`다음 판까지 ${fmtDur(soon)}`:"정산을 기다리는 중…");
+  if(done)a.push(`<span class="idle-warn">판을 다 돎${ps.length>1?` ${done}`:""} · 회수해 주세요</span>`);
   if(halted)a.push(`<span class="idle-warn">골드 부족으로 멈춤${ps.length>1?` ${halted}`:""}</span>`);
   const h=ps.length?a.join(" · "):"파견한 파티가 없습니다.";if(brief.dataset.h!==h){brief.dataset.h=h;brief.innerHTML=h}}
  if(due&&!idleBusy&&!battleBusy&&Date.now()>=idleNextTry){idleNextTry=Date.now()+60000;checkIdle(!(currentView==="adventure"&&!advRoom))}
