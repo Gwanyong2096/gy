@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v485 · 갱신 2026-11-09 15:08 KST -->
+<!-- ProjectGY-test-console v486 · 갱신 2026-11-09 16:45 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v485 · 2026-11-09 15:08</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v486 · 2026-11-09 16:45</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1682,19 +1682,22 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpOverlay").h
 const TUT_EXIT_BUTTON=true;
 // 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 KARMA가 한도를 넘은 Mage의 Karma Limit을 TP로 올리기,
 //   8 대기(TUT_WAIT: 셋째 던전을 처음 이겨 넷째 던전이 열릴 때까지. 짚지도 막지도 않는다), 9 대열(시작 위치·엄호) 보기, 10 Footman 패턴 맨 위에 Move Back·Move Forward(보스가 차징·캐스팅하면 물러섰다 돌아오기),
-//   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트), 13 끝
-// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12를 마침)
-// tutChapelLost·tutChapelFree: 단계 11에서 지면 한 번 알리고, 그 뒤로는 넷째 던전을 이길 때까지 화면을 놓아 둔다
+//   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트),
+//   13 챕터 4 시작(캐릭터가 1차 전직 레벨이 될 때까지 대기), 14 1차 전직, 15 전직한 캐릭터에게 장비 다시 끼우기,
+//   16 끝(챕터 5 다섯째 던전 준비는 사용자 재결정 대기)
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15를 마침)
+// tutChapelLost·tutChapelFree: 단계 11(넷째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
 // 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11을 벗어나면 서버가 끈다). 무대에서는 화면에서만
-function tutChapelFromServer(data){if(stage)return;tutChapelFree=tut.step===11&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add("cl1")}
+const TUT_FIGHT_FREE={11:"cl1"};
+function tutChapelFromServer(data){if(stage)return;tutChapelFree=!!TUT_FIGHT_FREE[tut.step]&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add(TUT_FIGHT_FREE[tut.step])}
 // 예전에 브라우저에 기억하던 키(pgy_chapel_free_계정)는 지운다
 try{Object.keys(localStorage).filter(k=>k.startsWith("pgy_chapel_free_")).forEach(k=>localStorage.removeItem(k))}catch(e){}
-let tut={step:null,last:13},tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
+let tut={step:null,last:16},tutIdleFree=false,tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
 const tutSeen=new Set();
-// 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다
-const TUT_WAIT=8;
+// 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다. TUT_FREE = 짚지 않는 단계 모두(서버 tutorial_busy와 같이 고친다: 8 대기, 13 전직 레벨 전 대기)
+const TUT_WAIT=8,TUT_FREE=[8,13];
 // 챕터: 단계 묶음(to = 그 챕터가 끝나는 단계). 끝낸 챕터는 무대에서 다시 볼 수 있다. 서버의 챕터 시작·끝 단계와 같이 고친다
-const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8},{n:3,to:13}];
+const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8},{n:3,to:13},{n:4,to:16}];
 // tutPractice: 무대에서 챕터를 다시 보는 중이면 {ch, end(끝나는 단계)}. tutAskOpen: 챕터 다시 보기 확인 창이 떠 있는 동안 짚기를 멈춘다
 let tutPractice=null,tutAskOpen=false,practiceBusy=false;
 // ===== 무대(챕터 다시 보기) =====
@@ -1795,7 +1798,9 @@ async function loadTutorial(){
 function tutStepMoved(prev){
  if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";else if(prev===7&&tut.step>=8)tutCongrats="karma";
  else if(prev===10&&tut.step>=11)tutCongrats="move";else if(prev===12&&tut.step>=13)tutCongrats="chapel";
- if(tut.step!==11){tutChapelLost=false;tutChapelFree=false}
+ else if((prev===14||prev===15)&&tut.step>=16)tutCongrats="regear";
+ if(prev!==tut.step){tutChapelLost=false;if(!TUT_FIGHT_FREE[tut.step])tutChapelFree=false}
+ if(tut.step!==14&&tut.step!==15)tutIdleFree=false
 }
 async function tutAck(key){
  if(tutAcking)return;tutAcking=true;
@@ -1804,8 +1809,14 @@ async function tutAck(key){
  const prev=tut.step;tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
  tutStepMoved(prev);tutChapelFromServer(data);
 }
-// 대기 단계와, 넷째 던전에서 진 뒤 놓아 둔 동안은 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
-function tutFreeStep(){return tut.step===TUT_WAIT||(tut.step===11&&tutChapelFree)}
+// 대기 단계와, 넷째 던전에서 진 뒤 놓아 둔 동안, 전직·장비를 바꿀 캐릭터가 모두 Auto Battle 중이라고 알린 뒤는 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
+function tutFreeStep(){return TUT_FREE.includes(tut.step)||(!!TUT_FIGHT_FREE[tut.step]&&tutChapelFree)||(tutIdleFree&&tutIdleStuck())}
+// 챕터 4: 전직할 수 있는 기본 직업 캐릭터(단계 14), 전직 장비 말고는 아무것도 안 낀 전직 캐릭터(단계 15). 그 캐릭터가 모두 Auto Battle 중이면 전직·장착을 못 한다
+function tutPromoteLv(){return Number(pubCfg?.PROMOTE_LEVEL_FIRST)||TUT_PROMOTE.lv}
+function tutTier(c){return templates.find(t=>t.job===c.job)?.tier||"BASE"}
+function tutPromoteChars(){return chars.filter(c=>tutTier(c)==="BASE"&&Number(c.level)>=tutPromoteLv())}
+function tutRegearChars(){return chars.filter(c=>tutTier(c)!=="BASE"&&!itemsData.some(i=>i.equipped_character===c.id&&!TUT_PROMOTE.gear.includes(i.def_id)))}
+function tutIdleStuck(){const on=typeof idleChars==="function"?idleChars():new Set(),l=tut.step===14?tutPromoteChars():tut.step===15?tutRegearChars():[];return l.length>0&&l.every(c=>on.has(c.id))}
 // 과제가 화면을 쓰는 중(다른 조각이 리모콘을 숨길 때 쓴다). 끝났거나 대기 단계면 false
 function tutBusy(){return tut.step!=null&&tut.step<tut.last&&!tutFreeStep()}
 // 퀘스트 설명(06의 qGuide)도 같은 짚기 화면을 쓴다
@@ -1824,6 +1835,8 @@ const TUT_SKILLS=[{job:"FOOTMAN",a:"footman_shield_slam",full:true},{job:"ARCHER
 // 단계 10: 이 직업 줄기(전직 포함) 캐릭터의 패턴 맨 위 두 줄(서버 tutorial_eval과 같이 고친다). 단계 11·12: 넷째 던전(목록 순서)과 보스의 줄 전원 스킬 이름(로그에서 찾는다)
 const TUT_MOVE={job:"FOOTMAN",rows:[{c:"bossWindup",a:"common_move_back"},{c:"selfBack",a:"common_move_forward"}]};
 const TUT_CHAPEL={i:3,wave:"Tidal Wave"};
+// 단계 14·15: 1차 전직 레벨(공개 설정 PROMOTE_LEVEL_FIRST를 못 받았을 때의 값)과, 전직할 때 서버가 새로 끼워 주는 장비(서버 PROMOTE_GEAR_DEFS와 같이 고친다. 단계 15의 끝 조건에서 뺀다)
+const TUT_PROMOTE={lv:20,gear:["worn_pistol","chevalier_garde_bras"]};
 // 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
 function tutRefresh(fn){if(Date.now()-tutPoll>2500){tutPoll=Date.now();(fn||loadTutorial)()}}
 // 지금 짚을 곳: {id, el, msg(문장은 줄바꿈으로 나눔, 빈 줄은 강제 줄바꿈), btn(말풍선 버튼 글자), fn, prev(이전 버튼), hole(버튼이 있어도 짚은 곳을 누를 수 있음), limit(목록에서 남길 값), above, nohold, holdId(누른 뒤 버튼이 새로 그려져도 잠깐 막는다), holdAs(누른 뒤 이 장으로 돌아와도 잠깐 막는다: 확인 창의 강조 버튼을 누른 뒤 원래 버튼 장), wait, center}. null이면 못 찾은 것(막지 않는다)
@@ -1860,7 +1873,10 @@ function tutResolve(){
  };
  if(tutCongrats){
   if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
-  if(tutCongrats==="chapel")return mid("done6",`잘하셨습니다!\n튜토리얼을 모두 마쳤습니다.\n${door(4)}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  // 챕터 4를 마침(지금은 튜토리얼의 끝)
+  if(tutCongrats==="regear")return mid("done7",`잘하셨습니다!\n남은 장비도 Allowed to Equip에서 같은 방법으로 끼울 수 있습니다.\n${tut.step>=tut.last?"튜토리얼을 모두 마쳤습니다.":"챕터 4를 마쳤습니다."}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  // 챕터 3을 마침: 전직 레벨 전(13 대기)이면 언제 이어지는지 알린다(무대에서는 그 판을 찍을 때의 끝이라 알리지 않는다)
+  if(tutCongrats==="chapel"){const lv=tutPromoteLv();return mid("done6",`잘하셨습니다!\n챕터 3을 마쳤습니다.\n${door(4)}${tut.step===13&&tut.step<tut.last?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n캐릭터가 Lv.${lv}${josaOf(lv,"이","가")} 되면 다음 과제가 이어집니다.`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}})}
   if(tutCongrats==="move"){const c=fmLine();return mid("done5",`잘하셨습니다!\n이제 보스가 차징이나 캐스팅을 시작하면 ${c?(c.job_name||c.job):"캐릭터"}의 차례에 후방으로 물러섰다가 돌아옵니다.\n${dgName(TUT_CHAPEL.i)||"다음 던전"}에 도전해 봅시다.`,{btn:"확인",fn:()=>{tutCongrats=null}})}
   // 대기 단계로 넘어가는 계정(무대가 아닌 진짜 진행)은 다음 과제가 언제 이어지는지 알린다
   const waitNote=tut.step===TUT_WAIT&&tut.step<tut.last&&dgName(2)?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n${dgName(2)}에서 이기면 다음 과제가 이어집니다.`:"";
@@ -2210,6 +2226,43 @@ function tutResolve(){
   if(gim)pages.push(["t5",gim,"기믹 멘트입니다.\n몬스터가 특별한 힘을 쓰면 로그에 이렇게 적힙니다.\n어떤 몬스터부터 쓰러뜨릴지 정할 때 참고하세요."]);
   pages.push(["t6",null,"보스 대사와 기믹 멘트를 읽으면 공략법이 보입니다.\n막히는 던전이 있으면 로그를 열어 보세요."]);
   return runPages(pages,()=>tutAck("log3"));
+ }
+ // 단계 13(전직 레벨 전 대기)은 짚지 않는다(tutActive가 거른다)
+ // 단계 14: Lv20이 된 기본 직업 캐릭터(Footman 줄기 먼저)의 전직 카드를 보여 주고 직업을 골라 전직한다. 고르는 건 유저가 한다(카드 묶음 전체를 짚는다)
+ if(s===14||s===15){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  const on=typeof idleChars==="function"?idleChars():new Set(),k="s"+s;
+  // 바꿀 캐릭터가 모두 Auto Battle 중이면 한 번 알리고 놓아 둔다(리모콘에서 회수하면 다시 짚는다)
+  if(tutIdleStuck()){if(modal)return okBtn?savedOk():say(k+"close",q(".help-close"),"닫기를 눌러 주세요.");
+   return mid("pi1",`Auto Battle 중인 캐릭터는 ${s===14?"전직":"장비를 바꿀 수"} 없습니다.\nAuto Battle 리모콘에서 회수하면 이어서 진행합니다.\n그동안 화면을 풀어 두겠습니다.`,{btn:"확인",fn:()=>{tutIdleFree=true}})}
+  if(s===14){
+   const promo=modal&&$("helpTitle")?.textContent==="전직"?q("#helpActions:not([hidden])"):null;
+   if(promo)return say("s14ok",promo,"전직하면 되돌릴 수 없습니다.\n직업을 확인하고 전직을 눌러 주세요.\n다른 직업을 보려면 취소를 누릅니다.",{holdId:true,holdAs:"s14card"});
+   if(modal)return okBtn?savedOk():say("s14close",q(".help-close"),"닫기를 눌러 주세요.");
+   const cand=tutPromoteChars().filter(c=>!on.has(c.id)),c=cand.find(x=>jobLine(x.job).includes(TUT_MOVE.job))||cand[0];
+   if(!c){tutRefresh();return wait()}
+   const jn=c.job_name||c.job,lv=tutPromoteLv();
+   if(!tutSeen.has("pr0"))return mid("pr0",`${jn}${josaOf(jn,"이","가")} Lv.${lv}${josaOf(lv,"이","가")} 되어 1차 전직을 할 수 있습니다.\n전직하면 더 강한 직업이 되어 새 스킬을 배울 수 있습니다.`,{btn:"다음",fn:()=>tutSeen.add("pr0")});
+   const go=toChar("s14",c,`${jn}부터 전직해 봅시다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+   const w=sec("status");if(w?.classList.contains("collapsed"))return say("s14sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+   const cards=q("#charDetail .promote-cards");if(!cards){tutRefresh();return wait()}
+   if(!tutSeen.has("pr1"))return page("pr1",cards,"전직 카드입니다.\n고를 수 있는 직업마다 카드가 하나씩 있고, 1차 전직과 특수 전직이 있습니다.\n카드를 누르면 무엇이 바뀌는지 먼저 보여 줍니다.");
+   if(!tutSeen.has("pr2"))return page("pr2",cards,"전직하면 끼고 있던 장비가 모두 풀려 Bag으로 돌아갑니다.\n소모품 칸은 그대로 남습니다.\nGunner와 Chevalier는 전직 장비를 새로 끼운 채로 시작합니다.",{back:"pr1"});
+   if(!tutSeen.has("pr3"))return page("pr3",cards,"특수 전직은 배운 스킬이 모두 초기화되고 SP를 돌려받습니다.\n이전 직업의 액티브 스킬은 더 쓸 수 없고 패시브만 남습니다.\n같은 특수 직업은 한 파티에 한 명만 넣을 수 있습니다.",{back:"pr2"});
+   return say("s14card",cards,"전직할 직업의 카드를 눌러 주세요.\n직업 설명을 보고 고르세요.",{holdId:true});
+  }
+  // 단계 15: 전직해 장비가 모두 풀린 캐릭터에게 Allowed to Equip에서 장비를 하나 끼운다(전직 장비는 세지 않는다). 낄 것이 없으면 넘긴다
+  if(cfm==="equip")return say("s15equipok",priBtn,"장착을 눌러 주세요.",{holdId:true,holdAs:"s15equip"});
+  if(modal)return okBtn?savedOk():say("s15close",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=tutRegearChars().find(x=>!on.has(x.id));if(!c){tutRefresh();return wait()}
+  const jn=c.job_name||c.job;
+  if(!tutSeen.has("rg0"))return mid("rg0",`${jn}${josaOf(jn,"으로","로")} 전직했습니다!\n끼고 있던 장비는 모두 Bag으로 돌아갔습니다.\n다시 끼워 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("rg0")});
+  const go=toChar("s15",c,`${jn}의 장비를 끼웁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  const w=sec("owned");if(w?.classList.contains("collapsed"))return say("s15owned",w.querySelector(".sec-toggle"),"Bag의 장비 중 이 직업이 낄 수 있는 것은 Allowed to Equip에 나옵니다.\n눌러서 펼쳐 주세요.");
+  const btn=w?[...w.querySelectorAll(".equip-row button")].find(b=>(b.getAttribute("onclick")||"").startsWith("equipTo(")):null;
+  if(!btn){tutAck("regear");return wait()} // 낄 장비가 없으면 넘긴다(서버도 tutorial_ack 'regear'로 넘긴다)
+  if(!tutSeen.has("rg1"))return page("rg1",btn.closest(".equip-row"),"전직하기 전에 끼던 장비도 여기에 나옵니다.\n직업이 바뀌어 낄 수 없게 된 장비는 나오지 않습니다.");
+  return say("s15equip",btn,"장착을 눌러 주세요.\n나머지 장비도 같은 방법으로 끼울 수 있습니다.",{holdId:true});
  }
  return null;
 }
