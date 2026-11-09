@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v488 · 갱신 2026-11-10 01:39 KST -->
+<!-- ProjectGY-test-console v489 · 갱신 2026-11-10 02:54 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v488 · 2026-11-10 01:39</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v489 · 2026-11-10 02:54</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1440,18 +1440,6 @@ const QUEST_GUIDE={
   return qgPages(h,[["qg-n1",h.q("#innJobs"),"Inn에서는 골드를 내고 동료를 영입합니다.\n직업을 고르고 이름을 적은 뒤 영입을 누릅니다."],
    ["qg-n2",h.q("#innJobs"),"영입한 캐릭터는 직접 싸우는 파티에 넣지 않아도 됩니다.\n서브 파티를 꾸려 Auto Battle로 보내면, 직접 싸우는 동안에도 경험치와 아이템이 쌓입니다.\n한 명을 영입해 보세요."]]);
  },
- // 1차 전직(q_ch2_14): 캐릭터의 Skill 아래 전직 카드를 짚고 전직 때 바뀌는 것을 알려 준다
- promote(g,h){
-  if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
-  if(h.modal)return null;
-  if(!selectedCharId)return h.say("qg-p0",h.q("#chars .roster-unit"),"Lv.20이 된 캐릭터를 눌러 주세요.");
-  const w=h.q('#charDetail .sec-wrap[data-sec="skill"]');if(w?.classList.contains("collapsed"))return h.say("qg-psec",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
-  const card=h.q("#charDetail .promote-card:not(.locked)");
-  if(!card)return h.page("qg-p0n",h.q("#charDetail .main-st"),"이 캐릭터는 아직 전직할 수 없습니다.\nLv.20이 되면 Skill 아래에 전직 카드가 나옵니다.\nLv.20이 된 캐릭터를 골라 퀘스트를 다시 눌러 주세요.",{btn:"확인",fn:()=>{qGuide=null}});
-  return qgPages(h,[["qg-p1",card,"Lv.20이 되면 여기서 1차 전직을 고릅니다.\n전직은 되돌릴 수 없으니 직업 설명을 보고 고르세요."],
-   ["qg-p2",card,"전직하면 끼고 있던 장비가 모두 풀려 Bag으로 돌아갑니다.\n전직한 뒤 Equipment에서 다시 끼워 주세요.\n직업에 따라 배운 스킬이 초기화되고 SP를 돌려받기도 합니다."],
-   ["qg-p3",card,"특수전직 직업은 한 파티에 같은 직업을 한 명만 넣을 수 있습니다.\n카드를 눌러 전직해 보세요."]]);
- },
  // 소모품(q_ch2_15): 소모품 칸 → 패턴의 Use Item 줄과 '쓸 수 있을 때' 조건 → 끼우기
  consumable(g,h){
   if(currentView!=="camp"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
@@ -1463,14 +1451,6 @@ const QUEST_GUIDE={
   return qgPages(h,[["qg-u1",slot,"여기가 소모품 칸입니다.\nHealing Potion 같은 소모품을 끼우면 전투에서 쓸 수 있습니다."],
    ["qg-u2",pat,"전투에서는 패턴의 Use Item 줄로 씁니다.\n조건을 '이 줄의 소모품을 쓸 수 있을 때'로 두면 쓸 수 있을 때만 씁니다.\nHP 조건과 AND로 묶으면 위급할 때만 쓰게 할 수 있습니다."],
    ["qg-u3",slot,"소모품 칸에 Healing Potion을 끼워 주세요."]]);
- },
- // Ashen Mine(q_ch2_16): Mine Golem은 출혈로, Forge Wyrm의 Slag Skin은 캐스팅을 끊어서
- ashen(g,h){
-  const r=qgRoom(g,h);if(!r.d)return r.stop;
-  if(h.modal)return null;
-  const el=h.q("#roomActs");
-  return qgPages(h,[["qg-s1",el,"Ashen Mine의 Mine Golem은 앞방어가 아주 높아 타격이 잘 들어가지 않습니다.\n출혈은 앞방어를 무시하니, 출혈을 쌓아 뚫으세요."],
-   ["qg-s2",el,"보스 Forge Wyrm은 HP가 절반 아래로 떨어지면 Slag Skin을 캐스팅해 HP를 모두 채우고 독·출혈을 지웁니다.\n캐스팅하는 동안 물 원소 타격으로 최대 HP의 10% 이상을 넣거나 10번을 맞히면 끊깁니다.\n끊긴 Forge Wyrm은 한동안 움직이지 못하고 받는 피해가 늘어납니다."]]);
  },
  // 제작: Enhance 탭에 있으면 Craft 탭으로 돌려놓고 목록을 짚는다(숨은 목록을 짚지 않게). 목록 장 다음에 Enhance 탭 한 장
  craft(g,h){
@@ -1684,20 +1664,24 @@ const TUT_EXIT_BUTTON=true;
 //   8 대기(TUT_WAIT: 셋째 던전을 처음 이겨 넷째 던전이 열릴 때까지. 짚지도 막지도 않는다), 9 대열(시작 위치·엄호) 보기, 10 Footman 패턴 맨 위에 Move Back·Move Forward(보스가 차징·캐스팅하면 물러섰다 돌아오기),
 //   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트),
 //   13 챕터 4 시작(캐릭터가 1차 전직 레벨이 될 때까지 대기), 14 1차 전직, 15 전직한 캐릭터에게 장비 다시 끼우기,
-//   16 끝(챕터 5 다섯째 던전 준비는 사용자 재결정 대기)
-// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15를 마침)
-// tutChapelLost·tutChapelFree: 단계 11(넷째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
-// 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11을 벗어나면 서버가 끈다). 무대에서는 화면에서만
-const TUT_FIGHT_FREE={11:"cl1"};
+//   16 챕터 5 시작: [빈 자리 TODO 장비 보상] Smuggler·Chapel 드롭 장비를 계정당 한 번 받기(지금은 서버가 바로 넘긴다),
+//   17 Move Back·Move Forward 줄 빼기(다섯째 던전 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다), 18 Thief 줄기 패턴 맨 위에 출혈 스킬(Mine Golem의 Front DEF 뚫기),
+//   19 Cleric 줄기 패턴 맨 위에 [아군 공격력 버프 여유 → AND][쿨타임 아님 → Hymn]. 남은 SP(sp_free)로 가른다: Chaplain이고 Hymn을 배울 SP가 있으면 Hymn
+//      (Cleric이면 먼저 Chaplain으로 전직), 모자라면 같은 줄을 Inspire로 넣고 나중에 Hymn으로 바꾸라고 알린다. Inspire도 못 배우면 알리고 넘긴다(tutorial_ack 'hymn'),
+//   20 다섯째 던전 이기기, 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15, "bleed" = 단계 18, "ashen" = 단계 21을 마침)
+// tutChapelLost·tutChapelFree: 단계 11(넷째 던전)·20(다섯째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
+// 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11·20을 벗어나면 서버가 끈다). 무대에서는 화면에서만
+const TUT_FIGHT_FREE={11:"cl1",20:"cl2"};
 function tutChapelFromServer(data){if(stage)return;tutChapelFree=!!TUT_FIGHT_FREE[tut.step]&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add(TUT_FIGHT_FREE[tut.step])}
 // 예전에 브라우저에 기억하던 키(pgy_chapel_free_계정)는 지운다
 try{Object.keys(localStorage).filter(k=>k.startsWith("pgy_chapel_free_")).forEach(k=>localStorage.removeItem(k))}catch(e){}
-let tut={step:null,last:16},tutIdleFree=false,tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
+let tut={step:null,last:22},tutIdleFree=false,tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
 const tutSeen=new Set();
 // 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다. TUT_FREE = 짚지 않는 단계 모두(서버 tutorial_busy와 같이 고친다: 8 대기, 13 전직 레벨 전 대기)
 const TUT_WAIT=8,TUT_FREE=[8,13];
 // 챕터: 단계 묶음(to = 그 챕터가 끝나는 단계). 끝낸 챕터는 무대에서 다시 볼 수 있다. 서버의 챕터 시작·끝 단계와 같이 고친다
-const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8},{n:3,to:13},{n:4,to:16}];
+const TUT_CHAPTERS=[{n:1,to:3},{n:2,to:8},{n:3,to:13},{n:4,to:16},{n:5,to:22}];
 // tutPractice: 무대에서 챕터를 다시 보는 중이면 {ch, end(끝나는 단계)}. tutAskOpen: 챕터 다시 보기 확인 창이 떠 있는 동안 짚기를 멈춘다
 let tutPractice=null,tutAskOpen=false,practiceBusy=false;
 // ===== 무대(챕터 다시 보기) =====
@@ -1798,7 +1782,7 @@ async function loadTutorial(){
 function tutStepMoved(prev){
  if(prev===2&&tut.step>=3){tutCongrats="mend";if(!questIntroSeen&&!stage)questIntroPending=true}else if(prev===3&&tut.step>=4)tutCongrats="skills";else if(prev===6&&tut.step>=7)tutCongrats="gear";else if(prev===7&&tut.step>=8)tutCongrats="karma";
  else if(prev===10&&tut.step>=11)tutCongrats="move";else if(prev===12&&tut.step>=13)tutCongrats="chapel";
- else if((prev===14||prev===15)&&tut.step>=16)tutCongrats="regear";
+ else if((prev===14||prev===15)&&tut.step>=16)tutCongrats="regear";else if(prev===18&&tut.step>=19)tutCongrats="bleed";else if(prev===21&&tut.step>=22)tutCongrats="ashen";
  if(prev!==tut.step){tutChapelLost=false;if(!TUT_FIGHT_FREE[tut.step])tutChapelFree=false}
  if(tut.step!==14&&tut.step!==15)tutIdleFree=false
 }
@@ -1809,13 +1793,58 @@ async function tutAck(key){
  const prev=tut.step;tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
  tutStepMoved(prev);tutChapelFromServer(data);
 }
-// 대기 단계와, 넷째 던전에서 진 뒤 놓아 둔 동안, 전직·장비를 바꿀 캐릭터가 모두 Auto Battle 중이라고 알린 뒤는 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
+// 대기 단계와, 넷째·다섯째 던전에서 진 뒤 놓아 둔 동안, 전직·장비를 바꿀 캐릭터가 모두 Auto Battle 중이라고 알린 뒤는 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
 function tutFreeStep(){return TUT_FREE.includes(tut.step)||(!!TUT_FIGHT_FREE[tut.step]&&tutChapelFree)||(tutIdleFree&&tutIdleStuck())}
 // 챕터 4: 전직할 수 있는 기본 직업 캐릭터(단계 14), 전직 장비 말고는 아무것도 안 낀 전직 캐릭터(단계 15). 그 캐릭터가 모두 Auto Battle 중이면 전직·장착을 못 한다
 function tutPromoteLv(){return Number(pubCfg?.PROMOTE_LEVEL_FIRST)||TUT_PROMOTE.lv}
 function tutTier(c){return templates.find(t=>t.job===c.job)?.tier||"BASE"}
 function tutPromoteChars(){return chars.filter(c=>tutTier(c)==="BASE"&&Number(c.level)>=tutPromoteLv())}
 function tutRegearChars(){return chars.filter(c=>tutTier(c)!=="BASE"&&!itemsData.some(i=>i.equipped_character===c.id&&!TUT_PROMOTE.gear.includes(i.def_id)))}
+// 단계 15·19: Allowed to Equip에서 c의 빈 칸에 낄 장비의 장착 버튼(끼워도 빠지는 장비가 없고 KARMA 한도를 넘지 않는 것). 없으면 null. 전직 뒤 하나만 끼고 맨몸으로 싸우지 않게 빈 칸을 모두 채운다
+function tutRegearBtn(c){
+ const w=document.querySelector('#charDetail .sec-wrap[data-sec="owned"]');if(!c||!w)return null;
+ return [...w.querySelectorAll(".equip-row button")].find(b=>{
+  const m=(b.getAttribute("onclick")||"").match(/^equipTo\('([^']+)'/),i=m&&itemsData.find(x=>x.id===m[1]);if(!i)return false;
+  const d=i.item_defs||{},sl=[d.slot,d.item_categories?.alt_slot].filter(Boolean);
+  return sl.some(x=>!equipOut(i.id,c.id,x).length&&!(k=>k&&k.next>k.lim&&k.next>k.cur)(karmaAfterEquip(i.id,c.id,x)))})||null}
+// 단계 15: 장비를 채우는 캐릭터(하나 끼면 tutRegearChars에서 빠지니 기억해 둔다)
+let tutRgChar=null,tutRgSay="s15equip",tutItemsKey=null,tutItemsAsk=null;
+// 전직하면 load()가 캐릭터를 먼저 받고 아이템은 기다리지 않고 받는다. key(캐릭터·직업)가 바뀐 뒤 아이템을 한 번 새로 받았으면 true(그 전에는 풀린 장비가 아직 낀 것으로 보인다)
+function tutItemsFresh(key){
+ if(tutItemsKey===key)return true;
+ if(tutItemsAsk!==key){tutItemsAsk=key;Promise.resolve(loadItems()).finally(()=>{if(tutItemsAsk===key)tutItemsKey=key})}
+ return false}
+// 챕터 5: 그 스킬을 쓸 수 있는 직업 줄기 캐릭터(특수전직은 이전 직업 스킬이 목록에서 빠져 고르지 않는다). 스킬 목록을 받는 중이면 undefined, 없으면 null
+function tutAshenPick(t){
+ const cs=chars.filter(c=>jobLine(c.job).includes(t.job)),miss=cs.filter(c=>!skillsByChar[c.id]);
+ if(miss.length){if(!tutSkAsk){tutSkAsk=true;Promise.all(miss.map(c=>loadSkills(c.id))).finally(()=>{tutSkAsk=false})}return undefined}
+ return cs.find(c=>(skillsByChar[c.id]?.skills||[]).some(x=>x.id===t.a))||null;
+}
+// 단계 17: 패턴에 Move Back 줄이 남은 캐릭터(Footman 줄기 먼저). 서버 tutorial_eval 17과 같이 고친다
+// 단계 19: 버프 줄을 넣을 Cleric 줄기 캐릭터(특수전직은 Inspire가 빠져 고르지 않는다). 스킬 목록을 받는 중이면 undefined, 없으면 null
+function tutHymnChar(){
+ const cs=chars.filter(c=>{const L=jobLine(c.job);return L.includes(TUT_HYMN.job)&&!L.some(j=>templates.find(t=>t.job===j)?.special_promotion)}),miss=cs.filter(c=>!skillsByChar[c.id]);
+ if(miss.length){if(!tutSkAsk){tutSkAsk=true;Promise.all(miss.map(c=>loadSkills(c.id))).finally(()=>{tutSkAsk=false})}return undefined}
+ return cs.find(c=>tutHymnPlan(c).plan!=="none")||cs[0]||null; // Cleric이 여럿이면 버프 줄을 넣을 수 있는 쪽
+}
+// 단계 19 갈림: 남은 SP(get_character_skills의 sp_free)로 Hymn·전직 뒤 Hymn·Inspire·없음을 고른다
+function tutHymnPlan(c){
+ const d=skillsByChar[c.id]||{},sk=id=>(d.skills||[]).find(x=>x.id===id),cost=id=>Number(sk(id)?.sp_cost??TUT_HYMN.sp[id])||0,free=Number(d.sp_free)||0;
+ const ins=sk(TUT_HYMN.insp),hym=sk(TUT_HYMN.hymn),needH=(ins?.known?0:cost(TUT_HYMN.insp))+cost(TUT_HYMN.hymn);
+ const chap=jobLine(c.job).includes(TUT_HYMN.chap),canPro=!chap&&tutTier(c)==="BASE"&&Number(c.level)>=tutPromoteLv();
+ const plan=hym?.known?"hymn":chap&&free>=needH?"hymn":canPro&&free>=needH?"promote":ins?.known||free>=cost(TUT_HYMN.insp)?"insp":"none";
+ return {plan,free,needH,chap,canPro,ins,hym,hymCost:cost(TUT_HYMN.hymn),insCost:cost(TUT_HYMN.insp)};
+}
+// 챕터 1~4(단계 19 전): Cleric 줄기의 Sanctuary·Vigil 배우기를 잠가 Hymn·Inspire에 쓸 SP를 남겨 둔다(무대·관리자 도구 밖, 튜토리얼을 마치면 풀린다)
+function tutSpareSkills(){
+ const on=loggedIn&&!stage&&tut.step!=null&&tut.step<19&&tut.step<tut.last;
+ document.querySelectorAll('#charDetail .skill-row button[onclick^="confirmLearn("]').forEach(b=>{
+  const hit=TUT_HYMN.spare.some(id=>(b.getAttribute("onclick")||"").includes(`'${id}'`));
+  if(on&&hit&&!b.dataset.tutSpare){b.dataset.tutSpare="1";b.disabled=true;b.title="튜토리얼 챕터 5에서 Hymn을 배울 SP를 남겨 두려고 잠시 잠가 둡니다."}
+  else if(!on&&b.dataset.tutSpare){delete b.dataset.tutSpare;b.disabled=false;b.title=""}
+ });
+}
+function tutUnmoveChar(){const has=c=>(c.pattern||[]).some(r=>r.a===TUT_MOVE.rows[0].a),f=chars.find(c=>jobLine(c.job).includes(TUT_MOVE.job)&&has(c));return f||chars.find(has)||null}
 function tutIdleStuck(){const on=typeof idleChars==="function"?idleChars():new Set(),l=tut.step===14?tutPromoteChars():tut.step===15?tutRegearChars():[];return l.length>0&&l.every(c=>on.has(c.id))}
 // 과제가 화면을 쓰는 중(다른 조각이 리모콘을 숨길 때 쓴다). 끝났거나 대기 단계면 false
 function tutBusy(){return tut.step!=null&&tut.step<tut.last&&!tutFreeStep()}
@@ -1837,6 +1866,10 @@ const TUT_MOVE={job:"FOOTMAN",rows:[{c:"bossWindup",a:"common_move_back"},{c:"se
 const TUT_CHAPEL={i:3,wave:"Tidal Wave"};
 // 단계 14·15: 1차 전직 레벨(공개 설정 PROMOTE_LEVEL_FIRST를 못 받았을 때의 값)과, 전직할 때 서버가 새로 끼워 주는 장비(서버 PROMOTE_GEAR_DEFS와 같이 고친다. 단계 15의 끝 조건에서 뺀다)
 const TUT_PROMOTE={lv:20,gear:["worn_pistol","chevalier_garde_bras"]};
+// 단계 17~21: 다섯째 던전(목록 순서)·보스·졸개·보스 캐스팅 스킬 이름(로그에서 찾는다), 18 Thief 줄기에 넣는 출혈 스킬 줄(서버 tutorial_eval과 같이 고친다)
+const TUT_ASHEN={i:4,boss:"forge_wyrm",golem:"mine_golem",slag:"Slag Skin",bleed:{job:"THIEF",a:"thief_lacerate",c:"selfMpGte"}};
+// 단계 19: Cleric 줄기 버프 줄(서버 tutorial_eval 19·tutorial_ack 'hymn'과 같이 고친다). sp = 스킬 목록을 못 받았을 때의 SP(서버 skill_defs). spare = 챕터 1~4 동안 배우기를 잠가 Hymn·Inspire SP를 남겨 두는 스킬
+const TUT_HYMN={job:"CLERIC",chap:"CHAPLAIN",hymn:"cleric_chaplain_hymn",insp:"cleric_inspire",w:"allyAtkBuffRoom",c:"skillReady",sp:{cleric_chaplain_hymn:5,cleric_inspire:3},spare:["cleric_sanctuary","cleric_chaplain_vigil"]};
 // 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
 function tutRefresh(fn){if(Date.now()-tutPoll>2500){tutPoll=Date.now();(fn||loadTutorial)()}}
 // 지금 짚을 곳: {id, el, msg(문장은 줄바꿈으로 나눔, 빈 줄은 강제 줄바꿈), btn(말풍선 버튼 글자), fn, prev(이전 버튼), hole(버튼이 있어도 짚은 곳을 누를 수 있음), limit(목록에서 남길 값), above, nohold, holdId(누른 뒤 버튼이 새로 그려져도 잠깐 막는다), holdAs(누른 뒤 이 장으로 돌아와도 잠깐 막는다: 확인 창의 강조 버튼을 누른 뒤 원래 버튼 장), wait, center}. null이면 못 찾은 것(막지 않는다)
@@ -1873,13 +1906,16 @@ function tutResolve(){
  };
  if(tutCongrats){
   if(modal)return okBtn?savedOk():say("s2close",q(".help-close"),"닫기를 눌러 주세요.");
-  // 챕터 4를 마침(지금은 튜토리얼의 끝)
+  if(tutCongrats==="ashen")return mid("done9",`잘하셨습니다!\n${dgName(TUT_ASHEN.i)?`${dgName(TUT_ASHEN.i)}까지 모두 이겼습니다.\n`:""}튜토리얼을 모두 마쳤습니다.`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
+  if(tutCongrats==="bleed"){const c=tutAshenPick(TUT_ASHEN.bleed),sk=c?(skillsByChar[c.id]?.skills||[]).find(x=>x.id===TUT_ASHEN.bleed.a):null,jn=c?(c.job_name||c.job):"";
+   return mid("done8",`잘하셨습니다!\n${c&&sk?`이제 ${jn}${josaOf(jn,"이","가")} MP가 있으면 ${sk.name}${josaOf(sk.name,"으로","로")} 출혈을 겁니다.\n`:""}${dgName(TUT_ASHEN.i)||"다섯째 던전"}에 들어갈 준비가 거의 끝났습니다.`,{btn:"확인",fn:()=>{tutCongrats=null}})}
+  // 챕터 4를 마침(챕터 5가 이어진다)
   if(tutCongrats==="regear")return mid("done7",`잘하셨습니다!\n남은 장비도 Allowed to Equip에서 같은 방법으로 끼울 수 있습니다.\n${tut.step>=tut.last?"튜토리얼을 모두 마쳤습니다.":"챕터 4를 마쳤습니다."}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
   // 챕터 3을 마침: 전직 레벨 전(13 대기)이면 언제 이어지는지 알린다(무대에서는 그 판을 찍을 때의 끝이라 알리지 않는다)
-  if(tutCongrats==="chapel"){const lv=tutPromoteLv();return mid("done6",`잘하셨습니다!\n챕터 3을 마쳤습니다.\n${door(4)}${tut.step===13&&tut.step<tut.last?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n캐릭터가 Lv.${lv}${josaOf(lv,"이","가")} 되면 다음 과제가 이어집니다.`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}})}
+  if(tutCongrats==="chapel"){const lv=tutPromoteLv();return mid("done6",`잘하셨습니다!\n챕터 3을 마쳤습니다.${tut.step===13&&tut.step<tut.last?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n캐릭터가 Lv.${lv}${josaOf(lv,"이","가")} 되면 다음 과제가 이어집니다.\n퀘스트 창의 Lv.${lv} 달성 퀘스트를 따라가 보세요.`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}})}
   if(tutCongrats==="move"){const c=fmLine();return mid("done5",`잘하셨습니다!\n이제 보스가 차징이나 캐스팅을 시작하면 ${c?(c.job_name||c.job):"캐릭터"}의 차례에 후방으로 물러섰다가 돌아옵니다.\n${dgName(TUT_CHAPEL.i)||"다음 던전"}에 도전해 봅시다.`,{btn:"확인",fn:()=>{tutCongrats=null}})}
   // 대기 단계로 넘어가는 계정(무대가 아닌 진짜 진행)은 다음 과제가 언제 이어지는지 알린다
-  const waitNote=tut.step===TUT_WAIT&&tut.step<tut.last&&dgName(2)?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n${dgName(2)}에서 이기면 다음 과제가 이어집니다.`:"";
+  const waitNote=tut.step===TUT_WAIT&&tut.step<tut.last&&dgName(2)?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n${dgName(2)}에서 이기면 다음 과제가 이어집니다.\n그동안 퀘스트 창의 퀘스트를 따라가 보세요.`:"";
   if(tutCongrats==="karma")return mid("done4",`잘하셨습니다!\n이제 KARMA가 한도 안에 들어왔습니다.\n보상으로 ${TUT_KARMA.gold}골드를 받았습니다.\n${door(2)}${waitNote}`,{btn:"확인",fn:()=>{tutCongrats=null;loadGold();if(currentView==="adventure")loadAdventure()}});
   // 단계 7을 건너뛰고 바로 끝난 계정(넘은 Mage가 없음)은 여기서 다음 던전을 알린다
   if(tutCongrats==="gear")return mid("done3",`잘하셨습니다!\n장비는 Camp에서 언제든 바꿔 낄 수 있습니다.${tut.step>=TUT_WAIT?`\n${door(2)}${waitNote}`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(tut.step>=TUT_WAIT){loadGold();if(currentView==="adventure")loadAdventure()}}});
@@ -2251,18 +2287,220 @@ function tutResolve(){
    if(!tutSeen.has("pr3"))return page("pr3",cards,"특수 전직은 배운 스킬이 모두 초기화되고 SP를 돌려받습니다.\n이전 직업의 액티브 스킬은 더 쓸 수 없고 패시브만 남습니다.\n같은 특수 직업은 한 파티에 한 명만 넣을 수 있습니다.",{back:"pr2"});
    return say("s14card",cards,"전직할 직업의 카드를 눌러 주세요.\n직업 설명을 보고 고르세요.",{holdId:true});
   }
-  // 단계 15: 전직해 장비가 모두 풀린 캐릭터에게 Allowed to Equip에서 장비를 하나 끼운다(전직 장비는 세지 않는다). 낄 것이 없으면 넘긴다
-  if(cfm==="equip")return say("s15equipok",priBtn,"장착을 눌러 주세요.",{holdId:true,holdAs:"s15equip"});
+  // 단계 15: 전직해 장비가 모두 풀린 캐릭터에게 Allowed to Equip에서 빈 칸마다 장비를 하나씩 끼운다(전직 장비는 세지 않는다, tutRegearBtn). 더 낄 것이 없으면 넘긴다
+  if(cfm==="equip")return say("s15equipok",priBtn,"장착을 눌러 주세요.",{holdId:true,holdAs:tutRgSay});
   if(modal)return okBtn?savedOk():say("s15close",q(".help-close"),"닫기를 눌러 주세요.");
-  const c=tutRegearChars().find(x=>!on.has(x.id));if(!c){tutRefresh();return wait()}
+  if(!tutItemsFresh("s15:"+chars.map(x=>x.id+x.job).join()))return wait();
+  // 기억한 캐릭터의 빈 칸이 남았으면 그 캐릭터, 아니면 아직 아무것도 안 낀 다음 전직 캐릭터. 둘 다 없으면 넘긴다(서버는 tutorial_ack 'regear'로만 16)
+  const mem=chars.find(x=>x.id===tutRgChar&&!on.has(x.id)),c=(mem&&(selectedCharId!==mem.id||!sec("owned")||tutRegearBtn(mem))?mem:null)||tutRegearChars().find(x=>!on.has(x.id)&&x.id!==tutRgChar);
+  if(!c){tutAck("regear");return wait()}
+  tutRgChar=c.id;
   const jn=c.job_name||c.job;
   if(!tutSeen.has("rg0"))return mid("rg0",`${jn}${josaOf(jn,"으로","로")} 전직했습니다!\n끼고 있던 장비는 모두 Bag으로 돌아갔습니다.\n다시 끼워 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("rg0")});
   const go=toChar("s15",c,`${jn}의 장비를 끼웁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
   const w=sec("owned");if(w?.classList.contains("collapsed"))return say("s15owned",w.querySelector(".sec-toggle"),"Bag의 장비 중 이 직업이 낄 수 있는 것은 Allowed to Equip에 나옵니다.\n눌러서 펼쳐 주세요.");
-  const btn=w?[...w.querySelectorAll(".equip-row button")].find(b=>(b.getAttribute("onclick")||"").startsWith("equipTo(")):null;
-  if(!btn){tutAck("regear");return wait()} // 낄 장비가 없으면 넘긴다(서버도 tutorial_ack 'regear'로 넘긴다)
+  const btn=tutRegearBtn(c);
+  if(!btn){tutRefresh();return wait()} // 이 캐릭터는 다 끼웠다: 다음 틱에 다음 캐릭터로 가거나 넘긴다
   if(!tutSeen.has("rg1"))return page("rg1",btn.closest(".equip-row"),"전직하기 전에 끼던 장비도 여기에 나옵니다.\n직업이 바뀌어 낄 수 없게 된 장비는 나오지 않습니다.");
-  return say("s15equip",btn,"장착을 눌러 주세요.\n나머지 장비도 같은 방법으로 끼울 수 있습니다.",{holdId:true});
+  const n=itemsData.filter(i=>i.equipped_character===c.id&&!TUT_PROMOTE.gear.includes(i.def_id)).length;tutRgSay=n?"s15eq"+n:"s15equip";
+  return say(tutRgSay,btn,n?"다음 빈 칸에 낄 장비입니다.\n장착을 눌러 주세요.":"장착을 눌러 주세요.\n빈 칸이 다 찰 때까지 낄 장비를 차례로 짚어 드립니다.",{holdId:true});
+ }
+ // 단계 16: [빈 자리 TODO 장비 보상] Smuggler·Chapel 드롭 장비를 계정당 한 번 받는 자리(로직 #튜토리얼-1110-0103이 지급 함수를 정하면 여기에 짚기를 넣는다). 지금은 서버가 바로 17로 넘긴다
+ // 단계 17: 다섯째 던전에 들어가기 전에 Move Back·Move Forward 줄을 뺀다(그 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다)
+ if(s===17){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(cfm==="pattern")return say("umsaveok",priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:"umsave"});
+  if(modal)return okBtn?savedOk():say("umclose",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=tutUnmoveChar();if(!c){tutRefresh();return wait()} // 빼야 할 줄이 없으면 서버가 넘긴다
+  const jn=c.job_name||c.job,d4=dgName(TUT_ASHEN.i)||"다섯째 던전",mb=skillName(c.id,TUT_MOVE.rows[0].a),mf=skillName(c.id,TUT_MOVE.rows[1].a);
+  const intro=[["um0",`챕터 5에서는 ${d4}에 들어갈 준비를 합니다.\n먼저 챕터 3에서 넣은 ${mb} 줄을 다시 봅시다.`],
+   ["um1",`${d4}의 보스는 줄을 옮겨 피해야 하는 공격을 쓰지 않습니다.\n그런데 전방이 물러나면 그동안 후방이 공격을 받습니다.\n이 던전에서는 ${mb}${josaOf(mb,"과","와")} ${mf} 줄을 빼는 편이 낫습니다.`]];
+  for(let i=0;i<intro.length;i++){const [id,msg]=intro[i];if(!tutSeen.has(id))return mid(id,msg,{btn:"다음",fn:()=>tutSeen.add(id),prev:i?()=>tutSeen.delete(intro[i-1][0]):null})}
+  const go=toChar("um",c,`${jn}의 패턴을 고칩니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say("umpattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const n=patLines(c.id),list=$("pat-"+c.id);const rows=list?[...list.querySelectorAll(".pattern-row")]:[];if(rows.length<n)return null;
+  // 처음 한 번: 켜진 줄에서 Move Back·Move Forward 줄을 빼고 아래 줄을 올린다. 빈 칸은 맨 아래에 기본 공격(반드시)으로 채운다. 비활성 줄은 그대로 둔다
+  const mv=TUT_MOVE.rows.map(x=>x.a);
+  if(!tutSeen.has("umshift")){
+   tutSeen.add("umshift");
+   const raw=readPatternRaw(c.id),act=raw.slice(0,n),rest=raw.slice(n),keep=act.filter(r=>!mv.includes(r.a)),blank={c:"always",a:basicSkill(c.id)};
+   if(keep.length<act.length){while(keep.length<act.length)keep.push(blank);list.innerHTML=renderPatternRows(keep.concat(rest),c.job,c.id);capturePatternDraft(c.id)}
+  }
+  if(!tutSeen.has("um2"))return page("um2",list,`${mb}${josaOf(mb,"과","와")} ${mf} 줄을 빼고 아래 줄을 위로 올렸습니다.\n빈 칸은 맨 아래에 기본 공격으로 채웠습니다.\n던전마다 맞는 패턴이 다르니, 막히면 패턴을 바꿔 보세요.`);
+  return say("umsave",q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 18: Thief 줄기 패턴 맨 위에 [MP ≥ 소모 → 출혈 스킬] 한 줄(Mine Golem은 Front DEF가 높아 출혈로 뚫는다)
+ if(s===18){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  const t=TUT_ASHEN.bleed,k="as";
+  if(cfm==="learn")return say(k+"learnok",priBtn,"배우기를 눌러 주세요.",{holdId:true,holdAs:k+"learn"});
+  if(cfm==="pattern")return say(k+"saveok",priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:k+"save"});
+  if(modal)return okBtn?savedOk():say(k+"close",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=tutAshenPick(t);if(c===undefined)return wait();
+  if(!c){tutAck("bleed");return wait()} // 그 스킬을 쓸 수 있는 캐릭터가 없으면 넘긴다(서버도 그런 캐릭터가 없으면 넘긴다)
+  const jn=c.job_name||c.job,d4=dungeons[TUT_ASHEN.i],golem=(d4?.monsters||[]).find(m=>m.id===TUT_ASHEN.golem)?.name||"Mine Golem";
+  const sk=(skillsByChar[c.id]?.skills||[]).find(x=>x.id===t.a);if(!sk)return null;
+  const mp=Number(sk.mp_cost)||0;
+  const intro=[["as0",`${dgName(TUT_ASHEN.i)||"다섯째 던전"}에는 ${golem}${josaOf(golem,"이","가")} 나옵니다.\n${golem}${josaOf(golem,"은","는")} Front DEF가 아주 높아 보통 공격이 잘 들어가지 않습니다.`],
+   ["as1",`출혈은 Front DEF를 무시하고 몇 턴 동안 턴마다 대미지를 줍니다.\n${jn}에게 출혈을 거는 ${sk.name}${josaOf(sk.name,"을","를")} 배워 패턴에 넣어 봅시다.`]];
+  for(let i=0;i<intro.length;i++){const [id,msg]=intro[i];if(!tutSeen.has(id))return mid(id,msg,{btn:"다음",fn:()=>tutSeen.add(id),prev:i?()=>tutSeen.delete(intro[i-1][0]):null})}
+  const go=toChar(k,c,`${jn}의 패턴을 고칩니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  if(!sk.known){
+   const w=sec("skill");if(w?.classList.contains("collapsed"))return say(k+"skill",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
+   const btn=[...document.querySelectorAll("#charDetail .skill-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`'${t.a}'`));
+   if((Number(skillsByChar[c.id]?.sp_free)||0)<(Number(sk.sp_cost)||0)){tutAck("bleed");return wait()} // SP가 모자라 배울 수 없으면 넘긴다
+   if(!btn||btn.disabled){tutRefresh(()=>loadSkills(c.id));return wait()} // 배우는 중(버튼이 잠깐 잠김)이면 스킬 목록을 다시 받을 때까지 기다린다
+   return say(k+"learn",btn,`${sk.name}${josaOf(sk.name,"을","를")} 배웁니다.\n배우기를 눌러 주세요.`,{holdId:true});
+  }
+  // 이미 저장된 패턴에 들어 있으면(서버 단계가 곧 넘어간다) 다시 묻는다
+  if(!patternDraft[c.id]&&(c.pattern||[]).some(r=>r.a===t.a)){tutRefresh();return wait()}
+  const n=patLines(c.id);
+  if(n<2){tutAck("bleed");return wait()} // 넣을 줄과 원래 줄 하나가 들어갈 칸이 없으면 넘긴다
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say(k+"pattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const list=$("pat-"+c.id);let rows=list?[...list.querySelectorAll(".pattern-row")]:[];if(rows.length<n)return null;
+  const want={c:t.c,v:mp,a:t.a};
+  const isRow=(row,x)=>row.querySelector(".pattern-cond").value===x.c&&row.querySelector(".pattern-action").value===x.a;
+  // 처음 한 번: 맨 위 줄을 비우고 원래 줄을 내린다(단계 10과 같은 방식: 반드시 줄 뒤의 줄을 아래에서부터 먼저 빼고, 모자라면 맨 아래 줄을 뺀다)
+  if(!tutSeen.has(k+"shift")){
+   tutSeen.add(k+"shift");tutMvLost=[];
+   if(!isRow(rows[0],want)){
+    const raw=readPatternRaw(c.id),act=raw.slice(0,n),rest=raw.slice(n),ai=act.findIndex(r=>r.c==="always"),keep=act.slice();let cut=0;
+    for(let i=keep.length-1;ai>=0&&i>ai&&cut<1;i--){keep.splice(i,1);cut++}
+    while(cut<1&&keep.length){tutMvLost.unshift(skillName(c.id,keep.pop().a));cut++}
+    list.innerHTML=renderPatternRows([{c:"always",a:basicSkill(c.id)}].concat(keep,rest),c.job,c.id);capturePatternDraft(c.id);
+    rows=[...list.querySelectorAll(".pattern-row")];
+   }else tutSeen.add(k+"sh");
+  }
+  if(!tutSeen.has(k+"sh"))return page(k+"sh",list,`맨 위 한 줄을 비우고, 원래 있던 줄은 아래로 한 칸씩 내렸습니다.${tutMvLost.length?`\n칸이 모자라 맨 아래 줄(${tutMvLost.join(", ")})은 뺐습니다.\nTP로 Pattern 줄을 늘리면 다시 넣을 수 있습니다.`:""}`);
+  const row=rows[0],cond=row.querySelector(".pattern-cond"),val=row.querySelector(".pattern-value"),act=row.querySelector(".pattern-action"),wrap=row.querySelector(".pattern-value-wrap");
+  const opt=cond.querySelector(`option[value="${want.c}"]`),lab=opt?.textContent.trim()||"",grp=opt?.parentElement?.label||"";
+  if(cond.value!==want.c)return say("c-as0",cond,`첫 줄 조건 칸에서 '${lab}'${josaOf(lab,"을","를")} 골라 주세요.${grp?`\n목록의 ${grp} 묶음에 있습니다.`:""}`,{limit:want.c,above:true,nohold:true});
+  const set=()=>{if(Number(val.value)!==mp){val.value=mp;capturePatternDraft(c.id)}};
+  if(!tutSeen.has("v-as0"))return say("v-as0",wrap,`${sk.name}의 MP 소모는 ${mp}입니다.\n숫자 칸에 ${mp}${josaOf(mp,"을","를")} 입력하고 다음을 눌러 주세요.`,{btn:"다음",hole:true,nohold:true,fn:()=>{set();tutSeen.add("v-as0")}});
+  set();
+  if(act.value!==want.a)return say("x-as0",act,`스킬 칸에서 ${sk.name}${josaOf(sk.name,"을","를")} 골라 주세요.`,{limit:want.a,above:true,nohold:true});
+  if(!tutSeen.has("as2"))return page("as2",row,`MP가 ${mp} 이상이면 ${sk.name}${josaOf(sk.name,"으로","로")} 출혈을 겁니다.\n출혈은 Front DEF를 무시하니 ${golem}에게도 대미지가 들어갑니다.\nMP가 모자라면 아래 줄의 원래 공격을 합니다.`);
+  return say(k+"save",q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 19: Cleric 줄기 패턴 맨 위에 [아군 공격력 버프 여유 → AND][쿨타임 아님 → Hymn 또는 Inspire] 두 줄. 남은 SP(sp_free)로 가른다(tutHymnPlan)
+ if(s===19){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  const k="hy";
+  if(cfm==="learn")return say(k+"learnok",priBtn,"배우기를 눌러 주세요.",{holdId:true,holdAs:k+"learn"});
+  if(cfm==="pattern")return say(k+"saveok",priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:k+"save"});
+  if(cfm==="equip")return say(k+"equipok",priBtn,"장착을 눌러 주세요.",{holdId:true,holdAs:k+"equip"});
+  if(modal&&$("helpTitle")?.textContent==="전직"&&priBtn)return say(k+"ok",priBtn,"전직하면 되돌릴 수 없습니다.\n전직을 눌러 주세요.",{holdId:true,holdAs:k+"card"});
+  if(modal)return okBtn?savedOk():say(k+"close",q(".help-close"),"닫기를 눌러 주세요.");
+  const c=tutHymnChar();if(c===undefined)return wait();
+  if(!c){tutRefresh();return wait()} // 넣을 캐릭터가 없으면 서버가 넘긴다
+  const P=tutHymnPlan(c),jn=c.job_name||c.job,cn=templates.find(t=>t.job===TUT_HYMN.chap)?.name_ko||"Chaplain";
+  const hN=P.hym?.name||"Hymn",iN=P.ins?.name||"Inspire",boss=(dungeons[TUT_ASHEN.i]?.monsters||[]).find(m=>m.id===TUT_ASHEN.boss)?.name||"Forge Wyrm";
+  if(P.plan==="none"){
+   if(!tutSeen.has("hy-x"))return mid("hy-x",`${jn}에게 ${iN}${josaOf(iN,"을","를")} 배울 SP가 남아 있지 않습니다.\n레벨을 올려 SP가 ${P.insCost} 모이면 ${iN}${josaOf(iN,"을","를")} 배워 패턴 맨 위에 넣어 보세요.\n아군의 공격력을 올리는 버프가 가장 중요합니다.`,{btn:"확인",fn:()=>{tutSeen.add("hy-x");tutAck("hymn")}});
+   return wait();
+  }
+  const intro=[["hy0",`${boss}${josaOf(boss,"은","는")} HP가 많아 오래 싸우면 Slag Skin으로 HP를 되찾습니다.\n그 전에 쓰러뜨리려면 아군의 공격력을 올리는 버프가 가장 중요합니다.`],
+   ["hy1",P.plan==="insp"?`${jn}의 ${iN}${josaOf(iN,"은","는")} 아군 한 명의 ATK와 MATK를 올립니다.\n${iN}${josaOf(iN,"을","를")} 패턴 맨 위에 넣어 봅시다.`:`${cn}의 ${hN}${josaOf(hN,"은","는")} ${iN}보다 강한 버프로 아군 한 명의 ATK와 MATK를 올립니다.\n${hN}${josaOf(hN,"을","를")} 배우려면 먼저 ${iN}${josaOf(iN,"을","를")} 배워야 합니다.\n${jn}에게 배워 패턴 맨 위에 넣어 봅시다.`]];
+  for(let i=0;i<intro.length;i++){const [id,msg]=intro[i];if(!tutSeen.has(id))return mid(id,msg,{btn:"다음",fn:()=>tutSeen.add(id),prev:i?()=>tutSeen.delete(intro[i-1][0]):null})}
+  const go=toChar(k,c,`${jn}의 패턴을 고칩니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+  // 전직: Cleric이면 Chaplain으로(Hymn은 Chaplain 스킬). 전직하면 장비가 풀리니 하나 다시 끼운다(단계 15와 같다)
+  if(P.plan==="promote"){
+   const w=sec("status");if(w?.classList.contains("collapsed"))return say(k+"sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+   const card=q(`#charDetail .promote-card[onclick*="'${TUT_HYMN.chap}'"]`);if(!card)return wait();
+   if(!tutSeen.has("hy-p0"))return page("hy-p0",card,`${hN}${josaOf(hN,"은","는")} ${cn}의 스킬입니다.\n${jn}${josaOf(jn,"을","를")} ${cn}${josaOf(cn,"으로","로")} 전직하면 배울 수 있습니다.\n${cn}${josaOf(cn,"은","는")} 배운 스킬이 그대로 남습니다.`);
+   return say(k+"card",card,`${cn} 카드를 눌러 주세요.`,{holdId:true});
+  }
+  // 이 단계에서 전직했으면(hy-p0을 봤다) 빈 칸을 모두 채운다(단계 15와 같다)
+  if(tutTier(c)!=="BASE"&&tutSeen.has("hy-p0")&&!tutSeen.has("hy-geared")){
+   const w=sec("owned");if(w?.classList.contains("collapsed"))return say(k+"owned",w.querySelector(".sec-toggle"),"전직해서 장비가 모두 풀렸습니다.\nAllowed to Equip을 눌러 펼쳐 주세요.");
+   if(!tutItemsFresh("hy:"+c.id+c.job))return wait();
+   const btn=tutRegearBtn(c);
+   if(btn){const n=itemsData.filter(i=>i.equipped_character===c.id).length;return say(n?k+"eq"+n:k+"equip",btn,n?"다음 빈 칸에 낄 장비입니다.\n장착을 눌러 주세요.":"장착을 눌러 주세요.\n빈 칸이 다 찰 때까지 낄 장비를 차례로 짚어 드립니다.",{holdId:true})}
+   if(w)tutSeen.add("hy-geared");
+  }
+  // 배우기: Inspire(선행) → Hymn. 배우는 중(버튼이 잠깐 잠김)이면 스킬 목록을 다시 받을 때까지 기다린다
+  const learn=[TUT_HYMN.insp].concat(P.plan==="hymn"?[TUT_HYMN.hymn]:[]);
+  for(const id of learn){
+   const sk=(skillsByChar[c.id]?.skills||[]).find(x=>x.id===id);if(!sk){tutRefresh(()=>loadSkills(c.id));return wait()}
+   if(sk.known)continue;
+   const w=sec("skill");if(w?.classList.contains("collapsed"))return say(k+"skill",w.querySelector(".sec-toggle"),"Skill을 눌러 펼쳐 주세요.");
+   const btn=[...document.querySelectorAll("#charDetail .skill-row button")].find(b=>(b.getAttribute("onclick")||"").includes(`'${id}'`));
+   if(!btn||btn.disabled){tutRefresh(()=>loadSkills(c.id));return wait()}
+   return say(k+"learn",btn,`${sk.name}${josaOf(sk.name,"을","를")} 배웁니다.\nSP ${Number(sk.sp_cost)||0}${josaOf(Number(sk.sp_cost)||0,"을","를")} 씁니다.\n배우기를 눌러 주세요.`,{holdId:true});
+  }
+  const X=P.plan==="hymn"?TUT_HYMN.hymn:TUT_HYMN.insp,xN=P.plan==="hymn"?hN:iN;
+  const wants=[{c:TUT_HYMN.w,a:"common_and"},{c:TUT_HYMN.c,a:X}];
+  const saved=c.pattern||[],ok=saved.some((r,i)=>i>0&&r.a===X&&r.c===TUT_HYMN.c&&saved[i-1].a==="common_and"&&saved[i-1].c===TUT_HYMN.w);
+  if(!patternDraft[c.id]&&ok){tutRefresh();return wait()}
+  const n=patLines(c.id);
+  const w=sec("pattern");if(w?.classList.contains("collapsed"))return say(k+"pattern",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+  const list=$("pat-"+c.id);let rows=list?[...list.querySelectorAll(".pattern-row")]:[];if(rows.length<n||n<2)return null;
+  const isRow=(row,x)=>row.querySelector(".pattern-cond").value===x.c&&row.querySelector(".pattern-action").value===x.a;
+  // 처음 한 번: 맨 위 두 줄을 비우고 원래 줄을 내린다(단계 10과 같은 방식)
+  if(!tutSeen.has(k+"shift")){
+   tutSeen.add(k+"shift");tutMvLost=[];
+   if(!wants.every((x,i)=>isRow(rows[i],x))){
+    const raw=readPatternRaw(c.id),act=raw.slice(0,n),rest=raw.slice(n),ai=act.findIndex(r=>r.c==="always"),keep=act.slice();let cut=0;
+    for(let i=keep.length-1;ai>=0&&i>ai&&cut<2;i--){keep.splice(i,1);cut++}
+    while(cut<2&&keep.length){tutMvLost.unshift(skillName(c.id,keep.pop().a));cut++}
+    const blank={c:"always",a:basicSkill(c.id)};
+    list.innerHTML=renderPatternRows([blank,blank].concat(keep,rest),c.job,c.id);capturePatternDraft(c.id);
+    rows=[...list.querySelectorAll(".pattern-row")];
+   }else tutSeen.add(k+"sh");
+  }
+  if(!tutSeen.has(k+"sh"))return page(k+"sh",list,`맨 위 두 줄을 비우고, 원래 있던 줄은 아래로 두 칸씩 내렸습니다.${tutMvLost.length?`\n칸이 모자라 맨 아래 줄(${tutMvLost.join(", ")})은 뺐습니다.\nTP로 Pattern 줄을 늘리면 다시 넣을 수 있습니다.`:""}`);
+  if(!tutSeen.has("hy-and"))return page("hy-and",rows[0],"AND는 다음 줄과 조건을 묶는 공용 스킬입니다.\n묶인 조건이 모두 맞아야 마지막 줄의 스킬을 쓰고, 하나라도 틀리면 묶음을 건너뜁니다.\n'공격력 버프를 더 받을 수 있는 아군이 있음'과 '쿨타임이 아님'을 묶어 봅시다.",{back:k+"sh"});
+  for(let i=0;i<wants.length;i++){
+   const x=wants[i],row=rows[i],cond=row.querySelector(".pattern-cond"),act=row.querySelector(".pattern-action"),id=k+i,nth=i?"둘째":"첫";
+   const opt=cond.querySelector(`option[value="${x.c}"]`),lab=opt?.textContent.trim()||"",grp=opt?.parentElement?.label||"";
+   if(cond.value!==x.c)return say("c-"+id,cond,`${nth} 줄 조건 칸에서 '${lab}'${josaOf(lab,"을","를")} 골라 주세요.${grp?`\n목록의 ${grp} 묶음에 있습니다.`:""}`,{limit:x.c,above:true,nohold:true});
+   if(act.value!==x.a)return say("x-"+id,act,x.a==="common_and"?"스킬 칸에서 AND를 골라 주세요.\n목록 맨 위의 공용 스킬에 있습니다.":`스킬 칸에서 ${xN}${josaOf(xN,"을","를")} 골라 주세요.`,{limit:x.a,above:true,nohold:true});
+  }
+  if(!tutSeen.has("hy2"))return page("hy2",rows[1],`공격력 버프를 더 받을 수 있는 아군이 있고 ${xN}${josaOf(xN,"이","가")} 쿨타임이 아니면 ${xN}${josaOf(xN,"을","를")} 씁니다.\n아군 모두가 버프를 끝까지 받았거나 쿨타임이면 묶음을 건너뛰고 셋째 줄부터 읽습니다.`);
+  // Inspire로 넣은 갈래: 왜 Inspire인지, 나중에 Hymn으로 바꾸라고 알린다
+  if(P.plan==="insp"&&!tutSeen.has("hy-ins")){
+   const why=!P.chap&&!P.canPro?`${hN}${josaOf(hN,"은","는")} ${cn}의 스킬이라 지금은 ${iN}${josaOf(iN,"을","를")} 넣었습니다.\n${jn}${josaOf(jn,"이","가")} Lv.${tutPromoteLv()}${josaOf(tutPromoteLv(),"이","가")} 되면 ${cn}${josaOf(cn,"으로","로")} 전직하고, SP가 ${P.hymCost} 모이면 ${hN}${josaOf(hN,"을","를")} 배워 이 줄의 스킬을 ${hN}${josaOf(hN,"으로","로")} 바꿔 주세요.`
+    :`지금은 SP가 모자라 ${hN}${josaOf(hN,"을","를")} 배우지 못해서 ${iN}${josaOf(iN,"을","를")} 넣었습니다.\n레벨을 올려 SP가 ${P.hymCost} 모이면 ${hN}${josaOf(hN,"을","를")} 배우고, 이 줄의 스킬을 ${hN}${josaOf(hN,"으로","로")} 바꿔 주세요.`;
+   return page("hy-ins",rows[1],`${why}\n${hN}${josaOf(hN,"이","가")} 더 강한 버프입니다.`);
+  }
+  return say(k+"save",q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+ }
+ // 단계 20: 다섯째 던전을 이길 때까지 전투로 데려간다. 지면 한 번 알리고 화면을 놓아 둔다(단계 11과 같다)
+ if(s===20){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s21expand",openBtn,"이겼습니다!\n이번에는 보스와 어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.",{wait:true});
+  if(modal){
+   const lost=logOpen&&!!openedBattle&&openedBattle.result!=="WIN";if(lost)tutChapelLost=true;
+   return okBtn?savedOk():say("s20close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
+  }
+  const d=dungeons[TUT_ASHEN.i];
+  if(tutChapelLost&&!tutSeen.has("cl2"))return mid("cl2",`이번에는 이기지 못했습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl2");tutChapelFree=true;if(!stage)tutAck("chapel_free")}});
+  if(!tutSeen.has("ag0"))return mid("ag0",`${door(TUT_ASHEN.i)}\n\n준비를 마쳤으니 도전해 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("ag0")});
+  return toFight(d,"s20",`${d?.name?`${d.name}에 `:""}도전해 봅시다.\nAdventure를 눌러 주세요.`,`다섯째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
+ }
+ // 단계 21: 다섯째 던전 로그에서 보스 캐스팅 대사, 캐스팅이 끊긴 줄 또는 발동한 줄, 출혈 줄을 짚는다(없는 줄은 건너뛴다)
+ if(s===21){
+  if(!logOpen)return toLog("s21");
+  if(!openBtn){tutAck("log4");return wait()} // 로그가 지워진 판은 건너뛴다
+  if(openBtn.getAttribute("aria-expanded")!=="true")return say("s21expand",openBtn,"이겼습니다!\n이번에는 보스와 어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.");
+  const d4=dungeons[TUT_ASHEN.i],mon=id=>(d4?.monsters||[]).find(m=>m.id===id)?.name,golem=mon(TUT_ASHEN.golem)||"Mine Golem",boss=mon(TUT_ASHEN.boss)||"Forge Wyrm",sl=TUT_ASHEN.slag;
+  const all=sel=>[...document.querySelectorAll("#battleLog "+sel)];
+  const talk=all(".bl-talk").find(t=>(t.querySelector(".bl-talk-sk")?.textContent||"").includes(sl))||null;
+  const cut=all(".bl-cancel").find(x=>x.textContent.includes("캐스팅이 끊겼다"))||null;
+  const healed=all(".bl-heal").find(x=>x.textContent.includes(boss)&&x.textContent.includes("씻겨"))||null;
+  const bld=all("div.bl-bld").find(x=>x.textContent.includes(golem))||null;
+  const pages=[];
+  if(talk)pages.push(["u1",talk,`${boss}${josaOf(boss,"이","가")} ${sl}${josaOf(sl,"을","를")} 캐스팅하며 한 말입니다.\n캐스팅이 끝나면 HP를 모두 되찾고 몸에 걸린 독·출혈을 지웁니다.`]);
+  else pages.push(["u0",null,`이번 전투에서는 ${boss}${josaOf(boss,"이","가")} ${sl}${josaOf(sl,"을","를")} 쓰기 전에 쓰러졌습니다.\nHP가 절반 아래로 떨어지면 ${sl}${josaOf(sl,"을","를")} 캐스팅합니다.`]);
+  if(cut)pages.push(["u4",cut,`${sl} 캐스팅이 끊겼습니다.\n캐스팅하는 동안 물 원소 타격을 여러 번 맞히면 끊깁니다.`]);
+  else if(healed)pages.push(["u4x",healed,`${sl}${josaOf(sl,"이","가")} 발동해 출혈이 씻겨 나갔습니다.\n출혈은 다시 걸면 됩니다.`]);
+  if(bld)pages.push(["u5",bld,`${golem}에게 출혈을 건 줄입니다.\n출혈은 Front DEF를 무시하고 턴마다 대미지를 줍니다.`]);
+  // 단계 19에서 넣은 버프 줄(Hymn 또는 Inspire)을 쓴 줄
+  const hc=tutHymnChar()||null,bn=hc?[TUT_HYMN.hymn,TUT_HYMN.insp].map(id=>(skillsByChar[hc.id]?.skills||[]).find(x=>x.id===id&&x.known)?.name).filter(Boolean):[];
+  const buff=hc?all(".bl-row:not(.bl-srow) .bl-r").find(x=>bn.includes(x.querySelector(".bl-turn .bl-sk")?.textContent)&&(!hc.name||x.querySelector(".bl-turn b")?.textContent===hc.name))||null:null;
+  if(buff){const bs=buff.querySelector(".bl-turn .bl-sk").textContent;pages.splice(pages.length,0,["u7",buff,`${hc.job_name||hc.job}의 ${bs} 줄입니다.\n공격력 버프를 더 받을 수 있는 아군에게 버프를 걸었습니다.\n버프를 받은 아군의 공격이 세져 ${boss}${josaOf(boss,"을","를")} 빨리 쓰러뜨립니다.`])}
+  pages.push(["u6",null,"보스 대사와 기믹 멘트를 읽으면 공략법이 보입니다.\n막히는 던전이 있으면 로그를 열어 보세요."]);
+  return runPages(pages,()=>tutAck("log4"));
  }
  return null;
 }
@@ -2333,6 +2571,7 @@ function tutRender(st){
 function tutTick(){
  if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;tutChapelLost=false;tutChapelFree=false;renderTutReplay()}qGuide=null;tutHide();return}
  if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
+ tutSpareSkills();
  if(!tutActive()){tutHide();return}
  let st=null;try{st=tutResolve()}catch(e){st=null}
  tutUnlimit(st?.limit?st.el:null);
