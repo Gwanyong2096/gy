@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v492 · 갱신 2026-11-10 05:55 KST -->
+<!-- ProjectGY-test-console v493 · 갱신 2026-11-10 06:32 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v492 · 2026-11-10 05:55</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v493 · 2026-11-10 06:32</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1802,13 +1802,32 @@ function tutPromoteLv(){return Number(pubCfg?.PROMOTE_LEVEL_FIRST)||TUT_PROMOTE.
 function tutTier(c){return templates.find(t=>t.job===c.job)?.tier||"BASE"}
 function tutPromoteChars(){return chars.filter(c=>tutTier(c)==="BASE"&&Number(c.level)>=tutPromoteLv())}
 function tutRegearChars(){return chars.filter(c=>tutTier(c)!=="BASE"&&!itemsData.some(i=>i.equipped_character===c.id&&!TUT_PROMOTE.gear.includes(i.def_id)))}
-// 단계 15·19: Allowed to Equip에서 c의 빈 칸에 낄 장비의 장착 버튼(끼워도 빠지는 장비가 없고 KARMA 한도를 넘지 않는 것). 없으면 null. 전직 뒤 하나만 끼고 맨몸으로 싸우지 않게 빈 칸을 모두 채운다
-function tutRegearBtn(c){
- const w=document.querySelector('#charDetail .sec-wrap[data-sec="owned"]');if(!c||!w)return null;
- return [...w.querySelectorAll(".equip-row button")].find(b=>{
-  const m=(b.getAttribute("onclick")||"").match(/^equipTo\('([^']+)'/),i=m&&itemsData.find(x=>x.id===m[1]);if(!i)return false;
-  const d=i.item_defs||{},sl=[d.slot,d.item_categories?.alt_slot].filter(Boolean);
-  return sl.some(x=>!equipOut(i.id,c.id,x).length&&!(k=>k&&k.next>k.lim&&k.next>k.cur)(karmaAfterEquip(i.id,c.id,x)))})||null}
+// 단계 15·19: Allowed to Equip에서 c의 빈 칸을 한 번에 채울 장비 [{id,slot}](목록 순서). 끼워도 빠지는 장비가 없고(빈 칸만, 다른 캐릭터가 낀 것은 고르지 않는다) KARMA 한도를 넘지 않는 것만, 앞서 고른 장비를 낀 것으로 셈해 가며 고른다(equipOut·karmaAfterEquip과 같은 판정). 전직 뒤 하나만 끼고 맨몸으로 싸우지 않게 빈 칸을 모두 채운다
+function tutRegearPlan(c){
+ const w=document.querySelector('#charDetail .sec-wrap[data-sec="owned"]');if(!c||!w)return [];
+ const two=x=>!!x?.item_defs?.item_categories?.two_handed,ov=x=>!!x?.item_defs?.item_categories?.overall,kv=x=>Number(itemBonuses(x).KARMA||0);
+ const occ={};itemsData.filter(x=>x.equipped_character===c.id).forEach(x=>{occ[x.equipped_slot]=x});
+ const k=c.stats?.KARMA,lim=Number(k?.LIMIT||0);let cur=Number(k?.TOTAL||0);
+ const free=(i,s)=>!occ[s]&&!(s==="WEAPON"&&two(i)&&occ.SHIELD)&&!(s==="SHIELD"&&two(occ.WEAPON))&&!(s==="TOP"&&ov(i)&&occ.BOTTOM)&&!(s==="BOTTOM"&&ov(occ.TOP));
+ const plan=[];
+ for(const b of w.querySelectorAll(".equip-row button")){
+  const m=(b.getAttribute("onclick")||"").match(/^equipTo\('([^']+)'/),i=m&&itemsData.find(x=>x.id===m[1]);if(!i||i.equipped_character||plan.some(p=>p.id===i.id))continue;
+  const d=i.item_defs||{},sl=[d.slot,d.item_categories?.alt_slot].filter(Boolean).find(x=>free(i,x));if(!sl)continue;
+  const next=cur+kv(i);if(k&&next>lim&&next>cur)continue;
+  occ[sl]=i;cur=next;plan.push({id:i.id,slot:sl});
+ }
+ return plan}
+// 고른 장비 중 맨 앞 줄(짚는 곳)
+function tutPlanRow(plan){const b=plan.length&&[...document.querySelectorAll('#charDetail .sec-wrap[data-sec="owned"] .equip-row button')].find(x=>(x.getAttribute("onclick")||"").startsWith(`equipTo('${plan[0].id}'`));return b?b.closest(".equip-row"):null}
+// 한 번에 채우기: 장착 버튼과 같은 서버 함수(equip_item)를 고른 장비마다 한 번씩 차례로 부른다(하나라도 실패하면 거기서 멈춘다). 끝나면 캐릭터·아이템을 다시 받는다. 그동안 과제는 기다린다
+let tutFilling=false;
+async function tutRegearFill(c){
+ if(tutFilling||!c||idleLocked(c.id))return;const plan=tutRegearPlan(c);if(!plan.length)return;
+ tutFilling=true;
+ try{for(const p of plan){if(!await rpc("equip_item",{p_char:c.id,p_item:p.id,p_slot:p.slot}))break}
+  await load();await loadItems()}finally{tutFilling=false}
+}
+const TUT_FILL_MSG=n=>`빈 칸에 낄 장비 ${n}개를 골랐습니다.\n지금 낀 장비는 빼지 않고, KARMA 한도를 넘지 않는 것만 고릅니다.\n한 번에 채우기를 누르면 모두 끼웁니다.`;
 // 단계 15: 장비를 채우는 캐릭터(하나 끼면 tutRegearChars에서 빠지니 기억해 둔다)
 let tutRgChar=null,tutRgSay="s15equip",tutItemsKey=null,tutItemsAsk=null;
 // 전직하면 load()가 캐릭터를 먼저 받고 아이템은 기다리지 않고 받는다. key(캐릭터·직업)가 바뀐 뒤 아이템을 한 번 새로 받았으면 true(그 전에는 풀린 장비가 아직 낀 것으로 보인다)
@@ -1852,11 +1871,17 @@ function tutSpareSkills(){
  });
 }
 function tutUnmoveChar(){const has=c=>(c.pattern||[]).some(r=>r.a===TUT_MOVE.rows[0].a),f=chars.find(c=>jobLine(c.job).includes(TUT_MOVE.job)&&has(c));return f||chars.find(has)||null}
+// 단계 8(대기): 셋째 던전(Smuggler)을 직접 싸워 처음 지면 한 번, 이기는 준비(패턴·장비·TP·레벨)를 몇 장 알린다(sm0~sm4). 전투 결과(openedBattle)는 창을 닫아도 남으니 새 결과마다 한 번 본다. Mock Battle·Auto Battle 결과는 세지 않는다
+let tutWaitB=null,tutWaitLost=false;
+function tutWaitWatch(){
+ if(stage||tut.step!==TUT_WAIT||!openedBattle||openedBattle===tutWaitB)return;const b=openedBattle,d=dungeons[2];tutWaitB=b;
+ if(d&&(b.dungeon===d.name||b.dungeon===d.id)&&b.result&&b.result!=="WIN"&&b.mode!=="MOCK"&&b.mode!=="IDLE")tutWaitLost=true}
+function tutWaitNote(){return tutWaitLost&&tut.step===TUT_WAIT&&!stage&&!tutPractice&&!tutSeen.has("sm4")}
 function tutIdleStuck(){const on=typeof idleChars==="function"?idleChars():new Set(),l=tut.step===14?tutPromoteChars():tut.step===15?tutRegearChars():[];return l.length>0&&l.every(c=>on.has(c.id))}
 // 과제가 화면을 쓰는 중(다른 조각이 리모콘을 숨길 때 쓴다). 끝났거나 대기 단계면 false
 function tutBusy(){return tut.step!=null&&tut.step<tut.last&&!tutFreeStep()}
 // 퀘스트 설명(06의 qGuide)도 같은 짚기 화면을 쓴다
-function tutActive(){return !!loggedIn&&tut.step!=null&&(tutBusy()||tutCongrats||!!tutPractice||questIntroPending||!!qGuide)}
+function tutActive(){return !!loggedIn&&tut.step!=null&&(tutBusy()||tutWaitNote()||tutCongrats||!!tutPractice||questIntroPending||!!qGuide)}
 function tutVisible(el){return !!el&&el.isConnected&&el.getClientRects().length>0}
 // 목록에서 고를 줄 하나만 남기고 나머지는 선택 불가(브라우저가 흐리게 그린다). 단계가 끝나면 바로 푼다
 function tutLimit(sel,keep){if(!sel||sel.dataset.tutLim===keep)return;[...sel.options].forEach(o=>o.disabled=o.value!==keep);sel.dataset.tutLim=keep}
@@ -1942,6 +1967,19 @@ function tutResolve(){
   return mid("pend",`챕터 ${tutPractice.ch} 연습이 끝났습니다.\n원래 화면으로 돌아갑니다.`,{btn:"확인",fn:()=>{practiceEnd()}});
  }
  const s=tut.step,logOpen=modal&&!!q("#helpBody .bl-result"),openBtn=q("#helpBody .bl-open");
+ // 단계 8: 셋째 던전에서 처음 진 뒤 한 번(tutWaitNote). 다 보면 다시 화면을 놓아 둔다
+ if(tutWaitNote()){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(modal)return okBtn?savedOk():say("smclose",q(".help-close"),"닫기를 눌러 주세요.");
+  const sn=dgName(2)||"셋째 던전",cl=chars.find(c=>jobLine(c.job).includes("CLERIC")),cn=cl?(cl.job_name||cl.job):"Cleric",mn=(x=>x&&x!==TUT_MEND.a?x:"Mend")(cl&&skillName(cl.id,TUT_MEND.a)),r1=dgName(0),r2=dgName(1);
+  const pg=[
+   ["sm0",null,`${sn}에서 이기지 못했습니다.\n${sn}${josaOf(sn,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n이기기 전에 해 둘 준비를 알려 드리겠습니다.`],
+   ["sm1",null,`먼저 패턴입니다.\nTP 찍기 퀘스트를 마치면 Pattern의 총 패턴 N줄 옆 ?(범용 패턴)에서 바로 적용할 수 있습니다.\n적용한 뒤에는 ${cn}의 패턴에 ${mn} 줄이 남아 있는지 꼭 확인하세요.\n없으면 [아군에 HP가 ${TUT_MEND.v}% 이하인 캐릭터가 있을 때 → ${mn}] 줄을 맨 위에 다시 넣어 주세요.`],
+   ["sm2",null,"다음은 장비입니다.\n퀘스트 보상과 던전에서 받은 장비가 Bag에 쌓여 있을 수 있습니다.\nCamp에서 캐릭터마다 Allowed to Equip을 펼쳐 빈 칸에 장비를 끼워 주세요."],
+   ["sm3",null,"TP도 확인하세요.\n레벨이 오를 때마다 TP를 받습니다.\n남은 TP는 Status에서 Front SPD나 Pattern 줄에 쓸 수 있습니다."]];
+  if(pg.some(([id])=>!tutSeen.has(id)))return runPages(pg,()=>{});
+  return mid("sm4",`그래도 어려우면 레벨을 올립니다.\n${r1&&r2?`${r1}${josaOf(r1,"이나","나")} ${r2}에서 `:""}Battle Rush로 여러 판을 이어 싸우면 빨리 오릅니다.\n그동안 화면을 풀어 두겠습니다.\n\n${sn}에서 이기면 다음 과제가 이어집니다.`,{btn:"확인",fn:()=>tutSeen.add("sm4"),prev:()=>tutSeen.delete("sm3")});
+ }
  const expandMsg="전투가 끝났습니다.\n어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.";
  const expandMsg2="이겼습니다!\n이번에는 스킬이 어떻게 쓰였는지 봅시다.\n로그 보기를 눌러 주세요.";
  // 던전 목록에서 그 던전의 방까지 들어가 전투를 누르게 한다(단계 0, 4, 11이 같이 쓴다). fightMsg: Battle! 장의 글(없으면 기본)
@@ -2295,23 +2333,24 @@ function tutResolve(){
    if(!tutSeen.has("pr3"))return page("pr3",cards,"특수 전직은 배운 스킬이 모두 초기화되고 SP를 돌려받습니다.\n이전 직업의 액티브 스킬은 더 쓸 수 없고 패시브만 남습니다.\n같은 특수 직업은 한 파티에 한 명만 넣을 수 있습니다.",{back:"pr2"});
    return say("s14card",cards,"전직할 직업의 카드를 눌러 주세요.\n직업 설명을 보고 고르세요.",{holdId:true});
   }
-  // 단계 15: 전직해 장비가 모두 풀린 캐릭터에게 Allowed to Equip에서 빈 칸마다 장비를 하나씩 끼운다(전직 장비는 세지 않는다, tutRegearBtn). 더 낄 것이 없으면 넘긴다
+  // 단계 15: 전직해 장비가 모두 풀린 캐릭터에게 Allowed to Equip에서 빈 칸을 한 번에 채운다(전직 장비는 세지 않는다, tutRegearPlan·tutRegearFill). 더 낄 것이 없으면 넘긴다
+  if(tutFilling)return wait();
   if(cfm==="equip")return say("s15equipok",priBtn,"장착을 눌러 주세요.",{holdId:true,holdAs:tutRgSay});
   if(modal)return okBtn?savedOk():say("s15close",q(".help-close"),"닫기를 눌러 주세요.");
   if(!tutItemsFresh("s15:"+chars.map(x=>x.id+x.job).join()))return wait();
   // 기억한 캐릭터의 빈 칸이 남았으면 그 캐릭터, 아니면 아직 아무것도 안 낀 다음 전직 캐릭터. 둘 다 없으면 넘긴다(서버는 tutorial_ack 'regear'로만 16)
-  const mem=chars.find(x=>x.id===tutRgChar&&!on.has(x.id)),c=(mem&&(selectedCharId!==mem.id||!sec("owned")||tutRegearBtn(mem))?mem:null)||tutRegearChars().find(x=>!on.has(x.id)&&x.id!==tutRgChar);
+  const mem=chars.find(x=>x.id===tutRgChar&&!on.has(x.id)),c=(mem&&(selectedCharId!==mem.id||!sec("owned")||tutRegearPlan(mem).length)?mem:null)||tutRegearChars().find(x=>!on.has(x.id)&&x.id!==tutRgChar);
   if(!c){tutAck("regear");return wait()}
   tutRgChar=c.id;
   const jn=c.job_name||c.job;
   if(!tutSeen.has("rg0"))return mid("rg0",`${jn}${josaOf(jn,"으로","로")} 전직했습니다!\n끼고 있던 장비는 모두 Bag으로 돌아갔습니다.\n다시 끼워 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("rg0")});
   const go=toChar("s15",c,`${jn}의 장비를 끼웁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
   const w=sec("owned");if(w?.classList.contains("collapsed"))return say("s15owned",w.querySelector(".sec-toggle"),"Bag의 장비 중 이 직업이 낄 수 있는 것은 Allowed to Equip에 나옵니다.\n눌러서 펼쳐 주세요.");
-  const btn=tutRegearBtn(c);
-  if(!btn){tutRefresh();return wait()} // 이 캐릭터는 다 끼웠다: 다음 틱에 다음 캐릭터로 가거나 넘긴다
-  if(!tutSeen.has("rg1"))return page("rg1",btn.closest(".equip-row"),"전직하기 전에 끼던 장비도 여기에 나옵니다.\n직업이 바뀌어 낄 수 없게 된 장비는 나오지 않습니다.");
-  const n=itemsData.filter(i=>i.equipped_character===c.id&&!TUT_PROMOTE.gear.includes(i.def_id)).length;tutRgSay=n?"s15eq"+n:"s15equip";
-  return say(tutRgSay,btn,n?"다음 빈 칸에 낄 장비입니다.\n장착을 눌러 주세요.":"장착을 눌러 주세요.\n빈 칸이 다 찰 때까지 낄 장비를 차례로 짚어 드립니다.",{holdId:true});
+  const plan=tutRegearPlan(c),row=tutPlanRow(plan);
+  if(!plan.length||!row){tutRefresh();return wait()} // 이 캐릭터는 다 끼웠다: 다음 틱에 다음 캐릭터로 가거나 넘긴다
+  if(!tutSeen.has("rg1"))return page("rg1",row,"전직하기 전에 끼던 장비도 여기에 나옵니다.\n직업이 바뀌어 낄 수 없게 된 장비는 나오지 않습니다.");
+  tutRgSay="s15fill";
+  return say(tutRgSay,row,TUT_FILL_MSG(plan.length),{btn:"한 번에 채우기",fn:()=>tutRegearFill(c)});
  }
  // 단계 16: [빈 자리 TODO 장비 보상] Smuggler·Chapel 드롭 장비를 계정당 한 번 받는 자리(로직 #튜토리얼-1110-0103이 지급 함수를 정하면 여기에 짚기를 넣는다). 지금은 서버가 바로 17로 넘긴다
  // 단계 17: 다섯째 던전에 들어가기 전에 Move Back·Move Forward 줄을 뺀다(그 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다)
@@ -2422,10 +2461,10 @@ function tutResolve(){
    return wait();
   }
   const intro=[["hy0",`${boss}${josaOf(boss,"은","는")} HP가 많아 오래 싸우면 Slag Skin으로 HP를 되찾습니다.\n그 전에 쓰러뜨리려면 아군의 공격력을 올리는 버프가 가장 중요합니다.`],
-   ["hy1",P.plan==="insp"?`${jn}의 ${iN}${josaOf(iN,"은","는")} 아군 한 명의 ATK와 MATK를 올립니다.\n${iN}${josaOf(iN,"을","를")} 패턴 맨 위에 넣어 봅시다.`:`${cn}의 ${hN}${josaOf(hN,"은","는")} ${iN}보다 강한 버프로 아군 한 명의 ATK와 MATK를 올립니다.\n${hN}${josaOf(hN,"을","를")} 배우려면 먼저 ${iN}${josaOf(iN,"을","를")} 배워야 합니다.\n${jn}에게 배워 패턴 맨 위에 넣어 봅시다.`]];
+   ["hy1",P.plan==="insp"?`${jn}의 ${iN}${josaOf(iN,"은","는")} 모든 아군의 ATK·MATK와 Back SPD를 올립니다.\n${iN}${josaOf(iN,"을","를")} 패턴 맨 위에 넣어 봅시다.`:`${cn}의 ${hN}${josaOf(hN,"은","는")} ${iN}보다 강한 버프로 모든 아군의 ATK·MATK와 Back SPD를 올립니다.\n${hN}${josaOf(hN,"을","를")} 배우려면 먼저 ${iN}${josaOf(iN,"을","를")} 배워야 합니다.\n${jn}에게 배워 패턴 맨 위에 넣어 봅시다.`]];
   for(let i=0;i<intro.length;i++){const [id,msg]=intro[i];if(!tutSeen.has(id))return mid(id,msg,{btn:"다음",fn:()=>tutSeen.add(id),prev:i?()=>tutSeen.delete(intro[i-1][0]):null})}
   const go=toChar(k,c,`${jn}의 패턴을 고칩니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
-  // 전직: Cleric이면 Chaplain으로(Hymn은 Chaplain 스킬). 전직하면 장비가 풀리니 하나 다시 끼운다(단계 15와 같다)
+  // 전직: Cleric이면 Chaplain으로(Hymn은 Chaplain 스킬). 전직하면 장비가 풀리니 빈 칸을 한 번에 다시 채운다(단계 15와 같다)
   if(P.plan==="promote"){
    const w=sec("status");if(w?.classList.contains("collapsed"))return say(k+"sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
    const card=q(`#charDetail .promote-card[onclick*="'${TUT_HYMN.chap}'"]`);if(!card)return wait();
@@ -2436,8 +2475,9 @@ function tutResolve(){
   if(tutTier(c)!=="BASE"&&tutSeen.has("hy-p0")&&!tutSeen.has("hy-geared")){
    const w=sec("owned");if(w?.classList.contains("collapsed"))return say(k+"owned",w.querySelector(".sec-toggle"),"전직해서 장비가 모두 풀렸습니다.\nAllowed to Equip을 눌러 펼쳐 주세요.");
    if(!tutItemsFresh("hy:"+c.id+c.job))return wait();
-   const btn=tutRegearBtn(c);
-   if(btn){const n=itemsData.filter(i=>i.equipped_character===c.id).length;return say(n?k+"eq"+n:k+"equip",btn,n?"다음 빈 칸에 낄 장비입니다.\n장착을 눌러 주세요.":"장착을 눌러 주세요.\n빈 칸이 다 찰 때까지 낄 장비를 차례로 짚어 드립니다.",{holdId:true})}
+   if(tutFilling)return wait();
+   const plan=tutRegearPlan(c),row=tutPlanRow(plan);
+   if(plan.length&&row)return say(k+"fill",row,TUT_FILL_MSG(plan.length),{btn:"한 번에 채우기",fn:()=>tutRegearFill(c)});
    if(w)tutSeen.add("hy-geared");
   }
   // 배우기: Inspire(선행) → Hymn. 배우는 중(버튼이 잠깐 잠김)이면 스킬 목록을 다시 받을 때까지 기다린다
@@ -2506,11 +2546,11 @@ function tutResolve(){
    const w=sec("status");if(w?.classList.contains("collapsed"))return say("spsec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
    const box=$("alloc-"+sc.id),f=box?.querySelector('input[data-tp="h"]'),fw=f?.closest(".alloc-f")||f;
    if(!f)return wait();
-   const t=tpCur(sc),v=Math.min(TUT_ASHEN.spd-t.h,Number(sc.tp)||0),B=pubCfg.TP_SPD_F_BANDS,base=Number(sc.stats?.SPD?.F||0),to=+(base+tpBandSum(B,t.h+v)-tpBandSum(B,t.h)).toFixed(2);
+   const t=tpCur(sc),pts=Number(sc.tp)||0,v=Math.min(TUT_ASHEN.spd-t.h,pts),B=pubCfg.TP_SPD_F_BANDS,base=Number(sc.stats?.SPD?.F||0),to=+(base+tpBandSum(B,t.h+v)-tpBandSum(B,t.h)).toFixed(2);
    if(!tutSeen.has("sp1"))return page("sp1",fw,`Front SPD는 TP 1에 1포인트씩 오릅니다.\n파티원마다 ${TUT_ASHEN.spd}포인트까지 올려 봅시다(TP가 모자라면 남은 만큼).\n다른 칸은 0으로 둡니다.`);
    const fill=()=>{box.querySelectorAll("input[data-tp]").forEach(i=>{const x=i===f?String(v):"0";if(i.value!==x)i.value=x});tpPreview(sc.id)};
    const key="sp2-"+sc.id;
-   if(!tutSeen.has(key))return say("sp2",fw,`${jn}${josaOf(jn,"은","는")} Front SPD 칸에 ${v}${josaOf(v,"을","를")} 입력하고 다음을 눌러 주세요.\nFront SPD가 ${hasteText(base)} → ${hasteText(to)}${josaOf(to,"이","가")} 됩니다.`,{btn:"다음",hole:true,nohold:true,fn:()=>{fill();tutSeen.add(key)}});
+   if(!tutSeen.has(key))return say("sp2",fw,`${jn}${josaOf(jn,"은","는")} 남은 TP ${pts} 중 ${v}${josaOf(v,"을","를")} Front SPD에 씁니다.\nFront SPD 칸에 ${v}${josaOf(v,"을","를")} 입력하고 다음을 눌러 주세요.\nFront SPD가 ${hasteText(base)} → ${hasteText(to)}${josaOf(to,"이","가")} 되고, 위의 TP 숫자는 배분 뒤 남을 ${pts-v}${josaOf(pts-v,"으로","로")} 바뀌어 보입니다.`,{btn:"다음",hole:true,nohold:true,fn:()=>{fill();tutSeen.add(key)}});
    if(f.value!==String(v))fill();
    return say("spalloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
   }
@@ -2614,7 +2654,7 @@ function tutRender(st){
 function tutTick(){
  if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;tutChapelLost=false;tutChapelFree=false;renderTutReplay()}qGuide=null;tutHide();return}
  if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
- tutSpareSkills();
+ tutSpareSkills();tutWaitWatch();
  if(!tutActive()){tutHide();return}
  let st=null;try{st=tutResolve()}catch(e){st=null}
  tutUnlimit(st?.limit?st.el:null);
