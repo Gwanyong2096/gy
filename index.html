@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v491 · 갱신 2026-11-10 04:50 KST -->
+<!-- ProjectGY-test-console v492 · 갱신 2026-11-10 05:55 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v491 · 2026-11-10 04:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v492 · 2026-11-10 05:55</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1386,6 +1386,8 @@ const QUEST_GUIDE={
   if(!g.phase){if(info.guide==="DONE")g.phase="back";else if((info.parties||[]).length)g.phase="sent"}
   if(g.phase==="sending")return h.wait();
   const rm=h.q("#idleRemote"),panel=h.q("#idleRemote .q-panel");
+  // 보낸 뒤인데 파티가 없으면(회수는 끝났는데 단계가 안 넘어간 경우, 예: 회수를 두 번 눌러 두 번째가 실패) 회수 뒤 장으로 넘긴다
+  if(g.phase==="sent"&&idleInfo&&!(info.parties||[]).length&&(info.guide==="DONE"||g.recallTried)&&!idleBusy&&!h.modal)g.phase="back";
   if(g.phase==="back")return h.page("qg-i8",panel||rm,`파티가 돌아와 직접 싸우는 파티에 다시 들어갔습니다.\n다음에 보내면 회수할 때까지 ${mins}분마다 한 판씩 싸웁니다.\nAuto Battle은 파티를 여러 개(지금 최대 ${info.slots??3}개) 함께 보낼 수 있습니다.\nTown의 Inn에서 캐릭터를 더 영입해 서브 파티를 꾸려 보내면, 직접 싸우는 동안에도 경험치와 아이템이 쌓여 효율적입니다.`,{btn:"확인",fn:questGuideDone});
   if(g.phase==="sent"){
    if(!rm||rm.classList.contains("hidden"))return h.wait();
@@ -3363,8 +3365,8 @@ function jobConditionOptions(charId){
 // 범용 패턴: 직업마다 기본 설계와 늘 쓰는 줄. 내용은 이 표만 갈아 끼우면 된다(없는 직업은 준비 중).
 // 줄은 [조건 글, 행동 이름, 조건 코드, 스킬 ID, 수치]. 글의 OO는 유저가 정할 값이고, 적용 버튼은 수치 칸의 값을 넣는다.
 const PATTERN_GUIDE={
-  CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
-    rows:[["MP가 OO 이하","Solace","selfMpLtePct","cleric_solace",30],["HP가 OO 이하","Sanctuary","allyHpLtePct","cleric_sanctuary",50],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["이 줄 스킬이 쿨타임이 아닐 때","Bless","skillReady","cleric_bless"],["ATK나 MATK 버프를 더 받을 수 있는 아군이 있을 때","AND","allyAtkBuffRoom","common_and"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire","skillReady","cleric_inspire"],["반드시","Renew","always","cleric_renew"]]},
+  CLERIC:{design:"Cleric은 후방에서 아군을 회복하고 버프를 거는 직업입니다. 급한 회복과 부활을 먼저 확인하고, HP가 떨어진 아군은 Mend로 고치고, 쿨타임이 돌아온 버프를 건 뒤, 남는 턴에는 Renew로 꾸준히 회복합니다.",
+    rows:[["MP가 OO 이하","Solace","selfMpLtePct","cleric_solace",30],["HP가 OO 이하","Sanctuary","allyHpLtePct","cleric_sanctuary",50],["아군 사망자가 1명 이상","Resurrection","allyDeadGte","cleric_resurrection",1],["아군에 HP가 OO 이하인 캐릭터가 있을 때","Mend","allyHpLtePct","cleric_mend",70],["이 줄 스킬이 쿨타임이 아닐 때","Bless","skillReady","cleric_bless"],["ATK나 MATK 버프를 더 받을 수 있는 아군이 있을 때","AND","allyAtkBuffRoom","common_and"],["이 줄 스킬이 쿨타임이 아닐 때","Inspire","skillReady","cleric_inspire"],["반드시","Renew","always","cleric_renew"]]},
   GUNNER:{design:"Gunner는 탄을 쓰는 사격 스킬로 딜을 넣는 직업입니다. 탄이 넉넉하고 El Presidente가 쿨타임이 아니면 El Presidente를 먼저 쓰고, 남은 탄에 맞춰 Bill Drill·Box Drill을 쏜 뒤, 탄이 모자라면 Reload로 채웁니다.",
     rows:[["자신의 탄약 수가 13 이상일 때","AND","ammoGte","common_and",13],["이 줄 스킬이 쿨타임이 아닐 때","El Presidente","skillReady","archer_gunner_el_presidente"],["자신의 탄약 수가 12 이상일 때","Bill Drill","ammoGte","archer_gunner_bill_drill",12],["자신의 탄약 수가 8 이상일 때","Box Drill","ammoGte","archer_gunner_box_drill",8],["반드시","Reload","always","archer_gunner_reload"]]},
   ROGUE:{design:"Rogue는 출혈을 쌓고 터뜨리는 직업입니다. Delay Push 면역인 적이 없고 차징이나 캐스팅 중인 적이 있으면 Garrote로 딜레이를 늘리고, Eviscerate가 쿨타임이 아니면 쌓인 출혈을 터뜨린 뒤, 남는 턴에는 Gash로 출혈을 쌓습니다.",
@@ -3430,7 +3432,10 @@ function patternGuideRows(charId){
 function confirmPatternGuide(charId){
   const r=patternGuideRows(charId);if(!r)return;
   const c=chars.find(x=>x.id===charId),nm=c?.name||c?.job_name||c?.job;
-  const note=[r.miss.length?`<p class="help-note">배우지 않은 스킬 줄은 뺍니다: ${r.miss.map(esc).join(", ")}</p>`:"",
+  // 지금 패턴에 있는데 범용 패턴에는 없는 스킬(적용하면 패턴에서 빠진다)
+  const now=[...($("pat-"+charId)?.querySelectorAll(".pattern-row .pattern-action")||[])].map(x=>x.value),nxt=new Set(r.rows.map(x=>x.a));
+  const gone=[...new Set(now.filter(a=>a&&a!=="common_and"&&!nxt.has(a)))].map(a=>skillName(charId,a));
+  const note=[gone.length?`<p class="help-note">지금 패턴에서 빠지는 스킬: ${gone.map(esc).join(", ")}</p>`:"",r.miss.length?`<p class="help-note">배우지 않은 스킬 줄은 뺍니다: ${r.miss.map(esc).join(", ")}</p>`:"",
    r.cut.length?`<p class="help-note">패턴 줄이 ${r.n}줄이라 넣지 못하는 줄: ${r.cut.map(esc).join(", ")}</p>`:"",
    r.basicEnd?`<p class="help-note">맨 끝 줄은 반드시 → ${esc(r.basicEnd)}(기본 공격)로 둡니다.</p>`:""].join("");
   openConfirm("범용 패턴 적용",`<p><b>${esc(nm)}</b>의 패턴을 범용 패턴으로 바꿔 저장합니다. 지금 패턴은 사라집니다.</p>${note}${draftWarnHtml(charId)}<p class="help-note">OO 수치는 기본값으로 들어갑니다. 저장한 뒤 패턴에서 바꿀 수 있습니다.</p>`,
@@ -4028,11 +4033,15 @@ async function startBattle(dungeonId,mode){
 async function startRush(dungeonId){
  if(battleBusy)return;const n=clampRush(rushCount);if(n<1)return;battleBusy=true;renderRoom();
  const body={action:"rush",dungeon_id:dungeonId,count:n,keep_going:rushKeepGoing,request_id:newRequestId()};
- let data=null,errMsg="";
+ let data=null,errMsg="",rushLost=false;
  try{
+  // 응답을 못 받으면(연결 끊김·시간 초과·5xx) 서버에서는 판이 돌았을 수 있다: 입장 비용을 돌려받는다고 하지 않고 Log를 보라고 한다
+  // (같은 요청을 다시 보내는 것은 서버가 아직 돌리는 중일 때 겹칠 수 있어 하지 않는다)
   for(let i=0;i<=n;i++){
    const r=await sb.functions.invoke("battle",{body});
-   if(r.error){try{const j=await r.error.context.json();errMsg=j.error||r.error.message}catch(e){errMsg=r.error.message}break}
+   if(r.error){const st=r.error.context?.status;if(!st||st>=500)rushLost=true;
+    try{const j=await r.error.context.json();errMsg=j.error||r.error.message}catch(e){errMsg=r.error.message}break}
+   if(!r.data||!Array.isArray(r.data.runs)){errMsg="BAD_RESPONSE";rushLost=true;break}
    data=r.data;if(!data.more)break;
   }
  }catch(e){errMsg=String(e&&e.message||e)}
@@ -4042,7 +4051,7 @@ async function startRush(dungeonId){
  // 한 판이라도 돌았으면 판 수 칸을 0으로 비운다(다음 Rush는 판 수를 새로 정한다)
  if(data&&(data.runs||[]).length)rushCount=0;
  if(data&&(data.runs||[]).length){log(`battle rush 성공: ${data.runs.length}판`,"ok");openRushResult({...data,stopped:data.stopped||(errMsg?(key||"ERROR"):null),dungeon:dungeons.find(x=>x.id===dungeonId)?.name||dungeonId})}
- else showBattleError(key?BATTLE_ERR[key]:"전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.","Battle Rush");
+ else showBattleError(key?BATTLE_ERR[key]:rushLost?"전투 결과를 받지 못했습니다. 서버에서는 판이 돌았을 수 있습니다. Log에서 결과를 확인해 주세요.":"전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.","Battle Rush");
  await load();loadAdventure();
 }
 function showBattleError(msg,title){openConfirm(title||"전투",`<p>${esc(msg)}</p>`,[["확인",null,true]])}
@@ -4748,16 +4757,18 @@ async function dispatchIdle(id,ids){
  if(g&&qGuide===g)g.phase="sent";
 }
 function confirmRecall(pid){
- const p=(idleInfo?.parties||[]).find(x=>x.id===pid);if(!p)return;
+ const p=(idleInfo?.parties||[]).find(x=>x.id===pid);if(!p||idleBusy)return;
  openConfirm("회수",`<p><b>${esc(p.dungeon)}</b>에 파견한 파티를 회수합니다. 밀린 판은 먼저 정산합니다.</p><p class="help-note">이 파티의 요약과 마지막 전투 기록은 사라집니다.</p>`,
   [["취소",null,false],["회수",()=>recallIdle(pid),true]]);
 }
 async function recallIdle(pid){
- if(idleBusy)return;idleBusy=true;let err="",sum=null;
+ if(idleBusy)return;idleBusy=true;let err="",sum=null;if(qGuide?.key==="idle")qGuide.recallTried=true;
  const p=(idleInfo?.parties||[]).find(x=>x.id===pid),mem=(p?.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean);
  try{await settleIdle();const {data,error}=await sb.rpc("idle_recall",{p_party:pid});if(error)err=error.message;else sum=data?.summary||{}}catch(e){err=String(e&&e.message||e)}
  idleBusy=false;
- if(err){log("idle_recall 실패: "+err,"bad");showBattleError(idleErrText(err,"회수하지 못했습니다."),"Auto Battle")}else log("idle_recall 성공","ok");
+ if(err){log("idle_recall 실패: "+err,"bad");showBattleError(idleErrText(err,"회수하지 못했습니다."),"Auto Battle")}else{log("idle_recall 성공","ok");
+  // 돌려받은 파티 카드는 바로 지운다(다시 읽는 동안 회수를 또 눌러 IDLE_NOT_FOUND가 나지 않게)
+  if(idleInfo){idleInfo.parties=(idleInfo.parties||[]).filter(x=>x.id!==pid);renderIdle()}}
  const g=!err&&qGuide?.key==="idle"?qGuide:null;
  await load();if(currentView!=="adventure")await checkIdle();
  if(sum)showRecallResult(p?.dungeon||"",mem,sum);
