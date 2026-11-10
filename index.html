@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v499 · 갱신 2026-11-10 14:13 KST -->
+<!-- ProjectGY-test-console v500 · 갱신 2026-11-10 14:29 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v499 · 2026-11-10 14:13</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v500 · 2026-11-10 14:29</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1667,7 +1667,8 @@ async function selectCharacter(id){
 let hidePts=false;
 function applyHidePts(){document.documentElement.classList.toggle("hide-pts",hidePts);if($("hidePtsChk"))$("hidePtsChk").checked=hidePts}
 function setHidePts(v){hidePts=!!v;saveUiPref("hide_point_badge",hidePts);applyHidePts()}
-function rosterPts(c){const sp=Number(c.sp)||0,tp=Number(c.tp)||0,a=[];if(sp>0)a.push(`SP ${sp}`);if(tp>0)a.push(`TP ${tp}`);
+// SP는 지금 배울 수 있는 스킬이 있을 때만(서버 sp_learnable: 안 배움·열림·SP 충분, 사용자 H 2026-11-10)
+function rosterPts(c){const sp=c.sp_learnable===false?0:Number(c.sp)||0,tp=Number(c.tp)||0,a=[];if(sp>0)a.push(`SP ${sp}`);if(tp>0)a.push(`TP ${tp}`);
  return a.length?`<span class="u-pts" title="안 쓴 포인트가 있습니다">${a.map(x=>`<b>${x}</b>`).join("")}</span>`:""}
 function renderCamp(){
  // 캐릭터를 고르지 않았으면 로스터(대표 화면), 골랐으면 상세 화면만 표시
@@ -3205,7 +3206,7 @@ function tpPreview(id){const c=chars.find(x=>x.id===id);if(!c)return;const v=tpV
 function confirmTpReset(id){
  const c=chars.find(x=>x.id===id);if(!c)return;
  openConfirm("TP 초기화",`<p><b>Unwinding Draught</b> 1개를 마셔 Front SPD, Pattern, Karma Limit에 쓴 TP를 모두 되돌립니다. 돌려받는 TP: <b>${tpUsed(c)}</b></p><p class="help-note">Karma Limit이 줄면 장착한 장비에 따라 과업 상태가 될 수 있습니다. Pattern이 줄면 패턴 줄 수가 줄고, 넘는 줄은 비활성이 됩니다.</p>${draftWarnHtml(id)}`,
-  [["취소",null,false],["마시기",async()=>{if(await rpc("use_tp_reset",{p_char:id})){delete patternDraft[id];load()}},true]]);
+  [["취소",null,false],["마시기",async()=>{if(await rpc("use_tp_reset",{p_char:id})!==null){delete patternDraft[id];load()}},true]]);
 }
 function confirmTp(id){
  const c=chars.find(x=>x.id===id);if(!c)return;
