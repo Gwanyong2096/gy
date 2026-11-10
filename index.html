@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v503 · 갱신 2026-11-10 16:50 KST -->
+<!-- ProjectGY-test-console v504 · 갱신 2026-11-10 17:56 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v503 · 2026-11-10 16:50</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v504 · 2026-11-10 17:56</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1338,7 +1338,7 @@ function questGold(to){const from=Number(gold)||0;if(to<=from){gold=to;renderGol
 // 짚는 설명을 아직 안 본 퀘스트면 간 뒤 설명을 시작한다(then: 설명이 끝나면 할 일. 보상 받기에서 부를 때)
 function questGo(q,then){
  const g=q&&q.go;if(!g||!g.view||qGuide)return;
- const ok=["camp","adventure","bag","town","appraise","craft","log","setting"].includes(g.view);if(!ok)return;
+ const ok=["camp","adventure","bag","town","appraise","craft","guild","log","setting"].includes(g.view);if(!ok)return;
  showView(g.view);if(currentView!==g.view)return;
  if(questNeedsGuide(q))questGuideStart(q,then);
  if(QR.narrow&&QR.open){QR.open=false;questPlace(true)}
@@ -1604,6 +1604,25 @@ const QUEST_GUIDE={
    ["qg-u2",pat,"전투에서는 패턴의 Use Item 줄로 씁니다.\n조건을 '이 줄의 소모품을 쓸 수 있을 때'로 두면 쓸 수 있을 때만 씁니다.\nHP 조건과 AND로 묶으면 위급할 때만 쓰게 할 수 있습니다."],
    ["qg-u3",slot,"소모품 칸에 Healing Potion을 끼워 주세요."]]);
  },
+ // 강화 해 보기(q_ch2_28, Chieftain's Boots +3): Smithy Enhance 탭에서 세 장. 안전 강까지는 늘 성공하고 그 위로는 깨질 수 있다고 알린다
+ enhance(g,h){
+  if(currentView!=="craft"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal)return null;
+  if(smithTab!=="enhance")setSmithTab("enhance");
+  const t=h.q('#smithTabs .seg-btn[data-t="enhance"]')||h.q("#smithTabs"),box=h.q("#enhList")||t;
+  return qgPages(h,[["qg-e1",t,"Enhance 탭에서는 감정을 마친 장비를 골드로 강화합니다.\n강화하면 장비의 기본 수치가 오릅니다.\n비용은 골드뿐입니다."],
+   ["qg-e2",box,"안전 강(무기 +7, 방어구·방패 +5, 장신구 +4)까지는 반드시 성공합니다.\n그 위로는 성공률이 75 − 3 × 목표 강 %이고, 실패하면 장비가 사라집니다.\n막는 수단은 없고, 쓴 골드도 돌려받지 못합니다."],
+   ["qg-e3",box,"받은 Chieftain's Boots는 방어구라 +5까지 안전합니다.\nChieftain's Boots를 골라 +3까지 강화해 봅시다."]]);
+ },
+ // Thieves' Guild 둘러보기(q_ch2_29, 튜토리얼 뒤): 티어1에는 무법 파견이 없어 직접 해 볼 수 없으니 둘러보며 세 장. 다 보면 셈(guided)이 차서 바로 보상을 받는다
+ raid(g,h){
+  if(currentView!=="guild"){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
+  if(h.modal)return null;
+  const body=h.q("#raidBody")||h.q("#raidTabs"),tabs=h.q("#raidTabs")||body;
+  return qgPages(h,[["qg-g1",body,"Thieves' Guild에서는 정보를 사서 다른 유저의 무법 파견 짐을 약탈합니다.\n매 정시에 공짜 정보가 한 장 생깁니다."],
+   ["qg-g2",body,"무법 파견은 티어2 던전부터 열립니다.\n보상이 크지만 짐을 약탈당할 수 있으니 호위대를 붙여 보내세요."],
+   ["qg-g3",tabs,"약탈 기록은 Records 탭과 Log의 Raid 필터에서 봅니다."]],async()=>{await questGuideDone();questLoad()});
+ },
  // 제작: Enhance 탭에 있으면 Craft 탭으로 돌려놓고 목록을 짚는다(숨은 목록을 짚지 않게). 목록 장 다음에 Enhance 탭 한 장
  craft(g,h){
   if(currentView==="craft"&&!h.modal&&tutSeen.has("qg-c3")){const t=h.q('#smithTabs .seg-btn[data-t="enhance"]')||h.q("#smithTabs");
@@ -1650,6 +1669,9 @@ function qgPages(h,pages,done){for(let i=0;i<pages.length;i++){const [id,el,msg]
 function qgSellPage(h,back,fn){return h.page("qg-a4",$("appraiseList"),"쓰지 않는 장비나 남는 아이템은 Town의 Inn에서 Goods의 Sell로 골드를 받고 팝니다.\n끼고 있는 장비는 풀어야 목록에 나오고, 판 것은 되살 수 없습니다.",{back,btn:"확인",fn})}
 // 퀘스트 보상 소모품 중 따로 설명을 둔 것
 const QUEST_ITEM_NOTE={
+ // q_ch2_15 보상: 무엇이고 언제 쓰는지(소모품 칸은 하나라 Healing Potion 대신 끼운다)
+ might_draught:`<p>마시면 그 전투 내내 <b>주는 피해 +5%</b>입니다. 한 전투에 한 번 씁니다.</p>`,
+ guard_draught:`<p>마시면 그 전투 내내 <b>받는 피해 −5%</b>입니다. 한 전투에 한 번 씁니다.</p><p class="help-note">소모품 칸은 하나라 Healing Potion 대신 끼웁니다. 보스가 센 던전(Ashen Mine)에 들어가기 전에 끼우고, 패턴 맨 위에 '이 줄의 소모품을 쓸 수 있을 때 → Use Item' 줄을 두면 전투 첫 차례에 마십니다.</p>`,
  reset_draught:`<p>한 병을 마시면 한 캐릭터의 <b>TP를 모두 돌려받거나</b>, <b>배운 스킬을 모두 초기화하고 SP를 돌려받습니다</b>. 둘 중 하나만 고릅니다.</p><p>Camp에서 캐릭터를 열어 Status의 <b>TP 초기화</b>나 Skill의 <b>스킬 초기화</b>를 누르면 마십니다.</p><p class="help-note">잘못 나눈 TP나 SP를 다시 나눌 때 씁니다. 보스가 드물게 떨구기도 합니다.</p>`
 };
 async function selectCharacter(id){
@@ -1951,6 +1973,7 @@ function renderTutReplay(){
 async function loadTutorial(){
  const {data,error}=await sb.rpc("get_tutorial");
  if(error){log("get_tutorial 실패: "+error.message,"bad");return}
+ if(!tutUid&&!stage){const {data:{user}}=await sb.auth.getUser();tutUid=user?.id||null}
  const prev=tut.step;tut={step:data?.step??null,last:data?.last??tut.last};
  // practice(무대 챕터)는 무대 자료가 답할 때만 들어 있다(stageAnswer)
  tutPractice=data?.practice?{ch:data.practice,end:data.practice_end}:null;renderTutReplay();
@@ -2031,9 +2054,11 @@ function tutAshenPick(t){
 // Front SPD 칸에 유저가 숫자를 적어 배분하거나(쓴 TP가 늘면 끝) 넘기기를 누르면 다음 캐릭터. 다 돌면 null. h = 짚기 도구(say, mid, page, wait, toChar, sec)
 // 넘긴 캐릭터·처음 짚을 때의 Front SPD TP(start)는 새로 고쳐도 다시 묻지 않게 계정마다 브라우저에 기억한다(무대에서는 기억하지 않는다)
 const tutSpdState={};
-function tutSpdKey(k){return `pgy_tutspd_${k}_${(typeof user!=="undefined"&&user?.id)||""}`}
-function tutSpdLoad(k){let o=null;if(!stage)try{o=JSON.parse(localStorage.getItem(tutSpdKey(k))||"null")}catch(e){}return {skip:new Set(o?.skip||[]),start:o?.start||{}}}
-function tutSpdSave(k,S){if(stage)return;try{localStorage.setItem(tutSpdKey(k),JSON.stringify({skip:[...S.skip],start:S.start}))}catch(e){}}
+// tutUid: 로그인한 계정 id(loadTutorial이 sb.auth.getUser로 한 번 받는다, 로그아웃하면 지운다). 받기 전에는 기억하지도 읽지도 않는다
+let tutUid=null;
+function tutSpdKey(k){return `pgy_tutspd_${k}_${tutUid}`}
+function tutSpdLoad(k){let o=null;if(!stage&&tutUid)try{o=JSON.parse(localStorage.getItem(tutSpdKey(k))||"null")}catch(e){}return {skip:new Set(o?.skip||[]),start:o?.start||{}}}
+function tutSpdSave(k,S){if(stage||!tutUid)return;try{localStorage.setItem(tutSpdKey(k),JSON.stringify({skip:[...S.skip],start:S.start}))}catch(e){}}
 // Front SPD가 TP 1마다 오르는 양(TP_SPD_F_BANDS: [TP 수, 오르는 양]) 설명
 function tutSpdRate(){const B=(pubCfg.TP_SPD_F_BANDS||[]).map(x=>Number(x[1])).filter(x=>x>0);if(!B.length)return "Front SPD는 TP를 넣을수록 오릅니다.";
  const rest=[...new Set(B.slice(1))];return `Front SPD는 TP 1마다 ${B[0]}씩 오릅니다.${rest.length?`\n많이 넣을수록 오르는 양이 ${rest.join("·")}${josaOf(rest[rest.length-1],"으로","로")} 줄어듭니다.`:""}`}
@@ -2876,7 +2901,7 @@ function tutRender(st){
  ui.cur=st;ui.key=st.id;ui.shown=true;document.documentElement.classList.add("tut-on");
 }
 function tutTick(){
- if(!loggedIn){if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;tutChapelLost=false;tutChapelFree=false;renderTutReplay()}qGuide=null;tutHide();return}
+ if(!loggedIn){tutUid=null;if(tut.step!=null){tut={step:null,last:tut.last};tutSeen.clear();tutCongrats=null;tutPractice=null;tutChapelLost=false;tutChapelFree=false;renderTutReplay()}qGuide=null;tutHide();return}
  if(tutAskOpen){if($("helpOverlay").hidden)tutAskOpen=false;else{tutHide();return}}
  tutSpareSkills();tutWaitWatch();
  if(!tutActive()){tutHide();return}
