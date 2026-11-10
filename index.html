@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v494 · 갱신 2026-11-10 12:10 KST -->
+<!-- ProjectGY-test-console v495 · 갱신 2026-11-10 12:55 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,9 +498,40 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .stat-pt b.over{color:#e53935}
 .bl-spirit{color:var(--cv);font-weight:700}.cs-sst{font-size:11.5px;margin-bottom:2px}.skill-subs{margin-top:4px;padding-left:8px;border-left:2px solid var(--bd)}.skill-sub{font-size:12px;margin-top:2px}.skill-sub .tag{margin-left:5px}.skill-sub-k,.skill-sub-m{color:var(--mu)}
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
+/* 무법 파견(Auto Battle): 확인 창 모드·호위대, 리모콘 카드 표시 */
+.dsp-mode{margin:4px 0 10px}.dsp-esc{margin-top:12px}.dsp-pool{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.dsp-chip{font-size:13px;padding:5px 10px;border-radius:8px}.dsp-chip span{color:var(--mu);font-size:12px;margin-left:2px}.dsp-chip.on{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}.dsp-chip.on span{color:var(--tx)}.dsp-chip[disabled]{opacity:.45;cursor:default}
+.idle-law{font-size:11px;font-weight:700;color:var(--bad);border:1px solid var(--bad);border-radius:5px;padding:0 5px;line-height:1.5}.idle-card.lawless{border-color:color-mix(in srgb,var(--bad) 45%,var(--bd))}
+/* Thieves' Guild 약탈(시안 C): 수배서 게시판, 내 파티 VS 호위대, 현상금 상자, 결과 도장, 기록 */
+#guildView .dim{color:var(--mu)}
+.rd-warn{color:var(--bad);font-size:12.5px}.rd-c{text-align:center}
+.rd-last{margin:4px 0 14px;padding:8px 12px;border:1px dashed var(--bd);border-radius:8px;font-size:13px}
+.rd-go-row{margin-top:14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}.rd-go{height:38px;padding:0 20px;font-weight:700}.rd-go[disabled]{opacity:.45;cursor:default}
+.rd-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.rd-act .pri{height:38px;padding:0 24px;font-weight:700}.rd-act .fm-btn{height:38px}
+.rd-roster{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.rd-roster .roster-unit{border:1px solid transparent}.rd-roster .roster-unit.rd-on{background:color-mix(in srgb,var(--ac) 14%,transparent);border-color:var(--ac)}.rd-roster .roster-unit[disabled]{opacity:.45;cursor:default}
+@media(max-width:520px){.rd-roster{grid-template-columns:repeat(4,1fr)}}
+.rd-party{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0}.rd-pu{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}.rd-pu .unit-name{font-size:13px}.rd-pu .unit-meta{font-size:11px;color:var(--mu)}.rd-party.sm .sprite-slot{max-width:80px}
+.rd-board{display:flex;gap:8px;flex-wrap:wrap}.rd-ticket{flex:1 1 92px;padding:10px 8px;text-align:center;border-radius:4px;background:color-mix(in srgb,#c9a46a 22%,var(--card));border:1px solid color-mix(in srgb,#8a4b2a 40%,var(--bd));box-shadow:2px 2px 0 color-mix(in srgb,#000 12%,transparent);transform:rotate(-1deg)}.rd-ticket:nth-child(even){transform:rotate(1.2deg)}.rd-tk-t{font-size:11.5px;letter-spacing:.08em;color:var(--mu)}.rd-tk-n{font-size:17px;font-weight:800;margin:2px 0}.rd-ticket .dim{font-size:11.5px}.rd-ticket.off{opacity:.4}.rd-ticket.cur{outline:2px solid var(--ac)}.rd-ticket.more{background:transparent;border-style:dashed;box-shadow:none}
+.rd-dgcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}.rd-dgc{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:10px}.rd-dgc span{font-size:12px;color:var(--mu)}.rd-dgc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset}.rd-dgc[disabled]{opacity:.45;cursor:default}
+.rd-wanted{max-width:280px;margin:16px auto 8px;padding:16px;text-align:center;background:color-mix(in srgb,#c9a46a 22%,var(--card));border:1px solid color-mix(in srgb,#8a4b2a 40%,var(--bd));box-shadow:3px 3px 0 color-mix(in srgb,#000 14%,transparent);font-size:13px;line-height:1.7}.rd-wt{font-family:Georgia,serif;font-weight:800;letter-spacing:.2em;font-size:20px;color:var(--ac)}.rd-q{font-size:64px;font-weight:800;line-height:1.2;color:var(--mu);animation:rdpulse 1.4s ease-in-out infinite}@keyframes rdpulse{50%{opacity:.35}}
+.rd-bar{height:6px;border-radius:3px;background:var(--bd);overflow:hidden;margin-top:8px}.rd-bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s}
+.rd-th{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:10px}.rd-th .dg-name{font-size:16px;font-weight:700}.rd-th .dg-meta{color:var(--mu);font-size:12.5px}
+.rd-vs{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:4px 0 10px}.rd-vsx{font-family:Georgia,serif;font-size:28px;font-weight:800;color:var(--ac)}.rd-side{min-width:0}@media(max-width:620px){.rd-vs{grid-template-columns:1fr}.rd-vsx{text-align:center}}
+.rd-form{display:flex;flex-direction:column;gap:6px}.rd-row{display:flex;align-items:flex-end;gap:6px}.rd-rl{flex:0 0 30px;font-size:11.5px;color:var(--mu);align-self:center}.rd-eu{flex:0 1 100px;display:flex;flex-direction:column;align-items:center;min-width:0}.rd-eu .sprite-slot{width:100%;max-width:100px;margin-bottom:2px}.rd-eu .sprite-slot img.spr{transform:translateX(-50%) scaleX(-1)}.rd-eu .unit-meta{font-size:11px;color:var(--mu);text-align:center}
+.rd-noesc{padding:14px;border:1px dashed var(--bd);border-radius:8px;color:var(--mu);font-size:13px;text-align:center}
+.rd-bounty{padding:12px;background:color-mix(in srgb,#c9a46a 16%,var(--card));border:1px solid color-mix(in srgb,#8a4b2a 35%,var(--bd))}.rd-bounty .rd-wt{font-size:14px;margin-bottom:6px}
+.rd-loot .rd-gold{font-size:14px;margin-bottom:6px}.rd-loot .rd-gold b{font-size:20px;color:var(--ac);margin-left:4px}.rd-loot .rd-gold .dim{font-size:12.5px}.rd-loot ul{list-style:none;margin:0;padding:0;font-size:13px}.rd-loot li{display:flex;gap:8px;padding:3px 0;border-bottom:1px dashed var(--bd)}.rd-loot li span{flex:1}
+.rd-timer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:13px}.rd-timer b{font-size:16px;color:var(--bad);min-width:40px}.rd-timer .rd-bar{flex:1;min-width:120px;margin:0}.rd-timer .rd-bar i{background:var(--bad)}
+.rd-stamp{display:inline-block;margin:4px 0 10px;padding:4px 18px;font-family:Georgia,serif;font-size:26px;font-weight:800;letter-spacing:.15em;border:3px solid;transform:rotate(-4deg)}.rd-stamp.win{color:var(--ok)}.rd-stamp.lose{color:var(--bad)}
+.rd-res{padding:14px;border-radius:10px;border:1px solid var(--bd);font-size:14px;line-height:1.7}.rd-res.win{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}.rd-res.lose{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,transparent)}
+.rd-rec{display:flex;flex-direction:column}.rd-rr{display:grid;grid-template-columns:80px 70px 1fr 44px auto;grid-template-areas:"t s w v b" "g g g g b";gap:2px 10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}.rd-rt{grid-area:t;color:var(--mu)}.rd-rs{grid-area:s;font-size:12px}.rd-rw{grid-area:w;min-width:0}.rd-rv{grid-area:v;font-weight:700}.rd-rr.w .rd-rv{color:var(--ok)}.rd-rr.l .rd-rv{color:var(--bad)}.rd-rg{grid-area:g;color:var(--mu);font-size:12px}.rd-rr>.fm-btn,.rd-rr>span:last-child{grid-area:b}.rd-rr .fm-btn{height:28px;padding:0 10px}
+@media(max-width:520px){.rd-rr{grid-template-columns:auto 1fr auto;grid-template-areas:"t s v" "w w b" "g g b"}}
+.log-raid-link{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 12px;margin-top:16px;padding-top:12px;border-top:1px solid var(--bd);font-size:13px;color:var(--mu)}
+.adm-raid{margin:6px 0 4px;font-size:12.5px;color:var(--mu);overflow-x:auto}.adm-raid-t{width:100%;border-collapse:collapse;font-size:12px;color:var(--tx)}.adm-raid-t th{text-align:left;font-weight:400;color:var(--mu);border-bottom:1px solid var(--bd);padding:4px 6px;white-space:nowrap}.adm-raid-t td{padding:5px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}.adm-raid-t tr[onclick]{cursor:pointer}.adm-raid-t tr.hot td{color:var(--bad);font-weight:700}
+/* Camp 로스터: 남은 SP·TP 배지 */
+.u-pts{display:inline-grid;grid-auto-flow:column;gap:3px;margin:4px auto 0}@media(max-width:520px){.u-pts{grid-auto-flow:row}}.u-pts b{text-align:center;font-size:11px;font-weight:700;line-height:1;padding:3px 6px;border-radius:999px;background:color-mix(in srgb,var(--ac) 18%,transparent);color:var(--ac)}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v494 · 2026-11-10 12:10</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v495 · 2026-11-10 12:55</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -530,6 +561,9 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="row"><input id="adminResetEmail" placeholder="대상 이메일" style="flex:1;min-width:220px">
     <button class="pri" onclick="confirmAdminReset()">가입 직후로 되돌리기</button></div>
     <div id="adminResetStatus" style="color:var(--mu)"></div>
+    <div class="pattern-help" style="margin-top:12px">약탈 기록(전체 또는 한 계정). 같은 두 계정 사이에 7일 안 3번 이상이면 빨갛게 표시합니다. 줄을 누르면 전투 로그를 봅니다.</div>
+    <div class="row"><input id="adminRaidEmail" placeholder="이메일(비우면 전체)" style="flex:1;min-width:220px"><button class="pri" onclick="loadAdminRaids()">약탈 기록</button></div>
+    <div id="adminRaidList" class="adm-raid"></div>
     <div class="pattern-help" style="margin-top:12px">테스트 자산(코드가 test_로 시작). 관리자에게만 보입니다.</div>
     <div id="adminTestList" class="pattern-help"></div>
   </details>
@@ -590,6 +624,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
   <div class="card">
     <div class="pattern-help roster-help">최근 전투 10판의 기록입니다. 전투 로그는 끝난 뒤 30분 동안만 다시 볼 수 있고, 그 뒤에는 결과와 보상만 남습니다. Battle Rush는 한 번을 한 판으로 세고 한 줄로 묶습니다.</div>
     <div id="battleLogList"><div class="empty">불러오는 중…</div></div>
+    <div class="log-raid-link" data-ctl-row><span>약탈 기록은 Town의 Thieves' Guild에서 봅니다.</span><button type="button" class="fm-btn" onclick="openRaidRecords()"><span>약탈 기록</span></button></div>
   </div>
 </div>
 
@@ -604,6 +639,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
       <button type="button" class="roster-unit" onclick="showView('inn')"><span class="sprite-slot" data-town="INN" aria-hidden="true"></span><span class="unit-name">Inn</span><span class="unit-meta">캐릭터 영입</span></button>
       <button type="button" class="roster-unit" onclick="showView('appraise')"><span class="sprite-slot" data-town="APPRAISAL" aria-hidden="true"></span><span class="unit-name">Appraisal Clan</span><span class="unit-meta">Unknown 감정</span></button>
       <button type="button" class="roster-unit" onclick="showView('craft')"><span class="sprite-slot" data-town="SMITHY" aria-hidden="true"></span><span class="unit-name">Smithy</span><span class="unit-meta">장비 제작·강화</span></button>
+      <button type="button" class="roster-unit" onclick="openGuild()"><span class="sprite-slot" data-town="THIEVES_GUILD" aria-hidden="true"></span><span class="unit-name">Thieves' Guild</span><span class="unit-meta">무법 파견 약탈</span></button>
     </div>
   </div>
 </div>
@@ -623,6 +659,16 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="seg shop-tabs" id="smithTabs"><button type="button" class="seg-btn on" data-t="craft" onclick="setSmithTab('craft')"><span>Craft</span></button><button type="button" class="seg-btn" data-t="enhance" onclick="setSmithTab('enhance')"><span>Enhance</span></button></div>
     <div id="craftList"><div class="empty">불러오는 중…</div></div>
     <div id="enhList" hidden></div>
+  </div>
+</div>
+
+<div id="guildView" class="view">
+  <div class="card">
+    <div class="town-head"><button type="button" class="fm-btn back-btn" onclick="showView('town')"><span>‹ Town</span></button><span class="section-title" style="margin:0">Thieves' Guild</span><button type="button" class="help-btn" onclick="openHelp('raid')" aria-label="약탈 도움말">?</button></div>
+    <div class="npc"><span class="sprite-slot" data-npc="GUILDMASTER" aria-hidden="true"></span><div class="npc-talk" id="raidTalk"></div></div>
+    <div class="seg shop-tabs" id="raidTabs"><button type="button" class="seg-btn on" data-t="raid" onclick="setRaidTab('raid')"><span>Raid</span></button><button type="button" class="seg-btn" data-t="log" onclick="setRaidTab('log')"><span>Records</span></button></div>
+    <div id="raidBody"><div class="empty">불러오는 중…</div></div>
+    <div id="raidLogs" hidden></div>
   </div>
 </div>
 
@@ -981,6 +1027,14 @@ function confirmAdminReset(){
    if(data.self){location.reload();return} // 지금 로그인한 계정을 되돌렸으면 화면을 처음부터 다시 받는다
    $("adminResetStatus").textContent=`${email} 계정을 되돌렸습니다. 캐릭터 ${data.characters}명으로 다시 시작합니다.`;log("admin_reset_account 성공","ok")},true]]);
 }
+// 약탈 기록(관리자): admin_raid_logs. 같은 두 계정 사이 반복(pair_7d ≥ 3)은 빨갛게. 줄을 누르면 get_raid_log(관리자는 계산 내역 포함)
+async function loadAdminRaids(){
+ const box=$("adminRaidList"),em=$("adminRaidEmail").value.trim();box.textContent="불러오는 중…";
+ const {data,error}=await sb.rpc("admin_raid_logs",{p_limit:100,p_email:em||null});
+ if(error){log("admin_raid_logs 실패: "+error.message,"bad");box.textContent=String(error.message).includes("USER_NOT_FOUND")?"그 이메일의 계정이 없습니다.":"불러오지 못했습니다.";return}
+ const rows=data||[];if(!rows.length){box.textContent="약탈 기록이 없습니다.";return}
+ box.innerHTML=`<table class="adm-raid-t"><tr><th>때</th><th>던전</th><th>약탈자</th><th>호위대 주인</th><th>결과</th><th>정보값</th><th>짐</th><th>둘 사이(7일/전체·약탈자 승)</th></tr>${rows.map(r=>`<tr class="${Number(r.pair_7d)>=3?"hot":""}" onclick="openRaidLog('${esc(r.id)}')"><td>${esc(raidWhen(r.at))}</td><td>${esc(r.dungeon||"")}</td><td>${esc(r.raider||"")}${r.raider_guest?" (손님)":""}</td><td>${esc(r.target||"")}${r.target_guest?" (손님)":""}</td><td>${r.result==="WIN"?"털림":r.result==="DRAW"?"무승부(막음)":"막음"}</td><td>${r.free?"공짜":Number(r.paid||0).toLocaleString()}${Number(r.info_to_target)>0?` → ${Number(r.info_to_target).toLocaleString()}`:""}</td><td>${r.result==="WIN"?`${Number(r.gold||0).toLocaleString()}G · ${raidItemsN(r.items)}개`:"-"}</td><td>${r.pair_7d}/${r.pair_total} · ${r.pair_raider_wins}</td></tr>`).join("")}</table>`;
+}
 let innJobs=[],selectedJob=null,charLimit=null;
 async function loadInn(){
  const {data,error}=await sb.from("character_templates").select("job,name_ko,recruit_cost,sort_order").eq("tier","BASE").order("sort_order").order("job");
@@ -1134,19 +1188,21 @@ function showView(view){
  $("craftView").classList.toggle("active",view==="craft");
  $("townView").classList.toggle("active",view==="town");
  $("innView").classList.toggle("active",view==="inn");
+ $("guildView").classList.toggle("active",view==="guild");
  $("logView").classList.toggle("active",view==="log");
  $("settingView").classList.toggle("active",view==="setting");
  $("tabLogin").classList.toggle("active",view==="login"||view==="signup");
  $("tabCamp").classList.toggle("active",view==="camp");
  $("tabAdventure").classList.toggle("active",view==="adventure");
  $("tabBag").classList.toggle("active",view==="bag");
- $("tabTown").classList.toggle("active",["town","inn","appraise","craft"].includes(view));
+ $("tabTown").classList.toggle("active",["town","inn","appraise","craft","guild"].includes(view));
  $("tabLog").classList.toggle("active",view==="log");
  $("tabSetting").classList.toggle("active",view==="setting");
  if(view==="bag")renderBag();
  if(view==="appraise")loadAppraise();
  if(view==="craft")loadCraft();
  if(view==="inn"&&loggedIn)loadShop();
+ if(view==="guild"){if(raidTab!=="raid")setRaidTab(raidTab);loadRaid()}
  if(view==="adventure"){advRoom=null;loadAdventure();}
  if(view==="log")loadBattleLogs();
  renderIdle();
@@ -1199,9 +1255,12 @@ function questEnsure(){
 // 값을 바꾸는 요청 뒤 퀘스트 창 다시 받기(04의 sb.rpc 길목이 부른다). 여러 요청이 이어지면 한 번으로 묶는다. 퀘스트 자체 요청은 스스로 다시 받고, 화면 설정 저장은 셈과 상관없어 뺀다
 let questSoonT=0;
 function questSoon(fn){if(fn==="claim_quests"||fn==="quest_guided"||fn==="set_ui_pref"||!loggedIn||stage)return;clearTimeout(questSoonT);questSoonT=setTimeout(questLoad,300)}
+// 여러 번 겹쳐 부르면 마지막에 보낸 요청의 답만 쓴다(먼저 보낸 요청의 답이 늦게 와 옛 숫자로 되돌리지 않게)
+let questSeq=0;
 async function questLoad(){
  if(stage||!loggedIn)return;
- const {data,error}=await sb.rpc("get_quests");if(error){log("get_quests 실패: "+error.message,"bad");return}
+ const my=++questSeq;
+ const {data,error}=await sb.rpc("get_quests");if(my!==questSeq)return;if(error){log("get_quests 실패: "+error.message,"bad");return}
  quests=Array.isArray(data)?data:[];questRender();
  patGuideLoad();
 }
@@ -1230,7 +1289,10 @@ function questClaim(ids,anchor){
  qs.forEach(q=>(q.items||[]).forEach(it=>{const u=!!it.unknown,nm=(it.item_defs?.name||it.def)+(u?" (Unknown)":""),x=its.find(y=>y.def===it.def&&y.u===u);if(x)x.n+=Number(it.qty)||1;else its.push({def:it.def,u,nm,n:Number(it.qty)||1})}));
  const rw=[g>0?`<b>${g.toLocaleString()}골드</b>`:"",...its.map(x=>`<b>${esc(x.nm)} ×${x.n}</b>`)].filter(Boolean).join(", ");
  const html=qs.length===1?`<p><b>${esc(qs[0].name)}</b> 보상을 받습니다${rw?`: ${rw}`:"."}</p>`:`<p>퀘스트 <b>${qs.length}</b>개의 보상을 받습니다${rw?`: 합계 ${rw}`:"."}</p>`;
- openConfirm("보상 받기",html,[["취소",null,false],["받기",()=>questClaimGo(qs.map(q=>q.id),anchor),true]],"quest");
+ // 한 줄만 받을 때 다른 받을 보상도 있으면 확인 창에서 한 번에 받을 수 있게 한다(확인 창이 줄마다 이어 뜨지 않게)
+ const rest=qs.length===1?quests.filter(q=>q.cur>=q.max&&q.id!==qs[0].id&&!questNeedsGuide(q)):[];
+ openConfirm("보상 받기",html+(rest.length?`<p class="help-note">받을 보상이 ${rest.length}개 더 있습니다. 모두 받기를 누르면 한 번에 받습니다.</p>`:""),
+  [["취소",null,false],...(rest.length?[["모두 받기",()=>questClaimGo([qs[0].id,...rest.map(q=>q.id)],anchor),false]]:[]),["받기",()=>questClaimGo(qs.map(q=>q.id),anchor),true]],"quest");
 }
 async function questClaimGo(ids,anchor){
  if(QR.busy||!ids.length)return;QR.busy=true;
@@ -1243,14 +1305,19 @@ async function questClaimGo(ids,anchor){
  if(data?.gold_now!=null)questGold(Number(data.gold_now));
  if((data?.items||[]).length)loadItems();
  await questLoad();
- questItemNotes((data?.items||[]).filter(x=>defs[x.def]?.slot==="CONSUMABLE").map(x=>({def:x.def,qty:x.qty,d:defs[x.def]})));
+ const got=(data?.items||[]).filter(x=>defs[x.def]);
+ questItemNotes(got.filter(x=>defs[x.def].slot==="CONSUMABLE").map(x=>({def:x.def,qty:x.qty,d:defs[x.def]})),
+  got.filter(x=>questIsGear(defs[x.def])).map(x=>({def:x.def,qty:x.qty,unknown:!!x.unknown,d:defs[x.def]})));
 }
-// 받은 소모품 설명: 한 창에 모아서 한 번
-function questItemNotes(list){
- if(!list.length)return;
- const body=list.map(x=>{const nm=x.d.name||x.def,n=QUEST_ITEM_NOTE[x.def];
+// 받은 소모품 설명과 받은 장비 알림: 한 창에 모아서 한 번(장비는 Bag에만 들어가 모르고 지나치기 쉽다)
+function questIsGear(d){return !!d&&!!d.slot&&d.slot!=="CONSUMABLE"&&d.slot!=="MATERIAL"&&!d.material}
+function questItemNotes(list,gear){
+ gear=gear||[];if(!list.length&&!gear.length)return;
+ const gearHtml=gear.length?`<p>받은 장비: ${gear.map(x=>`<b>${esc(x.d.name||x.def)}${x.unknown?" (Unknown)":""}</b>${Number(x.qty)>1?` ×${Number(x.qty)}`:""}`).join(", ")}</p><p>Bag에 들어갔습니다. Camp에서 캐릭터를 고르고 Equipment 칸을 눌러 낄 수 있습니다.${gear.some(x=>x.unknown)?" Unknown 장비는 Town의 Appraisal Clan에서 감정하면 옵션이 보입니다.":""}</p>`:"";
+ if(!list.length){openConfirm(gear.length===1?(gear[0].d.name||gear[0].def):"받은 장비",gearHtml,[["확인",null,true]]);return}
+ const body=gearHtml+list.map(x=>{const nm=x.d.name||x.def,n=QUEST_ITEM_NOTE[x.def];
   return `<p>받은 소모품: <b>${esc(nm)}</b> ×${Number(x.qty)||1}</p>`+(n||(x.d.use_skill?`<p>${esc(x.d.note||"")}</p><p>Camp에서 캐릭터의 Equipment 소모품 칸에 종류를 정하고, 패턴의 <b>Use Item</b>으로 전투에서 씁니다. 쓰면 하나씩 사라집니다.</p>`:`<p>${esc(x.d.note||"")}</p>`))}).join("");
- openConfirm(list.length===1?(list[0].d.name||list[0].def):"소모품",body,[["확인",null,true]]);
+ openConfirm(list.length===1&&!gear.length?(list[0].d.name||list[0].def):gear.length?"받은 아이템":"소모품",body,[["확인",null,true]]);
 }
 function questFloat(anchor,text){const p=QR.el.getBoundingClientRect(),a=anchor.getBoundingClientRect(),f=document.createElement("div");f.className="q-float";f.textContent=text;f.style.left=(a.left+a.width/2-p.left)+"px";f.style.top=(a.top-p.top-6)+"px";QR.el.appendChild(f);setTimeout(()=>f.remove(),1400)}
 // 위쪽 GOLD 숫자가 받은 만큼 올라간다
@@ -1294,7 +1361,9 @@ function questPlace(jump){
 function questFollow(){if(!QR.el||QR.raf||QR.el.classList.contains("hidden"))return;const step=()=>{const t=questTarget(),dd=t-QR.top;if(Math.abs(dd)<.5){QR.top=t;QR.el.style.top=t+"px";QR.raf=0;return}QR.top+=dd*.18;QR.el.style.top=QR.top+"px";QR.raf=requestAnimationFrame(step)};QR.raf=requestAnimationFrame(step)}
 // 보일지·접힐지를 바꾸는 값(튜토리얼 단계, 로그인, 무대, 설정, 창 폭, 본문 크기)이 바뀌었으면 다시 놓는다
 function questSig(){const m=document.querySelector("main").getBoundingClientRect();return [questHidden(),questIntroPending,document.documentElement.clientWidth,Math.round(m.right),Math.round(m.height)].join("|")}
-function questSync(){if(QR.el&&questSig()!==QR.sig)questPlace(true)}
+// 숨었다가 다시 보이면(튜토리얼 장이 끝남, 무대에서 나옴) 숨어 있던 동안 오른 숫자를 다시 받는다
+function questSync(){if(!QR.el||questSig()===QR.sig)return;const was=QR.el.classList.contains("hidden");questPlace(true);if(was&&!QR.el.classList.contains("hidden"))questLoad()}
+addEventListener("focus",()=>{if(QR.el&&!QR.el.classList.contains("hidden"))questLoad()});
 function setHideQuest(v){hideQuest=!!v;saveUiPref("hide_quest",hideQuest);questPlace(true)}
 function applyQuestPrefs(){if($("hideQuestChk"))$("hideQuestChk").checked=hideQuest;questPlace(true)}
 // 튜토리얼: 챕터 1을 마치면(Mend 축하 장 다음) 한 번만 리모콘을 짚는다. 본 뒤에는 계정에 기억해 다시 띄우지 않는다
@@ -1315,7 +1384,14 @@ async function questGuideDone(){
  if(g.then)g.then();
 }
 // 지금 짚을 곳. h = 08이 넘겨주는 도구(say, mid, page, wait, modal, q)
-function questGuideResolve(h){const g=qGuide,fn=QUEST_GUIDE[g.key];if(!fn){qGuide=null;return null}return fn(g,h)}
+// 기다리는 장(잠시만 기다려 주세요)이 8초 넘게 이어지면 설명 끝내기 장으로 바꾼다. 설명 중 Esc도 설명을 끝낸다(퀘스트 줄을 다시 누르면 처음부터 다시 본다)
+function questGuideStop(){if(!qGuide)return;qGuide=null;log("퀘스트 설명을 끝냄","ok")}
+function questGuideResolve(h){const g=qGuide,fn=QUEST_GUIDE[g.key];if(!fn){qGuide=null;return null}
+ const r=fn(g,h);
+ if(r&&r.id==="wait"&&g===qGuide){g.waitAt=g.waitAt||Date.now();if(Date.now()-g.waitAt>8000)return h.mid("qg-stuck","설명을 이어 갈 수 없습니다.\n설명을 끝내고 하던 일을 계속해 주세요.\n퀘스트 줄을 다시 누르면 처음부터 다시 볼 수 있습니다.",{btn:"설명 끝내기",fn:questGuideStop})}
+ else if(g===qGuide)g.waitAt=0;
+ return r}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&qGuide&&$("helpOverlay").hidden)questGuideStop()});
 // 던전 화면 설명: 그 던전 화면에 들어올 때까지 기다린다(오래 못 들어가면 설명을 접는다. 다음에 다시 보여 준다)
 function qgRoom(g,h){
  const id=g.q.go?.dungeon,d=dungeons.find(x=>x.id===id);
@@ -1509,6 +1585,9 @@ async function selectCharacter(id){
  await loadSkills(id);selectedCharId=id;renderCamp();
  try{if(fromRoster)history.pushState({detail:id},"");else history.replaceState({detail:id},"")}catch(e){}
 }
+// 남은 SP·TP 배지: 안 쓴 포인트가 있으면 로스터 카드 이름 아래에 작게(get_my_characters의 sp·tp). 쓰면 다음 그리기에서 빠진다
+function rosterPts(c){const sp=Number(c.sp)||0,tp=Number(c.tp)||0,a=[];if(sp>0)a.push(`SP ${sp}`);if(tp>0)a.push(`TP ${tp}`);
+ return a.length?`<span class="u-pts" title="안 쓴 포인트가 있습니다">${a.map(x=>`<b>${x}</b>`).join("")}</span>`:""}
 function renderCamp(){
  // 캐릭터를 고르지 않았으면 로스터(대표 화면), 골랐으면 상세 화면만 표시
  const inDetail=!!chars.find(c=>c.id===selectedCharId);
@@ -1516,7 +1595,7 @@ function renderCamp(){
  $("chars").innerHTML=chars.map(c=>`<button type="button" class="roster-unit" data-id="${c.id}" data-job="${esc(c.job)}" onclick="if(!rosterDrag.justDropped)selectCharacter('${c.id}')">
   <span class="sprite-slot" aria-hidden="true">${sprImg(c.job)}</span>
   <span class="unit-name">${esc(c.display_name)}</span>
-  <span class="unit-meta"><span class="u-lv">Lv.${c.level}</span><span class="u-job">${esc(c.job_name||c.job)}</span></span>
+  <span class="unit-meta"><span class="u-lv">Lv.${c.level}</span><span class="u-job">${esc(c.job_name||c.job)}</span></span>${rosterPts(c)}
  </button>`).join("") || `<div class="empty">보유 캐릭터가 없습니다.</div>`;
  renderCharacterDetail();
 }
@@ -1591,7 +1670,22 @@ const HELP={
   <li>보낸 파티는 왼쪽의 Auto Battle 리모콘에서 봅니다. 어느 탭에서든 열 수 있고, 손잡이와 접기 버튼으로 접고 폅니다. Auto Battle 튜토리얼을 마치거나 건너뛰면 생깁니다.</li>
   <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>
   <li>패턴은 파견할 때의 것으로 싸웁니다. 파견한 뒤 고친 패턴은 다음 판부터 적용됩니다.</li>
-  <li>기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.</li></ul>`}},
+  <li>기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.</li></ul>
+  ${(()=>{const L=ii?.lawless;return `<h4>안전 파견과 무법 파견</h4>
+  <ul><li><b>안전 파견</b>: 기사단이 호위합니다. 이긴 판의 골드는 전부 호위비로 나가고, 드랍·EXP는 직접 플레이의 ${ii?pctWord(ii.reward_pct):"일부"}를 바로 받습니다. 약탈당하지 않습니다.</li>
+  <li><b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. ${L?durWord(L.run_minutes*60):"20분"}마다 한 판, 이긴 판 골드의 ${L?.gold_pct??50}%와 드랍(직접 플레이의 ${L?pctWord(L.reward_pct):"100%"})은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.</li>
+  <li>짐은 다른 유저가 Town의 Thieves' Guild에서 약탈할 수 있습니다. 약탈자가 호위대를 이기면 짐을 전부 가져갑니다(호위대가 없으면 싸움 없이). 호위대가 이기거나 비기면 짐은 그대로이고, 약탈자가 낸 정보값을 받습니다.</li>
+  <li><b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. ${L?.recall_minutes??5}분 걸리고, 그동안에도 약탈될 수 있습니다.</li>
+  <li>약탈당한 파티는 2시간 동안 보호받습니다. 호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.</li>
+  <li>던전마다 안전만, 무법만, 둘 다 중 하나입니다. 손님 계정은 무법 파견을 할 수 없습니다.</li></ul>`})()}`}},
+ raid:{title:"Thieves' Guild",html:()=>{const r=raidInfo;return `<p>무법 파견 파티의 짐을 노립니다. 정보를 사면 길드가 상대를 찾아 줍니다.</p>
+  <ul><li>약탈 파티 5명과 무법 던전을 고르고 <b>정보 사기</b>를 누릅니다. Auto Battle 중인 캐릭터는 넣을 수 없습니다.</li>
+  <li>공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 200%, 2번째 1200%, 그다음부터는 앞 값의 2배입니다. 가격은 매 정시에 처음으로 돌아갑니다.</li>
+  <li>길드는 ${r?.search_sec??60}초마다 상대를 찾습니다. ${r?.search_minutes??10}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.</li>
+  <li>찾으면 상대 호위대의 직업·레벨·대열과 짐(골드·아이템)을 보여 줍니다. ${r?.hold_sec??60}초 안에 <b>넘긴다</b>나 <b>싸운다</b>를 고릅니다. 넘기거나 시간이 지나면 정보값은 돌려받지 못합니다.</li>
+  <li>이기면 짐을 전부 가져갑니다(골드 보너스는 붙지 않습니다). 지거나 비기면 짐은 그대로이고, 골드로 산 정보값은 상대에게 갑니다(공짜 정보면 없음). 진 쪽 캐릭터는 다치지 않습니다.</li>
+  <li>찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 ${r?Math.round((r.protect_minutes||120)/60):2}시간), 짐이 빈 파티, 오늘 이미 ${r?.daily_limit??3}번 싸운 상대.</li>
+  <li>약탈 기록은 Records에서 봅니다. 약탈한 쪽과 당한 쪽 모두 남습니다. 손님 계정은 약탈할 수 없습니다.</li></ul>`}},
  equipment:{title:"Equipment",html:`<p>장비 12칸과 소모품 칸 1개가 있습니다.</p>
   <h4>소모품</h4>
   <ul><li>소모품 칸에는 소모품의 <b>종류</b>를 정합니다. 같은 종류를 여러 캐릭터가 함께 낄 수 있습니다.</li>
@@ -2982,6 +3076,10 @@ async function openPromote(charId,job){
   <p class="help-note">되돌릴 수 없습니다.</p>${draftWarnHtml(charId)}`,
   [["취소",null,false],...opts.map(t=>[`${t.name} 전직`,async()=>{if(await rpc("promote_character",{p_char:charId,p_job:t.job})){delete promoteByChar[charId];delete patternDraft[charId];await load()}},true])]);
 }
+// 전직 카드 묶음의 카드 사이 빈틈을 눌러도 가장 가까운 카드를 누른 것으로 친다(묶음 가운데를 누르면 아무 일도 없던 것)
+document.addEventListener("click",e=>{const box=e.target;if(!box.classList||!box.classList.contains("promote-cards"))return;
+ let best=null,bd=1e9;box.querySelectorAll(".promote-card").forEach(c=>{const r=c.getBoundingClientRect(),dx=Math.max(r.left-e.clientX,0,e.clientX-r.right),dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom),d=dx+dy;if(d<bd){bd=d;best=c}});
+ if(best&&bd<=16)best.click()});
 // TP(Talent Point): Front SPD(1포인트 단위), Pattern(한 줄씩), Karma Limit(1점씩). 비용 표는 공개 설정에서 읽는다. 되돌리기는 Unwinding Draught
 const tpNum=v=>{const n=Math.floor(Number(v));return Number.isFinite(n)&&n>0?n:0};
 function tpBandSum(b,n){let s=0,prev=0;for(const [cnt,v] of b||[]){s+=Math.min(Math.max(n-prev,0),Number(cnt))*Number(v);prev+=Number(cnt)}return s}
@@ -3755,7 +3853,7 @@ function monstersHtml(list,dg,inRoom){
 }
 function autoLineHtml(d){
  const need=d.auto_unlock_clears||0,have=Math.min(d.manual_clears||0,need);
- return `<div class="dg-auto"><span class="dg-auto-k">auto</span>${d.auto_unlocked?`Auto Battle 가능 · 파견비 ${d.idle_fee}골드/판`:`Auto Battle ${have}/${need} · 직접 ${need}회 이기면 열립니다`}</div>`;
+ return `<div class="dg-auto"><span class="dg-auto-k">auto</span>${d.auto_unlocked?(d.zone==="LAWLESS"?`Auto Battle 가능 · 무법 파견만 · 파견비 ${d.idle_fee_lawless??d.idle_fee}골드/판`:d.zone==="BOTH"?`Auto Battle 가능 · 안전 ${d.idle_fee}골드/판 · 무법 ${d.idle_fee_lawless??d.idle_fee}골드/판`:`Auto Battle 가능 · 파견비 ${d.idle_fee}골드/판`):`Auto Battle ${have}/${need} · 직접 ${need}회 이기면 열립니다`}</div>`;
 }
 let supplyState=null,supplyTimer=null;
 async function loadSupply(){
@@ -4224,7 +4322,7 @@ function sceneHtml(n,stList,info,nameOf,dg){
  // 붙은 정령(엔진 0.37.0 상태표 spr = 부르기 스킬 id): id 끝 낱말을 붙인 그림(직업_정령, 예: 정령이 붙은 소환사)이 있으면 그 그림, 그 낱말의 그림 이펙트(SPR_FX)가 있으면 그림 뒤·앞에 겹쳐 번갈아 보인다
  const sprTail=id=>String(id).split("_").pop().toUpperCase();
  const fxHtml=(fx,k)=>`<span class="sc-fx ${k}" style="background-image:url(${fx[k]});background-size:${fx.n*100}% 100%;--tsx:${fx.n/(fx.n-1)*100}%;animation:townspr ${fx.n*400}ms steps(${fx.n}) infinite"></span>`;
- const units=place.sort((a,b)=>a.y-b.y).map(p=>{const dead=p.st.st==="DEAD",tails=(p.st.spr||[]).map(sprTail),base=p.u.side==="E"?p.u.name:p.u.job;
+ const units=place.sort((a,b)=>a.y-b.y).map(p=>{const dead=p.st.st==="DEAD",tails=(p.st.spr||[]).map(sprTail),base=p.u.side==="E"&&!(p.u.job&&sprOf(p.u.job))?p.u.name:p.u.job;
   const alt=tails.map(t=>sprOf(base+"_"+t)).find(Boolean),sp=alt||sprOf(base),fxs=sp&&typeof SPR_FX!=="undefined"?tails.map(t=>SPR_FX[t]).filter(f=>f&&f.n>1):[];
   const img=sp?`<img class="sc-spr" src="${sp.idle}"${sprAwStyle(sp)} alt="">`:"";
   return `<div class="sc-unit ${p.u.side==="E"?"foe":"ally"}${p.u.boss?" boss":""}${dead?" dead":sp&&sp.sh?" own-sh":""}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%;--ps:${(1+(p.y-72)*.005).toFixed(3)}" title="${esc(nameOf(p.st.u))}">${dead?`<img class="sc-spr" src="${TOMB_IMG[p.u.side==="E"?"E":"A"]}" alt="">`:sp?(fxs.length?`<span class="sc-sprw"${sprAwStyle(sp)}>${fxs.map(f=>fxHtml(f,"back")).join("")}${img}${fxs.map(f=>fxHtml(f,"front")).join("")}</span>`:img):SPR_SVG[p.u.side==="E"?"E":"A"]}<i class="sc-shadow"></i></div>`}).join("");
@@ -4268,6 +4366,9 @@ function halfText(o){const out=[],k=Object.keys(o);if(o.HP!=null)out.push(`최�
  for(const x of k)if(!["HP","ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"].includes(x))out.push(`${STAT_LABEL[x]||buffLabel(x)} ${o[x]}`);
  return out}
 const JOSA_PAIR={"이":["이","가"],"은":["은","는"],"을":["을","를"]};
+// 결과 큰 글: 약탈 기록을 호위대 주인(role TARGET)이 보면 뒤집는다(약탈자 승 = 털림, 아니면 막음)
+function blBig(b){if(b.mode==="RAID"&&b.role==="TARGET")return b.result==="WIN"?"털림":"막음!";return {WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}
+function blRes(b){const r=String(b.result||"").toLowerCase();if(b.mode==="RAID"&&b.role==="TARGET")return b.result==="WIN"?"lose":"win";return r}
 function battleLogHtml(b){
  // 계산 내역과 턴 번호 켜기는 관리자만(서버도 관리자에게만 calc를 보낸다). 일반 유저는 10턴마다와 끝의 턴 표시만 본다
  const showCalc=adminView();
@@ -4457,11 +4558,13 @@ function battleLogHtml(b){
  flush();rows.push(...later);
  const csv=Math.max(5,...units.flatMap(u=>[`${u.mhp}/${u.mhp}`.length,u.mmp>0?`${u.mmp}/${u.mmp}`.length:0]));
  const rw=b.rewards||{};const rwParts=[];
- if(b.mode==="MOCK")rwParts.push("Mock Battle이라 보상이 없습니다.");
+ // 약탈(RAID): 결과는 약탈자(A) 기준. 보상 줄 대신 짐·정보값(raidRewardText, 23-raid.js)
+ if(b.mode==="RAID")rwParts.push(raidRewardText(b));
+ else if(b.mode==="MOCK")rwParts.push("Mock Battle이라 보상이 없습니다.");
  else if(b.result!=="WIN")rwParts.push("지거나 비기면 보상이 없습니다.");
  else{if(b.mode!=="IDLE")rwParts.push(`골드 +${rw.gold||0}`);for(const x of Object.values(rw.exp||{}))rwParts.push(`${esc(x.name||"")} EXP +${x.gain}${x.level_up>0?` · <b>Lv.${x.level}</b>`:""}`)}
  // 드랍: lootGroups로 묶어 한 줄씩(도트 아이콘 포함)
- if(b.mode!=="MOCK"&&b.result==="WIN"){const dg=lootGroups(rw.drops);
+ if(b.mode!=="MOCK"&&b.mode!=="RAID"&&b.result==="WIN"){const dg=lootGroups(rw.drops);
   if(dg.length){rwParts.push(`<b class="bl-loot-h">전리품</b>`);dg.forEach(x=>rwParts.push(lootRow(x)))}
   // 던전을 처음 이겼을 때만 받는 장비: 같은 것은 묶고, 서버가 바로 끼워 준 것은 표시한다
   const gf=[];for(const x of rw.gifts||[]){const eq=!!x.char,g=gf.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else gf.push({def:x.def,name:x.name||x.def,eq,n:1})}
@@ -4482,16 +4585,16 @@ function battleLogHtml(b){
  // 보상 줄: 위 결과와 로그 맨 아래 요약이 같은 글을 쓴다
  const rwHtml=rwParts.join("<br>").replace(/(class="bl-loot-h">[^<]*<\/b>)<br>/g,"$1");
  // 로그 본문은 끝난 뒤 30분까지만 남는다. 지워진 판은 결과와 보상만 보여 준다
- if(b.expired||!b.log)return `<div class="bl-result">
-  <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
-  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":""}</div>
+ if(b.expired||!b.log||b.mode==="RAID"&&!b.log.length)return `<div class="bl-result">
+  <div class="bl-big bl-${blRes(b)}">${blBig(b)}</div>
+  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":b.mode==="RAID"?" · 약탈":""}</div>
   <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
   <div class="bl-rw">${rwHtml}</div>
-  <div class="bl-expired">전투 로그는 30분이 지나 지워졌습니다.</div>
+  <div class="bl-expired">${b.mode==="RAID"?(Number(b.turns)===0?"호위대가 없어 싸움 없이 끝났습니다.":"전투 로그는 7일이 지나 지워졌습니다."):"전투 로그는 30분이 지나 지워졌습니다."}</div>
  </div>`;
  return `<div class="bl-result">
-  <div class="bl-big bl-${res}">${{WIN:"승리!",LOSE:"패배",DRAW:"무승부!"}[b.result]||esc(b.result)}</div>
-  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":""}</div>
+  <div class="bl-big bl-${blRes(b)}">${blBig(b)}</div>
+  <div class="bl-meta">${esc(b.dungeon||"")}${b.mode==="MOCK"?" · Mock Battle":b.mode==="IDLE"?" · Auto Battle":b.mode==="RAID"?" · 약탈":""}</div>
   <div class="bl-sum-turn">턴 <b>${b.turns}/${turnLimit}</b></div>
   <div class="bl-sum">${sideHtml(sum.E)}${sideHtml(sum.A)}</div>
   <div class="bl-rw">${rwHtml}</div>
@@ -4644,9 +4747,9 @@ function idlePlace(jump){
  if(jump||IR.top==null){IR.top=idleTarget();d.style.top=IR.top+"px"}else idleFollow();
 }
 function idleFollow(){if(!IR.el||IR.raf||IR.el.classList.contains("hidden"))return;const step=()=>{const t=idleTarget(),dd=t-IR.top;if(Math.abs(dd)<.5){IR.top=t;IR.el.style.top=t+"px";IR.raf=0;return}IR.top+=dd*.18;IR.el.style.top=IR.top+"px";IR.raf=requestAnimationFrame(step)};IR.raf=requestAnimationFrame(step)}
-const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",IDLE_DUNGEON_TAKEN:"이 던전에는 이미 Auto Battle 파티가 있습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+const IDLE_ERR={IDLE_SLOTS_FULL:"파견할 수 있는 파티 수를 모두 썼습니다.",IDLE_DUNGEON_TAKEN:"이 던전에는 이미 Auto Battle 파티가 있습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",IDLE_LOCKED:"아직 Auto Battle이 열리지 않은 던전입니다.",PARTY_EMPTY:"파티에 캐릭터를 넣어 주세요.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",IDLE_NOT_SETTLED:"정산할 판이 남아 있습니다. 잠시 뒤 다시 시도해 주세요.",NOT_AUTHENTICATED:"다시 로그인해 주세요.",ZONE_LAWLESS_ONLY:"이 던전은 무법 파견만 할 수 있습니다.",ZONE_SAFE_ONLY:"이 던전은 안전 파견만 할 수 있습니다.",GUEST_BLOCKED:"손님 계정은 무법 파견과 약탈을 할 수 없습니다.",ESCORT_TOO_LARGE:"호위대는 5명까지입니다.",ESCORT_NOT_ALLOWED:"안전 파견에는 호위대를 넣을 수 없습니다.",ESCORT_SPECIAL_DUPLICATE:"호위대에도 특수직업은 직업별로 한 명만 넣을 수 있습니다.",INVALID_MODE:"파견 방식이 올바르지 않습니다.",IDLE_LOOT_EMPTY:"짐이 비어 있습니다.",IDLE_NOT_LAWLESS:"무법 파견 파티가 아닙니다.",IDLE_NOT_FOUND:"이미 돌아온 파티입니다."};
 function idleErrText(m,fallback){const k=Object.keys(IDLE_ERR).find(x=>String(m).includes(x));return k?IDLE_ERR[k]:fallback}
-function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of p.chars||[])s.add(c);return s}
+function idleChars(){const s=new Set();for(const p of idleInfo?.parties||[])for(const c of [...(p.chars||[]),...(p.escort||[])])s.add(c);return s}
 // 한 던전에는 내 Auto Battle 파티 하나만(서버 idle_dispatch가 IDLE_DUNGEON_TAKEN으로 막는다). 직접 전투·Battle Rush는 그 던전에서도 된다
 // Auto Battle에 나간 캐릭터는 서버가 전직·장비 끼기/빼기·소모품 바꾸기를 CHARACTER_ON_IDLE로 막는다. 화면은 누르기 전에 막고, 눌러도 같은 안내를 띄운다
 const IDLE_LOCK_MSG="Auto Battle 중인 캐릭터는 바꿀 수 없습니다.";
@@ -4687,7 +4790,7 @@ async function checkIdle(quiet){
   if(res&&res.settled>0){const cs=await rpc("get_my_characters");if(cs){chars=cs;renderAdminChars();renderCamp()}loadItems()}
   renderIdle();if(advRoom)renderRoom();applyIdleLock();
   if(res&&res.settled>0&&!quiet)showIdleResult(res,names);
- }finally{idleBusy=false}
+ }finally{idleBusy=false;showIdleReturns()}
 }
 function winLoseText(s){const a=[];if(s.win)a.push(`${s.win}승`);if(s.lose)a.push(`${s.lose}패`);if(s.draw)a.push(`${s.draw}무`);return a.join(" ")}
 function idleRunsText(s){return `${s.runs}판 · ${winLoseText(s)} · 파견비 ${Number(s.fee||0).toLocaleString()}골드`}
@@ -4721,15 +4824,24 @@ function renderIdle(){
   const drops=!dCut?dl.join(", "):dOpen?`${dl.join(", ")} <button type="button" class="idle-more" onclick="idleDrops('${esc(p.id)}',false)">접기</button>`
    :`${dl.slice(0,IDLE_DROPS_MAX).join(", ")} <button type="button" class="idle-more" aria-label="전리품 ${dl.length-IDLE_DROPS_MAX}개 더 보기" onclick="idleDrops('${esc(p.id)}',true)">…</button>`;
   const used=Object.values(s.consumed||{}).map(x=>`${esc(x.name||"")} ${x.n}개${x.left!=null?` (${Number(x.left).toLocaleString()}회 남음)`:""}`).join(", ");
-  return `<div class="idle-card">
-   <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span><span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
-   ${mem?`<div class="idle-line dim">${mem}</div>`:""}
-   ${p.done?`<div class="idle-line idle-warn">판을 다 돌았습니다 · 회수해 주세요.</div>`:p.halted?`<div class="idle-line idle-warn">골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.</div>`:`<div class="idle-line dim" data-idle-next="${esc(p.id)}"></div>`}
+  const law=p.mode==="LAWLESS",rc=p.recall,lt=p.loot||{},escN=(p.escort||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>`${esc(c.display_name)} Lv.${c.level}`).join(", ");
+  const lootN=(lt.items||[]).reduce((a,x)=>a+(Number(x.n)||1),0),lootEmpty=!(Number(lt.gold)>0)&&!lootN;
+  const lawLines=!law?"":`<div class="idle-line dim">호위대 · ${escN||"없음(약탈되면 싸움 없이 털림)"}</div>
+   <div class="idle-line">짐 · ${lootEmpty?"비어 있음":`${Number(lt.gold||0).toLocaleString()}골드 · 아이템 ${lootN}개 · ${lt.runs||0}판 몫`}</div>
+   ${rc?`<div class="idle-line idle-warn" data-idle-rc="${esc(p.id)}"></div>`:""}
+   ${p.caught?`<div class="idle-line idle-warn">약탈자가 노리는 중 · 회수 시간이 지나도 끝날 때까지 기다립니다.</div>`:""}
+   ${p.protect_sec?`<div class="idle-line dim" data-idle-pr="${esc(p.id)}"></div>`:""}
+   ${Number(s.gold)>0?`<div class="idle-line dim">짐에 쌓은 골드 · 모두 ${Number(s.gold).toLocaleString()}골드</div>`:""}
+   ${s.raided||s.defended?`<div class="idle-line">약탈 · ${s.raided?`털림 ${s.raided}`:""}${s.raided&&s.defended?" · ":""}${s.defended?`막음 ${s.defended}${Number(s.info_gold)>0?` (정보값 +${Number(s.info_gold).toLocaleString()}골드)`:""}`:""}</div>`:""}`;
+  return `<div class="idle-card${law?" lawless":""}">
+   <div class="idle-head"><span class="dg-name">${esc(p.dungeon)}</span>${law?`<span class="idle-law">무법</span>`:""}<span class="dg-meta">파견비 ${p.fee}골드/판</span></div>
+   ${mem?`<div class="idle-line dim">${mem}</div>`:""}${lawLines}
+   ${rc?.kind==="PARTY"?"":p.done?`<div class="idle-line idle-warn">판을 다 돌았습니다 · ${law?"돌려받아":"회수해"} 주세요.</div>`:p.halted?`<div class="idle-line idle-warn">골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.</div>`:`<div class="idle-line dim" data-idle-next="${esc(p.id)}"></div>`}
    <div class="idle-line">${s.runs>0?idleRunsText(s):"아직 끝난 판이 없습니다."}</div>
    ${exp?`<div class="idle-line">EXP · ${exp}</div>`:""}
    ${drops?`<div class="idle-line">전리품 · ${drops}</div>`:""}
    ${used?`<div class="idle-line">소모품 사용 · ${used}</div>`:""}
-   <div class="idle-act">${p.last?`<button type="button" class="fm-btn" onclick="openIdleLog('${esc(p.id)}')"><span>마지막 전투</span></button>`:""}<button type="button" class="fm-btn" onclick="confirmRecall('${esc(p.id)}')"><span>회수</span></button></div>
+   <div class="idle-act">${p.last?`<button type="button" class="fm-btn" onclick="openIdleLog('${esc(p.id)}')"><span>마지막 전투</span></button>`:""}${law?`<button type="button" class="fm-btn" onclick="confirmCollect('${esc(p.id)}')"${rc||lootEmpty?" disabled":""}><span>짐 회수</span></button>`:""}<button type="button" class="fm-btn" onclick="confirmRecall('${esc(p.id)}')"${rc?.kind==="PARTY"?" disabled":""}><span>${law?"돌려받기":"회수"}</span></button></div>
   </div>`}).join("")||`<div class="empty">파견한 파티가 없습니다. Auto Battle이 열린 던전에 입장해 파티를 파견할 수 있습니다.</div>`;
  tickIdle();
  if(!idleTimer)idleTimer=setInterval(tickIdle,1000);
@@ -4747,11 +4859,20 @@ function idleNeedSlots(){
  idleSlotAsk=sb.from("item_defs").select("id,slot").in("id",miss).then(({data})=>{(data||[]).forEach(d=>idleDefSlot[d.id]=d.slot);miss.forEach(d=>{if(!(d in idleDefSlot))idleDefSlot[d]=null});idleSlotAsk=null;renderIdle()});
 }
 function idleDrops(id,on){if(on)idleDropsOpen.add(id);else idleDropsOpen.delete(id);renderIdle()}
+// 무법 파티: 회수 남은 시간·보호 남은 시간(1초마다 글자만). 회수 시간이 되면 다시 읽는다(서버가 그때 옮긴다)
+function idleTickLaw(p,el){
+ if(p.recall){const left=Number(p.recall.sec||0)-el,n=document.querySelector(`[data-idle-rc="${p.id}"]`);
+  if(n){const tx=left>0?`${p.recall.kind==="PARTY"?"돌려받는 중":"짐 회수 중"} ${fmtDur(left)}${p.caught?"":" · 그동안에도 약탈될 수 있습니다."}`:"도착을 기다리는 중…";if(n.textContent!==tx)n.textContent=tx}
+  if(left<=0&&!idleBusy&&Date.now()>=idleNextTry){idleNextTry=Date.now()+15000;checkIdle(!(currentView==="adventure"&&!advRoom))}}
+ if(p.protect_sec){const left=Number(p.protect_sec)-el,n=document.querySelector(`[data-idle-pr="${p.id}"]`);if(n){const tx=left>0?`보호 중 ${fmtDur(left)} · 그동안 약탈되지 않습니다.`:"";if(n.textContent!==tx)n.textContent=tx}}
+}
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
  if(!idleInfo)return;
  const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false,soon=null,halted=0,done=0;
  for(const p of ps){
+  idleTickLaw(p,el);
+  if(p.recall?.kind==="PARTY")continue;
   if(p.done){done++;continue}
   if(p.halted){halted++;continue}
   const left=Number(p.next_sec||0)-el;
@@ -4788,20 +4909,43 @@ function confirmDispatch(id){
  if(!qGuide&&(idleInfo?.guide==="ACTIVE"||idleInfo?.guide==="NONE")&&idleGuideStart())return;
  confirmDispatchGo(id);
 }
+// 파견 확인 창. 던전 지대(get_dungeons.zone): SAFE = 안전 파견만, LAWLESS = 무법 파견만, BOTH = 둘 중 고름(처음 안전)
+// 무법 파견: 지금 파티 + 호위대 0~5명(파티·Auto Battle 중이 아닌 캐릭터). 호위대는 몬스터와 싸우지 않고 약탈자가 올 때만 싸운다(0명이면 싸움 없이 털린다)
+let DSP=null;
 function confirmDispatchGo(id){
  const d=dungeons.find(x=>x.id===id);if(!d)return;
  if(idleTaken(id)){openNotice(IDLE_ERR.IDLE_DUNGEON_TAKEN);return}
  const members=party.map(i=>chars.find(c=>c.id===i)).filter(Boolean);if(!members.length)return;
- const mins=idleInfo?.run_minutes??30,pct=idleInfo?.reward_pct??50;
- openConfirm("Auto Battle",`<p>지금 파티(${members.map(c=>esc(c.display_name)).join(", ")})를 <b>${esc(d.name)}</b>에 파견합니다.</p>
-  <ul><li>${mins}분마다 한 판을 싸우고, 판마다 파견비 <b>${d.idle_fee}골드</b>를 냅니다(이기든 지든).</li>
-  <li>이긴 판만 경험치와 아이템을 받습니다(직접 플레이의 ${pct}%, 골드 없음).</li>
-  <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li></ul>`,
-  [["취소",null,false],["파견",()=>dispatchIdle(id,members.map(c=>c.id)),true]]);
+ const zone=d.zone||"SAFE",guest=!!idleInfo?.lawless?.guest;
+ if(zone==="LAWLESS"&&guest){openNotice(IDLE_ERR.GUEST_BLOCKED);return}
+ DSP={id,members:members.map(c=>c.id),mode:zone==="LAWLESS"?"LAWLESS":"SAFE",escort:[],zone};
+ openConfirm("Auto Battle",`<div id="dspBody"></div>`,[["취소",()=>{DSP=null},false],["파견",()=>{const x=DSP;DSP=null;if(x)dispatchIdle(x.id,x.members,x.mode,x.escort)},true]]);
+ renderDispatch();
 }
-async function dispatchIdle(id,ids){
+function dspMode(m){if(!DSP)return;DSP.mode=m;if(m==="SAFE")DSP.escort=[];renderDispatch()}
+function dspEscort(cid){if(!DSP)return;const i=DSP.escort.indexOf(cid);if(i>=0)DSP.escort.splice(i,1);else if(DSP.escort.length<5)DSP.escort.push(cid);renderDispatch()}
+function renderDispatch(){
+ const box=$("dspBody");if(!box||!DSP)return;
+ const d=dungeons.find(x=>x.id===DSP.id),L=idleInfo?.lawless||{},guest=!!L.guest,law=DSP.mode==="LAWLESS";
+ const names=DSP.members.map(i=>chars.find(c=>c.id===i)).filter(Boolean).map(c=>esc(c.display_name)).join(", ");
+ const mins=law?(L.run_minutes??20):(idleInfo?.run_minutes??30),pct=law?(L.reward_pct??100):(idleInfo?.reward_pct??50),fee=law?(d.idle_fee_lawless??d.idle_fee):d.idle_fee;
+ const seg=DSP.zone==="BOTH"?`<div class="seg dsp-mode"><button type="button" class="seg-btn${law?"":" on"}" onclick="dspMode('SAFE')"><span>안전 파견</span></button><button type="button" class="seg-btn${law?" on":""}"${guest?" disabled":""} onclick="dspMode('LAWLESS')"><span>무법 파견</span></button></div>${guest?`<p class="help-note">손님 계정은 무법 파견을 할 수 없습니다.</p>`:""}`:"";
+ const rules=law?`<li>직접 호위 · ${mins}분마다 한 판, 판마다 파견비 <b>${fee}골드</b>(이기든 지든).</li>
+  <li>이긴 판의 골드 ${L.gold_pct??50}%와 드랍(직접 플레이의 ${pct}%)은 <b>짐</b>에 쌓이고, 약탈당하면 짐을 전부 잃습니다. EXP(${pct}%)는 바로 받습니다.</li>
+  <li>짐 회수·돌려받기는 ${L.recall_minutes??5}분 걸리고, 그동안에도 약탈될 수 있습니다.</li>
+  <li>보낸 캐릭터(파티·호위대)는 돌아올 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>`
+  :`<li>기사단 호위 · ${mins}분마다 한 판, 판마다 파견비 <b>${fee}골드</b>(이기든 지든).</li>
+  <li>이긴 판만 경험치와 아이템을 받습니다(직접 플레이의 ${pct}%). 골드는 기사단 호위비로 나갑니다.</li>
+  <li>파견한 캐릭터는 회수할 때까지 다른 파티나 던전에 쓸 수 없습니다.</li>`;
+ let esc_="";
+ if(law){const busy=idleChars(),pool=chars.filter(c=>!DSP.members.includes(c.id)&&!busy.has(c.id));
+  esc_=`<div class="dsp-esc"><div class="recall-h">호위대 ${DSP.escort.length}/5</div><p class="help-note">몬스터와 싸우지 않고 약탈자가 올 때만 싸웁니다. 지금 패턴·대열로 고정됩니다. 호위대가 없으면 싸움 없이 짐을 털립니다.</p>
+   <div class="dsp-pool">${pool.map(c=>`<button type="button" class="dsp-chip${DSP.escort.includes(c.id)?" on":""}" aria-pressed="${DSP.escort.includes(c.id)}" onclick="dspEscort('${c.id}')"${!DSP.escort.includes(c.id)&&DSP.escort.length>=5?" disabled":""}>${esc(c.display_name)} <span>Lv.${c.level} ${esc(c.job_name||c.job)}</span></button>`).join("")||`<span class="help-note">넣을 수 있는 캐릭터가 없습니다.</span>`}</div></div>`}
+ box.innerHTML=`<p>지금 파티(${names})를 <b>${esc(d.name)}</b>에 ${law?"무법 파견":"파견"}합니다.</p>${seg}<ul>${rules}</ul>${esc_}`;
+}
+async function dispatchIdle(id,ids,mode,escort){
  const g=qGuide?.key==="idle"?qGuide:null;if(g)g.phase="sending";
- const {data,error}=await sb.rpc("idle_dispatch",{p_dungeon:id,p_chars:ids});
+ const {data,error}=await sb.rpc("idle_dispatch",mode==="LAWLESS"?{p_dungeon:id,p_chars:ids,p_mode:"LAWLESS",p_escort:escort||[]}:{p_dungeon:id,p_chars:ids});
  if(error&&g)g.phase=null;
  if(error){log("idle_dispatch 실패: "+error.message,"bad");showBattleError(idleErrText(error.message,"파견하지 못했습니다."),"Auto Battle");return}
  log("idle_dispatch 성공","ok");
@@ -4814,24 +4958,55 @@ async function dispatchIdle(id,ids){
 }
 function confirmRecall(pid){
  const p=(idleInfo?.parties||[]).find(x=>x.id===pid);if(!p||idleBusy)return;
+ if(p.mode==="LAWLESS"){const m=idleInfo?.lawless?.recall_minutes??5;
+  openConfirm("돌려받기",`<p><b>${esc(p.dungeon)}</b>에 무법 파견한 파티를 돌려받습니다.</p><p>${m}분 뒤 짐과 함께 돌아옵니다. 그동안에도 약탈될 수 있습니다.</p><p class="help-note">돌려받는 동안에는 판을 더 싸우지 않습니다.</p>`,
+   [["취소",null,false],["돌려받기",()=>recallIdle(pid),true]]);return}
  openConfirm("회수",`<p><b>${esc(p.dungeon)}</b>에 파견한 파티를 회수합니다. 밀린 판은 먼저 정산합니다.</p><p class="help-note">이 파티의 요약과 마지막 전투 기록은 사라집니다.</p>`,
   [["취소",null,false],["회수",()=>recallIdle(pid),true]]);
 }
 async function recallIdle(pid){
- if(idleBusy)return;idleBusy=true;let err="",sum=null;if(qGuide?.key==="idle")qGuide.recallTried=true;
+ if(idleBusy)return;idleBusy=true;let err="",sum=null,recalling=false;if(qGuide?.key==="idle")qGuide.recallTried=true;
  const p=(idleInfo?.parties||[]).find(x=>x.id===pid),mem=(p?.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean);
- try{await settleIdle();const {data,error}=await sb.rpc("idle_recall",{p_party:pid});if(error)err=error.message;else sum=data?.summary||{}}catch(e){err=String(e&&e.message||e)}
+ try{await settleIdle();const {data,error}=await sb.rpc("idle_recall",{p_party:pid});if(error)err=error.message;else if(data?.recalling)recalling=true;else sum=data?.summary||{}}catch(e){err=String(e&&e.message||e)}
  idleBusy=false;
  if(err){log("idle_recall 실패: "+err,"bad");showBattleError(idleErrText(err,"회수하지 못했습니다."),"Auto Battle")}else{log("idle_recall 성공","ok");
   // 돌려받은 파티 카드는 바로 지운다(다시 읽는 동안 회수를 또 눌러 IDLE_NOT_FOUND가 나지 않게)
-  if(idleInfo){idleInfo.parties=(idleInfo.parties||[]).filter(x=>x.id!==pid);renderIdle()}}
+  if(idleInfo&&!recalling){idleInfo.parties=(idleInfo.parties||[]).filter(x=>x.id!==pid);renderIdle()}}
  const g=!err&&qGuide?.key==="idle"?qGuide:null;
  await load();if(currentView!=="adventure")await checkIdle();
  if(sum)showRecallResult(p?.dungeon||"",mem,sum);
  if(g&&qGuide===g)g.phase="back";
 }
+// 무법 파티 짐 회수: 짐만 5분 뒤 가방으로(파티는 계속 싸운다)
+function confirmCollect(pid){
+ const p=(idleInfo?.parties||[]).find(x=>x.id===pid);if(!p||idleBusy)return;const m=idleInfo?.lawless?.recall_minutes??5;
+ openConfirm("짐 회수",`<p><b>${esc(p.dungeon)}</b> 파티의 짐을 가방으로 옮깁니다.</p><p>${m}분 뒤 도착합니다. 그동안에도 약탈될 수 있습니다. 파티는 계속 싸웁니다.</p>`,
+  [["취소",null,false],["짐 회수",()=>collectIdle(pid),true]]);
+}
+async function collectIdle(pid){
+ if(idleBusy)return;idleBusy=true;let err="";
+ try{const {error}=await sb.rpc("idle_collect",{p_party:pid});if(error)err=error.message}catch(e){err=String(e&&e.message||e)}
+ idleBusy=false;
+ if(err){log("idle_collect 실패: "+err,"bad");showBattleError(idleErrText(err,"짐을 회수하지 못했습니다."),"Auto Battle")}else log("idle_collect 성공","ok");
+ await checkIdle(true);
+}
+// 무법 회수 결과(get_idle_info.returns, 아직 안 본 것): 짐 회수 = 받은 것, 돌려받기 = 회수 결과 + 받은 것. 닫으면 idle_returns_seen
+// Auto Battle 정보를 읽을 때마다(조용히 읽을 때도) 처음 보이면 띄우고, 다른 모달이 떠 있으면 다음에
+let idleRetShown=new Set();
+function showIdleReturns(){
+ const rs=(idleInfo?.returns||[]).filter(r=>!idleRetShown.has(r.id));if(!rs.length||!$("helpOverlay").hidden)return;
+ const r=rs[0];idleRetShown.add(r.id);
+ // 짐·파티가 이미 가방·Camp로 돌아왔으니 다시 읽고, 띄운 때 본 것으로 남긴다(×·Esc로 닫아도 다음 접속에 또 뜨지 않게)
+ loadItems();rpc("get_my_characters").then(cs=>{if(cs){chars=cs;renderAdminChars();renderCamp()}});
+ sb.rpc("idle_returns_seen",{p_ids:[r.id]}).then(({error})=>{if(error)log("idle_returns_seen 실패: "+error.message,"bad")});
+ const got=r.got||{},items=(got.items||[]),n=items.reduce((a,x)=>a+(Number(x.n)||1),0);
+ const gotHtml=`<div class="recall-sec"><div class="recall-h">짐 · ${Number(got.gold||0).toLocaleString()}골드 · 아이템 ${n}개</div>${items.length?`<ul class="recall-list">${items.map(x=>`<li>${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` <b>x${x.n}</b>`:""}</li>`).join("")}</ul>`:`<p class="help-note">${Number(got.gold)>0?"아이템은 없습니다.":"짐이 비어 있었습니다(약탈당했을 수 있습니다)."}</p>`}</div>`;
+ const done=()=>{if(idleInfo)idleInfo.returns=(idleInfo.returns||[]).filter(x=>x.id!==r.id);setTimeout(showIdleReturns,50)};
+ if(r.kind==="PARTY"){showRecallResult(r.dungeon||"",[],r.summary||{},gotHtml,done);return}
+ openConfirm("짐 회수",`<p><b>${esc(r.dungeon||"")}</b>에서 짐이 도착했습니다. 가방에 넣었습니다.</p>${gotHtml}`,[["확인",done,true]]);
+}
 // 회수 결과 모달: 회수한 파티가 파견된 동안 모은 것(idle_recall의 summary) 전부. 판 수·승패·파견비, 캐릭터별 EXP와 합계, 전리품 전체(장비 먼저, 같은 것은 묶어 개수), 소모품 사용
-function showRecallResult(dungeon,mem,s){
+function showRecallResult(dungeon,mem,s,extra,onOk){
  const ex=Object.entries(s.exp||{}),expSum=ex.reduce((a,[,x])=>a+(Number(x.gain)||0),0);
  const nm=id=>mem.find(c=>c.id===id)?.display_name;
  const expRows=ex.map(([id,x])=>`<li><b>${esc(nm(id)||x.name||"")}</b> +${(Number(x.gain)||0).toLocaleString()}${x.level_up>0?` <span class="recall-up">레벨 업 → Lv.${x.level}</span>`:""}</li>`).join("");
@@ -4844,7 +5019,7 @@ function showRecallResult(dungeon,mem,s){
   <p>${runs>0?`${runs}판 · ${winLoseText(s)} · 파견비 ${Number(s.fee||0).toLocaleString()}골드`:"끝난 판이 없습니다."}</p>
   ${ex.length?`<div class="recall-sec"><div class="recall-h">EXP · 합계 +${expSum.toLocaleString()}</div><ul class="recall-list">${expRows}</ul></div>`:""}
   ${dv.length?`<div class="recall-sec"><div class="recall-h">전리품 · ${dropCnt}개</div><ul class="recall-list">${dropRows}</ul></div>`:runs>0?`<div class="recall-sec"><div class="recall-h">전리품</div><p class="help-note">받은 전리품이 없습니다.</p></div>`:""}
-  ${used?`<div class="recall-sec"><div class="recall-h">소모품 사용</div><ul class="recall-list">${used}</ul></div>`:""}`,[["확인",null,true]],"recall");
+  ${used?`<div class="recall-sec"><div class="recall-h">소모품 사용</div><ul class="recall-list">${used}</ul></div>`:""}${extra||""}`,[["확인",onOk||null,true]],"recall");
 }
 async function openIdleLog(pid){const {data,error}=await sb.rpc("get_idle_log",{p_party:pid});if(error){log("get_idle_log 실패: "+error.message,"bad");return}openBattleLog(data)}
 function toggleDungeon(id){
@@ -5101,6 +5276,194 @@ async function showEnhanceResult(run,before,from,target){
  }
  const at=run.lvl+1,nm=`${run.lvl?`+${run.lvl} `:""}${base}`;
  openConfirm("강화 실패!",`<div class="enh-res bad"><b>파괴!</b></div><p class="enh-warn"><b>${esc(nm)}</b>${josaOf(base,"이","가")} +${at} 강화에 실패해 깨져 사라졌습니다.</p><p class="help-note">${spent}는 돌려받지 않습니다.${before.equipped_character?" 장착하던 칸이 비었습니다.":""}</p>`,[["확인",null,true]],"enhance");enhFx("enh-shake");
+}
+// ===== Town: Thieves' Guild(약탈) =====
+// 무법 파견 파티의 짐을 노린다. 흐름: 약탈 파티 5명·무법 던전 고르기 → 정보 사기(raid_buy, 공짜 1장/시간 → 골드 200%·1200%·×2) → 찾기(battle raid_search, 서버가 1분마다)
+// → 찾음(상대 호위대·짐, 60초 안에 넘긴다 raid_pass / 싸운다 battle raid_fight) → 결과(전투 결과 창). 기록은 Records 탭(get_raid_logs·get_raid_log)
+// 화면 값은 get_raid_info 한 번에 받는다. 찾는 중에는 15초마다 다시 읽고, 다음 찾기 시간이 되면 raid_search를 한 번 부른다(1분 전이면 서버가 그냥 기다리라고 한다)
+// 모양(사용자 H 시안 C): 정보는 수배서 장으로, 찾으면 내 약탈 파티 VS 상대 호위대 대결 구도 + 현상금(짐) 상자, 결과는 도장
+let raidFightFail=null,raidInfo=null,raidAt=0,raidTab="raid",raidParty=null,raidDg=null,raidBusy=false,raidTimer=null,raidPoll=0,raidSearchAt=0,raidLogs=null,raidDone=null;
+const RAID_ERR={DUNGEON_NOT_FOUND:"던전을 찾지 못했습니다.",PARTY_DUPLICATE:"같은 캐릭터가 두 번 들어 있습니다.",RAID_PRICE_CHANGED:"정시가 지나 정보값이 바뀌었습니다. 바뀐 값을 확인해 주세요.",NOT_ENOUGH_GOLD:"골드가 부족합니다.",RAID_ACTIVE:"이미 진행 중인 정보가 있습니다.",RAID_NOT_LAWLESS:"무법 파견을 할 수 있는 던전이 아닙니다.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",GUEST_BLOCKED:"손님 계정은 약탈을 할 수 없습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",PARTY_EMPTY:"약탈 파티에 캐릭터를 넣어 주세요.",PARTY_TOO_LARGE:"약탈 파티는 5명까지입니다.",RAID_NOT_FOUND:"정보를 찾지 못했습니다.",RAID_NOT_FOUND_STATE:"이미 끝난 정보입니다.",RAID_LOG_NOT_FOUND:"약탈 기록을 찾지 못했습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+function raidErr(m,fb){const k=Object.keys(RAID_ERR).sort((a,b)=>b.length-a.length).find(x=>String(m).includes(x));return k?RAID_ERR[k]:fb}
+async function loadRaid(){
+ if(stage||!loggedIn)return;
+ // 약탈 파티 후보에서 Auto Battle 중인 캐릭터를 빼려면 파견 정보가 먼저 있어야 한다
+ if(!idleInfo)try{await loadIdle()}catch(e){}
+ const {data,error}=await sb.rpc("get_raid_info");
+ if(error){log("get_raid_info 실패: "+error.message,"bad");$("raidBody").innerHTML=`<div class="empty">Thieves' Guild 정보를 불러오지 못했습니다.</div>`;return}
+ raidInfo=data;raidAt=Date.now();if(data?.gold!=null){gold=Number(data.gold)||0;renderGold()}
+ const t=data?.ticket;
+ if(t?.status==="FIGHTING"&&!raidBusy&&raidFightFail!==t.id){raidFight(true);return}
+ renderRaid();raidTickStart();
+}
+function openGuild(){raidDone=null;showView("guild")}
+function openRaidRecords(){raidTab="log";openGuild()}
+function setRaidTab(t){raidTab=t;document.querySelectorAll("#raidTabs .seg-btn").forEach(b=>b.classList.toggle("on",b.dataset.t===t));$("raidBody").hidden=t!=="raid";$("raidLogs").hidden=t!=="log";if(t==="log")loadRaidLogs();else renderRaid()}
+// 남은 초(받은 뒤 흐른 시간을 뺀다)
+function raidLeft(sec){return Number(sec||0)-(Date.now()-raidAt)/1000}
+function raidTickStart(){if(!raidTimer)raidTimer=setInterval(raidTick,1000)}
+function raidTick(){
+ if(currentView!=="guild"||!raidInfo){clearInterval(raidTimer);raidTimer=null;return}
+ const set=(id,tx)=>{const n=$(id);if(n&&n.textContent!==tx)n.textContent=tx};
+ set("raidReset",fmtDur(raidLeft(raidInfo.reset_sec)));
+ if(raidLeft(raidInfo.reset_sec)<=0&&!raidBusy&&Date.now()-raidAt>5000){loadRaid();return}
+ const t=raidInfo.ticket;if(!t)return;
+ if(t.status==="SEARCHING"){
+  const ex=raidLeft(t.expires_sec),nx=raidLeft(t.next_try_sec);
+  set("raidExp",fmtDur(ex));set("raidNext",nx>0?fmtDur(nx):"찾는 중…");
+  const bar=$("raidBar");if(bar)bar.style.width=Math.max(0,Math.min(100,100-ex/((raidInfo.search_minutes||10)*60)*100))+"%";
+  // 다음 찾기 시간이 되면 한 번 찾고, 그 밖에는 15초마다 다시 읽는다
+  if(nx<=0&&!raidBusy&&Date.now()-raidSearchAt>20000){raidSearch(t.id);return}
+  if(Date.now()-raidPoll>15000&&!raidBusy){raidPoll=Date.now();loadRaid()}
+ }else if(t.status==="FOUND"){
+  const h=raidLeft(t.hold_sec);set("raidHold",`${Math.max(0,Math.ceil(h))}초`);
+  const bar=$("raidHoldBar");if(bar)bar.style.width=Math.max(0,h/(raidInfo.hold_sec||60)*100)+"%";
+  if(h<=-1&&!raidBusy&&Date.now()-raidPoll>3000){raidPoll=Date.now();loadRaid()}
+ }
+}
+// 약탈 파티: 처음엔 직접 파티(Auto Battle 중인 캐릭터는 뺀다). 고르면 다시 그린다
+function raidPartyNow(){const busy=idleChars();if(!raidParty)raidParty=party.filter(id=>chars.some(c=>c.id===id)&&!busy.has(id)).slice(0,5);raidParty=raidParty.filter(id=>chars.some(c=>c.id===id)&&!busy.has(id));return raidParty}
+function raidPick(id){const p=raidPartyNow(),i=p.indexOf(id);if(i>=0)p.splice(i,1);else if(p.length<5)p.push(id);renderRaid()}
+function raidSetDg(id){raidDg=id;renderRaid()}
+function raidUnit(c,meta){return `<div class="rd-pu"><span class="sprite-slot" aria-hidden="true">${sprImg(c.job)}</span><span class="unit-name">${esc(c.name)}</span><span class="unit-meta">${meta}</span></div>`}
+// 상대 호위대: 전방·후방 두 줄(왼쪽을 보는 그림을 뒤집어 내 파티를 마주 보게)
+function raidEscortHtml(es){
+ if(!es||!es.length)return `<div class="rd-noesc">호위대가 없습니다. 싸우면 바로 짐을 텁니다.</div>`;
+ const u=x=>`<div class="rd-eu"><span class="sprite-slot" aria-hidden="true">${sprImg(x.job)}</span><span class="unit-meta">Lv.${x.level} ${esc(x.job_name||x.job)}</span></div>`;
+ const back=es.filter(x=>x.pos==="BACK"),front=es.filter(x=>x.pos!=="BACK");
+ return `<div class="rd-form">${back.length?`<div class="rd-row"><span class="rd-rl">후방</span>${back.map(u).join("")}</div>`:""}${front.length?`<div class="rd-row"><span class="rd-rl">전방</span>${front.map(u).join("")}</div>`:""}</div>`;
+}
+function raidLootHtml(l){const it=l?.items||[],n=it.reduce((a,x)=>a+(Number(x.n)||1),0);
+ return `<div class="rd-loot"><div class="rd-gold">골드 <b>${Number(l?.gold||0).toLocaleString()}</b>${l?.runs!=null?`<span class="dim"> · ${l.runs}판 몫 · 아이템 ${n}개</span>`:""}</div>${it.length?`<ul>${it.map(x=>`<li><span>${esc(x.name||x.def||"")}${x.unknown?" (Unknown)":""}</span><b>x${Number(x.n)||1}</b></li>`).join("")}</ul>`:`<div class="dim">아이템 없음</div>`}</div>`}
+const RAID_TALK={
+ ready:["어이, 문 닫아. 바람 들어온다.","무법 지대에 짐을 쌓아 둔 녀석들이 있지. <b>정보</b>만 있으면 어디 있는지 알려 주마.","정보는 매 정시에 <b>한 장</b>은 그냥 준다. 그다음부턴 <b>골드</b>다. 많이 살수록 비싸지고."],
+ search:["좋아, 애들 풀었다. 1분마다 소식이 들어온다.","10분 안에 못 찾으면 정보값은 돌려주지. 우린 신용이 생명이라."],
+ found:["찾았다. 호위대 면면 보고 정해.","<b>넘기면</b> 정보값은 날아가고, <b>싸워서 지면</b> 그 돈은 저쪽 주인 몫이다."],
+ win:["하하, 깔끔하군. 짐은 전부 네 가방으로 옮겨 놨다.","저쪽은 한동안 보호받으니 같은 놈은 당분간 못 찾는다."],
+ lose:["…호위대가 만만치 않았나 보군.","짐은 그대로고, 골드로 산 정보값은 저쪽 주인이 챙겼다."],
+ log:["장부 보러 왔나. 네가 턴 것, 너를 노린 것 다 적어 뒀다."]};
+function raidTalk(k){const n=$("raidTalk");if(n)n.innerHTML=(RAID_TALK[k]||RAID_TALK.ready).map(p=>`<p>${p}</p>`).join("")+(k==="ready"?`<div class="npc-note"><p>※ 이긴 쪽이 짐을 가져간다. 호위대가 이기거나 비기면 골드로 산 정보값은 호위대 주인에게 간다.</p></div>`:"")}
+// 마지막에 끝난 정보 안내(get_raid_info.last, 10분 안)
+function raidLastHtml(l){if(!l)return "";const st=l.status;
+ const tx=st==="REFUNDED"?`${esc(l.dungeon||"")}에서 상대를 찾지 못해 정보값을 돌려받았습니다.`:st==="PASSED"?"상대를 넘겼습니다. 정보값은 돌려받지 못합니다.":st==="TIMEOUT"?"정할 시간이 지나 넘긴 것으로 쳤습니다. 정보값은 돌려받지 못합니다.":st==="WIN"?"방금 약탈에 성공했습니다.":st==="LOSE"||st==="DRAW"?"방금 호위대에 막혔습니다.":"";
+ return tx?`<div class="rd-last">${tx}${l.log_id?` <button type="button" class="idle-more" onclick="openRaidLog('${esc(l.log_id)}')">기록 보기</button>`:""}</div>`:""}
+function renderRaid(){
+ const box=$("raidBody");if(!box||raidTab!=="raid")return;
+ const r=raidInfo;if(!r){box.innerHTML=`<div class="empty">불러오는 중…</div>`;return}
+ if(raidDone){raidTalk(raidDone.result==="WIN"?"win":"lose");box.innerHTML=raidResultHtml(raidDone);return}
+ const t=r.ticket;
+ if(t&&t.status==="SEARCHING"){raidTalk("search");
+  box.innerHTML=`<div class="rd-wanted searching"><div class="rd-wt">WANTED</div><div class="rd-q" aria-hidden="true">?</div><div>${esc(t.dungeon||"")}에서 찾는 중</div>
+   <div class="dim">남은 시간 <b id="raidExp">${fmtDur(raidLeft(t.expires_sec))}</b> · 다음 찾기 <b id="raidNext">-</b></div><div class="rd-bar"><i id="raidBar"></i></div></div>
+   <p class="help-note rd-c">${t.free?"공짜 정보":`정보값 ${Number(t.paid||0).toLocaleString()}골드`} · ${r.search_minutes||10}분 안에 못 찾으면 돌려받습니다. 다른 화면으로 가도 계속 찾습니다.</p>`;
+  raidTick();return}
+ if(t&&(t.status==="FOUND"||t.status==="FIGHTING")){raidTalk("found");const v=t.view||{},mine=(t.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean);
+  box.innerHTML=`<div class="rd-th"><span class="dg-name">${esc(v.dungeon||t.dungeon||"")}의 무법 파견</span><span class="dg-meta">짐 ${v.loot?.runs??"-"}판 몫</span></div>
+   <div class="rd-vs"><div class="rd-side"><div class="section-title">내 약탈 파티</div><div class="rd-party sm">${mine.map(c=>raidUnit({name:c.display_name,job:c.job},`Lv.${c.level} ${esc(c.job_name||c.job)}`)).join("")}</div></div><div class="rd-vsx" aria-hidden="true">VS</div><div class="rd-side"><div class="section-title">상대 호위대</div>${raidEscortHtml(v.escort)}</div></div>
+   <div class="rd-bounty"><div class="rd-wt">현상금</div>${raidLootHtml(v.loot)}</div>
+   <div class="rd-timer"><span>정할 시간</span><b id="raidHold">${Math.ceil(raidLeft(t.hold_sec))}초</b><div class="rd-bar"><i id="raidHoldBar"></i></div></div>
+   <div class="rd-act"><button type="button" class="fm-btn" onclick="confirmRaidPass()"${raidBusy?" disabled":""}><span>넘긴다</span></button><button type="button" class="pri" onclick="raidFight()"${raidBusy?" disabled":""}>싸운다</button></div>
+   <p class="help-note">${r.hold_sec||60}초 안에 안 정하면 넘긴 것으로 칩니다. 넘기면 정보값은 돌려받지 못합니다.</p>`;
+  raidTick();return}
+ raidTalk("ready");
+ if(r.guest){box.innerHTML=`${raidLastHtml(r.last)}<div class="empty">손님 계정은 약탈을 할 수 없습니다.</div>`;return}
+ const ds=r.dungeons||[];
+ if(!raidDg||!ds.some(d=>d.id===raidDg&&d.unlocked))raidDg=(ds.find(d=>d.unlocked)||{}).id||null;
+ const p=raidPartyNow(),busy=idleChars(),d=ds.find(x=>x.id===raidDg);
+ const pool=chars.map(c=>{const on=p.includes(c.id),b=busy.has(c.id);return `<button type="button" class="roster-unit${on?" rd-on":""}" aria-pressed="${on}" onclick="raidPick('${c.id}')"${b||!on&&p.length>=5?" disabled":""}><span class="sprite-slot" aria-hidden="true">${sprImg(c.job)}</span><span class="unit-name">${esc(c.display_name)}</span><span class="unit-meta"><span class="u-lv">Lv.${c.level}</span><span class="u-job">${b?"Auto Battle 중":esc(c.job_name||c.job)}</span></span></button>`}).join("");
+ // 수배서 게시판: 공짜 1장, 골드 단계(1번째 200%, 2번째 1200%, 그 뒤 2배씩). 지금 단계를 표시
+ const st=r.free?-1:Number(r.step)||0,PCT=[200,1200,2400];
+ const board=`<div class="rd-board"><div class="rd-ticket${r.free?" cur":" off"}"><div class="rd-tk-t">공짜</div><div class="rd-tk-n">${r.free?"1장":"0장"}</div><div class="dim">${r.free?"이번 시간 몫":"다음 정시에 1장"}</div></div>${PCT.map((x,i)=>`<div class="rd-ticket gold${i===st?" cur":""}${i<st?" off":""}"><div class="rd-tk-t">${i+1}번째</div><div class="rd-tk-n">${x}%</div><div class="dim">기준 골드의</div></div>`).join("")}<div class="rd-ticket more${st>=3?" cur":""}"><div class="rd-tk-t">그 뒤</div><div class="rd-tk-n">2배씩</div><div class="dim">${st>=3?`지금 ${Number(r.pct||0).toLocaleString()}%`:"앞 값의"}</div></div></div>
+  <p class="help-note">가격은 매 정시에 처음으로 돌아갑니다 · 다음 정시까지 <b id="raidReset">${fmtDur(raidLeft(r.reset_sec))}</b></p>`;
+ const dgs=ds.length?`<div class="rd-dgcards">${ds.map(x=>`<button type="button" class="rd-dgc${x.id===raidDg?" on":""}" aria-pressed="${x.id===raidDg}" onclick="raidSetDg('${esc(x.id)}')"${x.unlocked?"":" disabled"}><b>${esc(x.name)}</b><span>${x.zone==="LAWLESS"?"무법 파견만":"안전·무법"}</span><span>${x.unlocked?(Number(x.price)>0?`정보값 ${Number(x.price).toLocaleString()}골드`:"정보값 공짜"):"아직 열리지 않음"}</span></button>`).join("")}</div>`:`<div class="empty">무법 파견을 할 수 있는 던전이 아직 없습니다.</div>`;
+ const price=Number(d?.price)||0,ok=p.length>0&&!!d&&!raidBusy&&price<=gold;
+ box.innerHTML=`${raidLastHtml(r.last)}<div class="section-title sec-line">약탈 파티 <span class="dim">${p.length}/5</span></div><div class="roster rd-roster">${pool||`<div class="empty">캐릭터가 없습니다.</div>`}</div>
+  <div class="section-title sec-line sec-gap">어디서 찾을까</div>${dgs}
+  <div class="section-title sec-line sec-gap">정보 사기</div>${board}
+  <div class="rd-go-row"><button type="button" class="pri rd-go" onclick="confirmRaidBuy()"${ok?"":" disabled"}>${d?(price>0?`정보 사기 · ${price.toLocaleString()}골드`:"공짜 정보로 찾기"):"정보 사기"}</button>${!p.length?`<span class="rd-warn">약탈 파티에 캐릭터를 넣어 주세요.</span>`:price>gold?`<span class="rd-warn">골드가 부족합니다.</span>`:""}</div>`;
+}
+function confirmRaidBuy(changed){
+ const r=raidInfo,d=(r?.dungeons||[]).find(x=>x.id===raidDg),p=raidPartyNow();if(!d||!p.length||raidBusy)return;
+ const price=Number(d.price)||0,names=p.map(id=>chars.find(c=>c.id===id)).filter(Boolean).map(c=>esc(c.display_name)).join(", ");
+ openConfirm("정보 사기",`${changed?`<p class="idle-warn">정시가 지나 정보값이 바뀌었습니다.</p>`:""}<p><b>${esc(d.name)}</b>에서 상대를 찾습니다. ${price>0?`정보값 <b>${price.toLocaleString()}골드</b>를 냅니다.`:"이번 시간의 <b>공짜 정보</b>를 씁니다."}</p><p>약탈 파티: ${names}</p><p class="help-note">${r.search_minutes||10}분 안에 못 찾으면 돌려받습니다. 찾은 뒤 넘기거나 지면 돌려받지 못합니다.</p>`,
+  [["취소",null,false],["사기",()=>raidBuy(d.id,p.slice(),price),true]]);
+}
+async function raidBuy(did,ids,price){
+ if(raidBusy)return;raidBusy=true;renderRaid();let err="",data=null;
+ try{const r=await sb.rpc("raid_buy",{p_dungeon:did,p_chars:ids,p_price:price});if(r.error)err=r.error.message;else data=r.data}catch(e){err=String(e&&e.message||e)}
+ raidBusy=false;
+ if(err&&err.includes("RAID_PRICE_CHANGED")){log("raid_buy: 값이 바뀜","bad");await loadRaid();confirmRaidBuy(true);return}
+ if(err){log("raid_buy 실패: "+err,"bad");showBattleError(raidErr(err,"정보를 사지 못했습니다."),"Thieves' Guild");await loadRaid();return}
+ log("raid_buy 성공","ok");raidDone=null;
+ await raidSearch(data.ticket_id);
+}
+async function raidSearch(tid){
+ if(raidBusy||!tid)return;raidBusy=true;raidSearchAt=Date.now();
+ try{const r=await sb.functions.invoke("battle",{body:{action:"raid_search",ticket:tid}});
+  if(r.error){let m=r.error.message;try{const j=await r.error.context.json();m=j.error||m}catch(e){}log("raid_search 실패: "+m,"bad")}else log("raid_search: "+(r.data?.status||""),"ok")}catch(e){log("raid_search 실패: "+(e&&e.message||e),"bad")}
+ raidBusy=false;raidPoll=Date.now();await loadRaid();
+}
+function confirmRaidPass(){const t=raidInfo?.ticket;if(!t||raidBusy)return;
+ openConfirm("넘긴다",`<p>이 상대를 넘깁니다. ${t.free?"공짜 정보는":`정보값 ${Number(t.paid||0).toLocaleString()}골드는`} 돌려받지 못합니다.</p>`,[["취소",null,false],["넘긴다",()=>raidPass(t.id),true]])}
+async function raidPass(tid){
+ if(raidBusy)return;raidBusy=true;
+ const {error}=await sb.rpc("raid_pass",{p_ticket:tid});raidBusy=false;
+ if(error){log("raid_pass 실패: "+error.message,"bad");showBattleError(raidErr(error.message,"넘기지 못했습니다."),"Thieves' Guild")}else log("raid_pass 성공","ok");
+ await loadRaid();
+}
+// 싸운다: 같은 정보로 다시 불러도 두 번 싸우지 않는다(FIGHTING이면 같은 결과, 끝났으면 status·log_id만 → 기록에서 읽는다)
+async function raidFight(resume){
+ const t=raidInfo?.ticket;if(!t||raidBusy)return;raidBusy=true;if(!resume)renderRaid();
+ let data=null,err="";
+ try{const r=await sb.functions.invoke("battle",{body:{action:"raid_fight",ticket:t.id}});
+  if(r.error){try{const j=await r.error.context.json();err=j.error||r.error.message}catch(e){err=r.error.message}}else data=r.data}catch(e){err=String(e&&e.message||e)}
+ raidBusy=false;
+ if(err){log("raid_fight 실패: "+err,"bad");raidFightFail=t.id;showBattleError(raidErr(err,"싸우지 못했습니다."),"Thieves' Guild");await loadRaid();return}
+ const st=data?.status;log("raid_fight: "+st,"ok");
+ if(st==="TIMEOUT"||st==="REFUNDED"){showBattleError(st==="TIMEOUT"?"정할 시간이 지나 넘긴 것으로 쳤습니다.":"상대가 사라져 정보값을 돌려받았습니다.","Thieves' Guild");await loadRaid();return}
+ let b=null;
+ if(data?.log)b={mode:"RAID",role:"RAIDER",dungeon:t.view?.dungeon||t.dungeon,result:data.result,turns:data.turns,turn_limit:data.turn_limit,log:data.log,gold:data.rewards?.gold,items:data.rewards?.items,info_to_target:data.rewards?.info_to_target,paid:t.paid,free:t.free,log_id:data.rewards?.log_id};
+ else if(data?.log_id){const g=await sb.rpc("get_raid_log",{p_id:data.log_id});if(!g.error&&g.data)b={...g.data,paid:t.paid,free:t.free,log_id:data.log_id}}
+ raidDone=b||{result:st,mode:"RAID",role:"RAIDER"};
+ await load();await loadRaid();
+ if(b)openBattleLog(b);
+}
+// 결과 줄(전투 결과 창과 길드 결과 카드가 같이 쓴다). 약탈자 기준, 호위대 주인(TARGET)이 보면 뒤집는다
+function raidItemsN(items){return (items||[]).reduce((a,x)=>a+(Number(x.n)||1),0)}
+function raidRewardText(b){
+ const g=Number(b.gold??b.rewards?.gold)||0,it=b.items??b.rewards?.items??[],n=raidItemsN(it),info=Number(b.info_to_target??b.rewards?.info_to_target)||0;
+ const list=it.length?`<br>${it.map(x=>`${esc(x.name||x.def||"")}${x.unknown?" (Unknown)":""}${Number(x.n)>1?` x${x.n}`:""}`).join(", ")}`:"";
+ if(b.role==="TARGET")return b.result==="WIN"?`짐을 털렸습니다 · 골드 ${g.toLocaleString()} · 아이템 ${n}개${list}`:`짐을 지켰습니다${info>0?` · 정보값 +${info.toLocaleString()}골드`:""}`;
+ if(b.result==="WIN")return `짐을 털었습니다 · 골드 +${g.toLocaleString()} · 아이템 ${n}개${list}`;
+ return `호위대에 막혔습니다.${info>0?` 정보값 ${info.toLocaleString()}골드는 상대에게 갔습니다.`:" 공짜 정보라 넘어간 골드는 없습니다."}`;
+}
+function raidResultHtml(b){const win=b.result==="WIN";
+ return `<div class="rd-stamp ${win?"win":"lose"}">${win?"털었다":"막혔다"}</div><div class="rd-res ${win?"win":"lose"}"><div>${raidRewardText(b)}</div>
+  <div class="rd-act">${b.log_id||b.log?`<button type="button" class="fm-btn" onclick="${b.log_id?`openRaidLog('${esc(b.log_id)}')`:"openBattleLog(raidDone)"}"><span>전투 로그</span></button>`:""}<button type="button" class="pri" onclick="raidDone=null;loadRaid()">다시 찾기</button></div>
+  ${win?`<p class="help-note">상대 파티는 이제 ${Math.round((raidInfo?.protect_minutes||120)/60)}시간 동안 보호받습니다. 같은 상대와는 하루 ${raidInfo?.daily_limit??3}번까지 싸울 수 있습니다.</p>`:""}</div>`}
+// ---------- 약탈 기록 ----------
+async function loadRaidLogs(){
+ const box=$("raidLogs");if(!box)return;raidTalk("log");if(!raidLogs)box.innerHTML=`<div class="empty">불러오는 중…</div>`;
+ const {data,error}=await sb.rpc("get_raid_logs",{p_limit:30});
+ if(error){log("get_raid_logs 실패: "+error.message,"bad");box.innerHTML=`<div class="empty">약탈 기록을 불러오지 못했습니다.</div>`;return}
+ raidLogs=data||[];renderRaidLogs();
+}
+// 상대 편 한 줄: 캐릭터 이름(서버가 주면)과 직업·레벨. 상대는 내가 약탈자면 target_side, 당한 쪽이면 raider_side
+function raidSideText(side){if(!side||!side.length)return "호위대 없음";return side.map(x=>`${x.name?`${esc(x.name)} `:""}${x.name?"(":""}${esc(x.job_name||x.job)} Lv.${x.level}${x.name?")":""}`).join(", ")}
+function raidWhen(at){const d=new Date(at);if(isNaN(d))return "";const p=n=>String(n).padStart(2,"0");return `${p(d.getMonth()+1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`}
+function renderRaidLogs(){
+ const box=$("raidLogs");if(!box)return;
+ if(!raidLogs.length){box.innerHTML=`<div class="empty">아직 약탈 기록이 없습니다.</div>`;return}
+ box.innerHTML=`<div class="rd-rec">${raidLogs.map(l=>{const me=l.role==="RAIDER",win=me?l.result==="WIN":l.result!=="WIN",n=raidItemsN(l.items);
+  const tag=me?(l.result==="WIN"?"승":"패"):(l.result==="WIN"?"털림":"막음");
+  const what=l.result==="WIN"?`골드 ${Number(l.gold||0).toLocaleString()} · 아이템 ${n}개`:(Number(l.info_to_target)>0?`정보값 ${Number(l.info_to_target).toLocaleString()}골드 ${me?"상대에게":"받음"}`:me?"공짜 정보":"정보값 없음(공짜 정보)");
+  return `<div class="rd-rr ${win?"w":"l"}"><span class="rd-rt">${raidWhen(l.at)}</span><span class="rd-rs">${me?"내가 약탈":"약탈당함"}</span><span class="rd-rw"><b>${esc(l.dungeon||"")}</b> · ${me?"상대 호위대":"약탈자"} ${raidSideText(me?l.target_side:l.raider_side)}</span><span class="rd-rv">${tag}</span><span class="rd-rg">${what}${me&&!l.free&&l.paid?` · 정보값 ${Number(l.paid).toLocaleString()}골드`:""}</span>${l.has_log?`<button type="button" class="fm-btn" onclick="openRaidLog('${esc(l.id)}')"><span>로그</span></button>`:`<span></span>`}</div>`}).join("")}</div>
+  <p class="help-note">약탈한 쪽과 당한 쪽 모두 기록이 남습니다. 전투 로그는 7일 동안 볼 수 있습니다.</p>`;
+}
+async function openRaidLog(id){
+ const {data,error}=await sb.rpc("get_raid_log",{p_id:id});
+ if(error){log("get_raid_log 실패: "+error.message,"bad");showBattleError(raidErr(error.message,"약탈 기록을 불러오지 못했습니다."),"약탈 기록");return}
+ openBattleLog({...data,mode:"RAID"});
 }
 renderThemeToggle();
 init();
