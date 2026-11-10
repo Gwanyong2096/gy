@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v508 · 갱신 2026-11-11 01:49 KST -->
+<!-- ProjectGY-test-console v509 · 갱신 2026-11-11 03:07 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -509,7 +509,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .rd-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.rd-act .pri{height:38px;padding:0 24px;font-weight:700}.rd-act .fm-btn{height:38px}
 .rd-roster{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}.rd-roster .roster-unit{border:1px solid transparent}.rd-roster .roster-unit.rd-on{background:color-mix(in srgb,var(--ac) 14%,transparent);border-color:var(--ac)}.rd-roster .roster-unit[disabled]{opacity:.45;cursor:default}
 @media(max-width:520px){.rd-roster{grid-template-columns:repeat(4,1fr)}}
-.rd-party{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:6px 0}.rd-pu{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}.rd-pu .unit-name{font-size:13px}.rd-pu .unit-meta{font-size:11px;color:var(--mu)}.rd-party.sm .sprite-slot{max-width:80px}
+.rd-party{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 6px;margin:6px 0}.rd-pu{display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}.rd-pu .unit-name{font-size:13px}.rd-pu .unit-meta{font-size:11px;color:var(--mu)}.rd-party.sm .sprite-slot{max-width:80px}
 .rd-board{display:flex;gap:8px;flex-wrap:wrap}.rd-ticket{flex:1 1 92px;padding:10px 8px;text-align:center;border-radius:4px;background:color-mix(in srgb,#c9a46a 22%,var(--card));border:1px solid color-mix(in srgb,#8a4b2a 40%,var(--bd));box-shadow:2px 2px 0 color-mix(in srgb,#000 12%,transparent)}.rd-tk-t{font-size:11.5px;letter-spacing:.08em;color:var(--mu)}.rd-tk-n{font-size:17px;font-weight:800;margin:2px 0}.rd-ticket.off{opacity:.4}.rd-ticket.cur{outline:2px solid var(--ac)}.rd-ticket.more{background:transparent;border-style:dashed;box-shadow:none}
 .rd-dgcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}.rd-dgc{display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border-radius:10px}.rd-dgc span{font-size:12px;color:var(--mu)}.rd-dgc.on{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac) inset}.rd-dgc[disabled]{opacity:.45;cursor:default}
 .rd-wanted{max-width:280px;margin:16px auto 8px;padding:16px;text-align:center;background:color-mix(in srgb,#c9a46a 22%,var(--card));border:1px solid color-mix(in srgb,#8a4b2a 40%,var(--bd));box-shadow:3px 3px 0 color-mix(in srgb,#000 14%,transparent);font-size:13px;line-height:1.7}.rd-wt{font-family:Georgia,serif;font-weight:800;letter-spacing:.2em;font-size:20px;color:var(--ac)}.rd-q{font-size:64px;font-weight:800;line-height:1.2;color:var(--mu);animation:rdpulse 1.4s ease-in-out infinite}@keyframes rdpulse{50%{opacity:.35}}
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v508 · 2026-11-11 01:49</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v509 · 2026-11-11 03:07</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -4363,6 +4363,7 @@ function enterRowHtml(d){return `<div class="dg-enter"><button class="pri" oncli
 let advRoom=null;
 // Battle Rush: 판 수(0 ~ RUSH_MAX, 0이면 버튼이 꺼진다. 돌리고 나면 0으로 비운다)와 지거나 비겨도 계속 돌리기(rush_keep_going). 들어갈 수 있는 던전이면 늘 보인다
 let rushCount=10,rushKeepGoing=false,hideMock=false;
+const RUSH_WAIT_MS=60000;
 function rushMaxN(){return Math.max(1,Math.floor(Number(pubCfg.RUSH_MAX)||50))}
 function clampRush(v){const n=Math.floor(Number(v));return Number.isFinite(n)?Math.min(rushMaxN(),Math.max(0,n)):0}
 function rushInput(el,commit){rushCount=clampRush(el.value);if(commit)el.value=rushCount;const s=$("rushSub");if(s)s.textContent=`SUPPLY ${Number(el.dataset.cost)*rushCount}`;const b=$("rushGo");if(b)b.disabled=b.dataset.off==="1"||rushCount<1}
@@ -4421,7 +4422,10 @@ async function startRush(dungeonId){
   // 응답을 못 받으면(연결 끊김·시간 초과·5xx) 서버에서는 판이 돌았을 수 있다: 입장 비용을 돌려받는다고 하지 않고 Log를 보라고 한다
   // (같은 요청을 다시 보내는 것은 서버가 아직 돌리는 중일 때 겹칠 수 있어 하지 않는다)
   for(let i=0;i<=n;i++){
-   const r=await sb.functions.invoke("battle",{body});
+   // 한 번의 응답이 RUSH_WAIT_MS 안에 안 오면(서버는 한 응답을 약 10초에 끊어 보낸다) 연결이 끊긴 것으로 보고 "전투 중…"을 푼다(50판에서 응답 없이 멈춘 일, 플레이 시험 2026-11-11)
+   const ac=typeof AbortController==="function"?new AbortController():null;let to=0;
+   const r=await Promise.race([sb.functions.invoke("battle",ac?{body,signal:ac.signal}:{body}),new Promise(ok=>{to=setTimeout(()=>{try{ac&&ac.abort()}catch(e){}ok({error:{message:"RUSH_TIMEOUT",context:{}}})},RUSH_WAIT_MS)})]);
+   clearTimeout(to);
    if(r.error){const st=r.error.context?.status;if(!st||st>=500)rushLost=true;
     try{const j=await r.error.context.json();errMsg=j.error||r.error.message}catch(e){errMsg=r.error.message}break}
    if(!r.data||!Array.isArray(r.data.runs)){errMsg="BAD_RESPONSE";rushLost=true;break}
@@ -5198,6 +5202,15 @@ function confirmRecall(pid){
  openConfirm("회수",`<p><b>${esc(p.dungeon)}</b>에 파견한 파티를 회수합니다. 밀린 판은 먼저 정산합니다.</p><p class="help-note">이 파티의 요약과 마지막 전투 기록은 사라집니다.</p>`,
   [["취소",null,false],["회수",()=>recallIdle(pid),true]]);
 }
+// 회수한 파티를 직접 파티로 되돌리기: 보낼 때 직접 파티에서 빠졌으므로(서버 idle_dispatch), 돌아왔을 때 직접 파티가 비어 있으면 돌아온 캐릭터로 다시 채운다
+// (다른 캐릭터로 새 파티를 꾸려 두었으면 건드리지 않는다). 무법 돌려받기는 5분 뒤 돌아오므로 그때까지 파티 id별로 멤버를 기억해 둔다(idleBackChars)
+const idleBackChars={};
+async function idlePartyRefill(ids){
+ ids=(ids||[]).filter(id=>chars.some(c=>c.id===id));if(!ids.length)return;
+ const g=await sb.rpc("get_party");if(g.error)return;if((g.data||[]).length){party=g.data;return}
+ const {data,error}=await sb.rpc("set_party",{p_chars:ids.slice(0,partyMax)});
+ if(error){log("set_party(회수 뒤 되돌리기) 실패: "+error.message,"bad");return}
+ party=data||ids.slice(0,partyMax);log("회수한 파티를 직접 파티로 되돌림","ok");if(advRoom)renderRoom()}
 async function recallIdle(pid){
  if(idleBusy)return;idleBusy=true;let err="",sum=null,recalling=false;if(qGuide?.key==="idle")qGuide.recallTried=true;
  const p=(idleInfo?.parties||[]).find(x=>x.id===pid),mem=(p?.chars||[]).map(id=>chars.find(c=>c.id===id)).filter(Boolean);
@@ -5208,6 +5221,7 @@ async function recallIdle(pid){
   if(idleInfo&&!recalling){idleInfo.parties=(idleInfo.parties||[]).filter(x=>x.id!==pid);renderIdle()}}
  const g=!err&&qGuide?.key==="idle"?qGuide:null;
  await load();if(currentView!=="adventure")await checkIdle();
+ if(!err&&p){if(recalling)idleBackChars[pid]=(p.chars||[]).slice();else await idlePartyRefill(p.chars)}
  if(sum)showRecallResult(p?.dungeon||"",mem,sum);
  if(g&&qGuide===g)g.phase="back";
 }
@@ -5234,8 +5248,9 @@ function showIdleReturns(){
  loadItems();rpc("get_my_characters").then(cs=>{if(cs){chars=cs;renderAdminChars();renderCamp()}});
  sb.rpc("idle_returns_seen",{p_ids:[r.id]}).then(({error})=>{if(error)log("idle_returns_seen 실패: "+error.message,"bad")});
  const got=r.got||{},items=(got.items||[]),n=items.reduce((a,x)=>a+(Number(x.n)||1),0);
- const gotHtml=`<div class="recall-sec"><div class="recall-h">짐 · ${Number(got.gold||0).toLocaleString()}골드 · 아이템 ${n}개</div>${items.length?`<ul class="recall-list">${items.map(x=>`<li>${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` <b>x${x.n}</b>`:""}</li>`).join("")}</ul>`:`<p class="help-note">${Number(got.gold)>0?"아이템은 없습니다.":"짐이 비어 있었습니다(약탈당했을 수 있습니다)."}</p>`}</div>`;
+ const gotHtml=`<div class="recall-sec"><div class="recall-h">짐 · ${Number(got.gold||0).toLocaleString()}골드 · 아이템 ${n}개</div>${items.length?`<ul class="recall-list">${items.map(x=>`<li>${esc(x.name||x.def)}${x.unknown?" (Unknown)":""}${x.n>1?` <b>x${x.n}</b>`:""}</li>`).join("")}</ul>`:`<p class="help-note">${Number(got.gold)>0?"아이템은 없습니다.":(Number(r.summary?.raided)>0?"짐이 비어 있었습니다(약탈당했습니다).":"짐이 비어 있었습니다.")}</p>`}</div>`;
  const done=()=>{if(idleInfo)idleInfo.returns=(idleInfo.returns||[]).filter(x=>x.id!==r.id);setTimeout(showIdleReturns,50)};
+ if(r.kind==="PARTY"&&idleBackChars[r.party_id]){idlePartyRefill(idleBackChars[r.party_id]);delete idleBackChars[r.party_id]}
  if(r.kind==="PARTY"){showRecallResult(r.dungeon||"",[],r.summary||{},gotHtml,done);return}
  openConfirm("짐 회수",`<p><b>${esc(r.dungeon||"")}</b>에서 짐이 도착했습니다. 가방에 넣었습니다.</p>${gotHtml}`,[["확인",done,true]]);
 }
