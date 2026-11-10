@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v500 · 갱신 2026-11-10 14:29 KST -->
+<!-- ProjectGY-test-console v501 · 갱신 2026-11-10 14:44 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v500 · 2026-11-10 14:29</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v501 · 2026-11-10 14:44</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1522,7 +1522,7 @@ const QUEST_GUIDE={
   if(!tutSeen.has("qg-k1"))return h.page("qg-k1",b,`Mock Battle은 연습 판입니다.\nSUPPLY를 쓰지 않고, 보상도 승리 수도 없습니다.\n던전마다 하루 ${lim}판까지 됩니다.`);
   return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n지금은 지는 게 당연합니다.\nMock Battle을 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:"qg-k1",btn:"확인",fn:questGuideDone});
  },
- // Smuggler Hideout 이기기(q_ch2_12) 들어가기 전 준비: ① Cleric 줄기 패턴에 Mend 줄이 있는지(없으면 맨 위에 넣는다) ② 파티원마다 남은 TP를 Front SPD에 TUT_ASHEN.spd까지(단계 20과 같은 셈). 이미 이겼으면 바로 끝
+ // Smuggler Hideout 이기기(q_ch2_12) 들어가기 전 준비: ① Cleric 줄기 패턴에 Mend 줄이 있는지(없으면 맨 위에 넣는다) ② 파티원마다 남은 TP를 Front SPD에 넣도록 권한다(숫자는 유저가 정한다, 단계 20과 같은 tutSpdFlow). 이미 이겼으면 바로 끝
  smug(g,h){
   const q=quests.find(x=>x.id===g.q.id)||g.q;
   if(Number(q.cur||0)>=Number(q.max||1))return h.mid("qg-s9",`${dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전"}${josaOf(dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전","은","는")} 이미 이겼습니다.\n보상을 받으세요.`,{btn:"확인",fn:questGuideDone});
@@ -1554,23 +1554,8 @@ const QUEST_GUIDE={
    if(act.value!==TUT_MEND.a)return h.say("qg-mx",act,`스킬 칸에서 ${mn}${josaOf(mn,"을","를")} 골라 주세요.\n숫자는 ${TUT_MEND.v}으로 맞춰 두었습니다.`,{limit:TUT_MEND.a,above:true,nohold:true});
    return h.say("qg-msave",h.q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
   }
-  // ② Front SPD
-  const ids=Array.isArray(party)&&party.length?party:chars.map(c=>c.id),cap=TUT_ASHEN.spd;
-  const sc=ids.map(id=>chars.find(c=>c.id===id)).find(c=>c&&!away.has(c.id)&&tpCur(c).h<cap&&Number(c.tp||0)>0&&!(g.spDone||[]).includes(c.id));
-  if(sc){
-   const jn=sc.job_name||sc.job;
-   if(!tutSeen.has("qg-p0"))return h.mid("qg-p0","다음은 Front SPD입니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.\n남은 TP를 Front SPD에 써 둡시다.",{btn:"다음",fn:()=>tutSeen.add("qg-p0")});
-   const go=h.toChar("qg-p",sc,`${jn}의 TP를 씁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
-   const w=h.sec("status");if(w?.classList.contains("collapsed"))return h.say("qg-psec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
-   const box=$("alloc-"+sc.id),f=box?.querySelector('input[data-tp="h"]'),fw=f?.closest(".alloc-f")||f;if(!f)return h.wait();
-   const t=tpCur(sc),pts=Number(sc.tp)||0,v=Math.min(cap-t.h,pts),B=pubCfg.TP_SPD_F_BANDS,base=Number(sc.stats?.SPD?.F||0),to=+(base+tpBandSum(B,t.h+v)-tpBandSum(B,t.h)).toFixed(2);
-   if(!tutSeen.has("qg-p1"))return h.page("qg-p1",fw,`Front SPD는 TP 1에 1포인트씩 오릅니다.\n파티원마다 ${cap}포인트까지 올려 봅시다(TP가 모자라면 남은 만큼).\n다른 칸은 0으로 둡니다.`);
-   const fill=()=>{box.querySelectorAll("input[data-tp]").forEach(i=>{const x=i===f?String(v):"0";if(i.value!==x)i.value=x});tpPreview(sc.id)};
-   const key="qg-p2-"+sc.id;
-   if(!tutSeen.has(key))return h.say("qg-p2",fw,`${jn}${josaOf(jn,"은","는")} 남은 TP ${pts} 중 ${v}${josaOf(v,"을","를")} Front SPD에 씁니다.\nFront SPD 칸에 ${v}${josaOf(v,"을","를")} 입력하고 다음을 눌러 주세요.\nFront SPD가 ${hasteText(base)} → ${hasteText(to)}${josaOf(to,"이","가")} 됩니다.`,{btn:"다음",hole:true,nohold:true,fn:()=>{fill();tutSeen.add(key)}});
-   if(f.value!==String(v))fill();
-   return h.say("qg-palloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
-  }
+  // ② Front SPD: 남은 TP를 넣도록 권한다(숫자는 유저가 정한다, 08의 tutSpdFlow)
+  const sp=tutSpdFlow(h,"qg-p","다음은 Front SPD입니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.\n남은 TP를 Front SPD에 넣어 두면 좋습니다.");if(sp)return sp;
   const dn=dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"Smuggler Hideout";
   return h.mid("qg-s8",`준비를 마쳤습니다.\n${dn}에 도전해 보세요.\n그래도 지면 장비를 갖추거나 레벨을 더 올려 다시 도전하세요.`,{btn:"확인",fn:questGuideDone});
  },
@@ -1846,7 +1831,7 @@ const TUT_EXIT_BUTTON=true;
 //   17 Move Back·Move Forward 줄 빼기(다섯째 던전 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다), 18 Thief 줄기 패턴 맨 위에 출혈 스킬(Mine Golem의 Front DEF 뚫기)과 Mage 줄기 패턴 맨 위에 [캐스팅 중인 적 → Frost Shard](Slag Skin 끊기),
 //   19 Cleric 줄기 패턴 맨 위에 [아군 공격력 버프 여유 → AND][쿨타임 아님 → Hymn]. 남은 SP(sp_free)로 가른다: Chaplain이고 Hymn을 배울 SP가 있으면 Hymn
 //      (Cleric이면 먼저 Chaplain으로 전직), 모자라면 같은 줄을 Inspire로 넣고 나중에 Hymn으로 바꾸라고 알린다. Inspire도 못 배우면 알리고 넘긴다(tutorial_ack 'hymn'),
-//   20 다섯째 던전 이기기(첫 도전 전에 파티원마다 남은 TP를 Front SPD에 TUT_ASHEN.spd까지 쓰게 짚는다. 화면만, 서버는 안 봄), 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
+//   20 다섯째 던전 이기기(첫 도전 전에 파티원마다 남은 TP를 Front SPD에 넣도록 권한다. 숫자는 유저가 정한다, tutSpdFlow. 화면만, 서버는 안 봄), 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
 // tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15, "ch4gear" = 단계 16(받은 장비 알림, tutGearGot), "bleed" = 단계 18, "ashen" = 단계 21을 마침)
 // tutChapelLost·tutChapelFree: 단계 11(넷째 던전)·20(다섯째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
 // 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11·20을 벗어나면 서버가 끈다). 무대에서는 화면에서만
@@ -2027,10 +2012,26 @@ function tutAshenPick(t){
  if(miss.length){tutSkLoad(miss);return undefined}
  return cs.find(c=>(skillsByChar[c.id]?.skills||[]).some(x=>x.id===t.a))||null;
 }
-// 단계 20 첫 도전 전: 파티원 중 Front SPD에 쓴 TP가 TUT_ASHEN.spd보다 적고 남은 TP가 있는 캐릭터(파티 순서). 없으면 null
-function tutSpdChar(){
+// Front SPD에 TP 넣기(단계 20 첫 도전 전 k="sp", Smuggler 이기기 퀘스트 준비 k="qg-p"): 목표 숫자 없이 권한다. 파티 순서로 남은 TP가 있는 캐릭터마다 한 번씩,
+// Front SPD 칸에 유저가 숫자를 적어 배분하거나(쓴 TP가 늘면 끝) 넘기기를 누르면 다음 캐릭터. 다 돌면 null. h = 짚기 도구(say, mid, page, wait, toChar, sec)
+const tutSpdState={};
+function tutSpdFlow(h,k,intro){
+ const S=tutSpdState[k]||(tutSpdState[k]={skip:new Set(),start:{}}),away=typeof idleChars==="function"?idleChars():new Set();
  const ids=Array.isArray(party)&&party.length?party:chars.map(c=>c.id);
- return ids.map(id=>chars.find(c=>c.id===id)).find(c=>c&&tpCur(c).h<TUT_ASHEN.spd&&Number(c.tp||0)>0)||null;
+ const sc=ids.map(id=>chars.find(c=>c.id===id)).find(c=>c&&!away.has(c.id)&&Number(c.tp||0)>0&&!S.skip.has(c.id)&&!(S.start[c.id]!=null&&tpCur(c).h>S.start[c.id]));
+ if(!sc)return null;
+ const jn=sc.job_name||sc.job;
+ if(!tutSeen.has(k+"0"))return h.mid(k+"0",intro,{btn:"다음",fn:()=>tutSeen.add(k+"0")});
+ const go=h.toChar(k,sc,`${jn}의 TP를 씁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+ const w=h.sec("status");if(w?.classList.contains("collapsed"))return h.say(k+"sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
+ const box=$("alloc-"+sc.id),f=box?.querySelector('input[data-tp="h"]'),fw=f?.closest(".alloc-f")||f;
+ if(!f)return h.wait();
+ if(S.start[sc.id]==null)S.start[sc.id]=tpCur(sc).h;
+ if(!tutSeen.has(k+"1"))return h.page(k+"1",fw,"Front SPD는 TP 1에 1포인트씩 오릅니다.\n쓴 TP는 Unwinding Draught로만 되돌릴 수 있습니다.\n얼마나 넣을지는 직접 정하세요.");
+ const pts=Number(sc.tp)||0,v=tpNum(f.value),skip=()=>{S.skip.add(sc.id)};
+ if(!(v>0))return h.say(k+"2",box,`${jn}의 남은 TP는 ${pts}입니다.\nFront SPD 칸에 넣고 싶은 만큼 적어 주세요.\n넣지 않으려면 넘기기를 누릅니다.`,{btn:"넘기기",hole:true,nohold:true,fn:skip});
+ const t=tpCur(sc),B=pubCfg.TP_SPD_F_BANDS,base=Number(sc.stats?.SPD?.F||0),to=+(base+tpBandSum(B,t.h+v)-tpBandSum(B,t.h)).toFixed(2);
+ return h.say(k+"alloc",box,`Front SPD가 ${hasteText(base)} → ${hasteText(to)}${josaOf(to,"이","가")} 됩니다.\n배분을 눌러 주세요.\n넣지 않으려면 넘기기를 누릅니다.`,{btn:"넘기기",hole:true,nohold:true,fn:skip});
 }
 // 단계 17: 패턴에 Move Back 줄이 남은 캐릭터(Footman 줄기 먼저). 서버 tutorial_eval 17과 같이 고친다
 // 단계 19: 버프 줄을 넣을 Cleric 줄기 캐릭터(특수전직은 Inspire가 빠져 고르지 않는다). 스킬 목록을 받는 중이면 undefined, 없으면 null
@@ -2085,7 +2086,7 @@ const TUT_CHAPEL={i:3,wave:"Tidal Wave"};
 // 단계 14·15: 1차 전직 레벨(공개 설정 PROMOTE_LEVEL_FIRST를 못 받았을 때의 값)과, 전직할 때 서버가 새로 끼워 주는 장비(서버 PROMOTE_GEAR_DEFS와 같이 고친다. 단계 15의 끝 조건에서 뺀다)
 const TUT_PROMOTE={lv:20,gear:["worn_pistol","chevalier_garde_bras"]};
 // 단계 17~21: 다섯째 던전(목록 순서)·보스·졸개·보스 캐스팅 스킬 이름(로그에서 찾는다), 18 Thief 줄기에 넣는 출혈 스킬 줄(서버 tutorial_eval과 같이 고친다)
-const TUT_ASHEN={i:4,boss:"forge_wyrm",golem:"mine_golem",slag:"Slag Skin",bleed:{job:"THIEF",a:"thief_lacerate",c:"selfMpGte"},frost:{job:"MAGE",a:"mage_frost_shard",c:"enemyCastingAny"},spd:100};
+const TUT_ASHEN={i:4,boss:"forge_wyrm",golem:"mine_golem",slag:"Slag Skin",bleed:{job:"THIEF",a:"thief_lacerate",c:"selfMpGte"},frost:{job:"MAGE",a:"mage_frost_shard",c:"enemyCastingAny"}};
 // 단계 19: Cleric 줄기 버프 줄(서버 tutorial_eval 19·tutorial_ack 'hymn'과 같이 고친다). sp = 스킬 목록을 못 받았을 때의 SP(서버 skill_defs). spare = 챕터 1~4 동안 배우기를 잠가 Hymn·Inspire SP를 남겨 두는 스킬
 const TUT_HYMN={job:"CLERIC",chap:"CHAPLAIN",hymn:"cleric_chaplain_hymn",insp:"cleric_inspire",w:"allyAtkBuffRoom",c:"skillReady",sp:{cleric_chaplain_hymn:5,cleric_inspire:3},spare:["cleric_sanctuary","cleric_chaplain_vigil"]};
 // 서버 단계를 다시 묻는다(화면이 서버보다 앞서거나 뒤처졌을 때. 너무 자주 묻지 않는다)
@@ -2734,22 +2735,11 @@ function tutResolve(){
    return okBtn?savedOk():say("s20close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
   }
   const d=dungeons[TUT_ASHEN.i];
-  // 첫 도전 전: 파티원마다 남은 TP를 Front SPD에 쓴다(TUT_ASHEN.spd포인트까지, 화면만 짚고 서버는 보지 않는다). 진 뒤(화면을 풀어 둔 동안)에는 짚지 않는다
-  const sc=!tutChapelLost&&!tutChapelFree?tutSpdChar():null;
-  if(sc){
-   const jn=sc.job_name||sc.job,boss=(d?.monsters||[]).find(m=>m.id===TUT_ASHEN.boss)?.name||"Forge Wyrm";
-   if(!tutSeen.has("sp0"))return mid("sp0",`${d?.name||"다섯째 던전"}에 들어가기 전에 남은 TP를 써 둡시다.\n${boss}${josaOf(boss,"은","는")} HP가 많아 정해진 턴 안에 많이 때려야 이길 수 있습니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.`,{btn:"다음",fn:()=>tutSeen.add("sp0")});
-   const go=toChar("sp",sc,`${jn}의 TP를 씁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
-   const w=sec("status");if(w?.classList.contains("collapsed"))return say("spsec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
-   const box=$("alloc-"+sc.id),f=box?.querySelector('input[data-tp="h"]'),fw=f?.closest(".alloc-f")||f;
-   if(!f)return wait();
-   const t=tpCur(sc),pts=Number(sc.tp)||0,v=Math.min(TUT_ASHEN.spd-t.h,pts),B=pubCfg.TP_SPD_F_BANDS,base=Number(sc.stats?.SPD?.F||0),to=+(base+tpBandSum(B,t.h+v)-tpBandSum(B,t.h)).toFixed(2);
-   if(!tutSeen.has("sp1"))return page("sp1",fw,`Front SPD는 TP 1에 1포인트씩 오릅니다.\n파티원마다 ${TUT_ASHEN.spd}포인트까지 올려 봅시다(TP가 모자라면 남은 만큼).\n다른 칸은 0으로 둡니다.`);
-   const fill=()=>{box.querySelectorAll("input[data-tp]").forEach(i=>{const x=i===f?String(v):"0";if(i.value!==x)i.value=x});tpPreview(sc.id)};
-   const key="sp2-"+sc.id;
-   if(!tutSeen.has(key))return say("sp2",fw,`${jn}${josaOf(jn,"은","는")} 남은 TP ${pts} 중 ${v}${josaOf(v,"을","를")} Front SPD에 씁니다.\nFront SPD 칸에 ${v}${josaOf(v,"을","를")} 입력하고 다음을 눌러 주세요.\nFront SPD가 ${hasteText(base)} → ${hasteText(to)}${josaOf(to,"이","가")} 되고, 위의 TP 숫자는 배분 뒤 남을 ${pts-v}${josaOf(pts-v,"으로","로")} 바뀌어 보입니다.`,{btn:"다음",hole:true,nohold:true,fn:()=>{fill();tutSeen.add(key)}});
-   if(f.value!==String(v))fill();
-   return say("spalloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
+  // 첫 도전 전: 파티원마다 남은 TP를 Front SPD에 넣도록 권한다(얼마나 넣을지는 유저가 정한다, tutSpdFlow. 화면만 짚고 서버는 보지 않는다). 진 뒤(화면을 풀어 둔 동안)에는 짚지 않는다
+  if(!tutChapelLost&&!tutChapelFree){
+   const boss=(d?.monsters||[]).find(m=>m.id===TUT_ASHEN.boss)?.name||"Forge Wyrm";
+   const r=tutSpdFlow({say,mid,page,wait,toChar,sec},"sp",`${d?.name||"다섯째 던전"}에 들어가기 전에 남은 TP를 써 둡시다.\n${boss}${josaOf(boss,"은","는")} HP가 많아 정해진 턴 안에 많이 때려야 이길 수 있습니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.`);
+   if(r)return r;
   }
   if(tutChapelLost&&!tutSeen.has("cl2"))return mid("cl2",`이번에는 이기지 못했습니다.\n남은 SP로 스킬을 더 배우고, 남은 TP로 Front SPD나 Pattern 줄을 올려 보세요.\n패턴 맨 아래 줄은 반드시로 두면 할 일이 없을 때 머뭇거리지 않습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl2");tutChapelFree=true;if(!stage)tutAck("chapel_free")}});
   if(!tutSeen.has("ag0"))return mid("ag0",`${door(TUT_ASHEN.i)}\n\n준비를 마쳤으니 도전해 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("ag0")});
