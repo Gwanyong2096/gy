@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v495 · 갱신 2026-11-10 12:55 KST -->
+<!-- ProjectGY-test-console v496 · 갱신 2026-11-10 13:07 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -529,9 +529,13 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .adm-raid{margin:6px 0 4px;font-size:12.5px;color:var(--mu);overflow-x:auto}.adm-raid-t{width:100%;border-collapse:collapse;font-size:12px;color:var(--tx)}.adm-raid-t th{text-align:left;font-weight:400;color:var(--mu);border-bottom:1px solid var(--bd);padding:4px 6px;white-space:nowrap}.adm-raid-t td{padding:5px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}.adm-raid-t tr[onclick]{cursor:pointer}.adm-raid-t tr.hot td{color:var(--bad);font-weight:700}
 /* Camp 로스터: 남은 SP·TP 배지 */
 .u-pts{display:inline-grid;grid-auto-flow:column;gap:3px;margin:4px auto 0}@media(max-width:520px){.u-pts{grid-auto-flow:row}}.u-pts b{text-align:center;font-size:11px;font-weight:700;line-height:1;padding:3px 6px;border-radius:999px;background:color-mix(in srgb,var(--ac) 18%,transparent);color:var(--ac)}
+/* 약탈 찾음 알림 띠: 길드 밖 어느 화면이든 위 가운데(층: 리모콘 20·보급 30 위, 창 50 아래) */
+.rd-alert{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;max-width:calc(100% - 32px);box-sizing:border-box;padding:8px 10px 8px 14px;border:1px solid var(--bad);border-radius:10px;background:var(--card);box-shadow:0 6px 18px rgba(0,0,0,.25);font-size:14px}
+.rd-alert[hidden]{display:none}.rd-alert-t b{color:var(--bad)}
+@media(max-width:520px){.rd-alert{flex-wrap:wrap;justify-content:center;text-align:center;gap:6px}}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v495 · 2026-11-10 12:55</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v496 · 2026-11-10 13:07</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -951,7 +955,7 @@ async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();co
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
  loggedIn=now;questPlace(true);
- if(user){loadUiPrefs();load();loadAdminTools();checkIdle()}else{idleInfo=null;clearInterval(idleTimer);idleTimer=null;renderIdle();openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
+ if(user){loadUiPrefs();load();loadAdminTools();checkIdle();loadRaid()}else{idleInfo=null;raidInfo=null;raidAlert();clearInterval(idleTimer);idleTimer=null;renderIdle();openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
 async function saveUiPref(key,value){const {error}=await sb.rpc("set_ui_pref",{p_key:key,p_value:value});if(error)log("화면 설정 저장 실패: "+error.message,"bad")}
@@ -1680,7 +1684,7 @@ const HELP={
   <li>던전마다 안전만, 무법만, 둘 다 중 하나입니다. 손님 계정은 무법 파견을 할 수 없습니다.</li></ul>`})()}`}},
  raid:{title:"Thieves' Guild",html:()=>{const r=raidInfo;return `<p>무법 파견 파티의 짐을 노립니다. 정보를 사면 길드가 상대를 찾아 줍니다.</p>
   <ul><li>약탈 파티 5명과 무법 던전을 고르고 <b>정보 사기</b>를 누릅니다. Auto Battle 중인 캐릭터는 넣을 수 없습니다.</li>
-  <li>공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 200%, 2번째 1200%, 그다음부터는 앞 값의 2배입니다. 가격은 매 정시에 처음으로 돌아갑니다.</li>
+  <li>공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 ${raidLadder(raidInfo)[0].toLocaleString()}%, 2번째 ${raidLadder(raidInfo)[1].toLocaleString()}%, 그다음부터는 앞 값의 ${raidMult(raidInfo)}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.</li>
   <li>길드는 ${r?.search_sec??60}초마다 상대를 찾습니다. ${r?.search_minutes??10}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.</li>
   <li>찾으면 상대 호위대의 직업·레벨·대열과 짐(골드·아이템)을 보여 줍니다. ${r?.hold_sec??60}초 안에 <b>넘긴다</b>나 <b>싸운다</b>를 고릅니다. 넘기거나 시간이 지나면 정보값은 돌려받지 못합니다.</li>
   <li>이기면 짐을 전부 가져갑니다(골드 보너스는 붙지 않습니다). 지거나 비기면 짐은 그대로이고, 골드로 산 정보값은 상대에게 갑니다(공짜 정보면 없음). 진 쪽 캐릭터는 다치지 않습니다.</li>
@@ -5284,6 +5288,8 @@ async function showEnhanceResult(run,before,from,target){
 // 모양(사용자 H 시안 C): 정보는 수배서 장으로, 찾으면 내 약탈 파티 VS 상대 호위대 대결 구도 + 현상금(짐) 상자, 결과는 도장
 let raidFightFail=null,raidInfo=null,raidAt=0,raidTab="raid",raidParty=null,raidDg=null,raidBusy=false,raidTimer=null,raidPoll=0,raidSearchAt=0,raidLogs=null,raidDone=null;
 const RAID_ERR={DUNGEON_NOT_FOUND:"던전을 찾지 못했습니다.",PARTY_DUPLICATE:"같은 캐릭터가 두 번 들어 있습니다.",RAID_PRICE_CHANGED:"정시가 지나 정보값이 바뀌었습니다. 바뀐 값을 확인해 주세요.",NOT_ENOUGH_GOLD:"골드가 부족합니다.",RAID_ACTIVE:"이미 진행 중인 정보가 있습니다.",RAID_NOT_LAWLESS:"무법 파견을 할 수 있는 던전이 아닙니다.",DUNGEON_LOCKED:"아직 열리지 않은 던전입니다.",GUEST_BLOCKED:"손님 계정은 약탈을 할 수 없습니다.",CHARACTER_ON_IDLE:"Auto Battle 중인 캐릭터가 들어 있습니다.",PARTY_SPECIAL_DUPLICATE:"특수직업은 직업별로 한 명만 출전할 수 있습니다.",PARTY_EMPTY:"약탈 파티에 캐릭터를 넣어 주세요.",PARTY_TOO_LARGE:"약탈 파티는 5명까지입니다.",RAID_NOT_FOUND:"정보를 찾지 못했습니다.",RAID_NOT_FOUND_STATE:"이미 끝난 정보입니다.",RAID_LOG_NOT_FOUND:"약탈 기록을 찾지 못했습니다.",NOT_AUTHENTICATED:"다시 로그인해 주세요."};
+function raidMult(r){return Number(r?.ladder?.mult)||2}
+function raidLadder(r){const l=r?.ladder||{},a=Number(l.pct_1)||200,b=Number(l.pct_2)||1200;return [a,b,b*raidMult(r)]}
 function raidErr(m,fb){const k=Object.keys(RAID_ERR).sort((a,b)=>b.length-a.length).find(x=>String(m).includes(x));return k?RAID_ERR[k]:fb}
 async function loadRaid(){
  if(stage||!loggedIn)return;
@@ -5303,7 +5309,10 @@ function setRaidTab(t){raidTab=t;document.querySelectorAll("#raidTabs .seg-btn")
 function raidLeft(sec){return Number(sec||0)-(Date.now()-raidAt)/1000}
 function raidTickStart(){if(!raidTimer)raidTimer=setInterval(raidTick,1000)}
 function raidTick(){
- if(currentView!=="guild"||!raidInfo){clearInterval(raidTimer);raidTimer=null;return}
+ // 길드 밖에서도 찾는 중·찾음이면 계속 돈다(찾으면 어느 화면이든 알림 띠). 그 밖에는 길드를 떠나면 멈춘다
+ const t0=raidInfo?.ticket,live=t0&&(t0.status==="SEARCHING"||t0.status==="FOUND");
+ if(!loggedIn||stage||!raidInfo||(currentView!=="guild"&&!live)){clearInterval(raidTimer);raidTimer=null;raidAlert();return}
+ raidAlert();
  const set=(id,tx)=>{const n=$(id);if(n&&n.textContent!==tx)n.textContent=tx};
  set("raidReset",fmtDur(raidLeft(raidInfo.reset_sec)));
  if(raidLeft(raidInfo.reset_sec)<=0&&!raidBusy&&Date.now()-raidAt>5000){loadRaid();return}
@@ -5371,9 +5380,9 @@ function renderRaid(){
  if(!raidDg||!ds.some(d=>d.id===raidDg&&d.unlocked))raidDg=(ds.find(d=>d.unlocked)||{}).id||null;
  const p=raidPartyNow(),busy=idleChars(),d=ds.find(x=>x.id===raidDg);
  const pool=chars.map(c=>{const on=p.includes(c.id),b=busy.has(c.id);return `<button type="button" class="roster-unit${on?" rd-on":""}" aria-pressed="${on}" onclick="raidPick('${c.id}')"${b||!on&&p.length>=5?" disabled":""}><span class="sprite-slot" aria-hidden="true">${sprImg(c.job)}</span><span class="unit-name">${esc(c.display_name)}</span><span class="unit-meta"><span class="u-lv">Lv.${c.level}</span><span class="u-job">${b?"Auto Battle 중":esc(c.job_name||c.job)}</span></span></button>`}).join("");
- // 수배서 게시판: 공짜 1장, 골드 단계(1번째 200%, 2번째 1200%, 그 뒤 2배씩). 지금 단계를 표시
- const st=r.free?-1:Number(r.step)||0,PCT=[200,1200,2400];
- const board=`<div class="rd-board"><div class="rd-ticket${r.free?" cur":" off"}"><div class="rd-tk-t">공짜</div><div class="rd-tk-n">${r.free?"1장":"0장"}</div><div class="dim">${r.free?"이번 시간 몫":"다음 정시에 1장"}</div></div>${PCT.map((x,i)=>`<div class="rd-ticket gold${i===st?" cur":""}${i<st?" off":""}"><div class="rd-tk-t">${i+1}번째</div><div class="rd-tk-n">${x}%</div><div class="dim">기준 골드의</div></div>`).join("")}<div class="rd-ticket more${st>=3?" cur":""}"><div class="rd-tk-t">그 뒤</div><div class="rd-tk-n">2배씩</div><div class="dim">${st>=3?`지금 ${Number(r.pct||0).toLocaleString()}%`:"앞 값의"}</div></div></div>
+ // 수배서 게시판: 공짜 1장, 골드 단계(서버 설정 get_raid_info.ladder: 1번째 pct_1, 2번째 pct_2, 그 뒤 앞 값의 mult배). 지금 단계를 표시
+ const st=r.free?-1:Number(r.step)||0,PCT=raidLadder(r);
+ const board=`<div class="rd-board"><div class="rd-ticket${r.free?" cur":" off"}"><div class="rd-tk-t">공짜</div><div class="rd-tk-n">${r.free?"1장":"0장"}</div><div class="dim">${r.free?"이번 시간 몫":"다음 정시에 1장"}</div></div>${PCT.map((x,i)=>`<div class="rd-ticket gold${i===st?" cur":""}${i<st?" off":""}"><div class="rd-tk-t">${i+1}번째</div><div class="rd-tk-n">${x}%</div><div class="dim">기준 골드의</div></div>`).join("")}<div class="rd-ticket more${st>=3?" cur":""}"><div class="rd-tk-t">그 뒤</div><div class="rd-tk-n">${raidMult(r)}배씩</div><div class="dim">${st>=3?`지금 ${Number(r.pct||0).toLocaleString()}%`:"앞 값의"}</div></div></div>
   <p class="help-note">가격은 매 정시에 처음으로 돌아갑니다 · 다음 정시까지 <b id="raidReset">${fmtDur(raidLeft(r.reset_sec))}</b></p>`;
  const dgs=ds.length?`<div class="rd-dgcards">${ds.map(x=>`<button type="button" class="rd-dgc${x.id===raidDg?" on":""}" aria-pressed="${x.id===raidDg}" onclick="raidSetDg('${esc(x.id)}')"${x.unlocked?"":" disabled"}><b>${esc(x.name)}</b><span>${x.zone==="LAWLESS"?"무법 파견만":"안전·무법"}</span><span>${x.unlocked?(Number(x.price)>0?`정보값 ${Number(x.price).toLocaleString()}골드`:"정보값 공짜"):"아직 열리지 않음"}</span></button>`).join("")}</div>`:`<div class="empty">무법 파견을 할 수 있는 던전이 아직 없습니다.</div>`;
  const price=Number(d?.price)||0,ok=p.length>0&&!!d&&!raidBusy&&price<=gold;
@@ -5464,6 +5473,15 @@ async function openRaidLog(id){
  const {data,error}=await sb.rpc("get_raid_log",{p_id:id});
  if(error){log("get_raid_log 실패: "+error.message,"bad");showBattleError(raidErr(error.message,"약탈 기록을 불러오지 못했습니다."),"약탈 기록");return}
  openBattleLog({...data,mode:"RAID"});
+}
+
+// 찾음 알림 띠: 길드 밖에 있을 때 상대를 찾으면 화면 위에 남은 정할 시간과 길드로 가는 버튼(정할 시간이 지나면 정보값을 잃는다). 길드에 들어가거나 찾음이 끝나면 사라진다
+function raidAlert(){
+ let el=$("raidAlert");const t=raidInfo?.ticket,on=loggedIn&&!stage&&currentView!=="guild"&&t?.status==="FOUND"&&raidLeft(t.hold_sec)>0;
+ if(!on){if(el)el.hidden=true;return}
+ if(!el){el=document.createElement("div");el.id="raidAlert";el.className="rd-alert";el.setAttribute("role","alert");
+  el.innerHTML=`<span class="rd-alert-t">약탈 상대를 찾았습니다 · <b id="raidAlertSec"></b> 안에 정해 주세요</span><button type="button" class="fm-btn pri" onclick="openGuild()"><span>Thieves' Guild로</span></button>`;document.body.appendChild(el)}
+ el.hidden=false;const n=$("raidAlertSec"),tx=`${Math.max(0,Math.ceil(raidLeft(t.hold_sec)))}초`;if(n.textContent!==tx)n.textContent=tx;
 }
 renderThemeToggle();
 init();
