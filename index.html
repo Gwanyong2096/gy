@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v493 · 갱신 2026-11-10 06:32 KST -->
+<!-- ProjectGY-test-console v494 · 갱신 2026-11-10 12:10 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -500,7 +500,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .sc-sprw{position:relative;z-index:1;display:block;width:calc(150%*var(--aw,1));margin-bottom:-4%}.sc-sprw img.sc-spr{width:100%;margin:0}.sc-fx{position:absolute;inset:0;background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}.sc-fx.back{z-index:0}.sc-fx.front{z-index:2}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v493 · 2026-11-10 06:32</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v494 · 2026-11-10 12:10</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1666,19 +1666,19 @@ const TUT_EXIT_BUTTON=true;
 //   8 대기(TUT_WAIT: 셋째 던전을 처음 이겨 넷째 던전이 열릴 때까지. 짚지도 막지도 않는다), 9 대열(시작 위치·엄호) 보기, 10 Footman 패턴 맨 위에 Move Back·Move Forward(보스가 차징·캐스팅하면 물러섰다 돌아오기),
 //   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트),
 //   13 챕터 4 시작(캐릭터가 1차 전직 레벨이 될 때까지 대기), 14 1차 전직, 15 전직한 캐릭터에게 장비 다시 끼우기,
-//   16 챕터 5 시작: [빈 자리 TODO 장비 보상] Smuggler·Chapel 드롭 장비를 계정당 한 번 받기(지금은 서버가 바로 넘긴다),
+//   16 챕터 5 시작: 챕터 4 끝 장비 보상(셋째·넷째 던전에서 나오는 장비 한 벌씩, 계정당 한 번). 받기를 누르면 tutorial_ack 'gear'가 주고 받은 목록을 돌려준다,
 //   17 Move Back·Move Forward 줄 빼기(다섯째 던전 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다), 18 Thief 줄기 패턴 맨 위에 출혈 스킬(Mine Golem의 Front DEF 뚫기)과 Mage 줄기 패턴 맨 위에 [캐스팅 중인 적 → Frost Shard](Slag Skin 끊기),
 //   19 Cleric 줄기 패턴 맨 위에 [아군 공격력 버프 여유 → AND][쿨타임 아님 → Hymn]. 남은 SP(sp_free)로 가른다: Chaplain이고 Hymn을 배울 SP가 있으면 Hymn
 //      (Cleric이면 먼저 Chaplain으로 전직), 모자라면 같은 줄을 Inspire로 넣고 나중에 Hymn으로 바꾸라고 알린다. Inspire도 못 배우면 알리고 넘긴다(tutorial_ack 'hymn'),
 //   20 다섯째 던전 이기기(첫 도전 전에 파티원마다 남은 TP를 Front SPD에 TUT_ASHEN.spd까지 쓰게 짚는다. 화면만, 서버는 안 봄), 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
-// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15, "bleed" = 단계 18, "ashen" = 단계 21을 마침)
+// tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15, "ch4gear" = 단계 16(받은 장비 알림, tutGearGot), "bleed" = 단계 18, "ashen" = 단계 21을 마침)
 // tutChapelLost·tutChapelFree: 단계 11(넷째 던전)·20(다섯째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
 // 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11·20을 벗어나면 서버가 끈다). 무대에서는 화면에서만
 const TUT_FIGHT_FREE={11:"cl1",20:"cl2"};
 function tutChapelFromServer(data){if(stage)return;tutChapelFree=!!TUT_FIGHT_FREE[tut.step]&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add(TUT_FIGHT_FREE[tut.step])}
 // 예전에 브라우저에 기억하던 키(pgy_chapel_free_계정)는 지운다
 try{Object.keys(localStorage).filter(k=>k.startsWith("pgy_chapel_free_")).forEach(k=>localStorage.removeItem(k))}catch(e){}
-let tut={step:null,last:22},tutIdleFree=false,tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[];
+let tut={step:null,last:22},tutIdleFree=false,tutCongrats=null,tutHold=null,tutLost=0,tutUi=null,tutAcking=false,tutDgAsked=false,tutPoll=0,tutSkAsk=false,tutChapelLost=false,tutChapelFree=false,tutMvLost=[],tutGearGot=null,tutGearBusy=false;
 const tutSeen=new Set();
 // 대기 단계: 서버 tutorial_eval·tutorial_max_dungeon과 같이 고친다. TUT_FREE = 짚지 않는 단계 모두(서버 tutorial_busy와 같이 고친다: 8 대기, 13 전직 레벨 전 대기)
 const TUT_WAIT=8,TUT_FREE=[8,13];
@@ -1789,11 +1789,17 @@ function tutStepMoved(prev){
  if(tut.step!==14&&tut.step!==15)tutIdleFree=false
 }
 async function tutAck(key){
- if(tutAcking)return;tutAcking=true;
+ if(tutAcking)return null;tutAcking=true;
  const {data,error}=await sb.rpc("tutorial_ack",{p_key:key});tutAcking=false;
- if(error){log("tutorial_ack 실패: "+error.message,"bad");return}
+ if(error){log("tutorial_ack 실패: "+error.message,"bad");return null}
  const prev=tut.step;tut={step:data?.step??tut.step,last:data?.last??tut.last};renderTutReplay();
  tutStepMoved(prev);tutChapelFromServer(data);
+ return data
+}
+// 단계 16: 챕터 4 끝 장비 보상을 받는다. 받은 목록(items: def·name·dungeon)을 알림 장에 보여 주고 Bag을 새로 받는다
+async function tutGearGrant(){
+ if(tutGearBusy)return;tutGearBusy=true;
+ try{const d=await tutAck("gear");if(d&&d.gear){tutGearGot=d.gear.items||[];tutCongrats="ch4gear";await loadItems()}}finally{tutGearBusy=false}
 }
 // 대기 단계와, 넷째·다섯째 던전에서 진 뒤 놓아 둔 동안, 전직·장비를 바꿀 캐릭터가 모두 Auto Battle 중이라고 알린 뒤는 과제가 화면을 쓰지 않는다(짚지도 막지도 않는다)
 function tutFreeStep(){return TUT_FREE.includes(tut.step)||(!!TUT_FIGHT_FREE[tut.step]&&tutChapelFree)||(tutIdleFree&&tutIdleStuck())}
@@ -1943,6 +1949,10 @@ function tutResolve(){
    const m=tutAshenPick(TUT_ASHEN.frost),fs=m?(skillsByChar[m.id]?.skills||[]).find(x=>x.id===TUT_ASHEN.frost.a):null,mn=m?(m.job_name||m.job):"",fOk=!!(m&&fs&&(m.pattern||[]).some(r=>r.a===TUT_ASHEN.frost.a&&r.c===TUT_ASHEN.frost.c));
    return mid("done8",`잘하셨습니다!\n${c&&sk&&(c.pattern||[]).some(r=>r.a===sk.id)?`이제 ${jn}${josaOf(jn,"이","가")} MP가 있으면 ${sk.name}${josaOf(sk.name,"으로","로")} 출혈을 겁니다.\n`:""}${fOk?`${mn}${josaOf(mn,"은","는")} 캐스팅 중인 적이 있으면 ${fs.name}${josaOf(fs.name,"으로","로")} 늦춥니다.\n`:""}${dgName(TUT_ASHEN.i)||"다섯째 던전"}에 들어갈 준비가 거의 끝났습니다.`,{btn:"확인",fn:()=>{tutCongrats=null}})}
   // 챕터 4를 마침(챕터 5가 이어진다)
+  if(tutCongrats==="ch4gear"){
+   const got=tutGearGot||[],by={};got.forEach(x=>{const n=dungeons.find(d=>d.id===x.dungeon)?.name||x.dungeon;by[n]=(by[n]||0)+Number(x.qty||1)});
+   const lines=Object.entries(by).map(([n,k])=>`${n} 장비 ${k}개`).join("\n");
+   return mid("gr1",got.length?`장비 ${got.length}개를 받았습니다.\n${lines}\n\n모두 Bag에 들어 있습니다.\n캐릭터 화면의 Allowed to Equip에서 지금 낀 장비와 비교해 바꿔 낄 수 있습니다.`:"챕터 4 보상은 이미 받았습니다.\nBag을 확인해 보세요.",{btn:"확인",fn:()=>{tutCongrats=null}})}
   if(tutCongrats==="regear")return mid("done7",`잘하셨습니다!\n남은 장비도 Allowed to Equip에서 같은 방법으로 끼울 수 있습니다.\n${tut.step>=tut.last?"튜토리얼을 모두 마쳤습니다.":"챕터 4를 마쳤습니다."}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}});
   // 챕터 3을 마침: 전직 레벨 전(13 대기)이면 언제 이어지는지 알린다(무대에서는 그 판을 찍을 때의 끝이라 알리지 않는다)
   if(tutCongrats==="chapel"){const lv=tutPromoteLv();return mid("done6",`잘하셨습니다!\n챕터 3을 마쳤습니다.${tut.step===13&&tut.step<tut.last?`\n\n이제부터는 자유롭게 모험할 수 있습니다.\n캐릭터가 Lv.${lv}${josaOf(lv,"이","가")} 되면 다음 과제가 이어집니다.\n퀘스트 창의 Lv.${lv} 달성 퀘스트를 따라가 보세요.`:""}`,{btn:"확인",fn:()=>{tutCongrats=null;if(currentView==="adventure")loadAdventure()}})}
@@ -2352,7 +2362,13 @@ function tutResolve(){
   tutRgSay="s15fill";
   return say(tutRgSay,row,TUT_FILL_MSG(plan.length),{btn:"한 번에 채우기",fn:()=>tutRegearFill(c)});
  }
- // 단계 16: [빈 자리 TODO 장비 보상] Smuggler·Chapel 드롭 장비를 계정당 한 번 받는 자리(로직 #튜토리얼-1110-0103이 지급 함수를 정하면 여기에 짚기를 넣는다). 지금은 서버가 바로 17로 넘긴다
+ // 단계 16: 챕터 4 끝 장비 보상. 셋째·넷째 던전에서 나오는 장비를 한 벌씩 받는다(서버 tutorial_grant_ch4_gear, 계정당 한 번). 받기를 누르면 tutorial_ack 'gear'로 17
+ if(s===16){
+  if(modal)return okBtn?savedOk():say("s16close",q(".help-close"),"닫기를 눌러 주세요.");
+  if(tutGearBusy)return wait();
+  const d3=dgName(TUT_CHAPEL.i-1),d4=dgName(TUT_CHAPEL.i),both=d3&&d4?`${d3}${josaOf(d3,"과","와")} ${d4}`:"셋째·넷째 던전";
+  return mid("gr0",`챕터 4 보상입니다.\n${both}에서 나오는 장비를 한 벌씩 드립니다.\n감정된 채로 Bag에 들어가고, 판매가는 0골드입니다.`,{btn:"받기",fn:()=>tutGearGrant()});
+ }
  // 단계 17: 다섯째 던전에 들어가기 전에 Move Back·Move Forward 줄을 뺀다(그 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다)
  if(s===17){
   if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
