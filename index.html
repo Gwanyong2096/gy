@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v502 · 갱신 2026-11-10 16:02 KST -->
+<!-- ProjectGY-test-console v503 · 갱신 2026-11-10 16:50 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v502 · 2026-11-10 16:02</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v503 · 2026-11-10 16:50</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1413,6 +1413,46 @@ function qgRoom(g,h){
 }
 // Battle Rush 설명 세 장을 보여 주는 첫 Rush 퀘스트(그 뒤 Rush 퀘스트는 남은 승리 수만 알린다)
 const QUEST_RUSH_FIRST="q_ch2_05";
+const QUEST_DRAUGHTS=["might_draught","guard_draught"];
+// 센 던전 이기기 퀘스트 들어가기 전 준비(smug·chapel·ashen 같은 흐름): ① Cleric 줄기 패턴에 Mend 줄이 있는지(없으면 맨 위에 넣는다) ② 파티원마다 남은 TP를 Front SPD에 넣도록 권한다(숫자는 유저가 정한다, 08의 tutSpdFlow) ③ 퀘스트마다 덧붙일 장(o.more). 이미 이겼으면 바로 끝
+// o = {s0: 첫 장 id, intro: 던전 이름 → 첫 장 글, spd: tutSpdFlow 키, more, end: 마지막 장 id}
+function qgPrep(g,h,o){
+  const q=quests.find(x=>x.id===g.q.id)||g.q;
+  if(Number(q.cur||0)>=Number(q.max||1))return h.mid("qg-s9",`${dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전"}${josaOf(dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전","은","는")} 이미 이겼습니다.\n보상을 받으세요.`,{btn:"확인",fn:questGuideDone});
+  if(battleBusy)return h.wait();
+  if(!tutSeen.has(o.s0)){const r=qgRoom(g,h);if(!r.d)return r.stop;
+   return h.mid(o.s0,o.intro(r.d.name),{btn:"다음",fn:()=>{tutSeen.add(o.s0);g.at=Date.now()}})}
+  if(h.cfm==="pattern")return h.say("qg-msaveok",h.priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:"qg-msave"});
+  if(h.cfm==="tp")return h.say(o.spd+"ok",h.priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:o.spd+"alloc"});
+  if(h.modal)return h.okBtn?h.savedOk():h.say("qg-sclose",h.q(".help-close"),"닫기를 눌러 주세요.");
+  const away=typeof idleChars==="function"?idleChars():new Set();
+  // ① Mend 줄
+  const cl=chars.find(c=>jobLine(c.job).includes("CLERIC")&&!away.has(c.id)),mendKnown=cl&&(skillsByChar[cl.id]?.skills||[]).some(x=>x.id===TUT_MEND.a&&x.known);
+  if(cl&&!skillsByChar[cl.id]){if(!g.skAsk){g.skAsk=true;loadSkills(cl.id)}return h.wait()}
+  if(cl&&mendKnown&&!g.mendOk){
+   const cn=cl.job_name||cl.job,mn=skillName(cl.id,TUT_MEND.a),n=patLines(cl.id),has=!patternDraft[cl.id]&&(cl.pattern||[]).slice(0,n).some(r=>r.a===TUT_MEND.a);
+   if(has)return h.mid("qg-m0",`${cn}의 패턴에 ${mn} 줄이 들어 있습니다.\n줄을 바꾸거나 범용 패턴을 적용할 때도 이 줄은 맨 위에 남겨 두세요.\n회복이 없으면 오래 버티지 못합니다.`,{btn:"다음",fn:()=>{g.mendOk=true}});
+   const go=h.toChar("qg-m",cl,`${cn}의 패턴에 ${mn} 줄이 없습니다.\n회복이 없으면 오래 버티지 못합니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
+   const w=h.sec("pattern");if(w?.classList.contains("collapsed"))return h.say("qg-mpat",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
+   const list=$("pat-"+cl.id);if(!list)return h.wait();
+   if(!g.mShift){g.mShift=true;
+    const raw=readPatternRaw(cl.id),act=raw.slice(0,n),rest=raw.slice(n),ai=act.findIndex(r=>r.c==="always"),keep=act.slice();
+    if(ai>=0&&keep.length>ai+1)keep.splice(keep.length-1,1);else if(ai>0)keep.splice(ai-1,1);else keep.pop();
+    list.innerHTML=renderPatternRows([{c:"always",a:basicSkill(cl.id)}].concat(keep,rest),cl.job,cl.id);capturePatternDraft(cl.id)}
+   const row0=list.querySelector(".pattern-row");if(!row0)return h.wait();
+   const cond=row0.querySelector(".pattern-cond"),val=row0.querySelector(".pattern-value"),act=row0.querySelector(".pattern-action");
+   if(!tutSeen.has("qg-m1"))return h.page("qg-m1",list,"맨 위 줄을 비우고 원래 줄은 한 칸씩 내렸습니다.\n칸이 모자라면 맨 아래 줄 하나가 빠집니다.");
+   if(cond.value!==TUT_MEND.c)return h.say("qg-mc",cond,"조건 칸에서 '아군에 HP가 OO(%) 이하인 캐릭터가 있을 때'를 골라 주세요.",{limit:TUT_MEND.c,above:true,nohold:true});
+   if(val&&Number(val.value)!==TUT_MEND.v){val.value=TUT_MEND.v;capturePatternDraft(cl.id)}
+   if(act.value!==TUT_MEND.a)return h.say("qg-mx",act,`스킬 칸에서 ${mn}${josaOf(mn,"을","를")} 골라 주세요.\n숫자는 ${TUT_MEND.v}으로 맞춰 두었습니다.`,{limit:TUT_MEND.a,above:true,nohold:true});
+   return h.say("qg-msave",h.q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
+  }
+  // ② Front SPD: 남은 TP를 넣도록 권한다(숫자는 유저가 정한다, 08의 tutSpdFlow)
+  const sp=tutSpdFlow(h,o.spd,"다음은 Front SPD입니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.\n남은 TP를 Front SPD에 넣어 두면 좋습니다.");if(sp)return sp;
+  if(o.more){const m=o.more(g,h);if(m)return m}
+  const dn=dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전";
+  return h.mid(o.end,`준비를 마쳤습니다.\n${dn}에 도전해 보세요.\n그래도 지면 장비를 갖추거나 레벨을 더 올려 다시 도전하세요.`,{btn:"확인",fn:questGuideDone});
+ }
 const QUEST_GUIDE={
  // TP: Cleric 카드를 열어 TP 설명을 보고 Cleric의 패턴 줄을 TP로 하나 늘린다. 서버 cleric_tp.mode로 가른다(ready 바로, reset 공짜 되돌리기 뒤, level·spent 모자람 안내로 끝. 설명은 본 것으로 남기지 않아 다시 눌러 잇는다)
  tp(g,h){
@@ -1516,50 +1556,21 @@ const QUEST_GUIDE={
   if(first&&!tutSeen.has("qg-r3"))return h.page("qg-r3",box,"지거나 비기면 그 판에서 멈춥니다.\nSetting에서 끝까지 돌리도록 바꿀 수 있습니다.",{back:"qg-r2"});
   return h.page("qg-r4",left>0?go:box,end,{back:first?"qg-r3":null,btn:"확인",fn:questGuideDone});
  },
- // Mock Battle로 미리 보기(q_ch2_17): 그 던전 화면에서 Mock Battle 버튼을 짚고 무엇이 다른지 알린다
+ // Mock Battle로 미리 보기(q_ch2_17 Smuggler, q_ch2_20 Chapel, q_ch2_24 Ashen): 그 던전 화면에서 Mock Battle 버튼을 짚고 무엇이 다른지 알린다
  mock(g,h){
   const r=qgRoom(g,h);if(!r.d)return r.stop;
   const b=h.q(`#roomActs button[onclick*="'MOCK'"]`)||h.q("#roomActs"),dn=r.d.name,lim=r.d.mock_limit??3;
   if(!tutSeen.has("qg-k1"))return h.page("qg-k1",b,`Mock Battle은 연습 판입니다.\nSUPPLY를 쓰지 않고, 보상도 승리 수도 없습니다.\n던전마다 하루 ${lim}판까지 됩니다.`);
-  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n지금은 지는 게 당연합니다.\nMock Battle을 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:"qg-k1",btn:"확인",fn:questGuideDone});
+  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 지금 파티로는 아직 벅찹니다.\n지금은 지는 게 당연합니다.\nMock Battle을 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:"qg-k1",btn:"확인",fn:questGuideDone});
  },
- // Smuggler Hideout 이기기(q_ch2_12) 들어가기 전 준비: ① Cleric 줄기 패턴에 Mend 줄이 있는지(없으면 맨 위에 넣는다) ② 파티원마다 남은 TP를 Front SPD에 넣도록 권한다(숫자는 유저가 정한다, 단계 20과 같은 tutSpdFlow). 이미 이겼으면 바로 끝
- smug(g,h){
-  const q=quests.find(x=>x.id===g.q.id)||g.q;
-  if(Number(q.cur||0)>=Number(q.max||1))return h.mid("qg-s9",`${dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전"}${josaOf(dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"이 던전","은","는")} 이미 이겼습니다.\n보상을 받으세요.`,{btn:"확인",fn:questGuideDone});
-  if(battleBusy)return h.wait();
-  if(!tutSeen.has("qg-s0")){const r=qgRoom(g,h);if(!r.d)return r.stop;
-   return h.mid("qg-s0",`${r.d.name}${josaOf(r.d.name,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n들어가기 전에 두 가지를 준비합시다.\n회복 줄과 Front SPD입니다.`,{btn:"다음",fn:()=>{tutSeen.add("qg-s0");g.at=Date.now()}})}
-  if(h.cfm==="pattern")return h.say("qg-msaveok",h.priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:"qg-msave"});
-  if(h.cfm==="tp")return h.say("qg-pok",h.priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:"qg-palloc"});
-  if(h.modal)return h.okBtn?h.savedOk():h.say("qg-sclose",h.q(".help-close"),"닫기를 눌러 주세요.");
-  const away=typeof idleChars==="function"?idleChars():new Set();
-  // ① Mend 줄
-  const cl=chars.find(c=>jobLine(c.job).includes("CLERIC")&&!away.has(c.id)),mendKnown=cl&&(skillsByChar[cl.id]?.skills||[]).some(x=>x.id===TUT_MEND.a&&x.known);
-  if(cl&&!skillsByChar[cl.id]){if(!g.skAsk){g.skAsk=true;loadSkills(cl.id)}return h.wait()}
-  if(cl&&mendKnown&&!g.mendOk){
-   const cn=cl.job_name||cl.job,mn=skillName(cl.id,TUT_MEND.a),n=patLines(cl.id),has=!patternDraft[cl.id]&&(cl.pattern||[]).slice(0,n).some(r=>r.a===TUT_MEND.a);
-   if(has)return h.mid("qg-m0",`${cn}의 패턴에 ${mn} 줄이 들어 있습니다.\n줄을 바꾸거나 범용 패턴을 적용할 때도 이 줄은 맨 위에 남겨 두세요.\n회복이 없으면 오래 버티지 못합니다.`,{btn:"다음",fn:()=>{g.mendOk=true}});
-   const go=h.toChar("qg-m",cl,`${cn}의 패턴에 ${mn} 줄이 없습니다.\n회복이 없으면 오래 버티지 못합니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
-   const w=h.sec("pattern");if(w?.classList.contains("collapsed"))return h.say("qg-mpat",w.querySelector(".sec-toggle"),"Pattern을 눌러 펼쳐 주세요.");
-   const list=$("pat-"+cl.id);if(!list)return h.wait();
-   if(!g.mShift){g.mShift=true;
-    const raw=readPatternRaw(cl.id),act=raw.slice(0,n),rest=raw.slice(n),ai=act.findIndex(r=>r.c==="always"),keep=act.slice();
-    if(ai>=0&&keep.length>ai+1)keep.splice(keep.length-1,1);else if(ai>0)keep.splice(ai-1,1);else keep.pop();
-    list.innerHTML=renderPatternRows([{c:"always",a:basicSkill(cl.id)}].concat(keep,rest),cl.job,cl.id);capturePatternDraft(cl.id)}
-   const row0=list.querySelector(".pattern-row");if(!row0)return h.wait();
-   const cond=row0.querySelector(".pattern-cond"),val=row0.querySelector(".pattern-value"),act=row0.querySelector(".pattern-action");
-   if(!tutSeen.has("qg-m1"))return h.page("qg-m1",list,"맨 위 줄을 비우고 원래 줄은 한 칸씩 내렸습니다.\n칸이 모자라면 맨 아래 줄 하나가 빠집니다.");
-   if(cond.value!==TUT_MEND.c)return h.say("qg-mc",cond,"조건 칸에서 '아군에 HP가 OO(%) 이하인 캐릭터가 있을 때'를 골라 주세요.",{limit:TUT_MEND.c,above:true,nohold:true});
-   if(val&&Number(val.value)!==TUT_MEND.v){val.value=TUT_MEND.v;capturePatternDraft(cl.id)}
-   if(act.value!==TUT_MEND.a)return h.say("qg-mx",act,`스킬 칸에서 ${mn}${josaOf(mn,"을","를")} 골라 주세요.\n숫자는 ${TUT_MEND.v}으로 맞춰 두었습니다.`,{limit:TUT_MEND.a,above:true,nohold:true});
-   return h.say("qg-msave",h.q("#charDetail .pattern-save button.pri"),"패턴 저장을 눌러 주세요.",{holdId:true});
-  }
-  // ② Front SPD: 남은 TP를 넣도록 권한다(숫자는 유저가 정한다, 08의 tutSpdFlow)
-  const sp=tutSpdFlow(h,"qg-p","다음은 Front SPD입니다.\nFront SPD를 올리면 차례가 빨리 돌아와 더 자주 움직입니다.\n남은 TP를 Front SPD에 넣어 두면 좋습니다.");if(sp)return sp;
-  const dn=dungeons.find(d=>d.id===g.q.go?.dungeon)?.name||"Smuggler Hideout";
-  return h.mid("qg-s8",`준비를 마쳤습니다.\n${dn}에 도전해 보세요.\n그래도 지면 장비를 갖추거나 레벨을 더 올려 다시 도전하세요.`,{btn:"확인",fn:questGuideDone});
- },
+ // Smuggler Hideout 이기기(q_ch2_12): qgPrep(맨 위)
+ smug(g,h){return qgPrep(g,h,{s0:"qg-s0",intro:n=>`${n}${josaOf(n,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n들어가기 전에 두 가지를 준비합시다.\n회복 줄과 Front SPD입니다.`,spd:"qg-p",end:"qg-s8"})},
+ // Sunken Chapel 이기기(q_ch2_23, 단계 11 준비 줄기 끝): 레벨을 올리는 동안 쌓인 TP를 다시 권한다(키를 따로 둬 새로 센다)
+ chapel(g,h){return qgPrep(g,h,{s0:"qg-c0",intro:n=>`이제 ${n}에 도전할 차례입니다.\n들어가기 전에 회복 줄과 Front SPD를 다시 봅시다.`,spd:"qg-cp",end:"qg-c8"})},
+ // Ashen Mine 이기기(q_ch2_16, 단계 20 준비 줄기 끝): 위와 같고, Might·Guard Draught가 Bag에 있으면 소모품 칸에 끼우라고 한 장 더
+ ashen(g,h){return qgPrep(g,h,{s0:"qg-a0",intro:n=>`이제 ${n}에 도전할 차례입니다.\n들어가기 전에 회복 줄과 Front SPD를 다시 봅시다.`,spd:"qg-ap",end:"qg-a8",
+  more:(g,h)=>{if(tutSeen.has("qg-a1")||!(itemsData||[]).some(i=>QUEST_DRAUGHTS.includes(i.def_id)&&!i.equipped_character))return null;
+   return h.mid("qg-a1","Bag에 Might Draught·Guard Draught가 있습니다.\n소모품 칸에 끼우고 패턴에 Use Item 줄을 두면 보스전에서 씁니다.\nMight Draught는 주는 피해 +5%, Guard Draught는 받는 피해 −5%입니다.",{btn:"다음",fn:()=>tutSeen.add("qg-a1")})}})},
  // 감정: 첫 감정 공짜(get_appraise_costs.free_first)가 남았으면 지금 장들 뒤에 직접 감정해 보게 한다. 이미 써서 퀘스트가 채워졌으면 마지막 장에 덧붙이고 끝나면 바로 보상 받기
  appraise(g,h){
   if(currentView!=="appraise"||!appraiseAt){if(Date.now()-g.at>8000){qGuide=null;return null}return h.wait()}
@@ -1826,17 +1837,20 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("helpOverlay").h
 const TUT_EXIT_BUTTON=true;
 // 단계(서버): 0 첫 던전 이기기, 1 로그 보기, 2 Cleric 패턴에 Mend, 3 공격 스킬을 패턴에 넣기(Archer는 화살 채우는 줄도), 4 둘째 던전 이기기, 5 둘째 던전 로그 읽기(Delay), 6 받은 활을 Archer에게 끼우기, 7 KARMA가 한도를 넘은 Mage의 Karma Limit을 TP로 올리기,
 //   8 대기(TUT_WAIT: 셋째 던전을 처음 이겨 넷째 던전이 열릴 때까지. 짚지도 막지도 않는다), 9 대열(시작 위치·엄호) 보기, 10 Footman 패턴 맨 위에 Move Back·Move Forward(보스가 차징·캐스팅하면 물러섰다 돌아오기),
-//   11 넷째 던전 이기기, 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트),
+//   11 넷째 던전 이기기(파티가 TUT_PREP 레벨보다 낮으면 첫 도전 전에 화면을 풀고 준비 퀘스트로 보낸다), 12 넷째 던전 로그 읽기(보스 대사·물결 피하기·기믹 멘트),
 //   13 챕터 4 시작(캐릭터가 1차 전직 레벨이 될 때까지 대기), 14 1차 전직, 15 전직한 캐릭터에게 장비 다시 끼우기,
 //   16 챕터 5 시작: 챕터 4 끝 장비 보상(셋째·넷째 던전에서 나오는 장비 한 벌씩, 계정당 한 번). 받기를 누르면 tutorial_ack 'gear'가 주고 받은 목록을 돌려준다,
 //   17 Move Back·Move Forward 줄 빼기(다섯째 던전 보스는 줄을 피할 공격이 없고, 전방이 물러나면 후방이 맞는다), 18 Thief 줄기 패턴 맨 위에 출혈 스킬(Mine Golem의 Front DEF 뚫기)과 Mage 줄기 패턴 맨 위에 [캐스팅 중인 적 → Frost Shard](Slag Skin 끊기),
 //   19 Cleric 줄기 패턴 맨 위에 [아군 공격력 버프 여유 → AND][쿨타임 아님 → Hymn]. 남은 SP(sp_free)로 가른다: Chaplain이고 Hymn을 배울 SP가 있으면 Hymn
 //      (Cleric이면 먼저 Chaplain으로 전직), 모자라면 같은 줄을 Inspire로 넣고 나중에 Hymn으로 바꾸라고 알린다. Inspire도 못 배우면 알리고 넘긴다(tutorial_ack 'hymn'),
-//   20 다섯째 던전 이기기(첫 도전 전에 파티원마다 남은 TP를 Front SPD에 넣도록 권한다. 숫자는 유저가 정한다, tutSpdFlow. 화면만, 서버는 안 봄), 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
+//   20 다섯째 던전 이기기(첫 도전 전에 파티원마다 남은 TP를 Front SPD에 넣도록 권한다. 숫자는 유저가 정한다, tutSpdFlow. 화면만, 서버는 안 봄. 그 뒤 TUT_PREP 레벨보다 낮으면 단계 11과 같이 준비 퀘스트로), 21 다섯째 던전 로그 읽기(보스 대사·캐스팅 끊김 또는 발동·출혈), 22 끝
 // tutCongrats: 과제 묶음을 마친 직후에 띄울 축하 장("mend" = 단계 2, "skills" = 단계 3, "gear" = 단계 6, "karma" = 단계 7, "move" = 단계 10, "chapel" = 단계 12, "regear" = 단계 14·15, "ch4gear" = 단계 16(받은 장비 알림, tutGearGot), "bleed" = 단계 18, "ashen" = 단계 21을 마침)
 // tutChapelLost·tutChapelFree: 단계 11(넷째 던전)·20(다섯째 던전)에서 지면 한 번 알리고, 그 뒤로는 그 던전을 이길 때까지 화면을 놓아 둔다
 // 풀린 상태는 서버에 기억한다: 확인을 누르면 tutorial_ack('chapel_free'), get_tutorial·tutorial_ack의 chapel_free로 정한다(단계 11·20을 벗어나면 서버가 끈다). 무대에서는 화면에서만
 const TUT_FIGHT_FREE={11:"cl1",20:"cl2"};
+// TUT_PREP: 단계 11(넷째 던전)·20(다섯째 던전) 첫 도전 전, 파티 가장 높은 레벨이 lv보다 낮으면 "아직 벅차다" 한 장(id)을 띄우고 진 뒤와 같이 화면을 풀어 둔다(tutAck chapel_free).
+//   풀린 동안 준비 퀘스트 줄기(서버 quest_defs after_step 11·20: 미리 보기 → Rush 10승 → 레벨 → 이기기)를 따라간다. lv는 로직 시뮬(logic/balance/tutorial-gap-2026-11-10) 첫 도전 추천 레벨
+const TUT_PREP={11:{lv:35,id:"cp0"},20:{lv:40,id:"ap0"}};
 function tutChapelFromServer(data){if(stage)return;tutChapelFree=!!TUT_FIGHT_FREE[tut.step]&&data?.chapel_free===true;if(tutChapelFree)tutSeen.add(TUT_FIGHT_FREE[tut.step])}
 // 예전에 브라우저에 기억하던 키(pgy_chapel_free_계정)는 지운다
 try{Object.keys(localStorage).filter(k=>k.startsWith("pgy_chapel_free_")).forEach(k=>localStorage.removeItem(k))}catch(e){}
@@ -2073,10 +2087,13 @@ function tutSpareSkills(){
 }
 function tutUnmoveChar(){const has=c=>(c.pattern||[]).some(r=>r.a===TUT_MOVE.rows[0].a),f=chars.find(c=>jobLine(c.job).includes(TUT_MOVE.job)&&has(c));return f||chars.find(has)||null}
 // 단계 8(대기): 셋째 던전(Smuggler)을 직접 싸워 처음 지면 한 번, 이기는 준비(패턴·장비·TP·레벨)를 몇 장 알린다(sm0~sm4). 전투 결과(openedBattle)는 창을 닫아도 남으니 새 결과마다 한 번 본다. Mock Battle·Auto Battle 결과는 세지 않는다
-let tutWaitB=null,tutWaitLost=false;
+let tutWaitB=null,tutWaitLost=false,tutRgRecheck=false;
 function tutWaitWatch(){
  if(stage||tut.step!==TUT_WAIT||!openedBattle||openedBattle===tutWaitB)return;const b=openedBattle,d=dungeons[2];tutWaitB=b;
  if(d&&(b.dungeon===d.name||b.dungeon===d.id)&&b.result&&b.result!=="WIN"&&b.mode!=="MOCK"&&b.mode!=="IDLE")tutWaitLost=true}
+function tutPrepNeed(s){const p=TUT_PREP[s];return !stage&&!!p&&!tutChapelFree&&!tutChapelLost&&chars.length>0&&Math.max(...chars.map(c=>Number(c.level||0)))<p.lv}
+function tutPrepPage(s,d,mid){const n=d?.name||(s===11?"넷째 던전":"다섯째 던전");
+ return mid(TUT_PREP[s].id,`${n}${josaOf(n,"은","는")} 지금 파티로는 아직 벅찹니다.\n퀘스트 창의 퀘스트를 따라 레벨을 올리고 준비한 뒤 도전해 봅시다.\n그동안 화면을 풀어 두겠습니다.\n\n${n}에서 이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add(TUT_PREP[s].id);tutChapelFree=true;if(!stage)tutAck("chapel_free")}})}
 function tutWaitNote(){return tutWaitLost&&tut.step===TUT_WAIT&&!stage&&!tutPractice&&!tutSeen.has("sm4")}
 function tutIdleStuck(){const on=typeof idleChars==="function"?idleChars():new Set(),l=tut.step===14?tutPromoteChars():tut.step===15?tutRegearChars():[];return l.length>0&&l.every(c=>on.has(c.id))}
 // 과제가 화면을 쓰는 중(다른 조각이 리모콘을 숨길 때 쓴다). 끝났거나 대기 단계면 false
@@ -2485,6 +2502,7 @@ function tutResolve(){
   }
   const d=dungeons[TUT_CHAPEL.i];
   if(tutChapelLost&&!tutSeen.has("cl1"))return mid("cl1",`이번에는 이기지 못했습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl1");tutChapelFree=true;if(!stage)tutAck("chapel_free")}});
+  if(tutPrepNeed(11))return tutPrepPage(11,d,mid);
   return toFight(d,"s11",`${d?.name?`${d.name}에 `:""}도전해 봅시다.\nAdventure를 눌러 주세요.`,`넷째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
  }
  // 단계 12: 넷째 던전 로그에서 보스 대사, 물러선 줄, 물결 피하기, 돌아온 줄, 기믹 멘트를 짚는다(없는 줄은 건너뛴다)
@@ -2548,7 +2566,8 @@ function tutResolve(){
   if(!tutItemsFresh("s15:"+chars.map(x=>x.id+x.job).join()))return wait();
   // 기억한 캐릭터의 빈 칸이 남았으면 그 캐릭터, 아니면 아직 아무것도 안 낀 다음 전직 캐릭터. 둘 다 없으면 넘긴다(서버는 tutorial_ack 'regear'로만 16)
   const mem=chars.find(x=>x.id===tutRgChar&&!on.has(x.id)),c=(mem&&(selectedCharId!==mem.id||!sec("owned")||tutRegearPlan(mem).length)?mem:null)||tutRegearChars().find(x=>!on.has(x.id)&&x.id!==tutRgChar);
-  if(!c){tutAck("regear");return wait()}
+  // 고를 캐릭터가 없으면 넘기기 전에 아이템 목록을 한 번 더 받는다(앞서 보낸 요청이 늦게 와 전직 전 목록으로 덮인 채 넘기지 않게)
+  if(!c){if(!tutRgRecheck){tutRgRecheck=true;tutItemsKey=null;tutItemsAsk=null;return wait()}tutAck("regear");return wait()}
   tutRgChar=c.id;
   const jn=c.job_name||c.job;
   if(!tutSeen.has("rg0"))return mid("rg0",`${jn}${josaOf(jn,"으로","로")} 전직했습니다!\n끼고 있던 장비는 모두 Bag으로 돌아갔습니다.\n다시 끼워 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("rg0")});
@@ -2758,6 +2777,7 @@ function tutResolve(){
    if(r)return r;
   }
   if(tutChapelLost&&!tutSeen.has("cl2"))return mid("cl2",`이번에는 이기지 못했습니다.\n남은 SP로 스킬을 더 배우고, 남은 TP로 Front SPD나 Pattern 줄을 올려 보세요.\n패턴 맨 아래 줄은 반드시로 두면 할 일이 없을 때 머뭇거리지 않습니다.\n레벨을 더 올리거나 장비를 갖춘 뒤 다시 도전해도 됩니다.\n그동안 화면을 풀어 두겠습니다.\n\n${d?.name?`${d.name}에서 `:""}이기면 이어서 진행합니다.`,{btn:"확인",fn:()=>{tutSeen.add("cl2");tutChapelFree=true;if(!stage)tutAck("chapel_free")}});
+  if(tutPrepNeed(20))return tutPrepPage(20,d,mid);
   if(!tutSeen.has("ag0"))return mid("ag0",`${door(TUT_ASHEN.i)}\n\n준비를 마쳤으니 도전해 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("ag0")});
   return toFight(d,"s20",`${d?.name?`${d.name}에 `:""}도전해 봅시다.\nAdventure를 눌러 주세요.`,`다섯째 던전 ${d?.name||""}입니다.\n눌러서 펼쳐 주세요.`);
  }
