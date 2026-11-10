@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v509 · 갱신 2026-11-11 03:07 KST -->
+<!-- ProjectGY-test-console v510 · 갱신 2026-11-11 03:53 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v509 · 2026-11-11 03:07</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v510 · 2026-11-11 03:53</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1478,6 +1478,8 @@ async function questGuideDone(){
 function questGuideStop(){if(!qGuide)return;qGuide=null;log("퀘스트 설명을 끝냄","ok")}
 function questGuideResolve(h){const g=qGuide,fn=QUEST_GUIDE[g.key];if(!fn){qGuide=null;return null}
  const r=fn(g,h);
+ // 버튼 장의 첫 장(이전 없음)에는 건너뛰기: 설명을 본 것으로 치고(quest_guided) 하던 일(보상 받기 등)을 잇는다
+ if(r&&r.btn&&!r.prev&&!r.skip&&r.id!=="qg-stuck"&&g===qGuide)r.skip=()=>{if(qGuide===g)questGuideDone()};
  if(r&&r.id==="wait"&&g===qGuide){g.waitAt=g.waitAt||Date.now();if(Date.now()-g.waitAt>8000)return h.mid("qg-stuck","설명을 이어 갈 수 없습니다.\n설명을 끝내고 하던 일을 계속해 주세요.\n퀘스트 줄을 다시 누르면 처음부터 다시 볼 수 있습니다.",{btn:"설명 끝내기",fn:questGuideStop})}
  else if(g===qGuide)g.waitAt=0;
  return r}
@@ -1501,7 +1503,7 @@ function qgPrep(g,h,o){
   if(!tutSeen.has(o.s0)){const r=qgRoom(g,h);if(!r.d)return r.stop;
    return h.mid(o.s0,o.intro(r.d.name),{btn:"다음",fn:()=>{tutSeen.add(o.s0);g.at=Date.now()}})}
   if(h.cfm==="pattern")return h.say("qg-msaveok",h.priBtn,"저장을 눌러 주세요.",{holdId:true,holdAs:"qg-msave"});
-  if(h.cfm==="tp"){tutSpdPend=Date.now();return h.say(o.spd+"ok",h.priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:o.spd+"alloc"})}
+  if(h.cfm==="tp"){tutSpdPend=Date.now();return h.say(o.spd+"ok",h.priBtn,"확인 창의 배분을 눌러 주세요.",{holdId:true,holdAs:o.spd+"alloc"})}
   if(h.modal)return h.okBtn?h.savedOk():h.say("qg-sclose",h.q(".help-close"),"닫기를 눌러 주세요.");
   const away=typeof idleChars==="function"?idleChars():new Set();
   // ① Mend 줄
@@ -1628,18 +1630,31 @@ const QUEST_GUIDE={
   const r=qgRoom(g,h);if(!r.d)return r.stop;
   const box=h.q("#roomActs .rush-box")||h.q("#roomActs"),n=h.q("#rushCount")||box,go=h.q("#rushGo")||box;
   const q=quests.find(x=>x.id===g.q.id)||g.q,left=Math.max(0,Number(q.max||0)-Number(q.cur||0)),dn=r.d.name;
-  const first=g.q.id===QUEST_RUSH_FIRST,end=left>0?`${dn}${josaOf(dn,"을","를")} ${left}번 더 이기면 이 퀘스트를 깹니다.\n판 수에 ${left}${josaOf(left,"을","를")} 적고 Battle Rush!를 눌러 보세요.`:`${dn}${josaOf(dn,"은","는")} 이미 ${q.max}번 이겼습니다.\n보상을 받으세요.`;
+  const first=g.q.id===QUEST_RUSH_FIRST,end=left>0?`${dn}${josaOf(dn,"을","를")} ${left}번 더 이기면 이 퀘스트를 깹니다.\n판 수에 ${left}${josaOf(left,"을","를")} 적고 Battle Rush!를 눌러 보세요.${first?"":"\n자꾸 지면 더 쉬운 던전에서 레벨을 올린 뒤 오세요."}`:`${dn}${josaOf(dn,"은","는")} 이미 ${q.max}번 이겼습니다.\n보상을 받으세요.`;
   if(first&&!tutSeen.has("qg-r1"))return h.page("qg-r1",box,"Battle Rush는 같은 던전을 여러 판 이어서 직접 싸웁니다.\n판마다 SUPPLY를 쓰고, 보상은 직접 싸울 때와 같습니다.\nRush로 이긴 판도 직접 이긴 판으로 셉니다.");
   if(first&&!tutSeen.has("qg-r2"))return h.page("qg-r2",n,`여기에 판 수를 적습니다.\n한 번에 ${rushMaxN()}판까지 됩니다.\n최대를 누르면 남은 SUPPLY로 돌 수 있는 만큼 채웁니다.`,{back:"qg-r1"});
   if(first&&!tutSeen.has("qg-r3"))return h.page("qg-r3",box,"지거나 비기면 그 판에서 멈춥니다.\nSetting에서 끝까지 돌리도록 바꿀 수 있습니다.",{back:"qg-r2"});
   return h.page("qg-r4",left>0?go:box,end,{back:first?"qg-r3":null,btn:"확인",fn:questGuideDone});
  },
+ // 서브 파티 Auto Battle(q_ch2_19, Goblin Warren): 그 던전 화면의 파티 칸을 짚고, 직접 싸우지 않을 캐릭터만 남겨 Auto Battle!을 누르게 한다(1명이어도 된다). 보낸 뒤에도 다른 캐릭터로 직접 싸울 수 있다
+ idlesub(g,h){
+  const q=quests.find(x=>x.id===g.q.id)||g.q;
+  if(Number(q.cur||0)>=Number(q.max||1))return h.mid("qg-v9","이미 Auto Battle을 보냈습니다.\n보상을 받으세요.",{btn:"확인",fn:questGuideDone});
+  const r=qgRoom(g,h);if(!r.d)return r.stop;
+  const slots=h.q("#partySlots")||h.q("#roomActs"),auto=h.q(`#roomActs button[onclick*="confirmDispatch"]`)||h.q("#roomActs");
+  return qgPages(h,[["qg-v1",slots,"여기가 이 던전에 데려갈 파티 칸입니다.\n캐릭터를 누르면 파티에서 빠지고, 아래 목록에서 누르면 들어옵니다.\n직접 싸우지 않는 캐릭터(영입한 동료 등)만 남겨 주세요. 1명이어도 됩니다."],
+   ["qg-v2",auto,"그다음 Auto Battle!을 누르면 남긴 캐릭터가 파견됩니다.\n파견한 동안에도 다른 캐릭터로 직접 싸울 수 있고, 파견한 캐릭터는 레벨이 오릅니다.\n다 보낸 뒤 원래 파티를 다시 넣어 주세요."]]);
+ },
  // Mock Battle로 미리 보기(q_ch2_17 Smuggler, q_ch2_20 Chapel, q_ch2_24 Ashen): 그 던전 화면에서 Mock Battle 버튼을 짚고 무엇이 다른지 알린다
  mock(g,h){
+  const q=quests.find(x=>x.id===g.q.id)||g.q;
+  if(Number(q.cur||0)>=Number(q.max||1))return h.mid("qg-k9","이 던전은 이미 싸워 봤습니다.\n보상을 받으세요.",{btn:"확인",fn:questGuideDone});
   const r=qgRoom(g,h);if(!r.d)return r.stop;
-  const b=h.q(`#roomActs button[onclick*="'MOCK'"]`)||h.q("#roomActs"),dn=r.d.name,lim=r.d.mock_limit??3;
-  if(!tutSeen.has("qg-k1"))return h.page("qg-k1",b,`Mock Battle은 연습 판입니다.\nSUPPLY를 쓰지 않고, 보상도 승리 수도 없습니다.\n던전마다 하루 ${lim}판까지 됩니다.`);
-  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 지금 파티로는 아직 벅찹니다.\n지금은 지는 게 당연합니다.\nMock Battle을 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:"qg-k1",btn:"확인",fn:questGuideDone});
+  const dn=r.d.name,lim=r.d.mock_limit??3,mk=typeof mockVisible==="function"&&mockVisible();
+  // Mock Battle 버튼이 꺼져 있으면(18의 MOCK_ON) Battle!로 한 번 싸워 보게 한다. 서버 셈(quest_value mock)은 Mock 판·직접 싸운 판·이긴 적 모두 센다
+  const b=(mk&&h.q(`#roomActs button[onclick*="'MOCK'"]`))||h.q(`#roomActs button[onclick*="'MANUAL'"]`)||h.q("#roomActs");
+  if(mk&&!tutSeen.has("qg-k1"))return h.page("qg-k1",b,`Mock Battle은 연습 판입니다.\nSUPPLY를 쓰지 않고, 보상도 승리 수도 없습니다.\n던전마다 하루 ${lim}판까지 됩니다.`);
+  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 지금 파티로는 아직 벅찰 수 있습니다.\n져도 괜찮습니다.\n${mk?"Mock Battle":"Battle!"}를 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:mk?"qg-k1":null,btn:"확인",fn:questGuideDone});
  },
  // Smuggler Hideout 이기기(q_ch2_12): qgPrep(맨 위)
  smug(g,h){return qgPrep(g,h,{s0:"qg-s0",intro:n=>`${n}${josaOf(n,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n들어가기 전에 두 가지를 준비합시다.\n회복 줄과 Front SPD입니다.`,spd:"qg-p",end:"qg-s8"})},
@@ -2520,7 +2535,7 @@ function tutResolve(){
  // 단계 7: 장비를 다 끼자 KARMA가 한도를 넘은 Mage를 열어 KARMA를 보여 주고, TP로 Karma Limit을 1 올린다
  if(s===7){
   if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
-  if(cfm==="tp")return say("s7tpok",priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:"s7alloc"});
+  if(cfm==="tp")return say("s7tpok",priBtn,"확인 창의 배분을 눌러 주세요.",{holdId:true,holdAs:"s7alloc"});
   if(modal)return okBtn?savedOk():say("s7close",q(".help-close"),"닫기를 눌러 주세요.");
   const mg=chars.find(c=>c.job===TUT_KARMA.job),k=mg?.stats?.KARMA,t=mg?tpCur(mg):null;
   const cost=t?tpBandSum(pubCfg.TP_KARMA_BANDS,t.k+1)-tpBandSum(pubCfg.TP_KARMA_BANDS,t.k):0;
@@ -2877,7 +2892,7 @@ function tutResolve(){
  if(s===20){
   if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
   if(logOpen&&openedBattle?.result==="WIN"&&openBtn)return say("s21expand",openBtn,"이겼습니다!\n이번에는 보스와 어떻게 싸웠는지 봅시다.\n로그 보기를 눌러 주세요.",{wait:true});
-  if(cfm==="tp"){tutSpdPend=Date.now();return say("spok",priBtn,"배분을 눌러 주세요.",{holdId:true,holdAs:"spalloc"});}
+  if(cfm==="tp"){tutSpdPend=Date.now();return say("spok",priBtn,"확인 창의 배분을 눌러 주세요.",{holdId:true,holdAs:"spalloc"});}
   if(modal){
    const lost=logOpen&&!!openedBattle&&openedBattle.result!=="WIN";if(lost)tutChapelLost=true;
    return okBtn?savedOk():say("s20close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
