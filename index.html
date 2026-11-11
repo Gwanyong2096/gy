@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v515 · 갱신 2026-11-11 12:03 KST -->
+<!-- ProjectGY-test-console v516 · 갱신 2026-11-11 12:29 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v515 · 2026-11-11 12:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v516 · 2026-11-11 12:29</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -766,13 +766,16 @@ const sb=supabase.createClient("https://mctrnenqwmwksoockxvz.supabase.co","sb_pu
 // 값을 바꾸는 요청의 길목: 같은 함수·같은 값의 요청이 아직 돌아오지 않았으면 서버에 다시 보내지 않고 첫 요청의 결과를 함께 받는다
 // (빠르게 두 번 눌러 두 번 처리되는 일을 버튼마다가 아니라 여기 한 곳에서 막는다). 값이 다르면 그대로 나가고, 조회(get_, is_)는 건드리지 않는다
 const rpcRaw=sb.rpc.bind(sb),rpcFlying=new Map(),RPC_READ=/^(get_|is_)|^admin_test_assets$/;
+// 스킬 목록(직업·레벨·배운 스킬·무료 초기화)에 닿지 않는 값 바꾸기 요청. 이 밖의 요청이 끝나면 skillGen을 올려 06 load()가 스킬을 다시 받게 한다(모르는 요청은 닿는 것으로 본다)
+const SKILL_SAFE=new Set(["set_ui_pref","set_party","equip_item","unequip_item","set_roster_order","set_character_pattern","set_character_formation","set_character_consumable","allocate_tp","use_tp_reset","free_cleric_tp_reset","rename_character","sell_items","buy_shop_item","appraise_item","craft_items","enhance_item_to","item_enh_bonus","quest_guided","idle_dispatch","idle_returns_seen","answer_idle_guide","raid_buy","admin_set_gold","admin_grant_item","admin_get_monster","admin_save_monster","admin_save_monster_slot","admin_clear_monster_test","admin_raid_logs"]);
+let skillGen=0;
 sb.rpc=function(fn,args,opt){
  if(RPC_READ.test(fn))return rpcRaw(fn,args,opt);
  const k=fn+"|"+JSON.stringify(args??{});
  let p=rpcFlying.get(k);
  if(!p){p=Promise.resolve(rpcRaw(fn,args,opt)).finally(()=>rpcFlying.delete(k));rpcFlying.set(k,p);
   // 퀘스트 셈은 서버가 값을 바꾸는 동작 안에서 한다(감정·제작·보내기·스킬·TP 등). 값을 바꾸는 요청이 성공하면 퀘스트 창도 다시 받는다(동작마다가 아니라 여기 한 곳에서)
-  p.then(r=>{if(!r?.error)questSoon(fn)},()=>{})}
+  p.then(r=>{if(!r?.error)questSoon(fn);if(!r?.error&&(fn==="claim_quests"||fn.startsWith("admin_")))patGuideStale=true},()=>{}).finally(()=>{if(!SKILL_SAFE.has(fn))skillGen++})}
  return p;
 };
 // 전투(Edge Function battle)도 같은 길목: 성공하면 퀘스트 창을 다시 받는다. sb.functions는 부를 때마다 새로 만들어지므로 하나로 고정해 감싼다(토큰은 요청마다 붙는다)
@@ -973,7 +976,7 @@ async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();co
  if(now){$("currentEmail").textContent=isGuest?"손님 계정":(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
- loggedIn=now;questPlace(true);
+ loggedIn=now;patGuideStale=true;if(!now)patGuideFlag=false;questPlace(true);
  if(user){loadUiPrefs();load();loadAdminTools();checkIdle();loadRaid()}else{idleInfo=null;raidInfo=null;raidAlert();clearInterval(idleTimer);idleTimer=null;renderIdle();openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
@@ -1133,12 +1136,15 @@ async function loadAdminRaids(){
  box.innerHTML=`<table class="adm-raid-t"><tr><th>때</th><th>던전</th><th>약탈자</th><th>호위대 주인</th><th>결과</th><th>정보값</th><th>짐</th><th>둘 사이(7일/전체·약탈자 승)</th></tr>${rows.map(r=>`<tr class="${Number(r.pair_7d)>=3?"hot":""}" onclick="openRaidLog('${esc(r.id)}')"><td>${esc(raidWhen(r.at))}</td><td>${esc(r.dungeon||"")}</td><td>${esc(r.raider||"")}${r.raider_guest?" (손님)":""}</td><td>${esc(r.target||"")}${r.target_guest?" (손님)":""}</td><td>${r.result==="WIN"?"털림":r.result==="DRAW"?"무승부(막음)":"막음"}</td><td>${r.free?"공짜":Number(r.paid||0).toLocaleString()}${Number(r.info_to_target)>0?` → ${Number(r.info_to_target).toLocaleString()}`:""}</td><td>${r.result==="WIN"?`${Number(r.gold||0).toLocaleString()}G · ${raidItemsN(r.items)}개`:"-"}</td><td>${r.pair_7d}/${r.pair_total} · ${r.pair_raider_wins}</td></tr>`).join("")}</table>`;
 }
 let innJobs=[],selectedJob=null,charLimit=null;
-async function loadInn(){
+// 영입 직업 목록과 인원 한도는 Inn을 열 때만 받는다(load()마다 받지 않는다). Inn이 열려 있는 동안 load()는 다시 그리기와 Goods만 다시 받는다
+async function loadInn(full){
+ if(full||!innJobs.length){
  const {data,error}=await sb.from("character_templates").select("job,name_ko,recruit_cost,sort_order").eq("tier","BASE").order("sort_order").order("job");
  if(error){log("직업 목록 불러오기 실패: "+error.message,"bad");innJobs=[]}else innJobs=data||[];
  if(!innJobs.some(j=>j.job===selectedJob))selectedJob=innJobs[0]?.job||null;
  // 공개 설정값(is_public=true)만 읽을 수 있음
  const lim=await sb.from("game_config").select("value").eq("key","MAX_CHARACTERS").maybeSingle();charLimit=lim.error||!lim.data?null:Number(lim.data.value);
+ }
  renderInn();
  loadShop();
 }
@@ -1244,26 +1250,43 @@ async function loadMeta(){
  const g=await sb.from("game_config").select("key,value");
  pubCfg={};(g.data||[]).forEach(r=>pubCfg[r.key]=r.value);
 }
+// 스킬·전직 선택지 다시 받기 줄이기(서버 시간초과 조사 2026-11-11, 사용자 H 진행)
+// 스킬 목록(get_character_skills)이 달라지는 것: 직업·레벨·배운 스킬·무료 초기화. load()는 캐릭터 줄(get_my_characters)의 직업·레벨·남은 SP가 그대로이고
+//   그 사이 스킬에 닿을 수 있는 값 바꾸기 요청(04 길목의 skillGen)이 없었으면 다시 받지 않는다. 스킬을 바로 다시 봐야 하는 곳(튜토리얼 등)은 loadSkills로 늘 받는다
+// 전직 선택지(get_promote_options)는 직업·레벨·아는 스킬로만 정해지므로, 받은 스킬 목록의 그 셋이 그대로면 다시 받지 않는다
+let skillsKey={},promoteKey={};
+const skillKeyOf=c=>c?`${c.job}|${c.level}|${c.sp}|${skillGen}`:null;
 async function loadSkills(id){
+ const k=skillKeyOf(chars.find(c=>c.id===id));
  const {data,error}=await sb.rpc("get_character_skills",{p_char:id});
- if(error){log("get_character_skills 실패: "+error.message,"bad");return}
- skillsByChar[id]=data;(data?.skills||[]).forEach(noteFinal);
+ if(error){log("get_character_skills 실패: "+error.message,"bad");delete skillsKey[id];return}
+ skillsByChar[id]=data;(data?.skills||[]).forEach(noteFinal);skillsKey[id]=k;
+ const job=chars.find(c=>c.id===id)?.job,pk=`${job}|${data?.level}|${(data?.skills||[]).filter(s=>s.known).map(s=>s.id).sort().join(",")}`;
+ if(promoteByChar[id]&&promoteKey[id]===pk)return;
  const p=await sb.rpc("get_promote_options",{p_char:id});
- promoteByChar[id]=p.error?[]:(p.data||[]);
+ promoteByChar[id]=p.error?[]:(p.data||[]);if(p.error)delete promoteKey[id];else promoteKey[id]=pk;
 }
-async function load(){
+function loadSkillsIfStale(id){const k=skillKeyOf(chars.find(c=>c.id===id));if(skillsByChar[id]&&k&&skillsKey[id]===k)return Promise.resolve();return loadSkills(id)}
+// 겹쳐 부르면 묶는다: 도는 중에 또 부르면 지금 것이 끝난 뒤 한 번만 더 돌고(그 사이 바뀐 값도 받는다), 부른 쪽은 모두 그 마지막 것이 끝날 때까지 기다린다
+let loadRun=null,loadAgain=false;
+function load(){
+ if(loadRun){loadAgain=true;return loadRun}
+ // 퀘스트 창은 load()가 끝날 때 한 번 다시 받으니, 도는 동안 값 바꾸기 길목이 걸어 둔 다시 받기는 지운다(06-quest questSoon)
+ loadRun=(async()=>{try{do{loadAgain=false;clearTimeout(questSoonT);await loadOnce()}while(loadAgain)}finally{loadRun=null}})();
+ return loadRun}
+async function loadOnce(){
  if(!templates.length)await loadMeta();
  if(tut.step==null||tut.step<tut.last)loadTutorial();
  // 읽기가 실패하면(서버가 바빠 statement timeout 등) 화면을 비우지 않고 이전 목록을 둔 채 알린다(플레이 시험 2026-11-11: '보유 캐릭터가 없습니다'로 비던 일)
  {const cs=await rpc("get_my_characters");if(cs)chars=cs;else readFailNotice()}
  // 서버는 BASE가 아닌 직업 줄을 그 직업 캐릭터가 있을 때만 보여준다. 전직 등으로 표에 없는 직업이 생기면 표를 다시 읽는다(장착 판정의 계열·주 스탯·무기 제한이 이 표를 쓴다)
  if(chars.some(c=>!templates.some(t=>t.job===c.job)))await loadMeta();
- if(selectedCharId&&chars.some(c=>c.id===selectedCharId))await loadSkills(selectedCharId);
+ if(selectedCharId&&chars.some(c=>c.id===selectedCharId))await loadSkillsIfStale(selectedCharId);
  renderAdminChars();
- if(innJobs.length||$("innJobs"))loadInn();
+ if(currentView==="inn")loadInn();
  if(selectedCharId && !chars.some(c=>c.id===selectedCharId)) selectedCharId=null;
  renderCamp(); loadItems(); if(currentView==="adventure")loadAdventure();else if(!supplyState)loadSupply();
- questLoad()}
+ questLater()}
 function setTabsForLogin(on){
  $("tabLogin").style.display=on?"none":"";
  $("tabSupply").style.display=on?"":"none";$("tabGold").style.display=on?"":"none";
@@ -1299,7 +1322,7 @@ function showView(view){
  if(view==="bag")renderBag();
  if(view==="appraise")loadAppraise();
  if(view==="craft")loadCraft();
- if(view==="inn"&&loggedIn)loadShop();
+ if(view==="inn"&&loggedIn)loadInn(true);
  if(view==="guild"){if(raidTab!=="raid")setRaidTab(raidTab);loadRaid()}
  if(view==="adventure"){advRoom=null;loadAdventure();}
  if(view==="log"){if(logTab==="raid")loadRaidLogs("logRaidList");else loadBattleLogs()}
@@ -1352,12 +1375,14 @@ function questEnsure(){
 }
 // 값을 바꾸는 요청 뒤 퀘스트 창 다시 받기(04의 sb.rpc 길목이 부른다). 여러 요청이 이어지면 한 번으로 묶는다. 퀘스트 자체 요청은 스스로 다시 받고, 화면 설정 저장은 셈과 상관없어 뺀다
 let questSoonT=0;
-function questSoon(fn){if(fn==="claim_quests"||fn==="quest_guided"||fn==="set_ui_pref"||!loggedIn||stage)return;clearTimeout(questSoonT);questSoonT=setTimeout(questLoad,300)}
+function questSoon(fn){if(fn==="claim_quests"||fn==="quest_guided"||fn==="set_ui_pref"||!loggedIn||stage||loadRun)return;questLater()}
+// load()도 이 묶음으로 다시 받는다(값 바꾸기 뒤 load()와 길목이 따로 받아 두 번 나가던 것). 곧바로 questLoad를 부르면 기다리던 것은 지운다
+function questLater(){clearTimeout(questSoonT);questSoonT=setTimeout(questLoad,300)}
 // 여러 번 겹쳐 부르면 마지막에 보낸 요청의 답만 쓴다(먼저 보낸 요청의 답이 늦게 와 옛 숫자로 되돌리지 않게)
 let questSeq=0;
 async function questLoad(){
  if(stage||!loggedIn)return;
- const my=++questSeq;
+ clearTimeout(questSoonT);const my=++questSeq;
  const {data,error}=await sb.rpc("get_quests");if(my!==questSeq)return;if(error){log("get_quests 실패: "+error.message,"bad");return}
  quests=Array.isArray(data)?data:[];questRender();
  patGuideLoad();
@@ -1781,7 +1806,7 @@ async function selectCharacter(id){
  if(id===selectedCharId)return;
  if(!guardLeave(()=>selectCharacter(id)))return;
  const fromRoster=!selectedCharId;
- await loadSkills(id);selectedCharId=id;renderCamp();
+ await loadSkillsIfStale(id);selectedCharId=id;renderCamp();
  try{if(fromRoster)history.pushState({detail:id},"");else history.replaceState({detail:id},"")}catch(e){}
 }
 // 남은 SP·TP 배지: 안 쓴 포인트가 있으면 로스터 카드 이름 아래에 작게(get_my_characters의 sp·tp). 쓰면 다음 그리기에서 빠진다
@@ -3807,12 +3832,14 @@ const PATTERN_GUIDE={
   SHINOBI:{design:"Shinobi는 앞뒤를 오가며 표창과 인법으로 치는 직업입니다. 전방에 있으면 Shunshin으로 치고 자리를 바꾸고, 쿨타임이 아닌 Kage Nui를 쓰고, 남는 턴에는 Kunai로 칩니다.",
     rows:[["자신이 전방일 때","Shunshin","selfFront","thief_shinobi_shunshin"],["이 줄 스킬이 쿨타임이 아닐 때","Kage Nui","skillReady","thief_shinobi_kage_nui"],["반드시","Kunai","always","thief_shinobi_kunai"]]},
 };
-// 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 퀘스트를 받아 올 때마다 함께 받는다. 무대에서는 숨긴다.
-let patGuideFlag=false;
+// 범용 패턴(?) 버튼은 TP 찍기 퀘스트(q_ch2_02) 보상을 받은 뒤에만 보인다(서버 get_pattern_guide_on). 무대에서는 숨긴다.
+// 켜짐은 퀘스트 보상 받기(claim_quests)로만 바뀌므로 로그인 뒤 한 번, 그 뒤엔 보상 받기·관리자 요청 뒤에만 다시 받는다(04 길목이 patGuideStale을 세운다)
+let patGuideFlag=false,patGuideStale=true;
 function patGuideOn(){return !stage&&patGuideFlag}
 async function patGuideLoad(){
-  if(stage||!loggedIn)return;
-  const {data,error}=await sb.rpc("get_pattern_guide_on");if(error){log("get_pattern_guide_on 실패: "+error.message,"bad");return}
+  if(stage||!loggedIn||!patGuideStale)return;
+  patGuideStale=false;
+  const {data,error}=await sb.rpc("get_pattern_guide_on");if(error){patGuideStale=true;log("get_pattern_guide_on 실패: "+error.message,"bad");return}
   if(patGuideFlag===!!data)return;
   patGuideFlag=!!data;document.querySelectorAll("#charDetail .pat-guide").forEach(b=>b.hidden=!patGuideOn());
 }
