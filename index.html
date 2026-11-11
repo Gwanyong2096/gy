@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v513 · 갱신 2026-11-11 11:00 KST -->
+<!-- ProjectGY-test-console v514 · 갱신 2026-11-11 11:13 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v513 · 2026-11-11 11:00</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v514 · 2026-11-11 11:13</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1660,7 +1660,7 @@ const QUEST_GUIDE={
   // Mock Battle 버튼이 꺼져 있으면(18의 MOCK_ON) Battle!로 한 번 싸워 보게 한다. 서버 셈(quest_value mock)은 Mock 판·직접 싸운 판·이긴 적 모두 센다
   const b=(mk&&h.q(`#roomActs button[onclick*="'MOCK'"]`))||h.q(`#roomActs button[onclick*="'MANUAL'"]`)||h.q("#roomActs");
   if(mk&&!tutSeen.has("qg-k1"))return h.page("qg-k1",b,`Mock Battle은 연습 판입니다.\nSUPPLY를 쓰지 않고, 보상도 승리 수도 없습니다.\n던전마다 하루 ${lim}판까지 됩니다.`);
-  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 지금 파티로는 아직 벅찰 수 있습니다.\n져도 괜찮습니다.\n${mk?"Mock Battle":"Battle!"}를 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:mk?"qg-k1":null,btn:"확인",fn:questGuideDone});
+  return h.page("qg-k2",b,`${dn}${josaOf(dn,"은","는")} 지금은 질 수도 있습니다.\n져도 퀘스트는 채워집니다.\n${mk?"Mock Battle":"Battle!"}를 눌러 적이 얼마나 센지 보고, 레벨을 올려 다시 오세요.`,{back:mk?"qg-k1":null,btn:"확인",fn:questGuideDone});
  },
  // Smuggler Hideout 이기기(q_ch2_12): qgPrep(맨 위)
  smug(g,h){return qgPrep(g,h,{s0:"qg-s0",intro:n=>`${n}${josaOf(n,"은","는")} 앞의 두 던전보다 훨씬 강합니다.\n들어가기 전에 두 가지를 준비합시다.\n회복 줄과 Front SPD입니다.`,spd:"qg-p",end:"qg-s8"})},
