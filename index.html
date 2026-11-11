@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v516 · 갱신 2026-11-11 12:29 KST -->
+<!-- ProjectGY-test-console v517 · 갱신 2026-11-11 12:35 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v516 · 2026-11-11 12:29</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v517 · 2026-11-11 12:35</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -2179,7 +2179,7 @@ function tutAshenPick(t){
  return cs.find(c=>(skillsByChar[c.id]?.skills||[]).some(x=>x.id===t.a))||null;
 }
 // Front SPD에 TP 넣기(단계 20 첫 도전 전 k="sp", Smuggler 이기기 퀘스트 준비 k="qg-p"): 목표 숫자 없이 권한다. 파티 순서로 남은 TP가 있는 캐릭터마다 한 번씩,
-// Front SPD 칸에 유저가 숫자를 적어 배분하거나(쓴 TP가 늘면 끝) 넘기기를 누르면 다음 캐릭터. 다 돌면 null. h = 짚기 도구(say, mid, page, wait, toChar, sec)
+// Front SPD 칸에 유저가 숫자를 적어 배분하거나(쓴 TP가 늘면 끝) 넘기기를 누르면 다음 캐릭터. 첫 캐릭터 뒤에는 남은 캐릭터를 한 장에 모아 계속·건너뛰기를 묻는다. 다 돌면 null. h = 짚기 도구(say, mid, page, wait, toChar, sec)
 // 넘긴 캐릭터·처음 짚을 때의 Front SPD TP(start)는 새로 고쳐도 다시 묻지 않게 계정마다 브라우저에 기억한다(무대에서는 기억하지 않는다)
 const tutSpdState={};
 // tutUid: 로그인한 계정 id(loadTutorial이 sb.auth.getUser로 한 번 받는다, 로그아웃하면 지운다). 받기 전에는 기억하지도 읽지도 않는다
@@ -2201,6 +2201,12 @@ function tutSpdFlow(h,k,intro){
  if(!sc)return null;
  const jn=sc.job_name||sc.job;
  if(!tutSeen.has(k+"0"))return h.mid(k+"0",intro,{btn:"다음",fn:()=>tutSeen.add(k+"0")});
+ // 한 명을 끝내면(배분 또는 넘기기) 남은 캐릭터를 한 장에 모아 계속 짚을지 묻는다(건너뛰기면 남은 캐릭터를 모두 넘긴다). 캐릭터마다 같은 안내를 되풀이하지 않게
+ const done=ids.some(id=>{const c=chars.find(x=>x.id===id);return c&&(S.skip.has(id)||(S.start[id]!=null&&tpCur(c).h>S.start[id]))});
+ if(done&&!tutSeen.has(k+"more")){
+  const rest=ids.map(id=>chars.find(c=>c.id===id)).filter(c=>c&&!away.has(c.id)&&Number(c.tp||0)>0&&!S.skip.has(c.id)&&!(S.start[c.id]!=null&&tpCur(c).h>S.start[c.id]));
+  return h.mid(k+"more",`남은 TP가 있는 캐릭터가 ${rest.length}명 더 있습니다.\n${rest.map(c=>`${c.job_name||c.job} ${Number(c.tp)||0}`).join(", ")}\n같은 방법으로 Front SPD에 넣으려면 계속을 누릅니다.\n넣지 않고 바로 도전하려면 건너뛰기를 누릅니다.`,{btn:"계속",fn:()=>tutSeen.add(k+"more"),skip:()=>{rest.forEach(c=>S.skip.add(c.id));tutSpdSave(k,S)}});
+ }
  const go=h.toChar(k,sc,`${jn}의 TP를 씁니다.\n밝게 표시된 캐릭터를 눌러 주세요.`);if(go)return go;
  const w=h.sec("status");if(w?.classList.contains("collapsed"))return h.say(k+"sec",w.querySelector(".sec-toggle"),"Status를 눌러 펼쳐 주세요.");
  const box=$("alloc-"+sc.id),f=box?.querySelector('input[data-tp="h"]'),fw=f?.closest(".alloc-f")||f;
@@ -2930,7 +2936,9 @@ function tutResolve(){
   if(cfm==="tp"){tutSpdPend=Date.now();return say("spok",priBtn,"확인 창의 배분을 눌러 주세요.",{holdId:true,holdAs:"spalloc"});}
   if(modal){
    const lost=logOpen&&!!openedBattle&&openedBattle.result!=="WIN";if(lost)tutChapelLost=true;
-   return okBtn?savedOk():say("s20close",q(".help-close"),lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
+   // 비긴 판(턴 제한을 다 씀)은 진 판과 나눠, 정해진 턴 안에 끝내지 못해 비겼고 보상이 없다고 알린다
+   const draw=lost&&openedBattle.result==="DRAW",tl=Number(openedBattle?.turn_limit)||0;
+   return okBtn?savedOk():say("s20close",q(".help-close"),draw?`${tl?`${tl}턴`:"정해진 턴"} 안에 끝내지 못해 비겼습니다.\n비기면 진 판처럼 보상이 없습니다.\n닫기를 눌러 주세요.`:lost?"아쉽게 이기지 못했습니다.\n닫기를 눌러 주세요.":"닫기를 눌러 주세요.");
   }
   const d=dungeons[TUT_ASHEN.i];
   // 첫 도전 전: 파티원마다 남은 TP를 Front SPD에 넣도록 권한다(얼마나 넣을지는 유저가 정한다, tutSpdFlow. 화면만 짚고 서버는 보지 않는다). 진 뒤(화면을 풀어 둔 동안)에는 짚지 않는다
