@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v518 · 갱신 2026-11-12 14:21 KST -->
+<!-- ProjectGY-test-console v519 · 갱신 2026-11-13 13:03 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v518 · 2026-11-12 14:21</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v519 · 2026-11-13 13:03</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -739,6 +739,54 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 <div class="card" id="logCard" style="display:none"><h2>로그</h2><div id="log"></div></div>
 </main>
 <script>
+// ===== 번역: 화면 글은 한국어 원문을 열쇠로 언어 사전(04-lang-<언어>.js)에서 찾는다 =====
+// 쓰는 법: T("원문") · 값이 있으면 T("Lv.{lv}이 됩니다.",{lv}) · 같은 원문이 뜻이 다르면 T("원문",값,"문맥")
+//  {x} = 값 그대로 · {x:을/를} = x에 맞는 꼴 하나만(한국어는 받침으로 앞/뒤, 영어는 x가 1이면 앞·아니면 뒤, 중국어는 앞)
+//  원문에 넣는 태그는 <b>·<br>만. 감싸는 틀(div·class)은 코드에 둔다. 값은 부르는 쪽이 esc()해서 넘긴다.
+// 사전에 없는 글은 원문(한국어) 그대로 나온다. 기본 언어는 한국어라 사전이 비어도 화면이 같다.
+// 고정 글(03-body.html)은 코드를 바꾸지 않고, 한국어가 아닐 때만 시작할 때 글 조각·placeholder·aria-label·title을 사전으로 바꾼다(관리자 도구·로그 창은 뺀다).
+const LANGS=["ko","en","zh"];
+const I18N={en:{},zh:{}};
+let LANG=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(LANGS.includes(q))return q}catch(e){}return "ko"})();
+function langPick(lang,x,a,b){
+ if(lang==="ko")return josaOf(x,a,b);
+ if(lang==="en")return Number(String(x).replace(/,/g,""))===1?a:b;
+ return a;
+}
+function T(src,v,ctx){
+ let s=src;
+ if(LANG!=="ko"){const d=I18N[LANG],t=d&&d[ctx?ctx+"|"+src:src];if(t!=null&&t!=="")s=t}
+ if(!v)return s;
+ const lang=s===src?"ko":LANG;
+ return s.replace(/\{(\w+)(?::([^{}\/]*)\/([^{}]*))?\}/g,(m,k,a,b)=>{if(!(k in v))return m;const x=v[k]??"";return a==null?String(x):langPick(lang,x,a,b)});
+}
+const I18N_SKIP="#adminCard,#logCard,script,style,svg";
+const I18N_INLINE=new Set(["B","STRONG","I","EM","SPAN","A","BR","SMALL","CODE","KBD","SUB","SUP"]);
+// 고정 글의 번역 단위: 글 조각과 인라인 태그(b·span 등)만 든 요소는 innerHTML 통째로(문장이 끊기지 않게), 아니면 글 조각 하나씩
+function staticUnits(root){
+ const out=[],seen=new Set(),norm=x=>x.replace(/\s+/g," ").trim(),has=x=>/[^\s\d.,:;·•\-+×/%()?!…※⚠]/.test(x);
+ const walk=e=>{if(e.matches&&e.matches(I18N_SKIP))return;
+  const kids=[...e.childNodes],ownTxt=kids.some(n=>n.nodeType===3&&has(n.textContent)),inl=kids.every(n=>n.nodeType!==1||(I18N_INLINE.has(n.tagName)&&[...n.querySelectorAll("*")].every(c=>I18N_INLINE.has(c.tagName))));
+  if(ownTxt&&inl&&kids.some(n=>n.nodeType===1)){out.push({el:e,key:norm(e.innerHTML)});return}
+  for(const n of kids){if(n.nodeType===3){const k=norm(n.textContent);if(k&&has(k))out.push({node:n,key:k})}else if(n.nodeType===1)walk(n)}};
+ walk(root||document.body);
+ for(const e of (root||document.body).querySelectorAll("[placeholder],[aria-label],[title]")){if(e.closest(I18N_SKIP))continue;for(const a of ["placeholder","aria-label","title"]){const k=e.getAttribute(a);if(k&&has(k))out.push({el:e,attr:a,key:k})}}
+ return out;
+}
+function translateStatic(root){
+ if(LANG==="ko")return;const d=I18N[LANG]||{};
+ for(const u of staticUnits(root)){const t=d[u.key];if(!t)continue;if(u.attr)u.el.setAttribute(u.attr,t);else if(u.node)u.node.textContent=u.node.textContent.replace(/\S[\s\S]*\S|\S/,t);else u.el.innerHTML=t}
+}
+// ===== 언어 사전: 영어 =====
+// 열쇠 = 화면의 한국어 원문(T()의 첫 인자, 고정 글은 03-body.html의 글). 값 = 이 언어 글. 없는 열쇠는 한국어 원문이 나온다.
+// {x}·{x:앞/뒤} 칸은 원문과 같은 이름으로 둔다(쓰는 법은 04-i18n.js 맨 위).
+Object.assign(I18N.en,{
+});
+// ===== 언어 사전: 중국어 간체 =====
+// 열쇠 = 화면의 한국어 원문(T()의 첫 인자, 고정 글은 03-body.html의 글). 값 = 이 언어 글. 없는 열쇠는 한국어 원문이 나온다.
+// {x}·{x:앞/뒤} 칸은 원문과 같은 이름으로 둔다(쓰는 법은 04-i18n.js 맨 위).
+Object.assign(I18N.zh,{
+});
 // 화면 모드: 저장된 선택이 없으면 기기 설정을 따른다. 버튼을 누르면 바로 바뀐다.
 function currentTheme(){return document.documentElement.dataset.theme||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}
 function renderThemeToggle(){
@@ -747,7 +795,7 @@ function renderThemeToggle(){
  b.innerHTML=toLight
   ?`<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3 3l1.1 1.1M11.9 11.9L13 13M13 3l-1.1 1.1M4.1 11.9L3 13"/></svg><span>Light</span>`
   :`<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M13.5 9.8A5.8 5.8 0 0 1 6.2 2.5a5.8 5.8 0 1 0 7.3 7.3z"/></svg><span>Dark</span>`;
- b.setAttribute("aria-label",toLight?"라이트 모드로 바꾸기":"다크 모드로 바꾸기");
+ b.setAttribute("aria-label",toLight?T("라이트 모드로 바꾸기"):T("다크 모드로 바꾸기"));
 }
 function toggleTheme(){
  const next=currentTheme()==="dark"?"light":"dark";
@@ -780,7 +828,7 @@ sb.rpc=function(fn,args,opt){
 };
 // 전투(Edge Function battle)도 같은 길목: 성공하면 퀘스트 창을 다시 받는다. sb.functions는 부를 때마다 새로 만들어지므로 하나로 고정해 감싼다(토큰은 요청마다 붙는다)
 {const fc=sb.functions,invokeRaw=fc.invoke.bind(fc);fc.invoke=function(name,o){const p=invokeRaw(name,o);p.then(r=>{if(!r?.error)questSoon(name)},()=>{});return p};Object.defineProperty(sb,"functions",{value:fc})}
-const LB={BLESSED:"축복",NEUTRAL:"평온",BURDENED:"과업"};
+const LB={BLESSED:T("축복"),NEUTRAL:T("평온"),BURDENED:T("과업")};
 let chars=[];
 let loggedIn=null;
 let itemsData=[];
@@ -790,12 +838,12 @@ const $=id=>document.getElementById(id);
 const log=(m,c)=>{$("log").innerHTML=`<div class="${c||""}">[${new Date().toLocaleTimeString()}] ${m}</div>`+$("log").innerHTML};
 // 목록 읽기 실패 알림: 이전 목록을 그대로 둔다고 한 번 알린다(20초에 한 번, 다른 창이 떠 있으면 로그만)
 let readFailAt=0;
-function readFailNotice(){if(Date.now()-readFailAt<20000)return;readFailAt=Date.now();const ov=$("helpOverlay");if(ov&&!ov.hidden)return;openNotice("서버가 바빠 목록을 새로 받지 못했습니다. 이전 목록을 그대로 둡니다. 잠시 뒤 다시 해 주세요.")}
+function readFailNotice(){if(Date.now()-readFailAt<20000)return;readFailAt=Date.now();const ov=$("helpOverlay");if(ov&&!ov.hidden)return;openNotice(T("서버가 바빠 목록을 새로 받지 못했습니다. 이전 목록을 그대로 둡니다. 잠시 뒤 다시 해 주세요."))}
 async function rpc(fn,args){const {data,error}=await sb.rpc(fn,args);if(error){log(fn+" 실패: "+error.message,"bad");if(String(error.message).includes("CHARACTER_ON_IDLE")){checkIdle(true);openNotice(IDLE_LOCK_MSG)}return null}log(fn+" 성공","ok");return data??true}
 function setPwError(t){const e=$("loginMsg");e.textContent=t;e.style.display=t?"block":"none"}
-function togglePassword(){const p=$("loginPw"),b=$("pwToggle"),eye=$("pwEye");const show=p.type==="password";p.type=show?"text":"password";eye.innerHTML=show?`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle>`:`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle><path d="M4 4 20 20"></path>`;b.setAttribute("aria-label",show?"비밀번호 숨기기":"비밀번호 보기")}
+function togglePassword(){const p=$("loginPw"),b=$("pwToggle"),eye=$("pwEye");const show=p.type==="password";p.type=show?"text":"password";eye.innerHTML=show?`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle>`:`<path d="M2.2 12s3.5-6 9.8-6 9.8 6 9.8 6-3.5 6-9.8 6-9.8-6-9.8-6Z"></path><circle cx="12" cy="12" r="2.6"></circle><path d="M4 4 20 20"></path>`;b.setAttribute("aria-label",show?T("비밀번호 숨기기"):T("비밀번호 보기"))}
 // 비밀번호: 영어, 숫자, 특수문자(키보드의 인쇄 가능한 ASCII)만 허용. 한글/외국 문자/공백은 즉시 지움.
-const PW_ALLOWED_MSG="영어, 숫자, 특수문자만 입력할 수 있습니다.";
+const PW_ALLOWED_MSG=T("영어, 숫자, 특수문자만 입력할 수 있습니다.");
 function sanitizePw(){
  const el=$("loginPw"), v=el.value, clean=v.replace(/[^\x21-\x7E]/g,"");
  if(clean!==v){const pos=Math.max(0,(el.selectionStart||clean.length)-(v.length-clean.length));el.value=clean;try{el.setSelectionRange(pos,pos)}catch(e){}setPwError(PW_ALLOWED_MSG);return}
@@ -811,14 +859,14 @@ $("suEmail").addEventListener("animationend",e=>e.target.classList.remove("flash
 // 가입 서버가 돌려준 오류를 한글 안내로 바꾼다(모르는 오류만 원문을 붙인다).
 function signUpErrText(error){
  const m=String(error&&error.message||""),c=String(error&&error.code||""),sec=m.match(/after (\d+) second/i);
- if(sec)return "방금 가입을 요청했습니다. "+sec[1]+"초 뒤에 다시 시도해 주세요.";
- if(c==="over_email_send_rate_limit"||/email rate limit/i.test(m))return "지금은 확인 메일을 더 보낼 수 없습니다. 한 시간쯤 뒤에 다시 시도해 주세요.";
- if(c==="over_request_rate_limit"||(error&&error.status===429)||/rate limit/i.test(m))return "요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.";
- if(c==="user_already_exists"||c==="email_exists"||/already registered/i.test(m))return "이미 가입된 이메일입니다.";
- if(c==="email_address_invalid"||c==="validation_failed"||/invalid.*email|email.*invalid|validate email/i.test(m))return "이메일 주소를 다시 확인해 주세요.";
- if(c==="weak_password"||/password should/i.test(m))return "비밀번호가 너무 쉽습니다. 다른 비밀번호를 입력하세요.";
- if(c==="signup_disabled"||/signups? (are |is )?(not allowed|disabled)/i.test(m))return "지금은 가입할 수 없습니다.";
- return "가입에 실패했습니다: "+m;
+ if(sec)return T("방금 가입을 요청했습니다. {s}초 뒤에 다시 시도해 주세요.",{s:sec[1]});
+ if(c==="over_email_send_rate_limit"||/email rate limit/i.test(m))return T("지금은 확인 메일을 더 보낼 수 없습니다. 한 시간쯤 뒤에 다시 시도해 주세요.");
+ if(c==="over_request_rate_limit"||(error&&error.status===429)||/rate limit/i.test(m))return T("요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.");
+ if(c==="user_already_exists"||c==="email_exists"||/already registered/i.test(m))return T("이미 가입된 이메일입니다.");
+ if(c==="email_address_invalid"||c==="validation_failed"||/invalid.*email|email.*invalid|validate email/i.test(m))return T("이메일 주소를 다시 확인해 주세요.");
+ if(c==="weak_password"||/password should/i.test(m))return T("비밀번호가 너무 쉽습니다. 다른 비밀번호를 입력하세요.");
+ if(c==="signup_disabled"||/signups? (are |is )?(not allowed|disabled)/i.test(m))return T("지금은 가입할 수 없습니다.");
+ return T("가입에 실패했습니다: {m}",{m});
 }
 async function signUp(){
  const email=$("suEmail").value.trim(),pw=$("suPw").value,pw2=$("suPw2").value;
@@ -826,11 +874,11 @@ async function signUp(){
  if(noEmail||noPw){
   if(noEmail)flashEmpty($("suEmail"));
   if(noPw)flashEmpty($("suPw"));
-  return setSuMsg(noEmail&&noPw?"원하는 이메일과 비밀번호를 입력하세요.":noEmail?"원하는 이메일을 입력하세요.":"원하는 비밀번호를 입력하세요.");
+  return setSuMsg(noEmail&&noPw?T("원하는 이메일과 비밀번호를 입력하세요."):noEmail?T("원하는 이메일을 입력하세요."):T("원하는 비밀번호를 입력하세요."));
  }
  if(/[^\x21-\x7E]/.test(pw)) return setSuMsg(PW_ALLOWED_MSG);
- if(pw.length<6) return setSuMsg("비밀번호는 6자 이상이어야 합니다.");
- if(pw!==pw2){flashEmpty($("suPw2"));return setSuMsg("비밀번호 확인이 일치하지 않습니다.")}
+ if(pw.length<6) return setSuMsg(T("비밀번호는 6자 이상이어야 합니다."));
+ if(pw!==pw2){flashEmpty($("suPw2"));return setSuMsg(T("비밀번호 확인이 일치하지 않습니다."))}
  setSuMsg("");
  const {error}=await sb.auth.signUp({email,password:pw});
  log(error?"가입 실패: "+error.message:"가입 요청 완료 (이메일 확인이 켜져 있으면 메일을 확인하세요)",error?"bad":"ok");
@@ -844,17 +892,17 @@ async function signUp(){
 //  - {page:true,hold:밀리초,glitchMs:밀리초}: 앞줄의 멈춤에 더해 hold만큼 멈췄다가 glitchMs만큼 지직거린 뒤 화면을 비우고, 다음 줄부터 빈 화면에 새로 찍는다.
 // charMs = 한 글자 찍는 시간, dotMs = 말줄임 점 하나 찍는 시간, slowMs = [ ] 안의 한 글자 찍는 시간, lineMs = 줄 사이 멈춤, sound = 치직 소리, skippable = 넘기기 허용.
 const INTRO={charMs:50,dotMs:230,slowMs:300,lineMs:460,sound:true,skippable:false,lines:[
- "안녕하세요.",
- "저는 이 세계를 창조한 AI입니다.",
- "신은 태초에, 인간에게 불을 주었습니다.",
- {t:"훔쳐 왔다고요? [하.. 하.. |200][하...|300] 재밌네요.",hold:700},
- "여러분은 그런 로직이군요.",
+ T("안녕하세요."),
+ T("저는 이 세계를 창조한 AI입니다."),
+ T("신은 태초에, 인간에게 불을 주었습니다."),
+ {t:T("훔쳐 왔다고요? [하.. 하.. |200][하...|300] 재밌네요."),hold:700},
+ T("여러분은 그런 로직이군요."),
  {page:true,hold:1540,glitchMs:800},
- "몬스터도, 그것들의 패턴도 제가 만들었습니다.",
- "당신은 주어진 환경에서 가진 것을 동원해, 시련을 넘어야 합니다.",
- "당신이 시련을 깼다 착각한 그 순간,",
- {t:"시련은 또 다른 모습으로 찾아올 것입니다.",hold:900},
- {t:"그럼, 행운을 빕니다...",hold:1300,glitch:true}
+ T("몬스터도, 그것들의 패턴도 제가 만들었습니다."),
+ T("당신은 주어진 환경에서 가진 것을 동원해, 시련을 넘어야 합니다."),
+ T("당신이 시련을 깼다 착각한 그 순간,"),
+ {t:T("시련은 또 다른 모습으로 찾아올 것입니다."),hold:900},
+ {t:T("그럼, 행운을 빕니다..."),hold:1300,glitch:true}
 ]};
 // after = 연출이 끝난 뒤(화면이 아직 까만 동안) 할 일. 그 일이 끝나야 연출이 걷힌다. 자동 점검 브라우저에서는 연출 없이 바로 after(주소에 ?intro=1을 붙이면 보여 준다). force = 자동 점검 브라우저에서도 보여 준다(관리자 도구의 다시 보기).
 function playIntro(after,force){
@@ -865,8 +913,8 @@ function playIntro(after,force){
  if((navigator.webdriver&&!force&&!/[?&]intro=1(&|$)/.test(location.search))||!lines.some(l=>!l.page))return Promise.resolve().then(after);
  return new Promise(resolve=>{
   const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,born=performance.now();
-  const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label","접속 연출");
-  ov.innerHTML=`<canvas class="intro-cv"></canvas><div class="intro-scan"></div><div class="intro-sr" aria-live="polite"></div>${INTRO.skippable?`<div class="intro-skip">화면을 누르면 넘어갑니다</div>`:""}`;if(!INTRO.skippable)ov.style.cursor="default";
+  const ov=document.createElement("div");ov.className="intro-ov";ov.tabIndex=-1;ov.setAttribute("role","dialog");ov.setAttribute("aria-label",T("접속 연출"));
+  ov.innerHTML=`<canvas class="intro-cv"></canvas><div class="intro-scan"></div><div class="intro-sr" aria-live="polite"></div>${INTRO.skippable?`<div class="intro-skip">${T("화면을 누르면 넘어갑니다")}</div>`:""}`;if(!INTRO.skippable)ov.style.cursor="default";
   document.body.appendChild(ov);ov.focus();
   const cv=ov.querySelector("canvas"),cx=cv.getContext("2d"),sr=ov.querySelector(".intro-sr");
   const FS=12,RH=FS+6,GAP=Math.round(FS*.6),BASE=FS+1,COL={m:[216,228,220],r:[255,59,92],c:[59,240,255]};
@@ -935,7 +983,7 @@ async function signIn(){
  const {error}=await sb.auth.signInWithPassword({email,password:$("loginPw").value});
  if(error){
   log("로그인 실패: "+error.message,"bad");
-  setPwError("로그인 정보가 일치하지 않습니다.");
+  setPwError(T("로그인 정보가 일치하지 않습니다."));
  }else{log("로그인 성공","ok");persistLoginOpts(email,$("loginPw").value);return playIntro(init)}
  init();
 }
@@ -959,7 +1007,7 @@ let isGuest=false,guestBusy=false;
 async function startGuest(){
  if(guestBusy)return;guestBusy=true;$("btnGuest").disabled=true;setPwError("");let ok=false;
  try{const {error}=await sb.auth.signInAnonymously();
-  if(error){log("바로 시작 실패: "+error.message,"bad");setPwError(error.code==="anonymous_provider_disabled"?"지금은 바로 시작을 쓸 수 없습니다.":(error.status===429||/rate limit/i.test(error.message||""))?"요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요.":"바로 시작에 실패했습니다. 잠시 뒤에 다시 시도해 주세요.")}
+  if(error){log("바로 시작 실패: "+error.message,"bad");setPwError(error.code==="anonymous_provider_disabled"?T("지금은 바로 시작을 쓸 수 없습니다."):(error.status===429||/rate limit/i.test(error.message||""))?T("요청이 너무 많습니다. 잠시 뒤에 다시 시도해 주세요."):T("바로 시작에 실패했습니다. 잠시 뒤에 다시 시도해 주세요."))}
   else{log("바로 시작 성공","ok");ok=true}}
  finally{guestBusy=false;$("btnGuest").disabled=false}
  if(ok)return playIntro(init);
@@ -967,13 +1015,13 @@ async function startGuest(){
 }
 // 손님 계정은 로그아웃하면 다시 들어올 방법이 없어서 먼저 묻는다
 async function signOut(){
- if(isGuest)return openConfirm("로그아웃",`<p>손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.</p>`,[["취소",null,false],["로그아웃",async()=>{await sb.auth.signOut();init()},true]]);
+ if(isGuest)return openConfirm(T("로그아웃"),`<p>${T("손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.")}</p>`,[[T("취소"),null,false],[T("로그아웃"),async()=>{await sb.auth.signOut();init()},true]]);
  await sb.auth.signOut();init()}
 async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();const now=!!user;
  setTabsForLogin(now);
  $("loginForm").style.display=now?"none":"block";$("alreadyLogged").style.display=now?"block":"none";
  isGuest=!!(user&&user.is_anonymous);
- if(now){$("currentEmail").textContent=isGuest?"손님 계정":(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
+ if(now){$("currentEmail").textContent=isGuest?T("손님 계정"):(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
  loggedIn=now;patGuideStale=true;if(!now)patGuideFlag=false;questPlace(true);
@@ -1156,7 +1204,7 @@ function renderInn(){
   <span class="job-radio" aria-hidden="true"></span>
   <span class="job-cost">${Number(j.recruit_cost).toLocaleString()} G</span>
   <span class="job-label">${esc(j.name_ko||j.job)}</span>
- </button>`).join("")||`<div class="empty">영입할 수 있는 직업이 없습니다.</div>`;
+ </button>`).join("")||`<div class="empty">${T("영입할 수 있는 직업이 없습니다.")}</div>`;
 }
 // 여관 Goods: 파는 물건은 서버(get_shop)가 정하고, 사기는 buy_shop_item. 무대에서는 감춘다
 let innShop=[];
@@ -1172,25 +1220,25 @@ function renderShop(){
  // 같은 아이템의 줄(묶음 수량만 다름)은 한 줄로 묶고 묶음마다 버튼 하나. 묶음이 1개짜리 한 줄이면 수량 칸과 구매 버튼
  innShop.forEach(x=>{const k=x.def||x.id,gr=groups.find(y=>y.k===k);if(gr)gr.rows.push(x);else groups.push({k,rows:[x]})});
  $("innShop").innerHTML=groups.map(({rows})=>{const x=rows[0],pack=rows.length>1||Number(x.grant_qty)>1,lack=rows.every(r=>g<(Number(r.price)||0));
-  const buy=pack?rows.map(r=>`<button type="button" class="pri shop-pack"${g<(Number(r.price)||0)?" disabled":""} onclick="shopBuy('${esc(r.id)}',this)">${(Number(r.grant_qty)||1).toLocaleString()}회 · ${(Number(r.price)||0).toLocaleString()} G</button>`).join("")
-   :`<span class="shop-price">${(Number(x.price)||0).toLocaleString()} G</span><input type="number" class="shop-qty" min="1" max="99" step="1" value="1" aria-label="${esc(x.name)} 수량"><button type="button" class="pri"${lack?" disabled":""} onclick="shopBuy('${esc(x.id)}',this)">구매</button>`;
+  const buy=pack?rows.map(r=>`<button type="button" class="pri shop-pack"${g<(Number(r.price)||0)?" disabled":""} onclick="shopBuy('${esc(r.id)}',this)">${T("{n}회",{n:(Number(r.grant_qty)||1).toLocaleString()})} · ${(Number(r.price)||0).toLocaleString()} G</button>`).join("")
+   :`<span class="shop-price">${(Number(x.price)||0).toLocaleString()} G</span><input type="number" class="shop-qty" min="1" max="99" step="1" value="1" aria-label="${T("{name} 수량",{name:esc(x.name)})}"><button type="button" class="pri"${lack?" disabled":""} onclick="shopBuy('${esc(x.id)}',this)">${T("구매")}</button>`;
   return `<div class="shop-row" data-id="${esc(x.id)}">
-  <div class="shop-main"><div class="shop-name"><b>${esc(x.name)}</b><span class="shop-own">보유 ${Number(x.owned)||0}</span></div>${x.note?`<div class="shop-note">${esc(x.note)}</div>`:""}</div>
+  <div class="shop-main"><div class="shop-name"><b>${esc(x.name)}</b><span class="shop-own">${T("보유 {n}",{n:Number(x.owned)||0})}</span></div>${x.note?`<div class="shop-note">${esc(x.note)}</div>`:""}</div>
   <div class="shop-buy">${buy}</div>
-  ${lack?`<div class="shop-why">골드가 모자랍니다.</div>`:""}
- </div>`}).join("")||`<div class="empty">지금 파는 물건이 없습니다.</div>`;
+  ${lack?`<div class="shop-why">${T("골드가 모자랍니다.")}</div>`:""}
+ </div>`}).join("")||`<div class="empty">${T("지금 파는 물건이 없습니다.")}</div>`;
 }
 function shopBuy(id,btn){
  const x=innShop.find(y=>y.id===id);if(!x)return;
  const inp=btn.parentElement.querySelector(".shop-qty"),n=inp?Math.max(1,Math.min(99,Math.floor(Number(inp.value))||1)):1;if(inp)inp.value=n;
  const cost=(Number(x.price)||0)*n,per=Number(x.grant_qty)||1;
- if((Number(gold)||0)<cost){openNotice("골드가 모자랍니다.");return}
- openConfirm("구매",`<p><b>${esc(x.name)}</b> ${(n*per).toLocaleString()}개를 삽니다. <b>${cost.toLocaleString()}골드</b>를 냅니다.</p>`,[["취소",null,false],["구매",()=>shopBuyGo(id,n),true]]);
+ if((Number(gold)||0)<cost){openNotice(T("골드가 모자랍니다."));return}
+ openConfirm(T("구매"),`<p>${T("<b>{name}</b> {n}개를 삽니다. <b>{cost}골드</b>를 냅니다.",{name:esc(x.name),n:(n*per).toLocaleString(),cost:cost.toLocaleString()})}</p>`,[[T("취소"),null,false],[T("구매"),()=>shopBuyGo(id,n),true]]);
 }
 async function shopBuyGo(id,n){
  const {data,error}=await sb.rpc("buy_shop_item",{p_id:id,p_qty:n});
  if(error){const m=error.message||"";log("buy_shop_item 실패: "+m,"bad");
-  openNotice(m.includes("NOT_ENOUGH_GOLD")?"골드가 모자랍니다.":m.includes("NOT_FOR_SALE")?"지금은 팔지 않는 물건입니다.":m.includes("INVALID_COUNT")?"수량은 1~99개로 정해 주세요.":"구매하지 못했습니다.");
+  openNotice(m.includes("NOT_ENOUGH_GOLD")?T("골드가 모자랍니다."):m.includes("NOT_FOR_SALE")?T("지금은 팔지 않는 물건입니다."):m.includes("INVALID_COUNT")?T("수량은 1~99개로 정해 주세요."):T("구매하지 못했습니다."));
   loadShop();return}
  log("buy_shop_item 성공","ok");
  const x=innShop.find(y=>y.id===id);if(x&&data?.owned!=null)innShop.forEach(y=>{if((y.def||y.id)===(x.def||x.id))y.owned=data.owned});
@@ -1212,33 +1260,33 @@ async function loadSell(){
  sellList=list.map(x=>({...x,item_defs:defs[x.def_id]||{name:x.def_id}}));await loadEnhBonus(sellList);renderSell();
 }
 function renderSell(){
- if(!sellList.length){$("innSell").innerHTML=`<div class="empty">팔 수 있는 아이템이 없습니다.</div>`;return}
+ if(!sellList.length){$("innSell").innerHTML=`<div class="empty">${T("팔 수 있는 아이템이 없습니다.")}</div>`;return}
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
  const secs=itemSections(sellList,i=>i.item_defs);
  const rest=sellList.filter(i=>!known.has(i.item_defs.slot));if(rest.length)secs.push(["Etc",rest]);
  const row=i=>{const d=i.item_defs,p=Number(i.price)||0,q=Number(i.qty)||1,z=!p,[c]=i.unknown?[""]:itemBodyParts(i),rand=itemRandHtml(i);
   return `<div class="shop-row sell-row${z?" zero":""}" data-id="${esc(i.id)}">
-  <div class="shop-main"><div class="shop-name"><b>${esc(itemName(i))}${unkTag(i)}</b><span class="shop-own">보유 ${q}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}</div>
-  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${esc(itemName(i))} 수량">`:`<span class="shop-qty one">1개</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">판매</button></div>
+  <div class="shop-main"><div class="shop-name"><b>${esc(itemName(i))}${unkTag(i)}</b><span class="shop-own">${T("보유 {n}",{n:q})}</span>${itemTagsHtml(d)}</div>${c||rand?`<div class="sell-opt">${c}${rand}</div>`:""}</div>
+  <div class="shop-buy"><span class="shop-price">${p.toLocaleString()} G</span>${q>1?`<input type="number" class="shop-qty" min="1" max="${q}" step="1" value="1" aria-label="${T("{name} 수량",{name:esc(itemName(i))})}">`:`<span class="shop-qty one">${T("1개")}</span>`}<button type="button" class="pri sell-btn" onclick="sellPick('${esc(i.id)}',this)">${T("판매")}</button></div>
  </div>`};
- $("innSell").innerHTML=`<div class="sell-hint">장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
+ $("innSell").innerHTML=`<div class="sell-hint">${T("장착 중인 장비는 여기 나오지 않습니다. 캐릭터 화면에서 풀면 팔 수 있습니다.")}</div>`+secs.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(row).join("")}`).join("");
 }
 function sellPick(id,btn){
  const i=sellList.find(x=>x.id===id);if(!i)return;
  const q=Number(i.qty)||1,p=Number(i.price)||0,inp=btn.parentElement.querySelector("input.shop-qty"),n=inp?Math.max(1,Math.min(q,Math.floor(Number(inp.value))||1)):1;if(inp)inp.value=n;
  const nm=`<b>${esc(itemName(i))}</b>${unkTag(i)}`,enh=enhOf(i),opt=!i.unknown&&Object.values(i.rolled_bonuses||{}).some(v=>Number(v));
- const html=`<p>${nm} ${n}개를 팝니다. <b>${(p*n).toLocaleString()}골드</b>를 받습니다.</p><p>${opt?"옵션이 붙은 장비입니다. ":""}${enh?`+${enh} 강화 장비입니다. 강화에 쓴 골드는 돌려받지 않습니다. `:""}판 아이템은 되살 수 없습니다.</p>`;
- openConfirm("판매",html,[["취소",null,false],["판매",()=>sellGo(id,n),true]],"sell");
+ const html=`<p>${T("{name} {n}개를 팝니다. <b>{gold}골드</b>를 받습니다.",{name:nm,n,gold:(p*n).toLocaleString()})}</p><p>${opt?T("옵션이 붙은 장비입니다.")+" ":""}${enh?T("+{enh} 강화 장비입니다. 강화에 쓴 골드는 돌려받지 않습니다.",{enh})+" ":""}${T("판 아이템은 되살 수 없습니다.")}</p>`;
+ openConfirm(T("판매"),html,[[T("취소"),null,false],[T("판매"),()=>sellGo(id,n),true]],"sell");
 }
 async function sellGo(id,n){
  const {data,error}=await sb.rpc("sell_items",{p_items:[{id,qty:n}]});
  if(error){const m=error.message||"";log("sell_items 실패: "+m,"bad");
-  openNotice(m.includes("ITEM_EQUIPPED")?"장착 중인 아이템은 팔 수 없습니다.":m.includes("NOT_ENOUGH_ITEMS")?"가진 수보다 많이 팔 수 없습니다.":m.includes("ITEM_NOT_FOUND")?"이미 없는 아이템입니다.":m.includes("INVALID_COUNT")?"수량을 다시 정해 주세요.":"팔지 못했습니다.");
+  openNotice(m.includes("ITEM_EQUIPPED")?T("장착 중인 아이템은 팔 수 없습니다."):m.includes("NOT_ENOUGH_ITEMS")?T("가진 수보다 많이 팔 수 없습니다."):m.includes("ITEM_NOT_FOUND")?T("이미 없는 아이템입니다."):m.includes("INVALID_COUNT")?T("수량을 다시 정해 주세요."):T("팔지 못했습니다."));
   loadSell();return}
  log("sell_items 성공","ok");
  if(data?.gold!=null){gold=Number(data.gold);renderGold()}
  const s=(data?.sold||[])[0],g=Number(data?.gained)||0,sl=sellList.find(x=>x.id===id),nm=sl?itemName(sl):s?.name||"";
- openNotice(`${nm} ${n}개를 팔아 ${g.toLocaleString()}골드를 받았습니다.`);
+ openNotice(T("{name} {n}개를 팔아 {gold}골드를 받았습니다.",{name:nm,n,gold:g.toLocaleString()}));
  // Bag·골드·캐릭터(낀 소모품 칸 수량)를 다시 받는다
  load();
 }
@@ -1816,7 +1864,7 @@ function applyHidePts(){document.documentElement.classList.toggle("hide-pts",hid
 function setHidePts(v){hidePts=!!v;saveUiPref("hide_point_badge",hidePts);applyHidePts()}
 // SP는 지금 배울 수 있는 스킬이 있을 때만(서버 sp_learnable: 안 배움·열림·SP 충분, 사용자 H 2026-11-10)
 function rosterPts(c){const sp=c.sp_learnable===false?0:Number(c.sp)||0,tp=Number(c.tp)||0,a=[];if(sp>0)a.push(`SP ${sp}`);if(tp>0)a.push(`TP ${tp}`);
- return a.length?`<span class="u-pts" title="안 쓴 포인트가 있습니다">${a.map(x=>`<b>${x}</b>`).join("")}</span>`:""}
+ return a.length?`<span class="u-pts" title="${T("안 쓴 포인트가 있습니다")}">${a.map(x=>`<b>${x}</b>`).join("")}</span>`:""}
 function renderCamp(){
  // 캐릭터를 고르지 않았으면 로스터(대표 화면), 골랐으면 상세 화면만 표시
  const inDetail=!!chars.find(c=>c.id===selectedCharId);
@@ -1825,7 +1873,7 @@ function renderCamp(){
   <span class="sprite-slot" aria-hidden="true">${sprImg(c.job)}</span>
   <span class="unit-name">${esc(c.display_name)}</span>
   <span class="unit-meta"><span class="u-lv">Lv.${c.level}</span><span class="u-job">${esc(c.job_name||c.job)}</span></span>${rosterPts(c)}
- </button>`).join("") || `<div class="empty">보유 캐릭터가 없습니다.</div>`;
+ </button>`).join("") || `<div class="empty">${T("보유 캐릭터가 없습니다.")}</div>`;
  renderCharacterDetail();
 }
 // 로스터 드래그 정렬: 마우스는 누른 채 6px 이상 움직이면, 터치는 0.35초 길게 누르면 끌기 시작
@@ -3525,8 +3573,8 @@ function guardLeave(next){
  if(!selectedCharId)return true;
  const id=selectedCharId,parts=dirtyParts(id);if(!parts.length)return true;
  const go=()=>{discardDrafts(id);leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}};
- openConfirm("저장하지 않은 변경",`<p><b>${parts.join(", ")}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.</p>`,
-  [["계속 편집",null,false],["저장하지 않고 나가기",go,false],["저장하고 나가기",async()=>{
+ openConfirm(T("저장하지 않은 변경"),`<p>${T("<b>{parts}</b>에 저장하지 않은 변경이 있습니다. 이대로 나가면 변경 내용이 사라집니다.",{parts:parts.join(", ")})}</p>`,
+  [[T("계속 편집"),null,false],[T("저장하지 않고 나가기"),go,false],[T("저장하고 나가기"),async()=>{
    if(parts.includes("Pattern")&&!await pattern(id,true))return;
    if(parts.includes("Formation")&&!await saveFormation(id))return;
    leaveGuardBypass=true;try{next()}finally{leaveGuardBypass=false}},true]]);
@@ -3670,7 +3718,7 @@ function itemSections(list,defOf,groups=ITEM_GROUPS){
 }
 function renderBag(){
  const box=$("items");
- if(!itemsData.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
+ if(!itemsData.length){box.innerHTML='<div class="empty">'+T("보유한 아이템이 없습니다.")+'</div>';return;}
  // 장착 중인 아이템은 Bag에 표시하지 않음(캐릭터 화면의 Equipment에서만 확인).
  // 같은 코드·옵션의 아이템은 서버에서 한 줄(수량 x4)로 합쳐 내려온다.
  const groups=[];
@@ -3678,7 +3726,7 @@ function renderBag(){
   if(i.equipped_character)continue;
   groups.push({item:i,count:Number(i.qty)||1});
  }
- if(!groups.length){box.innerHTML='<div class="empty">보유한 아이템이 없습니다.</div>';return;}
+ if(!groups.length){box.innerHTML='<div class="empty">'+T("보유한 아이템이 없습니다.")+'</div>';return;}
  // 아이콘(19-skill-icons의 ITEM_ICONS)이 있는 아이템은 줄 앞에 32px 도트를 붙인다
  const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
@@ -4064,37 +4112,37 @@ let recruitReq=null;
 function recruit(){
  setRecruitMsg("");
  const name=$("nm").value.trim(),job=selectedJob;
- if(!job)return setRecruitMsg("영입할 직업을 선택하세요.");
+ if(!job)return setRecruitMsg(T("영입할 직업을 선택하세요."));
  const j=innJobs.find(x=>x.job===job),cost=Number(j?.recruit_cost)||0;
- openConfirm("영입",`<p><b>${esc(j?.name_ko||job)}</b> 캐릭터를 영입합니다. <b>${cost.toLocaleString()}골드</b>를 냅니다.</p>${name?`<p>이름: <b>${esc(name)}</b></p>`:`<p class="help-note">이름을 짓지 않으면 Dog Tag를 받습니다.</p>`}`,
-  [["취소",null,false],["영입",()=>doRecruit(job,name),true]],"recruit");
+ openConfirm(T("영입"),`<p>${T("<b>{job}</b> 캐릭터를 영입합니다. <b>{cost}골드</b>를 냅니다.",{job:esc(j?.name_ko||job),cost:cost.toLocaleString()})}</p>${name?`<p>${T("이름: <b>{name}</b>",{name:esc(name)})}</p>`:`<p class="help-note">${T("이름을 짓지 않으면 Dog Tag를 받습니다.")}</p>`}`,
+  [[T("취소"),null,false],[T("영입"),()=>doRecruit(job,name),true]],"recruit");
 }
 async function doRecruit(selectedJob,name){
  const req=recruitReq||(recruitReq=newRequestId());
  if(await rpc("recruit_character",{p_job:selectedJob,p_name:name||null,p_request:req})){
   if(recruitReq===req)recruitReq=null;
-  if(!name)setRecruitMsg("이름을 짓지 않아 Dog Tag를 지급합니다.");
+  if(!name)setRecruitMsg(T("이름을 짓지 않아 Dog Tag를 지급합니다."));
   $("nm").value="";load();
  }
 }
 // 방출: 캐릭터를 영구 삭제(서버 release_character, 보상 없음, 낀 장비는 가방으로). 메인 파티·Auto Battle·연습 파티에 든 캐릭터는 서버가 막는다
-const RELEASE_ERR={CHARACTER_IN_PARTY:"파티에 들어 있는 캐릭터는 방출할 수 없습니다. 먼저 파티에서 빼 주세요.",CHARACTER_NOT_FOUND:"캐릭터를 찾지 못했습니다."};
+const RELEASE_ERR={CHARACTER_IN_PARTY:T("파티에 들어 있는 캐릭터는 방출할 수 없습니다. 먼저 파티에서 빼 주세요."),CHARACTER_NOT_FOUND:T("캐릭터를 찾지 못했습니다.")};
 function releasePrompt(id){
  const c=chars.find(x=>x.id===id);if(!c)return;
- openConfirm("방출",`<p><b>${esc(c.display_name)}</b>${josaOf(c.display_name,"을","를")} 방출합니다.</p><p class="help-note">방출한 캐릭터는 되돌릴 수 없고 보상도 없습니다. 끼고 있는 장비는 가방으로 돌아갑니다.</p>${draftWarnHtml(id)}`,
-  [["취소",null,false],["방출",async()=>{
+ openConfirm(T("방출"),`<p>${T("<b>{name}</b>{name:을/를} 방출합니다.",{name:esc(c.display_name)})}</p><p class="help-note">${T("방출한 캐릭터는 되돌릴 수 없고 보상도 없습니다. 끼고 있는 장비는 가방으로 돌아갑니다.")}</p>${draftWarnHtml(id)}`,
+  [[T("취소"),null,false],[T("방출"),async()=>{
    const {error}=await sb.rpc("release_character",{p_char:id});
    if(error){const m=String(error.message),k=Object.keys(RELEASE_ERR).find(x=>m.includes(x));log("release_character 실패: "+m,"bad");
     if(m.includes("CHARACTER_ON_IDLE")){checkIdle(true);openNotice(IDLE_LOCK_MSG)}else if(k)openNotice(RELEASE_ERR[k]);return}
    log("release_character 성공","ok");delete patternDraft[id];if(selectedCharId===id)selectedCharId=null;
-   await load();openNotice(`${c.display_name}${josaOf(c.display_name,"을","를")} 방출했습니다.`)},true]]);
+   await load();openNotice(T("{name}{name:을/를} 방출했습니다.",{name:c.display_name}))},true]]);
 }
 function renamePrompt(id){
  const c=chars.find(x=>x.id===id);
- openConfirm("이름 변경",`<p>새 이름을 입력하세요. 2~12자, 한글/영문/숫자만 쓸 수 있습니다.</p>
+ openConfirm(T("이름 변경"),`<p>${T("새 이름을 입력하세요. 2~12자, 한글/영문/숫자만 쓸 수 있습니다.")}</p>
   <input id="renameInput" class="modal-input" maxlength="12" autocomplete="off" value="${esc(c?.name||"")}" placeholder="${esc(c?.display_name||"")}">
-  <p class="help-note">Dog Tag 1개를 사용합니다.</p>`,
-  [["취소",null,false],["변경",async()=>{const n=$("renameInput").value.trim();if(!n)return log("이름을 입력하세요.","bad");if(await rpc("rename_character",{p_char:id,p_name:n}))load()},true]]);
+  <p class="help-note">${T("Dog Tag 1개를 사용합니다.")}</p>`,
+  [[T("취소"),null,false],[T("변경"),async()=>{const n=$("renameInput").value.trim();if(!n)return log("이름을 입력하세요.","bad");if(await rpc("rename_character",{p_char:id,p_name:n}))load()},true]]);
  const inp=$("renameInput");inp.focus();inp.select();
  inp.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();$("helpActions").lastChild.click()}};
 }
@@ -5352,25 +5400,25 @@ async function loadAppraise(){
 function renderAppraise(){
  const box=$("appraiseList");if(!box)return;
  const list=itemsData.filter(i=>i.unknown&&!i.equipped_character);
- box.innerHTML=list.length?list.map(i=>{const c=appraiseCosts[i.def_id];return `<div class="item-card">${itemDetailHtml(i)}<div class="cr-act"><button class="pri fm-btn" onclick="confirmAppraise('${i.id}')"><span>감정${c!=null?` · ${Number(c).toLocaleString()} G`:""}</span></button></div></div>`}).join(""):`<div class="empty">감정할 Unknown 장비가 없습니다.</div>`;
+ box.innerHTML=list.length?list.map(i=>{const c=appraiseCosts[i.def_id];return `<div class="item-card">${itemDetailHtml(i)}<div class="cr-act"><button class="pri fm-btn" onclick="confirmAppraise('${i.id}')"><span>${T("감정")}${c!=null?` · ${Number(c).toLocaleString()} G`:""}</span></button></div></div>`}).join(""):`<div class="empty">${T("감정할 Unknown 장비가 없습니다.")}</div>`;
 }
 // 감정: 골드를 내고 결과를 되돌릴 수 없어 확인 창을 먼저 띄운다
 function confirmAppraise(id){
  const i=itemsData.find(x=>x.id===id);if(!i)return;
  const nm=i.item_defs?.name||i.def_id,c=appraiseCosts[i.def_id],o=appraiseCosts.free_first?.orig_cost?.[i.def_id];
- openConfirm("감정",`<p><b>${esc(nm)}</b>${josaOf(nm,"을","를")} 감정합니다.${c!=null?` <b>${Number(c).toLocaleString()}골드</b>를 냅니다.`:""}${o!=null?`<br>첫 감정이라 한 번만 0골드입니다(원래 ${Number(o).toLocaleString()}골드).`:""}</p><p class="help-note">랜덤 옵션이 안 붙을 수도 있습니다.<br>결과는 되돌릴 수 없습니다.</p>`,
-  [["취소",null,false],["감정",()=>appraise(id),true]],"appraise");
+ openConfirm(T("감정"),`<p>${T("<b>{name}</b>{name:을/를} 감정합니다.",{name:esc(nm)})}${c!=null?" "+T("<b>{cost}골드</b>를 냅니다.",{cost:Number(c).toLocaleString()}):""}${o!=null?"<br>"+T("첫 감정이라 한 번만 0골드입니다(원래 {cost}골드).",{cost:Number(o).toLocaleString()}):""}</p><p class="help-note">${T("랜덤 옵션이 안 붙을 수도 있습니다.<br>결과는 되돌릴 수 없습니다.")}</p>`,
+  [[T("취소"),null,false],[T("감정"),()=>appraise(id),true]],"appraise");
 }
 let appraising=false;
 async function appraise(id){
  if(appraising)return;appraising=true;
  const {data,error}=await sb.rpc("appraise_item",{p_item:id});
- if(error){appraising=false;log("appraise_item 실패: "+error.message,"bad");showBattleError(String(error.message).includes("NOT_ENOUGH_GOLD")?"골드가 부족합니다.":"감정하지 못했습니다.","Appraisal Clan");return}
+ if(error){appraising=false;log("appraise_item 실패: "+error.message,"bad");showBattleError(String(error.message).includes("NOT_ENOUGH_GOLD")?T("골드가 부족합니다."):T("감정하지 못했습니다."),"Appraisal Clan");return}
  log("appraise_item 성공","ok");
  // 감정한 Unknown은 서버가 한 개 줄이거나 지우고 새 장비를 만든다: 다시 받기 전에 목록에서 바로 빼 둔다(감정한 장비가 계속 Unknown으로 보이던 일)
  {const it=itemsData.find(i=>i.id===id);if(it){if(Number(it.qty)>1)it.qty=Number(it.qty)-1;else itemsData=itemsData.filter(i=>i!==it)}renderAppraise()}
  await loadItems();
- showItemResult("감정 결과",data);
+ showItemResult(T("감정 결과"),data);
  // 첫 감정 안내 중이면 결과를 넘겨 다음 장(옵션 설명)으로 간다. 결과 창이 뜰 때까지는 안내가 기다린다(appraising)
  if(qGuide?.key==="appraise")qGuide.res=data;
  appraising=false;
@@ -5380,7 +5428,7 @@ function showItemResult(title,r){
  const d=itemsData.find(i=>i.def_id===r.def)?.item_defs||{name:r.name};
  const it={def_id:r.def,rolled_bonuses:r.rolled||{},qty:1,item_defs:d};
  const none=!Object.keys(r.rolled||{}).length;
- openConfirm(title,`<div class="item-card">${itemDetailHtml(it)}</div><p class="help-note">${none?"랜덤 옵션이 붙지 않아 일반 장비가 되었습니다.":"랜덤 옵션이 붙었습니다. Bag에 들어갔습니다."}</p>${r.free?`<p class="help-note">첫 감정이라 0골드로 감정했습니다(원래 ${Number(r.orig_cost).toLocaleString()}골드).</p>`:r.cost!=null?`<p class="help-note">감정 비용 ${Number(r.cost).toLocaleString()}골드를 냈습니다.</p>`:""}`,[["확인",null,true]]);
+ openConfirm(title,`<div class="item-card">${itemDetailHtml(it)}</div><p class="help-note">${none?T("랜덤 옵션이 붙지 않아 일반 장비가 되었습니다."):T("랜덤 옵션이 붙었습니다. Bag에 들어갔습니다.")}</p>${r.free?`<p class="help-note">${T("첫 감정이라 0골드로 감정했습니다(원래 {cost}골드).",{cost:Number(r.orig_cost).toLocaleString()})}</p>`:r.cost!=null?`<p class="help-note">${T("감정 비용 {cost}골드를 냈습니다.",{cost:Number(r.cost).toLocaleString()})}</p>`:""}`,[[T("확인"),null,true]]);
 }
 // ===== 제작 =====
 let craftData=[],craftDefs={},craftN={};
@@ -5797,6 +5845,7 @@ function raidAlert(){
   el.innerHTML=`<span class="rd-alert-t">약탈 상대를 찾았습니다 · <b id="raidAlertSec"></b> 안에 정해 주세요</span><button type="button" class="fm-btn pri" onclick="openGuild()"><span>Thieves' Guild로</span></button>`;document.body.appendChild(el)}
  el.hidden=false;const n=$("raidAlertSec"),tx=`${Math.max(0,Math.ceil(raidLeft(t.hold_sec)))}초`;if(n.textContent!==tx)n.textContent=tx;
 }
+translateStatic();
 renderThemeToggle();
 init();
 </script></body></html>
