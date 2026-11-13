@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v527 · 갱신 2026-11-13 17:35 KST -->
+<!-- ProjectGY-test-console v528 · 갱신 2026-11-13 19:09 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -537,7 +537,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v527 · 2026-11-13 17:35</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v528 · 2026-11-13 19:09</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1704,7 +1704,6 @@ Object.assign(I18N.en,{
   "과제를 마치면 열립니다": "Complete the task to unlock",
   "앞 던전을 클리어하면 열립니다": "Clear the previous dungeon to unlock",
   "입장": "Enter",
-  "전투 중…": "In battle…",
   "파티에 캐릭터를 넣어 주세요.": "Add characters to the party.",
   "SUPPLY가 부족합니다.": "Not enough SUPPLY.",
   "파견 중": "On dispatch",
@@ -1715,6 +1714,7 @@ Object.assign(I18N.en,{
   "Battle Rush!": "Battle Rush!",
   "Mock Battle": "Mock Battle",
   "Battle!": "Battle!",
+  "다른 Battle Rush가 아직 돌고 있습니다. 끝난 뒤 다시 해 주세요.": "Another Battle Rush is still running. Try again once it's done.",
   "오늘 이 던전의 Mock Battle을 모두 썼습니다.": "You've used all of today's Mock Battles for this dungeon.",
   "판 수를 확인해 주세요.": "Check the number of runs.",
   "아직 열리지 않은 던전입니다.": "This dungeon isn't unlocked yet.",
@@ -1722,6 +1722,8 @@ Object.assign(I18N.en,{
   "특수직업은 직업별로 한 명만 출전할 수 있습니다.": "Only one of each special class can join a battle.",
   "다시 로그인해 주세요.": "Please log in again.",
   "전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.": "Couldn't start the battle. Your entry cost will be refunded.",
+  "전투 중… {n}/{m}판": "In battle… {n}/{m} runs",
+  "전투 중…": "In battle…",
   "전투 결과를 받지 못했습니다. 서버에서는 판이 돌았을 수 있습니다. Log에서 결과를 확인해 주세요.": "Couldn't get the battle result. The run may still have gone through on the server. Check the result in Log.",
   "Battle Rush": "Battle Rush",
   "전투": "Battle",
@@ -1784,6 +1786,7 @@ Object.assign(I18N.en,{
   "대미지": "Damage",
   "{sk}: 분신이 {w}{n:을/를} 쳤다": "{sk}: a clone strikes {w}",
   "(물결 피하기 +{v})": "(dodge bonus +{v})",
+  "{n} TURN": "{n} TURN",
   "원소를 파악했다!": "Elements revealed!",
   "원소 없음": "No element",
   "저지 자세를 취했다!": "Takes an intercepting stance!",
@@ -1861,7 +1864,6 @@ Object.assign(I18N.en,{
   "{w}{n:은/는} 쓰러졌다!": "{w} has fallen!",
   "{n} TURN END": "{n} TURN END",
   "BATTLE START!": "BATTLE START!",
-  "{n} TURN": "{n} TURN",
   "Mock Battle이라 보상이 없습니다.": "Mock Battle gives no rewards.",
   "지거나 비기면 보상이 없습니다.": "No rewards for a loss or a draw.",
   "골드 +{v}": "Gold +{v}",
@@ -1896,6 +1898,7 @@ Object.assign(I18N.en,{
   "{n}판에서 멈췄습니다{of}.": "Stopped at run {n}{of}.",
   "이긴 판이 없어 보상이 없습니다.": "No runs were won, so there are no rewards.",
   "<b>{wl}</b> · 평균 <b>{avg}</b>턴": "<b>{wl}</b> · avg <b>{avg}</b> {avg:turn/turns}",
+  "SUPPLY가 모자라 {m}판 대신 {n}판만 돌렸습니다.": "Not enough SUPPLY for {m} runs, so only {n} were run.",
   "{n}판": "Run {n}",
   "Auto Battle 열기": "Open Auto Battle",
   "Auto": "Auto",
@@ -3204,7 +3207,6 @@ Object.assign(I18N.zh,{
   "과제를 마치면 열립니다": "完成任务后开放",
   "앞 던전을 클리어하면 열립니다": "通关前一个地下城后开放",
   "입장": "进入",
-  "전투 중…": "战斗中…",
   "파티에 캐릭터를 넣어 주세요.": "请把角色加入队伍。",
   "SUPPLY가 부족합니다.": "补给不足。",
   "파견 중": "派遣中",
@@ -3215,6 +3217,7 @@ Object.assign(I18N.zh,{
   "Battle Rush!": "连战！",
   "Mock Battle": "模拟战",
   "Battle!": "战斗！",
+  "다른 Battle Rush가 아직 돌고 있습니다. 끝난 뒤 다시 해 주세요.": "另一场连战仍在进行中，请等它结束后再试。",
   "오늘 이 던전의 Mock Battle을 모두 썼습니다.": "今天这个地下城的模拟战次数已用完。",
   "판 수를 확인해 주세요.": "请检查场数。",
   "아직 열리지 않은 던전입니다.": "这个地下城尚未开放。",
@@ -3222,6 +3225,8 @@ Object.assign(I18N.zh,{
   "특수직업은 직업별로 한 명만 출전할 수 있습니다.": "特殊职业每种只能上场一名。",
   "다시 로그인해 주세요.": "请重新登录。",
   "전투를 시작하지 못했습니다. 입장 비용은 돌려받습니다.": "战斗未能开始。入场消耗会返还。",
+  "전투 중… {n}/{m}판": "战斗中…{n}/{m}场",
+  "전투 중…": "战斗中…",
   "전투 결과를 받지 못했습니다. 서버에서는 판이 돌았을 수 있습니다. Log에서 결과를 확인해 주세요.": "没能收到战斗结果。服务器上这场战斗可能已经进行。请在记录中查看结果。",
   "Battle Rush": "连战",
   "전투": "战斗",
@@ -3284,6 +3289,7 @@ Object.assign(I18N.zh,{
   "대미지": "伤害",
   "{sk}: 분신이 {w}{n:을/를} 쳤다": "{sk}：分身攻击了{w}",
   "(물결 피하기 +{v})": "（闪避奖励+{v}）",
+  "{n} TURN": "第{n}回合",
   "원소를 파악했다!": "看破了元素！",
   "원소 없음": "无元素",
   "저지 자세를 취했다!": "摆出了拦截架势！",
@@ -3361,7 +3367,6 @@ Object.assign(I18N.zh,{
   "{w}{n:은/는} 쓰러졌다!": "{w}倒下了！",
   "{n} TURN END": "第{n}回合 结束",
   "BATTLE START!": "战斗开始！",
-  "{n} TURN": "第{n}回合",
   "Mock Battle이라 보상이 없습니다.": "模拟战没有奖励。",
   "지거나 비기면 보상이 없습니다.": "输了或平局没有奖励。",
   "골드 +{v}": "金币+{v}",
@@ -3396,6 +3401,7 @@ Object.assign(I18N.zh,{
   "{n}판에서 멈췄습니다{of}.": "在第{n}场停止{of}。",
   "이긴 판이 없어 보상이 없습니다.": "没有获胜的场次，因此没有奖励。",
   "<b>{wl}</b> · 평균 <b>{avg}</b>턴": "<b>{wl}</b> · 平均<b>{avg}</b>回合",
+  "SUPPLY가 모자라 {m}판 대신 {n}판만 돌렸습니다.": "补给不够打{m}场，只进行了{n}场。",
   "{n}판": "第{n}场",
   "Auto Battle 열기": "打开自动战斗",
   "Auto": "自动",
@@ -8762,7 +8768,7 @@ function renderRoom(){
  renderParty();
  const hasParty=party.some(id=>chars.some(c=>c.id===id));
  const cost=d.supply_cost??10,sup=supplyNow(),left=Math.max(0,(d.mock_limit??0)-(d.mock_used??0)),noSupply=sup!=null&&sup<cost;
- const msg=battleBusy?T("전투 중…"):!hasParty?T("파티에 캐릭터를 넣어 주세요."):noSupply?T("SUPPLY가 부족합니다."):"";
+ const msg=battleBusy?rushProgText():!hasParty?T("파티에 캐릭터를 넣어 주세요."):noSupply?T("SUPPLY가 부족합니다."):"";
  // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
  const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
  const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()||idleTaken(d.id)?" disabled":""}>${T("Auto Battle!")}<span class="pill-sub">${idleTaken(d.id)?T("파견 중"):idleFull()?T("자리 없음"):T("{fee}골드/판",{fee:d.idle_fee})}</span></button>`:"";
@@ -8772,7 +8778,7 @@ function renderRoom(){
  if(typing!=null){const el=$("rushCount");if(el&&!el.disabled){el.value=typing;el.focus()}}
 }
 let battleBusy=false;
-const BATTLE_ERR={NOT_ENOUGH_SUPPLY:T("SUPPLY가 부족합니다."),MOCK_LIMIT:T("오늘 이 던전의 Mock Battle을 모두 썼습니다."),INVALID_RUSH:T("판 수를 확인해 주세요."),PARTY_EMPTY:T("파티에 캐릭터를 넣어 주세요."),DUNGEON_LOCKED:T("아직 열리지 않은 던전입니다."),CHARACTER_ON_IDLE:T("Auto Battle 중인 캐릭터는 쓸 수 없습니다."),PARTY_SPECIAL_DUPLICATE:T("특수직업은 직업별로 한 명만 출전할 수 있습니다."),NOT_AUTHENTICATED:T("다시 로그인해 주세요.")};
+const BATTLE_ERR={NOT_ENOUGH_SUPPLY:T("SUPPLY가 부족합니다."),RUSH_BUSY:T("다른 Battle Rush가 아직 돌고 있습니다. 끝난 뒤 다시 해 주세요."),MOCK_LIMIT:T("오늘 이 던전의 Mock Battle을 모두 썼습니다."),INVALID_RUSH:T("판 수를 확인해 주세요."),PARTY_EMPTY:T("파티에 캐릭터를 넣어 주세요."),DUNGEON_LOCKED:T("아직 열리지 않은 던전입니다."),CHARACTER_ON_IDLE:T("Auto Battle 중인 캐릭터는 쓸 수 없습니다."),PARTY_SPECIAL_DUPLICATE:T("특수직업은 직업별로 한 명만 출전할 수 있습니다."),NOT_AUTHENTICATED:T("다시 로그인해 주세요.")};
 function newRequestId(){try{return crypto.randomUUID()}catch(e){return "r"+Date.now().toString(36)+Math.random().toString(36).slice(2,12)}}
 async function startBattle(dungeonId,mode){
  if(battleBusy)return;battleBusy=true;renderRoom();
@@ -8788,25 +8794,31 @@ async function startBattle(dungeonId,mode){
  await load();loadAdventure();
 }
 // Battle Rush: 서버가 판마다 보통 전투와 똑같이 처리한다. 한 번에 다 못 하면 more를 주고, 같은 요청을 다시 보내 이어 간다
+// 엔진 0.63.0(사용자 H 진행 2026-11-13): 판 수는 서버가 남은 SUPPLY로 깎아 정한다(응답 count, 옛 서버는 없음). 판 사이를 벌려야 하면 more와 wait_sec(초)이 온다: 그만큼 기다렸다 같은 request_id로 이어 받는다.
+//   다른 Rush가 돌고 있으면 RUSH_BUSY. 도는 동안 "전투 중… 돈 판/정한 판"을 보인다(rushProg, 999판이면 오래 걸린다)
+let rushProg=null;
+function rushProgText(){return rushProg?T("전투 중… {n}/{m}판",rushProg):T("전투 중…")}
+function rushProgSet(p){rushProg=p;const m=document.querySelector("#roomActs .room-msg");if(m&&battleBusy)m.textContent=rushProgText()}
 async function startRush(dungeonId){
- if(battleBusy)return;const n=clampRush(rushCount);if(n<1)return;battleBusy=true;renderRoom();
+ if(battleBusy)return;const n=clampRush(rushCount);if(n<1)return;battleBusy=true;rushProg={n:0,m:n};renderRoom();
  const body={action:"rush",dungeon_id:dungeonId,count:n,keep_going:rushKeepGoing,request_id:newRequestId()};
  let data=null,errMsg="",rushLost=false;
  try{
   // 응답을 못 받으면(연결 끊김·시간 초과·5xx) 서버에서는 판이 돌았을 수 있다: 입장 비용을 돌려받는다고 하지 않고 Log를 보라고 한다
   // (같은 요청을 다시 보내는 것은 서버가 아직 돌리는 중일 때 겹칠 수 있어 하지 않는다)
-  for(let i=0;i<=n;i++){
-   // 한 번의 응답이 RUSH_WAIT_MS 안에 안 오면(서버는 한 응답을 약 10초에 끊어 보낸다) 연결이 끊긴 것으로 보고 "전투 중…"을 푼다(50판에서 응답 없이 멈춘 일, 플레이 시험 2026-11-11)
+  for(let i=0;i<n*3+20;i++){
+   // 한 번의 응답이 RUSH_WAIT_MS 안에 안 오면(서버는 한 응답을 약 20초에 끊어 보낸다) 연결이 끊긴 것으로 보고 "전투 중…"을 푼다(50판에서 응답 없이 멈춘 일, 플레이 시험 2026-11-11)
    const ac=typeof AbortController==="function"?new AbortController():null;let to=0;
    const r=await Promise.race([sb.functions.invoke("battle",ac?{body,signal:ac.signal}:{body}),new Promise(ok=>{to=setTimeout(()=>{try{ac&&ac.abort()}catch(e){}ok({error:{message:"RUSH_TIMEOUT",context:{}}})},RUSH_WAIT_MS)})]);
    clearTimeout(to);
    if(r.error){const st=r.error.context?.status;if(!st||st>=500)rushLost=true;
     try{const j=await r.error.context.json();errMsg=j.error||r.error.message}catch(e){errMsg=r.error.message}break}
    if(!r.data||!Array.isArray(r.data.runs)){errMsg="BAD_RESPONSE";rushLost=true;break}
-   data=r.data;if(!data.more)break;
+   data=r.data;rushProgSet({n:data.runs.length,m:Number(data.count)||n});if(!data.more)break;
+   const w=Number(data.wait_sec);if(w>0)await new Promise(ok=>setTimeout(ok,Math.min(w,60)*1000));
   }
  }catch(e){errMsg=String(e&&e.message||e)}
- battleBusy=false;
+ battleBusy=false;rushProg=null;renderRoom();
  const key=errMsg?Object.keys(BATTLE_ERR).find(k=>errMsg.includes(k)):null;
  if(errMsg)log("battle rush 실패: "+errMsg,"bad");
  // 한 판이라도 돌았으면 판 수 칸을 0으로 비운다(다음 Rush는 판 수를 새로 정한다)
@@ -9284,8 +9296,9 @@ function rushSummary(runs){
   for(const x of rw.gifts||[]){const eq=!!x.char,g=s.gifts.find(y=>y.def===x.def&&y.eq===eq);if(g)g.n++;else s.gifts.push({def:x.def,name:x.name||x.def,eq,n:1})}}
  return s;
 }
+// 판 수는 서버가 SUPPLY로 깎은 count(엔진 0.63.0)를 쓴다. 옛 응답은 requested
 function rushStopText(g,n){
- const of=g.requested?T(" ({n}/{m}판)",{n,m:g.requested}):"";
+ const m=g.count??g.requested,of=m?T(" ({n}/{m}판)",{n,m}):"";
  if(g.stopped==="LOSE")return T("{n}판째에서 져서 멈췄습니다{of}. 지거나 비겨도 계속 돌리려면 Setting에서 켤 수 있습니다.",{n,of});
  if(g.stopped==="DRAW")return T("{n}판째에서 비겨서 멈췄습니다{of}. 지거나 비겨도 계속 돌리려면 Setting에서 켤 수 있습니다.",{n,of});
  if(g.stopped==="NOT_ENOUGH_SUPPLY")return T("SUPPLY가 부족해 {n}판에서 멈췄습니다{of}.",{n,of});
@@ -9302,6 +9315,7 @@ function rushResultHtml(g){
   <div class="bl-big rush-big">Battle Rush ×${n}</div>
   <div class="bl-meta">${esc(TS(g.dungeon)||"")}</div>
   <div class="bl-sum-turn">${T("<b>{wl}</b> · 평균 <b>{avg}</b>턴",{wl:winLoseText(s),avg:n?Math.round(s.turns/n):0})}</div>
+  ${g.count!=null&&g.requested&&g.count<g.requested?`<div class="rush-stop">${esc(T("SUPPLY가 모자라 {m}판 대신 {n}판만 돌렸습니다.",{m:g.requested,n:g.count}))}</div>`:""}
   ${g.stopped?`<div class="rush-stop">${esc(rushStopText(g,n))}</div>`:""}
   <div class="bl-rw">${rwHtml}</div>
  </div>
