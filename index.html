@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v520 · 갱신 2026-11-13 13:24 KST -->
+<!-- ProjectGY-test-console v521 · 갱신 2026-11-13 14:01 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v520 · 2026-11-13 13:24</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v521 · 2026-11-13 14:01</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -817,17 +817,21 @@ const rpcRaw=sb.rpc.bind(sb),rpcFlying=new Map(),RPC_READ=/^(get_|is_)|^admin_te
 // 스킬 목록(직업·레벨·배운 스킬·무료 초기화)에 닿지 않는 값 바꾸기 요청. 이 밖의 요청이 끝나면 skillGen을 올려 06 load()가 스킬을 다시 받게 한다(모르는 요청은 닿는 것으로 본다)
 const SKILL_SAFE=new Set(["set_ui_pref","set_party","equip_item","unequip_item","set_roster_order","set_character_pattern","set_character_formation","set_character_consumable","allocate_tp","use_tp_reset","free_cleric_tp_reset","rename_character","sell_items","buy_shop_item","appraise_item","craft_items","enhance_item_to","item_enh_bonus","quest_guided","idle_dispatch","idle_returns_seen","answer_idle_guide","raid_buy","admin_set_gold","admin_grant_item","admin_get_monster","admin_save_monster","admin_save_monster_slot","admin_clear_monster_test","admin_raid_logs"]);
 let skillGen=0;
+// 값 바꾸기 요청(rpc 길목·전투 함수)이 끝날 때마다 올린다. 조회를 잠깐 다시 쓰는 곳(17 Adventure 탭)이 그 사이 바뀐 값이 있는지 본다
+let writeGen=0;
 sb.rpc=function(fn,args,opt){
  if(RPC_READ.test(fn))return rpcRaw(fn,args,opt);
  const k=fn+"|"+JSON.stringify(args??{});
  let p=rpcFlying.get(k);
  if(!p){p=Promise.resolve(rpcRaw(fn,args,opt)).finally(()=>rpcFlying.delete(k));rpcFlying.set(k,p);
   // 퀘스트 셈은 서버가 값을 바꾸는 동작 안에서 한다(감정·제작·보내기·스킬·TP 등). 값을 바꾸는 요청이 성공하면 퀘스트 창도 다시 받는다(동작마다가 아니라 여기 한 곳에서)
-  p.then(r=>{if(!r?.error)questSoon(fn);if(!r?.error&&(fn==="claim_quests"||fn.startsWith("admin_")))patGuideStale=true},()=>{}).finally(()=>{if(!SKILL_SAFE.has(fn))skillGen++})}
+  p.then(r=>{if(!r?.error)questSoon(fn);if(!r?.error&&(fn==="claim_quests"||fn.startsWith("admin_")))patGuideStale=true},()=>{}).finally(()=>{writeGen++;if(!SKILL_SAFE.has(fn))skillGen++})}
  return p;
 };
 // 전투(Edge Function battle)도 같은 길목: 성공하면 퀘스트 창을 다시 받는다. sb.functions는 부를 때마다 새로 만들어지므로 하나로 고정해 감싼다(토큰은 요청마다 붙는다)
-{const fc=sb.functions,invokeRaw=fc.invoke.bind(fc);fc.invoke=function(name,o){const p=invokeRaw(name,o);p.then(r=>{if(!r?.error)questSoon(name)},()=>{});return p};Object.defineProperty(sb,"functions",{value:fc})}
+// 함수는 서버(서울)와 같은 지역에서 돌게 고정한다(기본은 가까운 지역이라 미국에서 돌기도 함, 2026-11-13 로직 측정·사용자 H 진행). 지역 헤더(x-region)는 함수의 CORS 허용 헤더에 없어 막히므로 주소 끝 값(forceFunctionRegion)만 붙인다
+const FN_REGION="forceFunctionRegion=ap-northeast-2";
+{const fc=sb.functions,invokeRaw=fc.invoke.bind(fc);fc.invoke=function(name,o){const p=invokeRaw(String(name).includes("?")?name:name+"?"+FN_REGION,o);p.then(r=>{if(!r?.error)questSoon(name)},()=>{}).finally(()=>{writeGen++});return p};Object.defineProperty(sb,"functions",{value:fc})}
 const LB={BLESSED:T("축복"),NEUTRAL:T("평온"),BURDENED:T("과업")};
 let chars=[];
 let loggedIn=null;
@@ -1024,7 +1028,7 @@ async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();co
  if(now){$("currentEmail").textContent=isGuest?T("손님 계정"):(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
- loggedIn=now;patGuideStale=true;if(!now)patGuideFlag=false;questPlace(true);
+ loggedIn=now;patGuideStale=true;advAt=0;if(!now)patGuideFlag=false;questPlace(true);
  if(user){loadUiPrefs();load();loadAdminTools();checkIdle();loadRaid()}else{idleInfo=null;raidInfo=null;raidAlert();clearInterval(idleTimer);idleTimer=null;renderIdle();openDungeons.clear();clearInterval(supplyTimer);supplyState=null;$("tabSupply").innerHTML="";gold=null;renderGold();$("chars").innerHTML="";$("items").textContent="-";selectedCharId=null;$("adminCard").style.display="none";$("logCard").style.display="none"}
 }
 // 화면 설정은 서버(profiles.ui_prefs)에 저장한다. 화면 모드만 로그인 전을 위해 브라우저에도 임시로 기억한다.
@@ -1183,10 +1187,11 @@ async function loadAdminRaids(){
  const rows=data||[];if(!rows.length){box.textContent="약탈 기록이 없습니다.";return}
  box.innerHTML=`<table class="adm-raid-t"><tr><th>때</th><th>던전</th><th>약탈자</th><th>호위대 주인</th><th>결과</th><th>정보값</th><th>짐</th><th>둘 사이(7일/전체·약탈자 승)</th></tr>${rows.map(r=>`<tr class="${Number(r.pair_7d)>=3?"hot":""}" onclick="openRaidLog('${esc(r.id)}')"><td>${esc(raidWhen(r.at))}</td><td>${esc(r.dungeon||"")}</td><td>${esc(r.raider||"")}${r.raider_guest?" (손님)":""}</td><td>${esc(r.target||"")}${r.target_guest?" (손님)":""}</td><td>${r.result==="WIN"?"털림":r.result==="DRAW"?"무승부(막음)":"막음"}</td><td>${r.free?"공짜":Number(r.paid||0).toLocaleString()}${Number(r.info_to_target)>0?` → ${Number(r.info_to_target).toLocaleString()}`:""}</td><td>${r.result==="WIN"?`${Number(r.gold||0).toLocaleString()}G · ${raidItemsN(r.items)}개`:"-"}</td><td>${r.pair_7d}/${r.pair_total} · ${r.pair_raider_wins}</td></tr>`).join("")}</table>`;
 }
-let innJobs=[],selectedJob=null,charLimit=null;
+let innJobs=[],selectedJob=null,charLimit=null,innAt=0;
 // 영입 직업 목록과 인원 한도는 Inn을 열 때만 받는다(load()마다 받지 않는다). Inn이 열려 있는 동안 load()는 다시 그리기와 Goods만 다시 받는다
+// 열 때도 1분 안에 받은 게 있으면 다시 받지 않는다(관리자가 값을 바꾸는 표라 플레이로는 안 바뀜, 요청 줄이기 2026-11-13 사용자 H 진행)
 async function loadInn(full){
- if(full||!innJobs.length){
+ if(full&&Date.now()-innAt>60000||!innJobs.length){innAt=Date.now();
  const {data,error}=await sb.from("character_templates").select("job,name_ko,recruit_cost,sort_order").eq("tier","BASE").order("sort_order").order("job");
  if(error){log("직업 목록 불러오기 실패: "+error.message,"bad");innJobs=[]}else innJobs=data||[];
  if(!innJobs.some(j=>j.job===selectedJob))selectedJob=innJobs[0]?.job||null;
@@ -1320,7 +1325,7 @@ let loadRun=null,loadAgain=false;
 function load(){
  if(loadRun){loadAgain=true;return loadRun}
  // 퀘스트 창은 load()가 끝날 때 한 번 다시 받으니, 도는 동안 값 바꾸기 길목이 걸어 둔 다시 받기는 지운다(06-quest questSoon)
- loadRun=(async()=>{try{do{loadAgain=false;clearTimeout(questSoonT);await loadOnce()}while(loadAgain)}finally{loadRun=null}})();
+ loadRun=(async()=>{try{do{loadAgain=false;clearTimeout(questSoonT);questPend=false;await loadOnce()}while(loadAgain)}finally{loadRun=null}})();
  return loadRun}
 async function loadOnce(){
  if(!templates.length)await loadMeta();
@@ -1372,7 +1377,7 @@ function showView(view){
  if(view==="craft")loadCraft();
  if(view==="inn"&&loggedIn)loadInn(true);
  if(view==="guild"){if(raidTab!=="raid")setRaidTab(raidTab);loadRaid()}
- if(view==="adventure"){advRoom=null;loadAdventure();}
+ if(view==="adventure"){advRoom=null;loadAdventure(true);}
  if(view==="log"){if(logTab==="raid")loadRaidLogs("logRaidList");else loadBattleLogs()}
  renderIdle();
 }
@@ -1425,12 +1430,13 @@ function questEnsure(){
 let questSoonT=0;
 function questSoon(fn){if(fn==="claim_quests"||fn==="quest_guided"||fn==="set_ui_pref"||!loggedIn||stage||loadRun)return;questLater()}
 // load()도 이 묶음으로 다시 받는다(값 바꾸기 뒤 load()와 길목이 따로 받아 두 번 나가던 것). 곧바로 questLoad를 부르면 기다리던 것은 지운다
-function questLater(){clearTimeout(questSoonT);questSoonT=setTimeout(questLoad,300)}
+function questLater(){clearTimeout(questSoonT);questPend=true;questSoonT=setTimeout(questLoad,300)}
 // 여러 번 겹쳐 부르면 마지막에 보낸 요청의 답만 쓴다(먼저 보낸 요청의 답이 늦게 와 옛 숫자로 되돌리지 않게)
-let questSeq=0;
+// questPend: 묶어 둔 다시 받기가 기다리는 중. questAt: 마지막으로 보낸 때(창이 보이게 될 때 막 받은 것을 또 받지 않게, 로그인 때 두 번 나가던 것 2026-11-13 사용자 H 진행)
+let questSeq=0,questPend=false,questAt=0;
 async function questLoad(){
- if(stage||!loggedIn)return;
- clearTimeout(questSoonT);const my=++questSeq;
+ questPend=false;if(stage||!loggedIn)return;
+ clearTimeout(questSoonT);questAt=Date.now();const my=++questSeq;
  const {data,error}=await sb.rpc("get_quests");if(my!==questSeq)return;if(error){log("get_quests 실패: "+error.message,"bad");return}
  quests=Array.isArray(data)?data:[];questRender();
  patGuideLoad();
@@ -1535,7 +1541,7 @@ function questFollow(){if(!QR.el||QR.raf||QR.el.classList.contains("hidden"))ret
 // 보일지·접힐지를 바꾸는 값(튜토리얼 단계, 로그인, 무대, 설정, 창 폭, 본문 크기)이 바뀌었으면 다시 놓는다
 function questSig(){const m=document.querySelector("main").getBoundingClientRect();return [questHidden(),questIntroPending,document.documentElement.clientWidth,Math.round(m.right),Math.round(m.height)].join("|")}
 // 숨었다가 다시 보이면(튜토리얼 장이 끝남, 무대에서 나옴) 숨어 있던 동안 오른 숫자를 다시 받는다
-function questSync(){if(!QR.el||questSig()===QR.sig)return;const was=QR.el.classList.contains("hidden");questPlace(true);if(was&&!QR.el.classList.contains("hidden"))questLoad()}
+function questSync(){if(!QR.el||questSig()===QR.sig)return;const was=QR.el.classList.contains("hidden");questPlace(true);if(was&&!QR.el.classList.contains("hidden")&&!questPend&&Date.now()-questAt>3000)questLoad()}
 addEventListener("focus",()=>{if(QR.el&&!QR.el.classList.contains("hidden"))questLoad()});
 function setHideQuest(v){hideQuest=!!v;saveUiPref("hide_quest",hideQuest);questPlace(true)}
 function applyQuestPrefs(){if($("hideQuestChk"))$("hideQuestChk").checked=hideQuest;questPlace(true)}
@@ -4148,11 +4154,19 @@ function renamePrompt(id){
 }
 // ===== Adventure: 파티와 던전 =====
 let party=[],dungeons=[],openDungeons=new Set(),partyMax=5;
-async function loadAdventure(){
+// soft: 탭을 다시 열 때(06 showView). 30초 안에 다 받았고 그 뒤 값 바꾸기 요청(04 writeGen)이 끝난 게 없으면 서버에 다시 묻지 않고 든 값으로 그린다.
+//   SUPPLY 차오름과 Auto Battle 남은 시간은 화면이 스스로 세고(정산 때가 되면 21 tickIdle이 부른다), 전투·보내기 뒤에는 soft 없이 부른다
+//   (탭을 오갈 때마다 SUPPLY·파티·던전·파견 정보 4개를 다시 받던 것, 요청 줄이기 2026-11-13 사용자 H 진행)
+let advAt=0,advGen=-1;
+async function loadAdventure(soft){
+ if(soft&&advGen===writeGen&&Date.now()-advAt<30000&&dungeons.length&&supplyState&&idleInfo){
+  partyMax=Number(pubCfg.PARTY_MAX||5);renderDungeons();renderRoom();renderIdle();applyIdleLock();return}
+ const g=writeGen;
  loadSupply();
  const [p,d]=await Promise.all([sb.rpc("get_party"),sb.rpc("get_dungeons")]);
  if(p.error){log("get_party 실패: "+p.error.message,"bad");readFailNotice()}else party=p.data||[];
  if(d.error){log("get_dungeons 실패: "+d.error.message,"bad");readFailNotice()}else dungeons=d.data||[];
+ if(!p.error&&!d.error){advAt=Date.now();advGen=g}else advAt=0;
  partyMax=Number(pubCfg.PARTY_MAX||5);
  renderDungeons();renderRoom();
  checkIdle();
@@ -5115,7 +5129,9 @@ function applyIdleLock(){
 }
 function idleTaken(did){return (idleInfo?.parties||[]).some(p=>p.dungeon_id===did)}
 function idleFull(){return !!idleInfo&&(idleInfo.parties||[]).length>=Number(idleInfo.slots||0)}
-async function loadIdle(){const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();if(data&&data.gold!=null){gold=Number(data.gold)||0;renderGold()}return true}
+// 받는 중에 또 부르면 새로 보내지 않고 받는 중인 것을 함께 기다린다(로그인 때 파견 확인과 약탈 화면이 같이 불러 두 번 나가던 것, 2026-11-13 사용자 H 진행)
+let idleFlying=null;
+function loadIdle(){return idleFlying||(idleFlying=(async()=>{try{const {data,error}=await sb.rpc("get_idle_info");if(error){log("get_idle_info 실패: "+error.message,"bad");return false}idleInfo=data;idleAt=Date.now();if(data&&data.gold!=null){gold=Number(data.gold)||0;renderGold()}return true}finally{idleFlying=null}})())}
 // 밀린 판 정산: 서버가 한 번에 다 못 하면 more를 주고, 그동안 이어서 부른다
 async function settleIdle(){
  const total={settled:0,parties:{}};
