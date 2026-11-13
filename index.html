@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v521 · 갱신 2026-11-13 14:01 KST -->
+<!-- ProjectGY-test-console v522 · 갱신 2026-11-13 14:04 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -536,7 +536,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .log-tabs{margin-top:18px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v521 · 2026-11-13 14:01</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v522 · 2026-11-13 14:04</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -767,7 +767,7 @@ function staticUnits(root){
  const out=[],seen=new Set(),norm=x=>x.replace(/\s+/g," ").trim(),has=x=>/[^\s\d.,:;·•\-+×/%()?!…※⚠]/.test(x);
  const walk=e=>{if(e.matches&&e.matches(I18N_SKIP))return;
   const kids=[...e.childNodes],ownTxt=kids.some(n=>n.nodeType===3&&has(n.textContent)),inl=kids.every(n=>n.nodeType!==1||(I18N_INLINE.has(n.tagName)&&[...n.querySelectorAll("*")].every(c=>I18N_INLINE.has(c.tagName))));
-  if(ownTxt&&inl&&kids.some(n=>n.nodeType===1)){out.push({el:e,key:norm(e.innerHTML)});return}
+  if(ownTxt&&inl&&kids.some(n=>n.nodeType===1)&&!e.querySelector("[id]")){out.push({el:e,key:norm(e.innerHTML)});return}
   for(const n of kids){if(n.nodeType===3){const k=norm(n.textContent);if(k&&has(k))out.push({node:n,key:k})}else if(n.nodeType===1)walk(n)}};
  walk(root||document.body);
  for(const e of (root||document.body).querySelectorAll("[placeholder],[aria-label],[title]")){if(e.closest(I18N_SKIP))continue;for(const a of ["placeholder","aria-label","title"]){const k=e.getAttribute(a);if(k&&has(k))out.push({el:e,attr:a,key:k})}}
