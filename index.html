@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v523 · 갱신 2026-11-13 14:36 KST -->
+<!-- ProjectGY-test-console v524 · 갱신 2026-11-13 16:19 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -534,9 +534,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 @media(max-width:520px){.rd-alert{flex-wrap:wrap;justify-content:center;text-align:center;gap:6px}}
 .hide-pts .u-pts{display:none}
 .log-tabs{margin-top:18px}
+.lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v523 · 2026-11-13 14:36</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v524 · 2026-11-13 16:19</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -589,6 +590,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
       <div id="loginMsg" class="pw-error" style="display:none"></div>
     </div>
     <div id="alreadyLogged" style="display:none;color:var(--mu)">이미 로그인되어 있습니다.</div>
+    <div class="lang-pick"><select id="langSelLogin" aria-label="언어 · Language" onchange="setLang(this.value)"></select></div>
   </div>
 </div>
 
@@ -694,6 +696,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 </div>
 
 <div id="settingView" class="view">
+  <div class="card" id="langSetCard">
+    <div class="section-title">언어 · Language</div>
+    <div class="row"><select id="langSel" aria-label="언어 · Language" onchange="setLang(this.value)"></select></div>
+  </div>
   <div class="card">
     <div class="row"><span style="font-weight:700">접속 계정</span><span id="currentEmail" style="color:var(--mu)">-</span></div>
     <div class="row" style="margin-top:18px"><button id="btnSignOut" onclick="signOut()">로그아웃</button></div>
@@ -744,10 +750,31 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 //  {x} = 값 그대로 · {x:을/를} = x에 맞는 꼴 하나만(한국어는 받침으로 앞/뒤, 영어는 x가 1이면 앞·아니면 뒤, 중국어는 앞)
 //  원문에 넣는 태그는 <b>·<br>만. 감싸는 틀(div·class)은 코드에 둔다. 값은 부르는 쪽이 esc()해서 넘긴다.
 // 사전에 없는 글은 원문(한국어) 그대로 나온다. 기본 언어는 한국어라 사전이 비어도 화면이 같다.
-// 고정 글(03-body.html)은 코드를 바꾸지 않고, 한국어가 아닐 때만 시작할 때 글 조각·placeholder·aria-label·title을 사전으로 바꾼다(관리자 도구·로그 창·translate="no" 요소는 뺀다).
+// 고정 글(03-body.html)은 코드를 바꾸지 않고, 한국어가 아닐 때만 시작할 때 글 조각·placeholder·aria-label·title을 사전으로 바꾼다(관리자 도구·로그 창·콘솔 버전은 뺀다).
 const LANGS=["ko","en","zh"];
 const I18N={en:{},zh:{}};
-let LANG=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(LANGS.includes(q))return q}catch(e){}return "ko"})();
+// 언어 고르기: 주소 ?lang= > 이 브라우저에 고른 언어(pgy_lang) > 기기 언어(한국어·중국어가 아니면 영어). 로그인하면 서버 화면 설정(ui_prefs.lang)을 따른다(04-base loadUiPrefs)
+const LANG_NAMES={ko:"한국어",en:"English",zh:"中文"};
+const LANG_URL=(()=>{try{const q=new URLSearchParams(location.search).get("lang");if(LANGS.includes(q))return q}catch(e){}return null})();
+let LANG=(()=>{if(LANG_URL)return LANG_URL;try{const s=localStorage.getItem("pgy_lang");if(LANGS.includes(s))return s}catch(e){}
+ const n=String((navigator.languages&&navigator.languages[0])||navigator.language||"ko");return /^ko/i.test(n)?"ko":/^zh/i.test(n)?"zh":"en"})();
+document.documentElement.lang={ko:"ko",en:"en",zh:"zh-CN"}[LANG];
+// 서버에 lang 키가 생기면 true(set_ui_pref 허용 목록)
+const LANG_PREF_ON=true;   // 서버 ui_prefs에 lang 저장
+function renderLangSelects(){for(const id of ["langSel","langSelLogin"]){const el=document.getElementById(id);if(el)el.innerHTML=LANGS.map(l=>`<option value="${l}"${l===LANG?" selected":""}>${LANG_NAMES[l]}</option>`).join("")}}
+// 바꾸면 이 브라우저에 기억하고 다시 연다(고정 글·목록 이름이 시작할 때 정해지므로). 브라우저에 기억하지 못하면 주소의 ?lang=로 연다
+async function setLang(l){
+ if(!LANGS.includes(l)||l===LANG)return;
+ let kept=false;try{localStorage.setItem("pgy_lang",l);kept=localStorage.getItem("pgy_lang")===l}catch(e){}
+ if(LANG_PREF_ON&&typeof loggedIn!=="undefined"&&loggedIn)await saveUiPref("lang",l);
+ const u=new URL(location.href);if(kept)u.searchParams.delete("lang");else u.searchParams.set("lang",l);location.replace(u.href);
+}
+// 로그인 뒤 서버에 남은 언어가 지금과 다르면 그 언어로 다시 연다(주소로 언어를 정했으면 주소가 먼저)
+function applyLangPref(v){
+ if(!LANGS.includes(v)||v===LANG||LANG_URL)return;
+ let kept=false;try{localStorage.setItem("pgy_lang",v);kept=localStorage.getItem("pgy_lang")===v}catch(e){}
+ if(kept)location.reload();
+}
 function langPick(lang,x,a,b){
  if(lang==="ko")return josaOf(x,a,b);
  if(lang==="en")return Number(String(x).replace(/,/g,""))===1?a:b;
@@ -760,7 +787,7 @@ function T(src,v,ctx){
  const lang=s===src?"ko":LANG;
  return s.replace(/\{(\w+)(?::([^{}\/]*)\/([^{}]*))?\}/g,(m,k,a,b)=>{if(!(k in v))return m;const x=v[k]??"";return a==null?String(x):langPick(lang,x,a,b)});
 }
-const I18N_SKIP="#adminCard,#logCard,[translate=no],script,style,svg";
+const I18N_SKIP="#adminCard,#logCard,#consoleVer,script,style,svg";
 const I18N_INLINE=new Set(["B","STRONG","I","EM","SPAN","A","BR","SMALL","CODE","KBD","SUB","SUP"]);
 // 고정 글의 번역 단위: 글 조각과 인라인 태그(b·span 등)만 든 요소는 innerHTML 통째로(문장이 끊기지 않게), 아니면 글 조각 하나씩
 function staticUnits(root){
@@ -2087,6 +2114,7 @@ Object.assign(I18N.en,{
   "Goods": "Goods",
   "Buy": "Buy",
   "Sell": "Sell",
+  "언어 · Language": "Language",
   "접속 계정": "Signed in as",
   "Battle Rush에서 지거나 비겨도 계속 돌리기": "Keep Battle Rush going after a loss or draw",
   "꺼 두면 이기지 못한 판에서 멈춥니다.": "When off, it stops at any run you don't win.",
@@ -3424,6 +3452,7 @@ Object.assign(I18N.zh,{
   "Goods": "杂货",
   "Buy": "购买",
   "Sell": "出售",
+  "언어 · Language": "语言 · Language",
   "접속 계정": "当前账号",
   "Battle Rush에서 지거나 비겨도 계속 돌리기": "连战中输了或平局也继续",
   "꺼 두면 이기지 못한 판에서 멈춥니다.": "关闭时，会停在没赢的那一场。",
@@ -3711,6 +3740,7 @@ async function loadUiPrefs(){
  bgmOff=prefs.bgm_off===true;bgmBg=prefs.bgm_background===true;applyBgm();
  hideQuest=prefs.hide_quest===true;questIntroSeen=prefs.quest_intro_seen===true;applyQuestPrefs();
  collapsedSecs=new Set(Array.isArray(prefs.collapsed_sections)?prefs.collapsed_sections:[]);
+ if(LANG_PREF_ON)applyLangPref(prefs.lang);
 
  if(selectedCharId)renderCharacterDetail();
 }
@@ -8529,6 +8559,7 @@ function raidAlert(){
  el.hidden=false;const n=$("raidAlertSec"),tx=`${T("{hold_sec}초",{hold_sec:Math.max(0,Math.ceil(raidLeft(t.hold_sec)))})}`;if(n.textContent!==tx)n.textContent=tx;
 }
 translateStatic();
+renderLangSelects();
 renderThemeToggle();
 init();
 </script></body></html>
