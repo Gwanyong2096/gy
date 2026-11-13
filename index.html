@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v526 · 갱신 2026-11-13 17:03 KST -->
+<!-- ProjectGY-test-console v527 · 갱신 2026-11-13 17:35 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -537,7 +537,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v526 · 2026-11-13 17:03</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v527 · 2026-11-13 17:35</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -6322,9 +6322,21 @@ function stageAnswer(kind,name,body){
  if(kind==="rpc"&&name==="get_party"&&stage.party)return {s:200,b:stage.party};
  if(kind==="tbl"||(kind==="rpc"&&/^get_/.test(name))){
   const arr=D.reads[key];if(!arr)return {s:400,b:{message:"STAGE_NO_DATA "+key}};
-  let hit=arr[0];for(const x of arr){if(x[0]<=stage.pos)hit=x;else break}
+  // 던전 목록(열림)은 값을 바꾸는 요청이 아니라 튜토리얼 단계로 정해진다. 찍을 때 다 한 요청을 다시 보기에서 넘기면(Front SPD 넘기기 등) 그 뒤에 잡힌 열린 목록에 닿지 못해 멈추므로,
+  // 같은 단계 안에서는 다음 전투 직전까지 잡힌 답 중 가장 늦은 것을 준다(전투 결과·다음 단계는 앞당기지 않는다)
+  let lim=stage.pos;
+  if(name==="get_dungeons"){
+   const ts=(D.reads["rpc:get_tutorial|[]"]||[]).map(x=>x[0]).find(p=>p>stage.pos),W=D.writes;
+   let b=stage.pos;while(b<W.length&&W[b][0]!=="fn:battle")b++;
+   lim=Math.max(stage.pos,Math.min(b,ts!=null?ts-1:b));
+  }
+  let hit=arr[0];for(const x of arr){if(x[0]<=lim)hit=x;else break}
   let b=stageBlob(hit[1]);
   // 끝나는 단계는 그 판을 찍을 때의 마지막 단계를 넘지 않는다(단계가 늘기 전에 찍은 판은 그때의 끝에서 마친다)
+  // 단계는 tutorial_ack 답에도 온다. 찍을 때 그 뒤에 get_tutorial을 다시 읽지 않았으면 읽은 답이 단계보다 늦으니(챕터 4·5 첫 자리), 더 뒤에 끝난 ack 답의 단계를 쓴다
+  if(name==="get_tutorial"&&b&&typeof b==="object"){
+   for(let j=Math.min(stage.pos,D.writes.length)-1;j>=0&&j+1>hit[0];j--){const w=D.writes[j];if(w[0].startsWith("rpc:tutorial_ack|")&&w[2]!=null){const a=stageBlob(w[2]);if(a&&a.step!=null){b={...b,step:a.step,last:a.last??b.last,chapel_free:a.chapel_free??b.chapel_free}}break}}
+  }
   if(name==="get_tutorial"&&b&&typeof b==="object"){const to=(TUT_CHAPTERS.find(c=>c.n===stage.ch)||{}).to;b={...b,practice:stage.ch,practice_end:b.last!=null&&to!=null?Math.min(to,b.last):to}}
   return {s:200,b};
  }
@@ -6471,7 +6483,10 @@ function tutSpdFlow(h,k,intro){
  if(Date.now()-tutSpdPend<4000)return h.wait();
  const key=tutSpdKey(k);if(!tutSpdState[key])tutSpdState[key]=tutSpdLoad(k);
  const S=tutSpdState[key],away=typeof idleChars==="function"?idleChars():new Set();
- const ids=Array.isArray(party)&&party.length?party:chars.map(c=>c.id);
+ let ids=Array.isArray(party)&&party.length?party:chars.map(c=>c.id);
+ // 무대: 캐릭터 정보는 찍은 판의 배분 순서대로 바뀌므로 찍을 때 배분한 순서대로 짚는다(순서가 다르면 숫자가 같은 앞 판으로 건너뛰어 남은 배분이 막힌다)
+ if(stage){const W=STAGE_DATA.takes[stage.take].writes,ord=[];for(let j=stage.pos;j<stage.to&&j<W.length;j++){const m=W[j][0].match(/^rpc:allocate_tp\|\[\["p_char","([^"]+)"/);if(m&&!ord.includes(m[1]))ord.push(m[1])}
+  const at=id=>{const x=ord.indexOf(id);return x<0?ord.length:x};ids=[...ids].sort((a,b)=>at(a)-at(b))}
  const sc=ids.map(id=>chars.find(c=>c.id===id)).find(c=>c&&!away.has(c.id)&&Number(c.tp||0)>0&&!S.skip.has(c.id)&&!(S.start[c.id]!=null&&tpCur(c).h>S.start[c.id]));
  if(!sc)return null;
  const jn=sc.job_name||sc.job;
@@ -6877,7 +6892,14 @@ function tutResolve(){
   if(f.value!=="1")fill();
   return say("s7alloc",box.querySelector("button.pri"),"배분을 눌러 주세요.",{holdId:true});
  }
- // 단계 8(대기)은 짚지 않는다(tutActive가 거른다)
+ // 단계 8(대기)은 짚지 않는다(tutActive가 거른다). 무대(챕터 3 다시 보기)는 이 단계에서 시작하므로 셋째 던전으로 바로 데려간다(퀘스트 줄기는 무대 자료에 없다)
+ if(s===TUT_WAIT&&tutPractice){
+  if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
+  if(modal)return okBtn?savedOk():say("p8close",q(".help-close"),"닫기를 눌러 주세요.");
+  const sn=dgName(2)||"셋째 던전";
+  if(!tutSeen.has("p8"))return mid("p8",`챕터 3은 ${sn}에서 이기는 데서 시작합니다.\n원래는 퀘스트를 따라 레벨을 올린 뒤 도전합니다.\n연습에서는 바로 도전해 봅시다.`,{btn:"다음",fn:()=>tutSeen.add("p8")});
+  return toFight(dungeons[2],"p8",`${sn}에 도전해 봅시다.\nAdventure를 눌러 주세요.`,`셋째 던전 ${sn}입니다.\n눌러서 펼쳐 주세요.`);
+ }
  // 단계 9: 셋째 던전을 이겨 챕터 3이 열렸다. Footman의 Formation에서 시작 위치와 엄호를 보여 준다
  if(s===9){
   if(battleBusy)return mid("busy","전투 중입니다.\n잠시만 기다려 주세요.");
