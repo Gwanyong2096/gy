@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v530 · 갱신 2026-11-13 19:49 KST -->
+<!-- ProjectGY-test-console v531 · 갱신 2026-11-16 16:14 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -530,7 +530,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v530 · 2026-11-13 19:49</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v531 · 2026-11-16 16:14</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1764,6 +1764,11 @@ Object.assign(I18N.en,{
   "{w}의 약점이 깎여나간다!": "{w}'s weak spot is shredded!",
   "출혈 {n}턴": "Bleed {n} {n:turn/turns}",
   "몰입 {n}턴": "Focus {n} {n:turn/turns}",
+  "도발 {n}턴": "Taunt {n} {n:turn/turns}",
+  "{n}턴": "{n} {n:turn/turns}",
+  "저지 자세": "Intercepting stance",
+  "확정 패링 {n}회": "Guaranteed parry ×{n}",
+  "재생 {n}턴": "Regen {n} {n:turn/turns}",
   "Front Delay": "Front Delay",
   "Back Delay": "Back Delay",
   "(편 {v}%)": "(side {v}%)",
@@ -1774,7 +1779,6 @@ Object.assign(I18N.en,{
   "(저항 {v}%)": "(resist {v}%)",
   "(소모품 사용 중)": "(using a consumable)",
   "{w} {dl} 변화 없음": "No {dl} change for {w}",
-  "{n}턴": "{n} {n:turn/turns}",
   "합계": "Total",
   "대미지": "Damage",
   "{sk}: 분신이 {w}{n:을/를} 쳤다": "{sk}: a clone strikes {w}",
@@ -3247,6 +3251,11 @@ Object.assign(I18N.zh,{
   "{w}의 약점이 깎여나간다!": "{w}的弱点被一点点削去！",
   "출혈 {n}턴": "流血{n}回合",
   "몰입 {n}턴": "专注{n}回合",
+  "도발 {n}턴": "嘲讽{n}回合",
+  "{n}턴": "{n}回合",
+  "저지 자세": "拦截架势",
+  "확정 패링 {n}회": "必定招架{n}次",
+  "재생 {n}턴": "再生{n}回合",
   "Front Delay": "前摇",
   "Back Delay": "后摇",
   "(편 {v}%)": "（阵营{v}%）",
@@ -3257,7 +3266,6 @@ Object.assign(I18N.zh,{
   "(저항 {v}%)": "（抗性{v}%）",
   "(소모품 사용 중)": "（正在使用消耗品）",
   "{w} {dl} 변화 없음": "{w}的{dl}没有变化",
-  "{n}턴": "{n}回合",
   "합계": "合计",
   "대미지": "伤害",
   "{sk}: 분신이 {w}{n:을/를} 쳤다": "{sk}：分身攻击了{w}",
@@ -8992,7 +9000,14 @@ function battleLogHtml(b){
   const meta=u.boss?"":TS(u.job||"");
   return `<div class="cs-u${dead?" dead":""}${u.boss?" boss":""}"><div class="cs-name"><span class="cs-id">${who(st.u)}</span>${dead?"":w?`<span class="cs-st">${w[1]}...</span>`:""}${meta?`<span class="cs-meta">${esc(meta)}</span>`:""}</div>
   ${line("HP",st.hp,st.mhp||mhp[st.u],"hp")}${mmp[st.u]>0?line("MP",st.mp,st.mmp||mmp[st.u],"mp"):""}${dead?"":`<div class="cs-line"><span class="cs-k"></span><span class="cs-bar fd"><i style="width:${w?Math.max(0,Math.min(100,+st.fp||0)):0}%"></i></span><span class="cs-v"></span></div>`}
-  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw${st.psl?" bl-tk":""}"${st.psl?` ${tkOpen}`:""}><span class="psn-ico">☠</span> ${T("독")} ${st.ps}${tkListPop(st.psl,T("독"))}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw${st.bll?" bl-tk":""}"${st.bll?` ${tkOpen}`:""}>${BLEED_ICO}${T("출혈 {n}턴",{n:st.bl})}${tkListPop(st.bll,T("출혈"))}</span>`:""}</div>`:""}${!dead&&(st.spr?.length||st.zn)?`<div class="cs-dot">${st.spr?.length?`<span class="bl-spirit nw">✦ ${st.spr.map(id=>esc(TS(spName[id])||id)).join(" · ")}</span>`:""}${st.spr?.length&&st.zn?" ":""}${st.zn?`<span class="bl-buff nw">${T("몰입 {n}턴",{n:st.zn})}</span>`:""}</div>`:""}</div>`};
+  ${!dead&&(st.ps||st.bl)?`<div class="cs-dot">${st.ps?`<span class="bl-psn nw${st.psl?" bl-tk":""}"${st.psl?` ${tkOpen}`:""}><span class="psn-ico">☠</span> ${T("독")} ${st.ps}${tkListPop(st.psl,T("독"))}</span>`:""}${st.ps&&st.bl?" ":""}${st.bl?`<span class="bl-bld nw${st.bll?" bl-tk":""}"${st.bll?` ${tkOpen}`:""}>${BLEED_ICO}${T("출혈 {n}턴",{n:st.bl})}${tkListPop(st.bll,T("출혈"))}</span>`:""}</div>`:""}${!dead&&(st.spr?.length||st.zn)?`<div class="cs-dot">${st.spr?.length?`<span class="bl-spirit nw">✦ ${st.spr.map(id=>esc(TS(spName[id])||id)).join(" · ")}</span>`:""}${st.spr?.length&&st.zn?" ":""}${st.zn?`<span class="bl-buff nw">${T("몰입 {n}턴",{n:st.zn})}</span>`:""}</div>`:""}${dead?"":fxHtml(st)}</div>`};
+ // 걸린 효과 한 줄(티어2 기믹, 로직 #로직-1116-1558): 도발 tn·표식 mk[{n,t}]·저지 자세(반격 태세) sc·확정 패링 남은 수 sp·재생 남은 턴 rg·버프 누적 bf{키:값}. 상태표(status)에 있을 때만(엔진이 넣기 전엔 안 보임)
+ const fxHtml=st=>{const l=[];if(st.tn)l.push(`<span class="bl-parry nw">⚑ ${T("도발 {n}턴",{n:st.tn})}</span>`);
+  (st.mk||[]).forEach(m=>l.push(`<span class="bl-debuff nw">◎ ${esc(TS(m.n)||"")} ${T("{n}턴",{n:m.t})}</span>`));
+  if(st.sc)l.push(`<span class="bl-parry nw">${T("저지 자세")}</span>`);if(st.sp)l.push(`<span class="bl-parry nw">${T("확정 패링 {n}회",{n:st.sp})}</span>`);
+  if(st.rg)l.push(`<span class="bl-heal nw">⟳ ${T("재생 {n}턴",{n:st.rg})}</span>`);
+  Object.entries(st.bf||{}).filter(([,v])=>v).forEach(([k,v])=>{const tv=v*buffSign(k);l.push(`<span class="${v>0?"bl-buff":"bl-debuff"} nw">${esc(buffLabel(k))} ${tv>0?"+":""}${tv}${buffUnit(k)}</span>`)});
+  return l.length?`<div class="cs-dot cs-fx">${l.join(" ")}</div>`:""};
  // 한쪽 = 전방/후방 두 줄. 전방 줄이 가운데 선 쪽(적: back | front, 아군: front | back). 사람이 적은 줄은 세로 가운데에 선다
  const statusSide=(sd,list)=>{const order=sd==="E"?["BACK","FRONT"]:["FRONT","BACK"];
   return `<div class="cs-side ${sd==="E"?"l":"r"}">${order.map(pos=>{const us=list.filter(x=>(x.pos||info[x.u]?.pos||"BACK")===pos);
