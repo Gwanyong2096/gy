@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v531 · 갱신 2026-11-16 16:14 KST -->
+<!-- ProjectGY-test-console v532 · 갱신 2026-11-17 18:36 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -530,7 +530,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v531 · 2026-11-16 16:14</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v532 · 2026-11-17 18:36</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1049,19 +1049,25 @@ Object.assign(I18N.en,{
   "안전 파견과 무법 파견": "Safe Dispatch and Lawless Dispatch",
   "<b>안전 파견</b>: 기사단이 호위합니다. 이긴 판의 골드는 전부 호위비로 나가고, 드랍·EXP는 직접 플레이의 {v}를 바로 받습니다. 약탈당하지 않습니다.": "<b>Safe Dispatch</b>: A knight escort protects the party. All gold from won runs goes to the escort, and you receive drops and EXP at {v} of direct play right away. It can't be raided.",
   "<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. {v}마다 한 판, 이긴 판 골드의 {gold_pct}%와 드랍(직접 플레이의 {v2})은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.": "<b>Lawless Dispatch</b>: You send your own escort (0–5 characters). One run every {v}; {gold_pct}% of the gold from won runs and the drops ({v2} of direct play) pile up in the <b>haul</b>. EXP is received right away.",
-  "20분": "20 minutes",
+  "<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. 이긴 판 골드의 일부와 드랍은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.": "<b>Lawless Dispatch</b>: You send your own escort (0–5 characters). Part of the gold from won runs and the drops pile up in the <b>haul</b>. EXP is received right away.",
   "짐은 다른 유저가 Town의 Thieves' Guild에서 약탈할 수 있습니다. 약탈자가 호위대를 이기면 짐을 전부 가져갑니다(호위대가 없으면 싸움 없이). 호위대가 이기거나 비기면 짐은 그대로이고, 약탈자가 낸 정보값을 받습니다.": "Other players can raid your haul at the Thieves' Guild in Town. If the raider beats your escort, they take the whole haul (without a fight if there's no escort). If your escort wins or draws, the haul stays and you receive the intel fee the raider paid.",
   "<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. {recall_minutes}분 걸리고, 그동안에도 약탈될 수 있습니다.": "<b>Collect haul</b> moves just the haul to your Bag; <b>Bring back</b> moves the party and the haul together. It takes {recall_minutes} minutes, and the haul can still be raided in the meantime.",
-  "약탈당한 파티는 2시간 동안 보호받습니다. 호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.": "A raided party is protected for 2 hours. The escort doesn't fight monsters and fights with the pattern and formation it had when sent.",
+  "<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. 옮기는 동안에도 약탈될 수 있습니다.": "<b>Collect haul</b> moves just the haul to your Bag; <b>Bring back</b> moves the party and the haul together. The haul can still be raided while it's on the way.",
+  "약탈당한 파티는 {v} 동안 보호받습니다.": "A raided party is protected for {v}.",
+  "약탈당한 파티는 한동안 보호받습니다.": "A raided party is protected for a while.",
+  "호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.": "The escort doesn't fight monsters and fights with the pattern and formation it had when sent.",
   "던전마다 안전만, 무법만, 둘 다 중 하나입니다. 손님 계정은 무법 파견을 할 수 없습니다.": "Each dungeon allows Safe only, Lawless only, or both. Guest accounts can't use Lawless Dispatch.",
   "Thieves' Guild": "Thieves' Guild",
   "무법 파견 파티의 짐을 노립니다. 정보를 사면 길드가 상대를 찾아 줍니다.": "Go after the hauls of Lawless Dispatch parties. Buy intel and the guild will find you a target.",
   "약탈 파티 5명과 무법 던전을 고르고 <b>정보 사기</b>를 누릅니다. Auto Battle 중인 캐릭터는 넣을 수 없습니다.": "Choose a 5-character raid party and a lawless dungeon, then tap <b>Buy intel</b>. Characters on Auto Battle can't be included.",
-  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 {v}%, 2번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.": "Free intel resets to 1 every hour on the hour (Korea time) and doesn't stack. After using it, you buy intel with gold. Within that hour, the 1st costs {v}% of that dungeon's base gold, the 2nd {v2}%, and each one after that is {raidInfo}× the previous price. Prices reset every hour on the hour.",
+  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 2번째는 그 던전 기준 골드의 {v}%, 3번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.": "Free intel resets to 1 every hour on the hour (Korea time) and doesn't stack. After using it, you buy intel with gold. Within that hour, the 2nd costs {v}% of that dungeon's base gold, the 3rd {v2}%, and each one after that is {raidInfo}× the previous price. Prices reset every hour on the hour.",
+  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 사고, 살수록 비싸집니다. 가격은 매 정시에 처음으로 돌아갑니다.": "Free intel resets to 1 every hour on the hour (Korea time) and doesn't stack. After using it, you buy intel with gold, and each purchase costs more. Prices reset every hour on the hour.",
   "길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). {search_minutes}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.": "The guild searches for a target (searches are spaced out more when many players are searching). If none is found within {search_minutes} min, the intel fee is refunded (a free intel slip for free intel; gold and the price step for paid intel). The search continues even if you close the screen.",
+  "길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). 정해진 시간 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.": "The guild searches for a target (searches are spaced out more when many players are searching). If none is found in time, the intel fee is refunded (a free intel slip for free intel; gold and the price step for paid intel). The search continues even if you close the screen.",
   "찾으면 고르지 않고 바로 상대 호위대와 싸웁니다. 결과에서 상대 호위대의 직업·레벨·대열과 짐(골드·아이템)을 볼 수 있습니다.": "Once a target is found, you fight its escort right away. There's no choosing. The result shows the escort's classes, levels, formation, and haul (gold and items).",
   "이기면 짐을 전부 가져갑니다(골드 보너스는 붙지 않습니다). 지거나 비기면 짐은 그대로이고, 골드로 산 정보값은 상대에게 갑니다(공짜 정보면 없음). 진 쪽 캐릭터는 다치지 않습니다.": "Win and you take the whole haul (no gold bonus). Lose or draw and the haul stays, and gold paid for intel goes to the target (nothing if the intel was free). The losing side's characters aren't harmed.",
-  "찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {protect_minutes}시간), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.": "Excluded from the search: yourself, protected parties ({protect_minutes} {protect_minutes:hour/hours} after being raided), parties with an empty haul, and targets you've already fought {daily_limit} times today.",
+  "찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {v}), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.": "Excluded from the search: yourself, protected parties ({v} after being raided), parties with an empty haul, and targets you've already fought {daily_limit} times today.",
+  "찾기에서 빠지는 상대: 나 자신, 보호 중, 짐이 빈 파티, 오늘 정해진 횟수만큼 이미 싸운 상대.": "Excluded from the search: yourself, protected parties, parties with an empty haul, and targets you've already fought the daily limit of times.",
   "약탈 기록은 Records에서 봅니다. 약탈한 쪽과 당한 쪽 모두 남습니다. 손님 계정은 약탈할 수 없습니다.": "Raid records are under Records. Both the raider and the raided side keep a record. Guest accounts can't raid.",
   "Equipment": "Equipment",
   "장비 12칸과 소모품 칸 1개가 있습니다.": "There are 12 gear slots and 1 consumable slot.",
@@ -1129,6 +1135,10 @@ Object.assign(I18N.en,{
   "BATTLE CRY": "BATTLE CRY",
   "MP REGEN": "MP REGEN",
   "{CRY_TURNS}턴": "{CRY_TURNS} {CRY_TURNS:turn/turns}",
+  "DEF": "DEF",
+  "MDEF": "MDEF",
+  "SPD": "SPD",
+  "Random": "Random",
   "화살": "Arrows",
   "장탄수": "Magazine",
   "물리 경감": "Physical MIT",
@@ -1144,8 +1154,6 @@ Object.assign(I18N.en,{
   "패턴 줄": "Pattern Rows",
   "최대 HP": "Max HP",
   "최대 MP": "Max MP",
-  "DEF": "DEF",
-  "MDEF": "MDEF",
   "독": "Poison",
   "출혈": "Bleed",
   "Front DEF": "Front DEF",
@@ -1378,7 +1386,6 @@ Object.assign(I18N.en,{
   "방출": "Release",
   "EXP {exp}/{exp_next}": "EXP {exp}/{exp_next}",
   "EXP MAX": "EXP MAX",
-  "SPD": "SPD",
   "피해 증폭 <b>{v}{DMG_AMP}</b>": "DMG AMP <b>{v}{DMG_AMP}</b>",
   "패링 <b>{PARRY}</b>": "Parry <b>{PARRY}</b>",
   "관통 <b>{PIERCE}</b>": "Pierce <b>{PIERCE}</b>",
@@ -1942,6 +1949,7 @@ Object.assign(I18N.en,{
   "(정보값 +{info_gold}골드)": "(intel fee +{info_gold} gold)",
   "무법": "Lawless",
   "파견비 {fee}골드/판": "Fee {fee} gold/run",
+  "{min}분마다 한 판": "One run every {min} min",
   "판을 다 돌았습니다 · 돌려받아 주세요.": "All runs done · Bring the party back.",
   "판을 다 돌았습니다 · 회수해 주세요.": "All runs done · Recall the party.",
   "골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.": "Stopped: not enough gold. It'll resume once you have enough gold.",
@@ -1961,10 +1969,6 @@ Object.assign(I18N.en,{
   "보호 중 {left} · 그동안 약탈되지 않습니다.": "Protected for {left} · Can't be raided during this time.",
   "다음 판까지 {left}": "Next run in {left}",
   "정산을 기다리는 중…": "Waiting to settle…",
-  "다음 판까지 {soon}": "Next run in {soon}",
-  "판을 다 돎{names} · 회수해 주세요": "All runs done{names} · Recall the party",
-  "골드 부족으로 멈춤{names}": "Stopped: not enough gold{names}",
-  "파견한 파티가 없습니다.": "No parties dispatched.",
   "튜토리얼을 보지 않으면 Auto Battle 보내기 퀘스트 보상을 받을 수 없습니다.": "If you skip the tutorial, you can't get the reward for the Auto Battle dispatch quest.",
   "Auto Battle 튜토리얼": "Auto Battle tutorial",
   "Auto Battle 튜토리얼을 보시겠습니까?": "View the Auto Battle tutorial?",
@@ -2125,8 +2129,6 @@ Object.assign(I18N.en,{
   "장부 보러 왔나. 네가 턴 것, 너를 노린 것 다 적어 뒀다.": "Here for the ledger? Everyone you hit, everyone who came for you. It's all written down.",
   "※ 이긴 쪽이 짐을 가져간다. 호위대가 이기거나 비기면 골드로 산 정보값은 호위대 주인에게 간다.": "※ The winner takes the haul. If the escort wins or draws, the intel fee paid in gold goes to the escort's owner.",
   "{dungeon}에서 상대를 찾지 못해 정보값을 돌려받았습니다.": "Couldn't find a target in {dungeon}, so your intel fee was refunded.",
-  "상대를 넘겼습니다. 정보값은 돌려받지 못합니다.": "You passed on the target. The intel fee isn't refunded.",
-  "정할 시간이 지나 넘긴 것으로 쳤습니다. 정보값은 돌려받지 못합니다.": "Time ran out, so it counts as a pass. The intel fee isn't refunded.",
   "방금 약탈에 성공했습니다.": "The raid just succeeded.",
   "방금 호위대에 막혔습니다.": "The escort just stopped you.",
   "기록 보기": "View records",
@@ -2536,19 +2538,25 @@ Object.assign(I18N.zh,{
   "안전 파견과 무법 파견": "安全派遣与无法派遣",
   "<b>안전 파견</b>: 기사단이 호위합니다. 이긴 판의 골드는 전부 호위비로 나가고, 드랍·EXP는 직접 플레이의 {v}를 바로 받습니다. 약탈당하지 않습니다.": "<b>安全派遣</b>：由骑士团护卫。赢下场次的金币全部用作护卫费，掉落·经验按亲自游玩的{v}直接获得。不会被掠夺。",
   "<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. {v}마다 한 판, 이긴 판 골드의 {gold_pct}%와 드랍(직접 플레이의 {v2})은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.": "<b>无法派遣</b>：自己组建护卫队（0~5人）派出。每{v}一场，赢下场次金币的{gold_pct}%和掉落（亲自游玩的{v2}）会存进<b>战利品包</b>。经验直接获得。",
-  "20분": "20分钟",
+  "<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. 이긴 판 골드의 일부와 드랍은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.": "<b>无法派遣</b>：自己组建护卫队（0~5人）派出。赢下场次的部分金币和掉落会存进<b>战利品包</b>。经验直接获得。",
   "짐은 다른 유저가 Town의 Thieves' Guild에서 약탈할 수 있습니다. 약탈자가 호위대를 이기면 짐을 전부 가져갑니다(호위대가 없으면 싸움 없이). 호위대가 이기거나 비기면 짐은 그대로이고, 약탈자가 낸 정보값을 받습니다.": "战利品包可能被其他玩家在城镇的盗贼公会掠夺。掠夺者打赢护卫队就会拿走全部战利品（没有护卫队则不用战斗）。护卫队打赢或打平时，战利品包保持原样，还能拿到掠夺者支付的情报费。",
   "<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. {recall_minutes}분 걸리고, 그동안에도 약탈될 수 있습니다.": "<b>回收战利品</b>只运回战利品包，<b>撤回</b>则把队伍和战利品包一起运回背包。需要{recall_minutes}分钟，期间仍可能被掠夺。",
-  "약탈당한 파티는 2시간 동안 보호받습니다. 호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.": "被掠夺的队伍会受到2小时保护。护卫队不与怪物战斗，按派出时的战术·站位作战。",
+  "<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. 옮기는 동안에도 약탈될 수 있습니다.": "<b>回收战利品</b>只运回战利品包，<b>撤回</b>则把队伍和战利品包一起运回背包。运送期间仍可能被掠夺。",
+  "약탈당한 파티는 {v} 동안 보호받습니다.": "被掠夺的队伍会受到{v}保护。",
+  "약탈당한 파티는 한동안 보호받습니다.": "被掠夺的队伍会受到一段时间的保护。",
+  "호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.": "护卫队不与怪物战斗，按派出时的战术·站位作战。",
   "던전마다 안전만, 무법만, 둘 다 중 하나입니다. 손님 계정은 무법 파견을 할 수 없습니다.": "每个地下城只能安全派遣、只能无法派遣，或两者皆可。游客账号无法使用无法派遣。",
   "Thieves' Guild": "盗贼公会",
   "무법 파견 파티의 짐을 노립니다. 정보를 사면 길드가 상대를 찾아 줍니다.": "盯上无法派遣队伍的战利品包。购买情报后，公会会帮你找目标。",
   "약탈 파티 5명과 무법 던전을 고르고 <b>정보 사기</b>를 누릅니다. Auto Battle 중인 캐릭터는 넣을 수 없습니다.": "选好5人掠夺队和无法地下城，点击<b>购买情报</b>。正在自动战斗的角色不能加入。",
-  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 {v}%, 2번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.": "免费情报每到整点（韩国时间）补满为1张，不会累积。用完免费的之后需要花金币购买。同一小时内，第1张为该地下城基准金币的{v}%，第2张{v2}%，之后每张是前一张的{raidInfo}倍。价格每到整点重置。",
+  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 2번째는 그 던전 기준 골드의 {v}%, 3번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.": "免费情报每到整点（韩国时间）补满为1张，不会累积。用完免费的之后需要花金币购买。同一小时内，第2张为该地下城基准金币的{v}%，第3张{v2}%，之后每张是前一张的{raidInfo}倍。价格每到整点重置。",
+  "공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 사고, 살수록 비싸집니다. 가격은 매 정시에 처음으로 돌아갑니다.": "免费情报每到整点（韩国时间）补满为1张，不会累积。用完免费的之后需要花金币购买，买得越多越贵。价格每到整点重置。",
   "길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). {search_minutes}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.": "公会会为你搜寻目标（同时搜寻的人多时，间隔会变长）。{search_minutes}分钟内没找到会返还情报费（免费情报返还免费次数，金币情报返还金币和价格档位）。关闭界面也会继续搜寻。",
+  "길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). 정해진 시간 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.": "公会会为你搜寻目标（同时搜寻的人多时，间隔会变长）。在规定时间内没找到会返还情报费（免费情报返还免费次数，金币情报返还金币和价格档位）。关闭界面也会继续搜寻。",
   "찾으면 고르지 않고 바로 상대 호위대와 싸웁니다. 결과에서 상대 호위대의 직업·레벨·대열과 짐(골드·아이템)을 볼 수 있습니다.": "找到后不用选择，直接与对方护卫队开战。可以在结果中查看对方护卫队的职业·等级·站位和战利品包（金币·物品）。",
   "이기면 짐을 전부 가져갑니다(골드 보너스는 붙지 않습니다). 지거나 비기면 짐은 그대로이고, 골드로 산 정보값은 상대에게 갑니다(공짜 정보면 없음). 진 쪽 캐릭터는 다치지 않습니다.": "胜利就拿走全部战利品（没有金币加成）。失败或平局时战利品包保持原样，用金币买的情报费归对方（免费情报则没有）。战败方的角色不会受伤。",
-  "찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {protect_minutes}시간), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.": "不会被搜到的目标：自己、保护中（被掠夺后{protect_minutes}小时）、战利品包为空的队伍、今天已交手{daily_limit}次的对手。",
+  "찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {v}), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.": "不会被搜到的目标：自己、保护中（被掠夺后{v}）、战利品包为空的队伍、今天已交手{daily_limit}次的对手。",
+  "찾기에서 빠지는 상대: 나 자신, 보호 중, 짐이 빈 파티, 오늘 정해진 횟수만큼 이미 싸운 상대.": "不会被搜到的目标：自己、保护中、战利品包为空的队伍、今天已交手达到上限次数的对手。",
   "약탈 기록은 Records에서 봅니다. 약탈한 쪽과 당한 쪽 모두 남습니다. 손님 계정은 약탈할 수 없습니다.": "掠夺记录在记录页查看。掠夺方和被掠夺方都会留下记录。游客账号无法掠夺。",
   "Equipment": "装备",
   "장비 12칸과 소모품 칸 1개가 있습니다.": "共有12个装备栏和1个消耗品栏。",
@@ -2616,6 +2624,10 @@ Object.assign(I18N.zh,{
   "BATTLE CRY": "战吼",
   "MP REGEN": "法力再生",
   "{CRY_TURNS}턴": "{CRY_TURNS}回合",
+  "DEF": "物防",
+  "MDEF": "法防",
+  "SPD": "速度",
+  "Random": "随机",
   "화살": "箭矢",
   "장탄수": "弹匣",
   "물리 경감": "物理减伤",
@@ -2631,8 +2643,6 @@ Object.assign(I18N.zh,{
   "패턴 줄": "战术条数",
   "최대 HP": "最大生命",
   "최대 MP": "最大法力",
-  "DEF": "物防",
-  "MDEF": "法防",
   "독": "中毒",
   "출혈": "流血",
   "Front DEF": "比例物防",
@@ -2865,7 +2875,6 @@ Object.assign(I18N.zh,{
   "방출": "遣散",
   "EXP {exp}/{exp_next}": "经验{exp}/{exp_next}",
   "EXP MAX": "经验已满",
-  "SPD": "速度",
   "피해 증폭 <b>{v}{DMG_AMP}</b>": "增伤<b>{v}{DMG_AMP}</b>",
   "패링 <b>{PARRY}</b>": "招架<b>{PARRY}</b>",
   "관통 <b>{PIERCE}</b>": "穿透<b>{PIERCE}</b>",
@@ -3429,6 +3438,7 @@ Object.assign(I18N.zh,{
   "(정보값 +{info_gold}골드)": "（情报费+{info_gold}金币）",
   "무법": "无法",
   "파견비 {fee}골드/판": "派遣费{fee}金币/场",
+  "{min}분마다 한 판": "每{min}分钟一场",
   "판을 다 돌았습니다 · 돌려받아 주세요.": "场次已全部打完 · 请撤回队伍。",
   "판을 다 돌았습니다 · 회수해 주세요.": "场次已全部打完 · 请召回队伍。",
   "골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.": "金币不足，已暂停。补足金币后会继续。",
@@ -3448,10 +3458,6 @@ Object.assign(I18N.zh,{
   "보호 중 {left} · 그동안 약탈되지 않습니다.": "保护中{left} · 期间不会被掠夺。",
   "다음 판까지 {left}": "距下一场{left}",
   "정산을 기다리는 중…": "等待结算…",
-  "다음 판까지 {soon}": "距下一场{soon}",
-  "판을 다 돎{names} · 회수해 주세요": "场次已打完{names} · 请召回",
-  "골드 부족으로 멈춤{names}": "金币不足已暂停{names}",
-  "파견한 파티가 없습니다.": "没有派出的队伍。",
   "튜토리얼을 보지 않으면 Auto Battle 보내기 퀘스트 보상을 받을 수 없습니다.": "不看教程的话，无法领取派出自动战斗任务的奖励。",
   "Auto Battle 튜토리얼": "自动战斗教程",
   "Auto Battle 튜토리얼을 보시겠습니까?": "要看自动战斗教程吗？",
@@ -3612,8 +3618,6 @@ Object.assign(I18N.zh,{
   "장부 보러 왔나. 네가 턴 것, 너를 노린 것 다 적어 뒀다.": "来看账本？你劫过谁、谁盯上过你，全都记着呢。",
   "※ 이긴 쪽이 짐을 가져간다. 호위대가 이기거나 비기면 골드로 산 정보값은 호위대 주인에게 간다.": "※ 赢的一方拿走战利品包。护卫队赢或打平时，用金币买的情报费归护卫队的主人。",
   "{dungeon}에서 상대를 찾지 못해 정보값을 돌려받았습니다.": "在{dungeon}没找到目标，情报费已退还。",
-  "상대를 넘겼습니다. 정보값은 돌려받지 못합니다.": "已放过目标。情报费不退还。",
-  "정할 시간이 지나 넘긴 것으로 쳤습니다. 정보값은 돌려받지 못합니다.": "超过决定时间，视为放过。情报费不退还。",
   "방금 약탈에 성공했습니다.": "刚刚掠夺成功。",
   "방금 호위대에 막혔습니다.": "刚刚被护卫队挡住了。",
   "기록 보기": "查看记录",
@@ -5226,7 +5230,7 @@ async function loadUiPrefs(){
  if(prefs.theme==="light"||prefs.theme==="dark"){document.documentElement.dataset.theme=prefs.theme;try{localStorage.setItem("pgy_theme",prefs.theme)}catch(e){}renderThemeToggle()}
  else if(document.documentElement.dataset.theme)saveUiPref("theme",document.documentElement.dataset.theme);
  quickOpen=prefs.quick_open!==false;
- idleOpen=prefs.idle_open!==false;renderIdle();
+ renderIdle();
  adminMode=prefs.admin_mode!==false;applyAdminMode();
  rushKeepGoing=prefs.rush_keep_going===true;hideMock=prefs.hide_mock===true;applyRushPrefs();
  hidePts=prefs.hide_point_badge===true;applyHidePts();
@@ -6144,18 +6148,18 @@ const HELP={
   <li>${T("기록은 파티마다 요약과 마지막 한 판의 전투 로그만 남고, 회수하면 사라집니다.")}</li></ul>
   ${(()=>{const L=ii?.lawless;return `<h4>${T("안전 파견과 무법 파견")}</h4>
   <ul><li>${T("<b>안전 파견</b>: 기사단이 호위합니다. 이긴 판의 골드는 전부 호위비로 나가고, 드랍·EXP는 직접 플레이의 {v}를 바로 받습니다. 약탈당하지 않습니다.",{v:ii?pctWord(ii.reward_pct):T("일부")})}</li>
-  <li>${T("<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. {v}마다 한 판, 이긴 판 골드의 {gold_pct}%와 드랍(직접 플레이의 {v2})은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.",{v:L?durWord(L.run_minutes*60):T("20분"),gold_pct:L?.gold_pct??50,v2:L?pctWord(L.reward_pct):"100%"})}</li>
+  <li>${L?T("<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. {v}마다 한 판, 이긴 판 골드의 {gold_pct}%와 드랍(직접 플레이의 {v2})은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.",{v:durWord(L.run_minutes*60),gold_pct:L.gold_pct,v2:pctWord(L.reward_pct)}):T("<b>무법 파견</b>: 직접 호위대(0~5명)를 꾸려 보냅니다. 이긴 판 골드의 일부와 드랍은 <b>짐</b>에 쌓입니다. EXP는 바로 받습니다.")}</li>
   <li>${T("짐은 다른 유저가 Town의 Thieves' Guild에서 약탈할 수 있습니다. 약탈자가 호위대를 이기면 짐을 전부 가져갑니다(호위대가 없으면 싸움 없이). 호위대가 이기거나 비기면 짐은 그대로이고, 약탈자가 낸 정보값을 받습니다.")}</li>
-  <li>${T("<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. {recall_minutes}분 걸리고, 그동안에도 약탈될 수 있습니다.",{recall_minutes:L?.recall_minutes??5})}</li>
-  <li>${T("약탈당한 파티는 2시간 동안 보호받습니다. 호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.")}</li>
+  <li>${L?.recall_minutes!=null?T("<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. {recall_minutes}분 걸리고, 그동안에도 약탈될 수 있습니다.",{recall_minutes:L.recall_minutes}):T("<b>짐 회수</b>는 짐만, <b>돌려받기</b>는 파티와 짐을 함께 가방으로 옮깁니다. 옮기는 동안에도 약탈될 수 있습니다.")}</li>
+  <li>${raidInfo?.protect_minutes?T("약탈당한 파티는 {v} 동안 보호받습니다.",{v:durWord(raidInfo.protect_minutes*60)}):T("약탈당한 파티는 한동안 보호받습니다.")} ${T("호위대는 몬스터와 싸우지 않고, 보낼 때의 패턴·대열로 싸웁니다.")}</li>
   <li>${T("던전마다 안전만, 무법만, 둘 다 중 하나입니다. 손님 계정은 무법 파견을 할 수 없습니다.")}</li></ul>`})()}`}},
  raid:{title:T("Thieves' Guild"),html:()=>{const r=raidInfo;return `<p>${T("무법 파견 파티의 짐을 노립니다. 정보를 사면 길드가 상대를 찾아 줍니다.")}</p>
   <ul><li>${T("약탈 파티 5명과 무법 던전을 고르고 <b>정보 사기</b>를 누릅니다. Auto Battle 중인 캐릭터는 넣을 수 없습니다.")}</li>
-  <li>${T("공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 1번째는 그 던전 기준 골드의 {v}%, 2번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.",{v:raidLadder(raidInfo)[0].toLocaleString(),v2:raidLadder(raidInfo)[1].toLocaleString(),raidInfo:raidMult(raidInfo)})}</li>
-  <li>${T("길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). {search_minutes}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.",{search_minutes:r?.search_minutes??1})}</li>
+  <li>${r?.ladder?T("공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 삽니다. 그 시간 안에서 2번째는 그 던전 기준 골드의 {v}%, 3번째 {v2}%, 그다음부터는 앞 값의 {raidInfo}배입니다. 가격은 매 정시에 처음으로 돌아갑니다.",{v:raidLadder(r)[0].toLocaleString(),v2:raidLadder(r)[1].toLocaleString(),raidInfo:raidMult(r)}):T("공짜 정보는 매 정시(한국 시간)에 1장으로 다시 채워지고 쌓이지 않습니다. 공짜를 쓴 뒤에는 골드로 사고, 살수록 비싸집니다. 가격은 매 정시에 처음으로 돌아갑니다.")}</li>
+  <li>${r?.search_minutes!=null?T("길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). {search_minutes}분 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.",{search_minutes:r.search_minutes}):T("길드가 상대를 찾습니다(찾는 사람이 많으면 간격이 길어집니다). 정해진 시간 안에 못 찾으면 정보값(공짜면 공짜 한 장, 골드면 골드와 가격 단계)을 돌려줍니다. 화면을 닫아도 계속 찾습니다.")}</li>
   <li>${T("찾으면 고르지 않고 바로 상대 호위대와 싸웁니다. 결과에서 상대 호위대의 직업·레벨·대열과 짐(골드·아이템)을 볼 수 있습니다.")}</li>
   <li>${T("이기면 짐을 전부 가져갑니다(골드 보너스는 붙지 않습니다). 지거나 비기면 짐은 그대로이고, 골드로 산 정보값은 상대에게 갑니다(공짜 정보면 없음). 진 쪽 캐릭터는 다치지 않습니다.")}</li>
-  <li>${T("찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {protect_minutes}시간), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.",{protect_minutes:r?Math.round((r.protect_minutes||120)/60):2,daily_limit:r?.daily_limit??3})}</li>
+  <li>${r?.protect_minutes&&r?.daily_limit!=null?T("찾기에서 빠지는 상대: 나 자신, 보호 중(약탈당한 뒤 {v}), 짐이 빈 파티, 오늘 이미 {daily_limit}번 싸운 상대.",{v:durWord(r.protect_minutes*60),daily_limit:r.daily_limit}):T("찾기에서 빠지는 상대: 나 자신, 보호 중, 짐이 빈 파티, 오늘 정해진 횟수만큼 이미 싸운 상대.")}</li>
   <li>${T("약탈 기록은 Records에서 봅니다. 약탈한 쪽과 당한 쪽 모두 남습니다. 손님 계정은 약탈할 수 없습니다.")}</li></ul>`}},
  equipment:{title:T("Equipment"),html:`<p>${T("장비 12칸과 소모품 칸 1개가 있습니다.")}</p>
   <h4>${T("소모품")}</h4>
@@ -7375,14 +7379,14 @@ function itemTagsHtml(d){const t=[itemCat(d),String(d?.material||"").toLowerCase
 function itemTop(head,i){const [c,n]=itemBodyParts(i);// 범주 괄호와 옵션, 옵션과 설명 사이에 같은 점(·)을 넣는다(범주 괄호 속 점보다 크고 굵게, 세로 가운데)
  const dot=(x,cls)=>x?`<span class="${cls}"><span class="opt-dot">·</span>${x}</span>`:"";
  return `<div class="item-top">${head}${dot(c,"opt-wrap")}${dot(n,"note-wrap")}</div>`}
-// 감정·제작으로 붙은 랜덤 옵션만 따로(영어 표기, 색 없음). 앞의 옵션은 기본 옵션과 합친 값이다
+// 감정·제작으로 붙은 랜덤 옵션만 따로(옵션 이름은 기본 옵션과 같은 말, T()로 중국어 화면은 용어집 말, 색 없음). 앞의 옵션은 기본 옵션과 합친 값이다
 function itemRandHtml(i){
  if(!i||i.unknown)return "";
  const r=i.rolled_bonuses||{},n=k=>Number(r[k]||0),sg=x=>x>0?`+${x}`:` ${x}`;
  const fb=(label,f,b)=>(n(f)||n(b))?`${label} ${fbText(n(f),n(b))}`:"";
- const parts=[n("ATK")?`ATK${sg(n("ATK"))}`:"",n("MATK")?`MATK${sg(n("MATK"))}`:"",fb("DEF","DEF_F","DEF_B"),fb("MDEF","MDEF_F","MDEF_B"),fb("SPD","SPD_F","SPD_B"),
+ const parts=[n("ATK")?`${T("ATK")}${sg(n("ATK"))}`:"",n("MATK")?`${T("MATK")}${sg(n("MATK"))}`:"",fb(T("DEF"),"DEF_F","DEF_B"),fb(T("MDEF"),"MDEF_F","MDEF_B"),fb(T("SPD"),"SPD_F","SPD_B"),
   ...Object.entries(r).filter(([k,v])=>!CORE_BONUS.has(k)&&Number(v)!==0).map(([k,v])=>`${vis(ITEM_OPT_LABEL[k]||k)}${sg(Number(v))}${PCT_BONUS.has(k)||k.endsWith("_PCT")?"%":""}`)].filter(Boolean);
- return parts.length?`<span class="item-rand">(Random ${parts.map(esc).join(" ")})</span>`:"";
+ return parts.length?`<span class="item-rand">(${T("Random")} ${parts.map(esc).join(" ")})</span>`:"";
 }
 function itemBodyParts(i){
  const d=i.item_defs||{};if(d.slot==="CONSUMABLE")return ["",d.note?`<div class="item-note">${esc(TS(d.note))}</div>`:""];
@@ -7391,7 +7395,7 @@ function itemBodyParts(i){
  const val=(cls,label,txt)=>`<b class="${cls}">${label}${String(txt).startsWith("+")?"":" "}${txt}</b>`;
  // 없는 옵션(0)은 표시하지 않는다
  const sg=x=>x>0?`+${x}`:`${x}`;
- const parts=[n("ATK")?val("o-atk","ATK",sg(n("ATK"))):"",n("MATK")?val("o-matk","MATK",sg(n("MATK"))):"",(n("DEF_F")||n("DEF_B"))?val("o-def","DEF",fbText(n("DEF_F"),n("DEF_B"))):"",(n("MDEF_F")||n("MDEF_B"))?val("o-mdef","MDEF",fbText(n("MDEF_F"),n("MDEF_B"))):"",(n("SPD_F")||n("SPD_B"))?val("o-spd","SPD",fbText(n("SPD_F"),n("SPD_B"))):""].filter(Boolean);
+ const parts=[n("ATK")?val("o-atk",T("ATK"),sg(n("ATK"))):"",n("MATK")?val("o-matk",T("MATK"),sg(n("MATK"))):"",(n("DEF_F")||n("DEF_B"))?val("o-def",T("DEF"),fbText(n("DEF_F"),n("DEF_B"))):"",(n("MDEF_F")||n("MDEF_B"))?val("o-mdef",T("MDEF"),fbText(n("MDEF_F"),n("MDEF_B"))):"",(n("SPD_F")||n("SPD_B"))?val("o-spd",T("SPD"),fbText(n("SPD_F"),n("SPD_B"))):""].filter(Boolean);
  // 기본 옵션과 그 밖의 옵션을 순서대로 한 줄(가로)에 나열
  const extra=Object.entries(b).filter(([k,v])=>!CORE_BONUS.has(k)&&!OPT_HIDE.has(k)&&Number(v)!==0).map(([k,v])=>`<b class="${optClass(k)}">${esc(optText(k,v,b))}</b>`);
  const all=[...parts,...extra].join("");
@@ -8510,7 +8514,8 @@ const MON_UP=`<svg class="btn-ico" viewBox="0 0 16 16" aria-hidden="true"><path 
 function monRowHtml(p,i){
  const acts=monActs(),basic=monBasic();
  const c=p?.c||"always",a=acts.some(s=>s.id===p?.a)?p.a:basic,has=VALUE_CONDS.has(c);
- const v=Number.isFinite(Number(p?.v))?Number(p.v):condDefault(c);
+ // 몬스터 패턴은 수치 없이 저장될 수 있고, 그때 엔진은 0으로 본다(11-17 점검 30번) → 저장된 줄은 0으로 보인다. 새 줄은 always라 수치 칸이 없다
+ const v=Number.isFinite(Number(p?.v))?Number(p.v):0;
  return `<div class="pattern-row">
   <div class="pattern-head"><span class="pattern-num">패턴 ${i+1}</span></div>
   <div class="pattern-controls">
@@ -8558,7 +8563,7 @@ function monCheckPattern(rows){
  for(let i=0;i<rows.length;i++){if(rows[i].a!=="common_and")continue;if(i===rows.length-1)return "마지막 줄에는 AND를 쓸 수 없습니다.";if(COOLDOWN_CONDS.has(rows[i].c))return "AND 줄에는 쿨타임 조건을 쓸 수 없습니다."}
  return "";
 }
-const monPatKey=rows=>(rows||[]).map(p=>`${p.c}|${p.a}|${VALUE_CONDS.has(p.c)?Number(p.v??condDefault(p.c)):""}`).join("\n");
+const monPatKey=rows=>(rows||[]).map(p=>`${p.c}|${p.a}|${VALUE_CONDS.has(p.c)?Number(p.v??0):""}`).join("\n");
 function monReadDef(){
  const box=$("advMon"),st={};
  box.querySelectorAll(".mon-stat input").forEach(i=>st[i.dataset.k]=Math.round(Number(i.value)));
@@ -8734,7 +8739,7 @@ function renderRoom(){
  const msg=battleBusy?rushProgText():!hasParty?T("파티에 캐릭터를 넣어 주세요."):noSupply?T("SUPPLY가 부족합니다."):"";
  // 순서: Battle! → Auto Battle! → Battle Rush! → Mock Battle(항상 맨 뒤). 판 수를 적는 중에 다시 그려져도 적던 값과 커서를 지킨다
  const typing=document.activeElement&&document.activeElement.id==="rushCount"?document.activeElement.value:null;
- const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()||idleTaken(d.id)?" disabled":""}>${T("Auto Battle!")}<span class="pill-sub">${idleTaken(d.id)?T("파견 중"):idleFull()?T("자리 없음"):T("{fee}골드/판",{fee:d.idle_fee})}</span></button>`:"";
+ const autoBtn=d.auto_unlocked?`<button class="pill" onclick="confirmDispatch('${esc(d.id)}')"${battleBusy||!hasParty||idleFull()||idleTaken(d.id)?" disabled":""}>${T("Auto Battle!")}<span class="pill-sub">${idleTaken(d.id)?T("파견 중"):idleFull()?T("자리 없음"):T("{fee}골드/판",{fee:d.zone==="LAWLESS"?(d.idle_fee_lawless??d.idle_fee):d.idle_fee})}</span></button>`:"";
  const rushBtn=`<span class="rush-box"><input id="rushCount" class="rush-n" type="number" inputmode="numeric" min="0" max="${rushMaxN()}" step="1" value="${rushCount}" data-cost="${cost}" aria-label="${T("Battle Rush 판 수")}" oninput="rushInput(this)" onchange="rushInput(this,true)"${battleBusy?" disabled":""}><button type="button" class="mini-btn rush-max" onclick="rushMax(${cost})"${battleBusy?" disabled":""}>${T("최대")}</button><button class="pill" id="rushGo" data-off="${battleBusy||!hasParty||noSupply?1:0}" onclick="startRush('${esc(d.id)}')"${battleBusy||!hasParty||noSupply||rushCount<1?" disabled":""}>${T("Battle Rush!")}<span class="pill-sub" id="rushSub">${T("SUPPLY {n}",{n:cost*rushCount})}</span></button></span>`;
  const mockBtn=mockVisible()?`<button class="pill" onclick="startBattle('${esc(d.id)}','MOCK')"${battleBusy||!hasParty||left<=0?" disabled":""}>${T("Mock Battle")}<span class="pill-sub">${left}/${d.mock_limit??0}</span></button>`:"";
  $("roomActs").innerHTML=`<div class="room-acts"><button class="pill pri" onclick="startBattle('${esc(d.id)}','MANUAL')"${battleBusy||!hasParty||noSupply?" disabled":""}>${T("Battle!")}<span class="pill-sub">${T("SUPPLY {n}",{n:cost})}</span></button>${autoBtn}${rushBtn}${mockBtn}${msg?`<span class="pattern-help room-msg">${msg}</span>`:""}</div>`;
@@ -9306,7 +9311,7 @@ function spiritActNameHtml(e){const src=(typeof SKILL_ICONS!=="undefined"&&(SKIL
 // 화면: 퀘스트 리모콘과 같은 모양의 떠 있는 리모콘(본문 왼쪽). 어느 화면에서든 열어 진행을 보고 회수한다.
 // 보이는 때: 로그인 뒤, 무대·튜토리얼 진행 중이 아닐 때, Auto Battle 안내 상태(get_idle_info.guide)가 마침·건너뜀일 때. 안내 중(ACTIVE)에는 파티를 보낸 뒤(⑤)부터. 상태 값이 없는 예전 서버면 파견한 파티가 있을 때
 // 접힘: 창이 좁으면(본문 왼쪽에 안 들어가면) 접힘 → 이 브라우저에 기억된 마지막 상태 → 처음이면 펼침. 좁은 화면은 손잡이를 누르면 본문 안쪽 왼쪽에 뜨고 ×·바깥·Esc로 닫힌다
-let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0,idleOpen=true;
+let idleInfo=null,idleAt=0,idleBusy=false,idleTimer=null,idleNextTry=0;
 const IR={el:null,top:null,raf:0,userFold:null,narrow:false,open:false,sig:""},I_FOLD_KEY="pgy_idle_fold";
 function idleRemoteOn(){if(!idleInfo)return false;const g=idleInfo.guide,n=(idleInfo.parties||[]).length;return g==="DONE"||g==="SKIPPED"||(g==="ACTIVE"||g==null)&&n>0}
 function idleHidden(){return !loggedIn||!!stage||tut.step==null||tutBusy()||!!tutPractice||!idleRemoteOn()}
@@ -9438,7 +9443,7 @@ function renderIdle(){
    ${Number(s.gold)>0?`<div class="idle-line dim">${T("짐에 쌓은 골드 · 모두 {gold}골드",{gold:Number(s.gold).toLocaleString()})}</div>`:""}
    ${s.raided||s.defended?`<div class="idle-line">${T("약탈 · {raided}{sep}{defended}",{raided:s.raided?`${T("털림 {raided}",{raided:s.raided})}`:"",sep:s.raided&&s.defended?" · ":"",defended:s.defended?`${T("막음 {defended}{info}",{defended:s.defended,info:Number(s.info_gold)>0?` ${T("(정보값 +{info_gold}골드)",{info_gold:Number(s.info_gold).toLocaleString()})}`:""})}`:""})}</div>`:""}`;
   return `<div class="idle-card${law?" lawless":""}">
-   <div class="idle-head"><span class="dg-name">${esc(TS(p.dungeon))}</span>${law?`<span class="idle-law">${T("무법")}</span>`:""}<span class="dg-meta">${T("파견비 {fee}골드/판",{fee:p.fee})}</span></div>
+   <div class="idle-head"><span class="dg-name">${esc(TS(p.dungeon))}</span>${law?`<span class="idle-law">${T("무법")}</span>`:""}<span class="dg-meta">${T("파견비 {fee}골드/판",{fee:p.fee})}${law&&p.run_minutes?` · ${T("{min}분마다 한 판",{min:p.run_minutes})}`:""}</span></div>
    ${mem?`<div class="idle-line dim">${mem}</div>`:""}${lawLines}
    ${rc?.kind==="PARTY"?"":p.done?`<div class="idle-line idle-warn">${(law?T("판을 다 돌았습니다 · 돌려받아 주세요."):T("판을 다 돌았습니다 · 회수해 주세요."))}</div>`:p.halted?`<div class="idle-line idle-warn">${T("골드가 부족해 멈췄습니다. 골드를 채우면 다시 돕니다.")}</div>`:`<div class="idle-line dim" data-idle-next="${esc(p.id)}"></div>`}
    <div class="idle-line">${s.runs>0?idleRunsText(s):T("아직 끝난 판이 없습니다.")}</div>
@@ -9473,25 +9478,17 @@ function idleTickLaw(p,el){
 // 다음 판까지 남은 시간(1초마다 글자만 바꾼다). 시간이 되면 어느 화면에서든 정산을 부른다(결과 모달은 Adventure 목록을 보고 있을 때만)
 function tickIdle(){
  if(!idleInfo)return;
- const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false,soon=null,halted=0,done=0;
+ const el=(Date.now()-idleAt)/1000,ps=idleInfo.parties||[];let due=false;
  for(const p of ps){
   idleTickLaw(p,el);
   if(p.recall?.kind==="PARTY")continue;
-  if(p.done){done++;continue}
-  if(p.halted){halted++;continue}
+  if(p.done||p.halted)continue;
   const left=Number(p.next_sec||0)-el;
   if(left<=0)due=true;
-  if(soon==null||left<soon)soon=left;
   const node=document.querySelector(`[data-idle-next="${p.id}"]`);if(!node)continue;
   const tx=left>0?`${T("다음 판까지 {left}",{left:fmtDur(left)})}`:T("정산을 기다리는 중…");
   if(node.textContent!==tx)node.textContent=tx;
  }
- // 접었을 때 제목 아래 한 줄: 가장 가까운 다음 판까지 남은 시간, 멈춘 파티
- const brief=$("idleBrief");
- if(brief){const a=[];if(soon!=null)a.push(soon>0?`${T("다음 판까지 {soon}",{soon:fmtDur(soon)})}`:T("정산을 기다리는 중…"));
-  if(done)a.push(`<span class="idle-warn">${T("판을 다 돎{names} · 회수해 주세요",{names:ps.length>1?` ${done}`:""})}</span>`);
-  if(halted)a.push(`<span class="idle-warn">${T("골드 부족으로 멈춤{names}",{names:ps.length>1?` ${halted}`:""})}</span>`);
-  const h=ps.length?a.join(" · "):T("파견한 파티가 없습니다.");if(brief.dataset.h!==h){brief.dataset.h=h;brief.innerHTML=h}}
  if(due&&!idleBusy&&!battleBusy&&Date.now()>=idleNextTry){idleNextTry=Date.now()+60000;checkIdle(!(currentView==="adventure"&&!advRoom))}
 }
 // ===== Auto Battle 안내 =====
@@ -9895,9 +9892,8 @@ async function showEnhanceResult(run,before,from,target){
  openConfirm(T("강화 실패!"),`<div class="enh-res bad">${T("<b>파괴!</b>")}</div><p class="enh-warn">${T("<b>{nm}</b>{base:이/가} +{at} 강화에 실패해 깨져 사라졌습니다.",{nm:esc(nm),base,at})}</p><p class="help-note">${T("{spent}는 돌려받지 않습니다.",{spent})+(before.equipped_character?" "+T("장착하던 칸이 비었습니다."):"")}</p>`,[[T("확인"),null,true]],"enhance");enhFx("enh-shake");
 }
 // ===== Town: Thieves' Guild(약탈) =====
-// 무법 파견 파티의 짐을 노린다. 흐름: 약탈 파티 5명·무법 던전 고르기 → 정보 사기(raid_buy, 공짜 1장/시간 → 골드 200%·1200%·×2) → 찾기(battle raid_search, 서버가 1분마다)
-// → 찾음(상대 호위대·짐, 60초 안에 넘긴다 raid_pass / 싸운다 battle raid_fight) → 결과(전투 결과 창). 기록은 Records 탭(get_raid_logs·get_raid_log)
-// 화면 값은 get_raid_info 한 번에 받는다. 찾는 중에는 15초마다 다시 읽고, 다음 찾기 시간이 되면 raid_search를 한 번 부른다(1분 전이면 서버가 그냥 기다리라고 한다)
+// 무법 파견 파티의 짐을 노린다. 흐름: 약탈 파티·던전 고르기 → 정보 사기(raid_buy) → 찾고 바로 싸우기(battle raid_go, 끊기면 같은 정보로 다시) → 결과. 기록은 Records(get_raid_logs·get_raid_log)
+// 화면 값은 get_raid_info 한 번에 받는다(엔진 0.64.0부터 찾음·넘기기·시간 지남 없음)
 // 모양(사용자 H 시안 C): 정보는 수배서 장으로, 찾으면 내 약탈 파티 VS 상대 호위대 대결 구도 + 현상금(짐) 상자, 결과는 도장
 let raidGoFail=null,raidInfo=null,raidAt=0,raidTab="raid",raidParty=null,raidDg=null,raidBusy=false,raidTimer=null,raidLogs=null,raidDone=null;
 const RAID_ERR={DUNGEON_NOT_FOUND:T("던전을 찾지 못했습니다."),PARTY_DUPLICATE:T("같은 캐릭터가 두 번 들어 있습니다."),RAID_PRICE_CHANGED:T("정시가 지나 정보값이 바뀌었습니다. 바뀐 값을 확인해 주세요."),NOT_ENOUGH_GOLD:T("골드가 부족합니다."),RAID_ACTIVE:T("이미 진행 중인 정보가 있습니다."),RAID_NOT_LAWLESS:T("무법 파견을 할 수 있는 던전이 아닙니다."),DUNGEON_LOCKED:T("아직 열리지 않은 던전입니다."),GUEST_BLOCKED:T("손님 계정은 약탈을 할 수 없습니다."),CHARACTER_ON_IDLE:T("Auto Battle 중인 캐릭터가 들어 있습니다."),PARTY_SPECIAL_DUPLICATE:T("특수직업은 직업별로 한 명만 출전할 수 있습니다."),PARTY_EMPTY:T("약탈 파티에 캐릭터를 넣어 주세요."),PARTY_TOO_LARGE:T("약탈 파티는 5명까지입니다."),RAID_NOT_FOUND:T("정보를 찾지 못했습니다."),RAID_NOT_FOUND_STATE:T("이미 끝난 정보입니다."),RAID_LOG_NOT_FOUND:T("약탈 기록을 찾지 못했습니다."),NOT_AUTHENTICATED:T("다시 로그인해 주세요.")};
@@ -9949,7 +9945,7 @@ const RAID_TALK={
 function raidTalk(k){const n=$("raidTalk");if(n)n.innerHTML=(RAID_TALK[k]||RAID_TALK.ready).map(p=>`<p>${p}</p>`).join("")+(k==="ready"?`<div class="npc-note"><p>${T("※ 이긴 쪽이 짐을 가져간다. 호위대가 이기거나 비기면 골드로 산 정보값은 호위대 주인에게 간다.")}</p></div>`:"")}
 // 마지막에 끝난 정보 안내(get_raid_info.last, 10분 안)
 function raidLastHtml(l){if(!l)return "";const st=l.status;
- const tx=st==="REFUNDED"?`${T("{dungeon}에서 상대를 찾지 못해 정보값을 돌려받았습니다.",{dungeon:esc(TS(l.dungeon)||"")})}`:st==="PASSED"?T("상대를 넘겼습니다. 정보값은 돌려받지 못합니다."):st==="TIMEOUT"?T("정할 시간이 지나 넘긴 것으로 쳤습니다. 정보값은 돌려받지 못합니다."):st==="WIN"?T("방금 약탈에 성공했습니다."):st==="LOSE"||st==="DRAW"?T("방금 호위대에 막혔습니다."):"";
+ const tx=st==="REFUNDED"?`${T("{dungeon}에서 상대를 찾지 못해 정보값을 돌려받았습니다.",{dungeon:esc(TS(l.dungeon)||"")})}`:st==="WIN"?T("방금 약탈에 성공했습니다."):st==="LOSE"||st==="DRAW"?T("방금 호위대에 막혔습니다."):"";
  return tx?`<div class="rd-last">${tx}${l.log_id?` <button type="button" class="idle-more" onclick="openRaidLog('${esc(l.log_id)}')">${T("기록 보기")}</button>`:""}</div>`:""}
 function renderRaid(){
  const box=$("raidBody");if(!box||raidTab!=="raid")return;
@@ -10015,7 +10011,6 @@ async function raidGo(tid){
   await loadRaid();return}
  log("raid_go: "+st,"ok");
  if(st==="REFUNDED"){showBattleError(T("상대를 찾지 못해 정보값을 돌려받았습니다."),T("Thieves' Guild"));await loadRaid();return}
- if(st==="TIMEOUT"||st==="PASSED"){await loadRaid();return}
  const t=raidInfo?.ticket?.id===tid?raidInfo.ticket:{};
  let b=null;
  if(data.log)b={mode:"RAID",role:"RAIDER",dungeon:data.view?.dungeon||t.dungeon,result:data.result||st,turns:data.turns,turn_limit:data.turn_limit,log:data.log,gold:data.rewards?.gold,items:data.rewards?.items,info_to_target:data.rewards?.info_to_target,paid:t.paid,free:t.free,log_id:data.rewards?.log_id,view:data.view};
