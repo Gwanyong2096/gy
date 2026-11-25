@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v532 · 갱신 2026-11-17 18:36 KST -->
+<!-- ProjectGY-test-console v533 · 갱신 2026-11-25 15:47 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -530,7 +530,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v532 · 2026-11-17 18:36</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v533 · 2026-11-25 15:47</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -1134,6 +1134,10 @@ Object.assign(I18N.en,{
   "POISON DMG": "POISON DMG",
   "BATTLE CRY": "BATTLE CRY",
   "MP REGEN": "MP REGEN",
+  "SPD DEBUFF TAKEN": "SPD DEBUFF TAKEN",
+  "BLEED TAKEN": "BLEED TAKEN",
+  "POISON TAKEN": "POISON TAKEN",
+  "PUSH TAKEN": "PUSH TAKEN",
   "{CRY_TURNS}턴": "{CRY_TURNS} {CRY_TURNS:turn/turns}",
   "DEF": "DEF",
   "MDEF": "MDEF",
@@ -1779,6 +1783,7 @@ Object.assign(I18N.en,{
   "Front Delay": "Front Delay",
   "Back Delay": "Back Delay",
   "(편 {v}%)": "(side {v}%)",
+  "(장비 -{v}%)": "(gear -{v}%)",
   "{w} Delay 변화 없음": "No Delay change for {w}",
   "(차징·캐스팅 중이 아님)": "(not charging or casting)",
   "(글로벌 쿨타임 중)": "(on global cooldown)",
@@ -1858,6 +1863,7 @@ Object.assign(I18N.en,{
   "쿨타임 {n}턴": "Cooldown {n} {n:turn/turns}",
   "{w} {lab} 효과 끝": "{w}'s {lab} wore off",
   "누적 {v}": "total {v}",
+  "장비 -{v}%": "gear -{v}%",
   "{w}의 몸에서 {v}이 씻겨 나갔다": "{v} washed off {w}",
   "{n}건": "{n} {n:stack/stacks}",
   "{w}{n:이/가} 쓰러져 {sk} 효과가 사라졌다": "{w} fell, so {sk} faded",
@@ -2623,6 +2629,10 @@ Object.assign(I18N.zh,{
   "POISON DMG": "中毒伤害",
   "BATTLE CRY": "战吼",
   "MP REGEN": "法力再生",
+  "SPD DEBUFF TAKEN": "受到减速",
+  "BLEED TAKEN": "受到流血",
+  "POISON TAKEN": "受到中毒",
+  "PUSH TAKEN": "受到推条",
   "{CRY_TURNS}턴": "{CRY_TURNS}回合",
   "DEF": "物防",
   "MDEF": "法防",
@@ -3268,6 +3278,7 @@ Object.assign(I18N.zh,{
   "Front Delay": "前摇",
   "Back Delay": "后摇",
   "(편 {v}%)": "（阵营{v}%）",
+  "(장비 -{v}%)": "（装备 -{v}%）",
   "{w} Delay 변화 없음": "{w}的前后摇没有变化",
   "(차징·캐스팅 중이 아님)": "（未在蓄力或咏唱）",
   "(글로벌 쿨타임 중)": "（公共冷却中）",
@@ -3347,6 +3358,7 @@ Object.assign(I18N.zh,{
   "쿨타임 {n}턴": "冷却{n}回合",
   "{w} {lab} 효과 끝": "{w}的{lab}效果结束",
   "누적 {v}": "累计{v}",
+  "장비 -{v}%": "装备 -{v}%",
   "{w}의 몸에서 {v}이 씻겨 나갔다": "{w}身上的{v}被洗去了",
   "{n}건": "{n}层",
   "{w}{n:이/가} 쓰러져 {sk} 효과가 사라졌다": "{w}倒下，{sk}效果消失了",
@@ -7368,9 +7380,9 @@ function itemBonuses(i){const o={};for(const src of [i.item_defs?.base_bonuses,i
 const CORE_BONUS=new Set(["ATK","MATK","DEF_F","DEF_B","MDEF_F","MDEF_B","SPD_F","SPD_B"]);
 const PCT_BONUS=new Set(["MIT","MMIT","SUPPORT_AMP","DMG_AMP","PARRY","PIERCE","FINAL_AMP","FINAL_REDUCE"]);
 // 아이템 옵션 표기(영어)
-const ITEM_OPT_LABEL={HP:T("HP"),HP_PCT:T("HP"),MP:T("MP"),MP_PCT:T("MP"),SPD_B:T("Back SPD"),SPD_B_PCT:T("Back SPD"),ATK_PCT:T("ATK"),MATK_PCT:T("MATK"),DMG_AMP:T("DMG AMP"),SUPPORT_AMP:T("SUPPORT AMP"),PARRY:T("PARRY"),PIERCE:T("PIERCE"),FINAL_AMP:T("FINAL AMP"),FINAL_REDUCE:T("FINAL REDUCE"),MIT:T("MIT"),MMIT:T("MMIT"),KARMA:T("KARMA"),SPD_F:T("Front SPD"),PATTERN:T("Pattern"),FIRST_DELAY_CUT:T("FIRST DELAY"),POISON_DMG_PCT:T("POISON DMG"),CRY_PCT:T("BATTLE CRY"),MP_REGEN_PCT:T("MP REGEN")};
-// 보스 장비 고유 옵션(엔진 0.39.0): 첫 행동 딜레이는 줄어드는 %라 -로, 함성은 % 옆에 턴(CRY_TURNS는 따로 안 보임)
-const OPT_NEG=new Set(["FIRST_DELAY_CUT"]),OPT_HIDE=new Set(["CRY_TURNS"]);
+const ITEM_OPT_LABEL={HP:T("HP"),HP_PCT:T("HP"),MP:T("MP"),MP_PCT:T("MP"),SPD_B:T("Back SPD"),SPD_B_PCT:T("Back SPD"),ATK_PCT:T("ATK"),MATK_PCT:T("MATK"),DMG_AMP:T("DMG AMP"),SUPPORT_AMP:T("SUPPORT AMP"),PARRY:T("PARRY"),PIERCE:T("PIERCE"),FINAL_AMP:T("FINAL AMP"),FINAL_REDUCE:T("FINAL REDUCE"),MIT:T("MIT"),MMIT:T("MMIT"),KARMA:T("KARMA"),SPD_F:T("Front SPD"),PATTERN:T("Pattern"),FIRST_DELAY_CUT:T("FIRST DELAY"),POISON_DMG_PCT:T("POISON DMG"),CRY_PCT:T("BATTLE CRY"),MP_REGEN_PCT:T("MP REGEN"),SPD_DEBUFF_CUT:T("SPD DEBUFF TAKEN"),BLEED_CUT:T("BLEED TAKEN"),POISON_CUT:T("POISON TAKEN"),PUSH_CUT:T("PUSH TAKEN")};
+// 보스 장비 고유 옵션(엔진 0.39.0): 첫 행동 딜레이와 받는 쪽 감소 넷(엔진 0.67.0 SPD_DEBUFF_CUT·BLEED_CUT·POISON_CUT·PUSH_CUT)은 줄어드는 %라 -로, 함성은 % 옆에 턴(CRY_TURNS는 따로 안 보임)
+const OPT_NEG=new Set(["FIRST_DELAY_CUT","SPD_DEBUFF_CUT","BLEED_CUT","POISON_CUT","PUSH_CUT"]),OPT_HIDE=new Set(["CRY_TURNS"]);
 function optText(k,v,b){v=Number(v);const neg=OPT_NEG.has(k),pct=PCT_BONUS.has(k)||k.endsWith("_PCT")||neg;const sv=neg?-v:v;return `${vis(ITEM_OPT_LABEL[k]||k)}${sv>0?"+":sv<0?"":" "}${sv}${pct?"%":""}${k==="CRY_PCT"&&b?.CRY_TURNS?` ${T("{CRY_TURNS}턴",{CRY_TURNS:Number(b.CRY_TURNS)})}`:""}`}
 // 앞+뒤 표기(DEF, MDEF, SPD): 뒤가 음수면 DEF 5-3. 소수는 둘째 자리까지
 function fbText(f,b){f=Number((Number(f)||0).toFixed(2));b=Number((Number(b)||0).toFixed(2));return `${f}${b<0?"":"+"}${b}`}
@@ -8830,6 +8842,8 @@ function calcText(c,kind,tick){
  if(c.stagger>0)parts.push(`비틀거림 +${q(c.stagger)}%`);
  // 독 피해 %(엔진 0.39.0, calc.pdmg): 틱에 마지막으로 곱한다
  if(tick&&c.pdmg)parts.push(`독 피해 +${q(c.pdmg)}%`);
+ // 받는 출혈·독 감소(엔진 0.67.0 calc.cut, BLEED_CUT·POISON_CUT): 독 피해 % 다음, 상쇄 전
+ if(tick&&c.cut)parts.push(`받는 쪽 감소 -${q(c.cut)}%`);
  // 한 항목은 줄바꿈으로 쪼개지지 않게
  return parts.map(x=>`<span class="nw">${esc(x)}</span>`).join(" → ");
 }
@@ -9029,7 +9043,8 @@ function battleLogHtml(b){
  const dlLine=(ph,a,c)=>`<div class="bl-dl">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></div>`;
  const dlk=(ph,a,c)=>`<span class="bl-dlk">${DL(ph)}<span class="bl-hp nw">(${fmt(a)} &gt; ${fmt(c)})</span></span>`;
  // 편 받는 Delay Push(엔진 0.44.0 delay.taken)
- const dTk=e=>e.taken?` <span class="bl-sub nw">${T("(편 {v}%)",{v:`${e.taken>0?"+":""}${e.taken}`})}</span>`:"";
+ const dTk=e=>`${e.taken?` <span class="bl-sub nw">${T("(편 {v}%)",{v:`${e.taken>0?"+":""}${e.taken}`})}</span>`:""}${e.cut?` <span class="bl-sub nw">${T("(장비 -{v}%)",{v:e.cut})}</span>`:""}`;
+ // 장비 받는 쪽 감소(엔진 0.67.0 delay.cut PUSH_CUT·buff.cut SPD_DEBUFF_CUT): 줄어든 %를 괄호로
  const delayHtml=e=>{const ar=e.kind==="PUSH"?"⇥":"⇤";
   // 헛방(엔진 0.10.0부터): 딜밀은 차징·캐스팅 중이 아닐 때, 딜땡은 글로벌 쿨타임 중일 때
   if(e.miss)return `<div class="bl-delay">${ar} ${T("{w} Delay 변화 없음",{w:who(e.tg)})} <span class="bl-sub nw">${e.kind==="PUSH"?T("(차징·캐스팅 중이 아님)"):T("(글로벌 쿨타임 중)")}</span></div>`;
@@ -9129,7 +9144,7 @@ function battleLogHtml(b){
   else if(e.t==="delay"){const h=delayHtml(e);if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   else if(e.t==="buff"){/* 바뀐 양이 0이면(한계) 같은 편이 건 것은 버프, 상대가 건 것은 디버프로 본다 */const up=e.v>0||(e.v===0&&side[e.u]===side[e.tg]),lab=buffLabel(e.k),u=buffUnit(e.k),sg=buffSign(e.k),tv=e.total*sg,dv=e.v*sg,tot=`${tv>0?"+":""}${tv}${u}`,d=`${dv>0?"+":dv<0?"":(up===(sg>0)?"+":"-")}${dv}${u}`;
    /* 턴 있는 버프: 걸 때 turns(자기 턴 수), 끝나 되돌릴 때 end */
-   const h=e.end?`<div class="bl-buffend">◇ ${T("{w} {lab} 효과 끝",{w:who(e.tg),lab:esc(lab)})} <span class="bl-sub nw">(${T("누적 {v}",{v:tot})})</span></div>`:`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(${[T("누적 {v}",{v:tot}),e.cap?T("한계"):"",e.turns?T("{n}턴",{n:e.turns}):""].filter(Boolean).join(" · ")})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
+   const h=e.end?`<div class="bl-buffend">◇ ${T("{w} {lab} 효과 끝",{w:who(e.tg),lab:esc(lab)})} <span class="bl-sub nw">(${T("누적 {v}",{v:tot})})</span></div>`:`<div class="${up?"bl-buff":"bl-debuff"}">${up?"▲":"▼"} ${who(e.tg)} ${esc(lab)} <b>${d}</b> <span class="bl-sub nw">(${[T("누적 {v}",{v:tot}),e.cap?T("한계"):"",e.cut?T("장비 -{v}%",{v:e.cut}):"",e.turns?T("{n}턴",{n:e.turns}):""].filter(Boolean).join(" · ")})</span></div>`;if(cur)cur.html.push(h);else rows.push(row(side[e.tg],h))}
   // 자기 도트 지우기(엔진 0.43.0 cleanse): 회복 줄 다음. 지운 종류만, 건수는 괄호
   else if(e.t==="cleanse"){const ks=[[T("독"),e.poison],[T("출혈"),e.bleed]].filter(x=>x[1]>0);if(ks.length)put(e.u,`<div class="bl-heal">⟳ ${T("{w}의 몸에서 {v}이 씻겨 나갔다",{w:who(e.u),v:ks.map(x=>x[0]).join("·")})} <span class="bl-sub nw">(${ks.map(x=>`${x[0]} ${T("{n}건",{n:x[1]})}`).join(" · ")})</span></div>`)}
   // 편 상태(엔진 0.44.0 side): 쓴 쪽 묶음 안(패시브는 전투 시작 때 그 개체 칸, BATTLE START 장면 아래 함성 다음). 누적은 다른 스킬과 합쳐질 때만
