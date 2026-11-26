@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v533 · 갱신 2026-11-25 15:47 KST -->
+<!-- ProjectGY-test-console v534 · 갱신 2026-11-26 18:02 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -530,7 +530,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v533 · 2026-11-25 15:47</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v534 · 2026-11-26 18:02</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -695,7 +695,21 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
   </div>
   <div class="card">
     <div class="row"><span style="font-weight:700">접속 계정</span><span id="currentEmail" style="color:var(--mu)">-</span></div>
-    <div class="row" style="margin-top:18px"><button id="btnSignOut" onclick="signOut()">로그아웃</button></div>
+    <div id="acctLinkBox" class="acct-link" hidden>
+      <div class="pattern-help" id="acctLinkHelp"></div>
+      <form id="acctLinkForm" novalidate onsubmit="event.preventDefault();acctLinkSubmit()">
+        <div class="row" id="acctLinkEmailRow"><input id="alEmail" name="email" type="email" inputmode="email" placeholder="이메일" autocomplete="username" autocapitalize="off" spellcheck="false" style="flex:1;min-width:180px"></div>
+        <div class="row" id="acctLinkPwRow"><input id="alPw" name="new-password" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="new-password" style="flex:1;min-width:180px"><input id="alPw2" name="new-password-confirm" type="password" placeholder="비밀번호 확인" autocomplete="new-password" style="flex:1;min-width:180px"></div>
+        <div class="row"><button type="submit" class="pri" id="btnAcctLink">이메일 잇기</button><button type="button" id="btnAcctLinkRe" onclick="init()" hidden>메일 확인 뒤 새로 보기</button></div>
+      </form>
+      <div id="acctLinkMsg" class="pw-error" style="display:none"></div>
+    </div>
+    <div class="row" style="margin-top:18px"><button id="btnSignOut" onclick="signOut()">로그아웃</button><button type="button" id="btnDelAcct" onclick="askDeleteAccount()">계정 삭제</button></div>
+  </div>
+  <div class="card" id="adPrivacyCard" hidden>
+    <div class="section-title">광고</div>
+    <div class="row"><button type="button" onclick="window.GYApp&amp;&amp;GYApp.ads.privacyOptions()">광고 개인정보 설정</button></div>
+    <div class="pattern-help">맞춤 광고 동의를 다시 고릅니다.</div>
   </div>
   <div class="card" id="rushSetCard">
     <div class="section-title">Battle Rush</div>
@@ -850,6 +864,25 @@ Object.assign(I18N.en,{
   "로그아웃": "Log out",
   "손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.": "A guest account <b>can't be accessed again</b> after you log out. All your characters and progress will be lost.",
   "취소": "Cancel",
+  "손님 계정은 이 기기에만 있어서 앱을 지우거나 기기를 바꾸면 다시 들어올 수 없습니다. 이메일을 이어 두면 다른 기기에서도 같은 계정으로 들어옵니다.": "A guest account lives only on this device. If you delete the app or switch devices, you can't get back in. Link an email to sign in to the same account on any device.",
+  "{e}로 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 아래 버튼을 누르세요.": "We sent a confirmation email to {e}. Open the link in the email, then tap the button below.",
+  "이메일이 이어졌습니다. 다음 로그인에 쓸 비밀번호를 정하세요.": "Your email is linked. Set a password for your next sign-in.",
+  "이메일 잇기": "Link Email",
+  "확인 메일 다시 보내기": "Resend Email",
+  "비밀번호 정하기": "Set Password",
+  "지금은 계정 잇기를 쓸 수 없습니다.": "Account linking isn't available right now.",
+  "정식 계정이 되었습니다. 다음부터 이메일과 비밀번호로 로그인하세요.": "Your account is now permanent. Sign in with your email and password from now on.",
+  "계정 삭제": "Delete Account",
+  "계정을 지우면 캐릭터·아이템·진행·구매 기록이 모두 사라지고 되돌릴 수 없습니다.": "Deleting your account erases all characters, items, progress, and purchase records. This cannot be undone.",
+  "계속하려면 아래 칸에 <b>삭제</b>라고 입력하세요.": "To continue, type <b>DELETE</b> below.",
+  "삭제": "DELETE",
+  "입력한 글이 맞지 않아 지우지 않았습니다.": "The text didn't match, so nothing was deleted.",
+  "지금 다른 유저가 이 계정을 약탈하는 중입니다. 1분쯤 뒤에 다시 시도해 주세요.": "Another player is raiding this account right now. Please try again in about a minute.",
+  "계정을 지우지 못했습니다. 잠시 뒤에 다시 시도해 주세요.": "Couldn't delete your account. Please try again later.",
+  "계정을 지웠습니다.": "Your account has been deleted.",
+  "게임 끝내기": "Quit Game",
+  "게임을 끝낼까요?": "Quit the game?",
+  "끝내기": "Quit",
   "손님 계정": "Guest account",
   "영입할 수 있는 직업이 없습니다.": "No classes available to recruit.",
   "{n}회": "{n} {n:use/uses}",
@@ -2273,6 +2306,10 @@ Object.assign(I18N.en,{
   "Sell": "Sell",
   "언어 · Language": "Language",
   "접속 계정": "Signed in as",
+  "메일 확인 뒤 새로 보기": "I've Confirmed",
+  "광고": "Ads",
+  "광고 개인정보 설정": "Ad Privacy Settings",
+  "맞춤 광고 동의를 다시 고릅니다.": "Change your consent for personalized ads.",
   "Battle Rush에서 지거나 비겨도 계속 돌리기": "Keep Battle Rush going after a loss or draw",
   "꺼 두면 이기지 못한 판에서 멈춥니다.": "When off, it stops at any run you don't win.",
   "퀘스트창 숨기기": "Hide quest panel",
@@ -2345,6 +2382,25 @@ Object.assign(I18N.zh,{
   "로그아웃": "退出登录",
   "손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.": "游客账号退出登录后<b>将无法再次进入</b>，角色和进度都会消失。",
   "취소": "取消",
+  "손님 계정은 이 기기에만 있어서 앱을 지우거나 기기를 바꾸면 다시 들어올 수 없습니다. 이메일을 이어 두면 다른 기기에서도 같은 계정으로 들어옵니다.": "游客账号只保存在这台设备上，删除应用或更换设备后将无法再登录。绑定邮箱后，在其他设备上也能登录同一账号。",
+  "{e}로 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 아래 버튼을 누르세요.": "确认邮件已发送至 {e}。请点击邮件中的链接，然后点击下方按钮。",
+  "이메일이 이어졌습니다. 다음 로그인에 쓸 비밀번호를 정하세요.": "邮箱已绑定。请设置下次登录使用的密码。",
+  "이메일 잇기": "绑定邮箱",
+  "확인 메일 다시 보내기": "重新发送邮件",
+  "비밀번호 정하기": "设置密码",
+  "지금은 계정 잇기를 쓸 수 없습니다.": "暂时无法绑定账号。",
+  "정식 계정이 되었습니다. 다음부터 이메일과 비밀번호로 로그인하세요.": "已转为正式账号。今后请使用邮箱和密码登录。",
+  "계정 삭제": "删除账号",
+  "계정을 지우면 캐릭터·아이템·진행·구매 기록이 모두 사라지고 되돌릴 수 없습니다.": "删除账号后，所有角色、物品、进度和购买记录都会消失，且无法恢复。",
+  "계속하려면 아래 칸에 <b>삭제</b>라고 입력하세요.": "如要继续，请在下方输入<b>删除</b>。",
+  "삭제": "删除",
+  "입력한 글이 맞지 않아 지우지 않았습니다.": "输入内容不一致，未删除。",
+  "지금 다른 유저가 이 계정을 약탈하는 중입니다. 1분쯤 뒤에 다시 시도해 주세요.": "其他玩家正在掠夺此账号，请约一分钟后再试。",
+  "계정을 지우지 못했습니다. 잠시 뒤에 다시 시도해 주세요.": "账号删除失败，请稍后再试。",
+  "계정을 지웠습니다.": "账号已删除。",
+  "게임 끝내기": "退出游戏",
+  "게임을 끝낼까요?": "要退出游戏吗？",
+  "끝내기": "退出",
   "손님 계정": "游客账号",
   "영입할 수 있는 직업이 없습니다.": "没有可招募的职业。",
   "{n}회": "{n}次",
@@ -3768,6 +3824,10 @@ Object.assign(I18N.zh,{
   "Sell": "出售",
   "언어 · Language": "语言 · Language",
   "접속 계정": "当前账号",
+  "메일 확인 뒤 새로 보기": "我已确认",
+  "광고": "广告",
+  "광고 개인정보 설정": "广告隐私设置",
+  "맞춤 광고 동의를 다시 고릅니다.": "重新选择是否同意个性化广告。",
   "Battle Rush에서 지거나 비겨도 계속 돌리기": "连战中输了或平局也继续",
   "꺼 두면 이기지 못한 판에서 멈춥니다.": "关闭时，会停在没赢的那一场。",
   "퀘스트창 숨기기": "隐藏任务栏",
@@ -5224,10 +5284,68 @@ async function startGuest(){
 async function signOut(){
  if(isGuest)return openConfirm(T("로그아웃"),`<p>${T("손님 계정은 로그아웃하면 <b>다시 들어올 수 없습니다</b>. 캐릭터와 진행이 모두 사라집니다.")}</p>`,[[T("취소"),null,false],[T("로그아웃"),async()=>{await sb.auth.signOut();init()},true]]);
  await sb.auth.signOut();init()}
+// 계정 잇기: 손님 계정에 이메일을 붙여 정식 계정으로 바꾼다. Supabase 순서대로 이메일 → 메일의 확인 링크 → 비밀번호 두 단계(확인 전에는 비밀번호를 붙일 수 없다). 계정 id가 그대로라 진행도 그대로다.
+// 모드: email(손님, 이메일 입력) / wait(확인 메일 기다림, user.new_email) / pw(확인 끝, 비밀번호 정하기. 이 기기에서 잇기를 시작했을 때만)
+let acctUser=null,acctBusy=false,delBusy=false;
+function acctLinkMsg(t,ok){const e=$("acctLinkMsg");e.textContent=t;e.style.color=ok?"var(--ok)":"";e.style.display=t?"block":"none"}
+function renderAcctLink(){
+ const u=acctUser,box=$("acctLinkBox");if(!box)return;
+ const mode=!u?"":(!u.is_anonymous&&LS.get("pgy_link_pw")===u.id)?"pw":(u.is_anonymous&&u.new_email)?"wait":u.is_anonymous?"email":"";
+ box.hidden=!mode;box.dataset.mode=mode;if(!mode)return;
+ $("acctLinkHelp").textContent=mode==="email"?T("손님 계정은 이 기기에만 있어서 앱을 지우거나 기기를 바꾸면 다시 들어올 수 없습니다. 이메일을 이어 두면 다른 기기에서도 같은 계정으로 들어옵니다."):mode==="wait"?T("{e}로 확인 메일을 보냈습니다. 메일의 링크를 누른 뒤 아래 버튼을 누르세요.",{e:u.new_email}):T("이메일이 이어졌습니다. 다음 로그인에 쓸 비밀번호를 정하세요.");
+ $("acctLinkEmailRow").style.display=mode==="pw"?"none":"";$("acctLinkPwRow").style.display=mode==="pw"?"":"none";
+ if(mode==="wait"&&!$("alEmail").value)$("alEmail").value=u.new_email;
+ $("btnAcctLink").textContent=mode==="email"?T("이메일 잇기"):mode==="wait"?T("확인 메일 다시 보내기"):T("비밀번호 정하기");
+ $("btnAcctLinkRe").hidden=mode!=="wait";
+}
+async function acctLinkSubmit(){
+ if(acctBusy||!acctUser)return;const mode=$("acctLinkBox").dataset.mode;let req;
+ if(mode==="pw"){
+  const pw=$("alPw").value,pw2=$("alPw2").value;
+  if(!pw){flashEmpty($("alPw"));return acctLinkMsg(T("원하는 비밀번호를 입력하세요."))}
+  if(/[^\x21-\x7E]/.test(pw))return acctLinkMsg(PW_ALLOWED_MSG);
+  if(pw.length<6)return acctLinkMsg(T("비밀번호는 6자 이상이어야 합니다."));
+  if(pw!==pw2){flashEmpty($("alPw2"));return acctLinkMsg(T("비밀번호 확인이 일치하지 않습니다."))}
+  req={password:pw};
+ }else{
+  const email=$("alEmail").value.trim();
+  if(!email){flashEmpty($("alEmail"));return acctLinkMsg(T("원하는 이메일을 입력하세요."))}
+  req={email};
+ }
+ acctBusy=true;$("btnAcctLink").disabled=true;acctLinkMsg("");
+ try{const {error}=await sb.auth.updateUser(req);
+  if(error){log("계정 잇기 실패: "+error.message,"bad");return acctLinkMsg(error.code==="manual_linking_disabled"?T("지금은 계정 잇기를 쓸 수 없습니다."):signUpErrText(error))}
+  if(mode==="pw"){LS.del("pgy_link_pw");$("alPw").value="";$("alPw2").value="";log("계정 잇기 끝","ok");openNotice(T("정식 계정이 되었습니다. 다음부터 이메일과 비밀번호로 로그인하세요."))}
+  else{LS.set("pgy_link_pw",acctUser.id);log("계정 잇기: 확인 메일 보냄","ok")}
+  await init();
+ }finally{acctBusy=false;$("btnAcctLink").disabled=false}
+}
+// 계정 삭제(구글 플레이 필수: 앱 안에서 시작). 서버 함수 delete-account(Edge Function)가 계정과 데이터를 지우고, 지운 뒤에는 이 기기의 세션도 끝낸다. 손님 계정도 같다.
+function askDeleteAccount(){
+ openConfirm(T("계정 삭제"),`<p>${T("계정을 지우면 캐릭터·아이템·진행·구매 기록이 모두 사라지고 되돌릴 수 없습니다.")}</p><p>${T("계속하려면 아래 칸에 <b>삭제</b>라고 입력하세요.")}</p><div class="row"><input id="delAcctTxt" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:120px"></div>`,[[T("취소"),null,false],[T("계정 삭제"),deleteAccount,true]]);
+}
+async function deleteAccount(){
+ if(delBusy)return;
+ if((($("delAcctTxt")||{}).value||"").trim()!==T("삭제"))return openNotice(T("입력한 글이 맞지 않아 지우지 않았습니다."));
+ delBusy=true;$("btnDelAcct").disabled=true;
+ try{const {data,error}=await sb.functions.invoke("delete-account",{body:{}});
+  if(error||!data||data.ok!==true){
+   // 함수가 오류 코드로 답하면 본문의 error 값을 읽는다(RAID_IN_PROGRESS = 누가 이 계정을 약탈하는 중)
+   let code=data&&data.error;try{if(!code&&error&&error.context&&error.context.json)code=(await error.context.json()).error}catch(e){}
+   log("계정 삭제 실패: "+(code||(error?error.message:JSON.stringify(data))),"bad");
+   return openNotice(code==="RAID_IN_PROGRESS"?T("지금 다른 유저가 이 계정을 약탈하는 중입니다. 1분쯤 뒤에 다시 시도해 주세요."):T("계정을 지우지 못했습니다. 잠시 뒤에 다시 시도해 주세요."))}
+  log("계정 삭제 완료","ok");["pgy_link_pw","pgy_email","pgy_pw","pgy_save_email","pgy_save_pw"].forEach(k=>LS.del(k));
+  try{await sb.auth.signOut({scope:"local"})}catch(e){}
+  await init();openNotice(T("계정을 지웠습니다."));
+ }finally{delBusy=false;$("btnDelAcct").disabled=false}
+}
+// 앱(안드로이드)에서 첫 화면에서 뒤로 가기를 누르면 끝낼지 묻는다. 앱의 native-bridge.js가 부른다(웹 콘솔에서는 쓰지 않음).
+function appExitConfirm(exit){openConfirm(T("게임 끝내기"),`<p>${T("게임을 끝낼까요?")}</p>`,[[T("취소"),null,false],[T("끝내기"),exit,true]])}
 async function init(){stageBoot();const {data:{user}}=await sb.auth.getUser();const now=!!user;
  setTabsForLogin(now);
  $("loginForm").style.display=now?"none":"block";$("alreadyLogged").style.display=now?"block":"none";
  isGuest=!!(user&&user.is_anonymous);
+ acctUser=user||null;renderAcctLink();
  if(now){$("currentEmail").textContent=isGuest?T("손님 계정"):(user.email||"-");showView(loggedIn===null?"camp":(loggedIn===false?"camp":currentView));}else{
   $("loginPw").value="";applySaveOpts();$("currentEmail").textContent="-";showView("login");
  }
