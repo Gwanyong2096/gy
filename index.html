@@ -1,4 +1,4 @@
-<!-- ProjectGY-test-console v534 · 갱신 2026-11-26 18:02 KST -->
+<!-- ProjectGY-test-console v535 · 갱신 2026-11-26 18:40 KST -->
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -528,9 +528,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
 .hide-pts .u-pts{display:none}
 .log-tabs{margin-top:18px}
 .lang-pick{display:flex;justify-content:flex-end;margin-top:14px}
+/* 가방 지도 Use(14-bag.js mapRow): 줄 아래 왼쪽에 버튼, 못 쓰면 옆에 흐린 까닭 */
+.item-use{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px}.item-why{color:var(--mu);font-size:12.5px}
 </style><script>try{const t=localStorage.getItem("pgy_theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 </head><body><main>
-<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v534 · 2026-11-26 18:02</span></h1>
+<h1>ProjectGY 테스트 콘솔 <span style="color:var(--mu);font-size:12px">(로컬 테스트용)</span> <span id="consoleVer" style="color:var(--mu);font-size:12px;font-weight:400">v535 · 2026-11-26 18:40</span></h1>
 
 <div class="card" id="adminCard" style="display:none">
   <details>
@@ -560,6 +562,10 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;appearance
     <div class="row"><input id="adminResetEmail" placeholder="대상 이메일" style="flex:1;min-width:220px">
     <button class="pri" onclick="confirmAdminReset()">가입 직후로 되돌리기</button></div>
     <div id="adminResetStatus" style="color:var(--mu)"></div>
+    <div class="pattern-help" style="margin-top:12px">대상 계정의 티어2 이상 던전을 지도 없이 열거나 닫습니다(티어1은 안 됨).</div>
+    <div class="row"><input id="adminDgEmail" placeholder="대상 이메일" style="flex:1;min-width:220px"><input id="adminDgId" list="adminDgList" onfocus="adminDungeonList()" placeholder="던전 코드(예: frostfang_pass)" style="flex:1;min-width:180px"><datalist id="adminDgList"></datalist>
+    <button class="pri" onclick="adminDungeonUnlock(true)">열기</button><button onclick="adminDungeonUnlock(false)">닫기</button></div>
+    <div id="adminDgStatus" style="color:var(--mu)"></div>
     <div class="pattern-help" style="margin-top:12px">약탈 기록(전체 또는 한 계정). 같은 두 계정 사이에 7일 안 3번 이상이면 빨갛게 표시합니다. 줄을 누르면 전투 로그를 봅니다.</div>
     <div class="row"><input id="adminRaidEmail" placeholder="이메일(비우면 전체)" style="flex:1;min-width:220px"><button class="pri" onclick="loadAdminRaids()">약탈 기록</button></div>
     <div id="adminRaidList" class="adm-raid"></div>
@@ -1456,6 +1462,18 @@ Object.assign(I18N.en,{
   "Sub Weapon": "Sub Weapon",
   "Accessory": "Accessory",
   "보유한 아이템이 없습니다.": "You don't have any items.",
+  "Use": "Use",
+  "아직 이 지도가 가리키는 곳으로 갈 수 없습니다.": "You can't reach the place this map points to yet.",
+  "아직 이 지도를 읽을 수 없습니다.": "You can't read this map yet.",
+  "이미 길이 열린 던전입니다.": "The way to this dungeon is already open.",
+  "지도가 아닙니다.": "That isn't a map.",
+  "이 지도를 갖고 있지 않습니다.": "You don't have this map.",
+  "지도 쓰기": "Use Map",
+  "<b>{nm}</b>{nm:을/를} 씁니다.": "Use <b>{nm}</b>.",
+  "열리는 던전: <b>{dg}</b>. 지도는 사라집니다.": "Opens: <b>{dg}</b>. The map will be used up.",
+  "길이 열리고 지도는 사라집니다.": "A path will open and the map will be used up.",
+  "지도를 쓰지 못했습니다.": "Couldn't use the map.",
+  "길이 열렸습니다: {name}": "The way is open: {name}",
   "반드시": "Always",
   "이 스킬을 OO회까지 반드시": "Always, up to X uses of this skill",
   "OO턴마다 반드시": "Always, every X turns",
@@ -1739,6 +1757,8 @@ Object.assign(I18N.en,{
   "locked": "locked",
   "SUPPLY {n}": "SUPPLY {n}",
   "과제를 마치면 열립니다": "Complete the task to unlock",
+  "흩어진 지식을 모아야 길이 열립니다": "Gather the scattered knowledge to open the way",
+  "지도가 있어야 길을 찾을 수 있습니다": "You need a map to find the way",
   "앞 던전을 클리어하면 열립니다": "Clear the previous dungeon to unlock",
   "입장": "Enter",
   "파티에 캐릭터를 넣어 주세요.": "Add characters to the party.",
@@ -2974,6 +2994,18 @@ Object.assign(I18N.zh,{
   "Sub Weapon": "副手",
   "Accessory": "饰品",
   "보유한 아이템이 없습니다.": "没有持有的物品。",
+  "Use": "使用",
+  "아직 이 지도가 가리키는 곳으로 갈 수 없습니다.": "暂时还去不了这张地图所指的地方。",
+  "아직 이 지도를 읽을 수 없습니다.": "暂时还看不懂这张地图。",
+  "이미 길이 열린 던전입니다.": "通往这个地下城的路已经开启。",
+  "지도가 아닙니다.": "这不是地图。",
+  "이 지도를 갖고 있지 않습니다.": "你没有这张地图。",
+  "지도 쓰기": "使用地图",
+  "<b>{nm}</b>{nm:을/를} 씁니다.": "使用<b>{nm}</b>。",
+  "열리는 던전: <b>{dg}</b>. 지도는 사라집니다.": "开启的地下城：<b>{dg}</b>。地图将被消耗。",
+  "길이 열리고 지도는 사라집니다.": "道路将会开启，地图将被消耗。",
+  "지도를 쓰지 못했습니다.": "无法使用地图。",
+  "길이 열렸습니다: {name}": "道路已开启：{name}",
   "반드시": "必定",
   "이 스킬을 OO회까지 반드시": "本技能前X次必定",
   "OO턴마다 반드시": "每X回合必定",
@@ -3257,6 +3289,8 @@ Object.assign(I18N.zh,{
   "locked": "未开放",
   "SUPPLY {n}": "补给{n}",
   "과제를 마치면 열립니다": "完成任务后开放",
+  "흩어진 지식을 모아야 길이 열립니다": "收集散落的知识才能开启道路",
+  "지도가 있어야 길을 찾을 수 있습니다": "需要地图才能找到路",
   "앞 던전을 클리어하면 열립니다": "通关前一个地下城后开放",
   "입장": "进入",
   "파티에 캐릭터를 넣어 주세요.": "请把角色加入队伍。",
@@ -5508,6 +5542,17 @@ async function loadAdminRaids(){
  if(error){log("admin_raid_logs 실패: "+error.message,"bad");box.textContent=String(error.message).includes("USER_NOT_FOUND")?"그 이메일의 계정이 없습니다.":"불러오지 못했습니다.";return}
  const rows=data||[];if(!rows.length){box.textContent="약탈 기록이 없습니다.";return}
  box.innerHTML=`<table class="adm-raid-t"><tr><th>때</th><th>던전</th><th>약탈자</th><th>호위대 주인</th><th>결과</th><th>정보값</th><th>짐</th><th>둘 사이(7일/전체·약탈자 승)</th></tr>${rows.map(r=>`<tr class="${Number(r.pair_7d)>=3?"hot":""}" onclick="openRaidLog('${esc(r.id)}')"><td>${esc(raidWhen(r.at))}</td><td>${esc(r.dungeon||"")}</td><td>${esc(r.raider||"")}${r.raider_guest?" (손님)":""}</td><td>${esc(r.target||"")}${r.target_guest?" (손님)":""}</td><td>${r.result==="WIN"?"털림":r.result==="DRAW"?"무승부(막음)":"막음"}</td><td>${r.free?"공짜":Number(r.paid||0).toLocaleString()}${Number(r.info_to_target)>0?` → ${Number(r.info_to_target).toLocaleString()}`:""}</td><td>${r.result==="WIN"?`${Number(r.gold||0).toLocaleString()}G · ${raidItemsN(r.items)}개`:"-"}</td><td>${r.pair_7d}/${r.pair_total} · ${r.pair_raider_wins}</td></tr>`).join("")}</table>`;
+}
+// 티어2+ 던전 열기·닫기(admin_set_dungeon_unlock, 지도 없이). 던전 코드 목록은 지도 표(get_dungeon_maps)에서 채운다
+const ADMIN_DG_ERR={USER_NOT_FOUND:"그 이메일의 계정이 없습니다.",DUNGEON_NOT_FOUND:"그 코드의 던전이 없습니다.",NOT_MAP_DUNGEON:"티어1 던전은 열고 닫을 수 없습니다.",FORBIDDEN:"관리자만 쓸 수 있습니다."};
+async function adminDungeonList(){const l=$("adminDgList");if(!l||l.dataset.done)return;const {data,error}=await sb.rpc("get_dungeon_maps");if(error)return;l.dataset.done="1";l.innerHTML=(data||[]).map(m=>`<option value="${esc(m.dungeon_id)}">${esc(m.dungeon||m.dungeon_id)}</option>`).join("")}
+async function adminDungeonUnlock(open){
+ const email=$("adminDgEmail").value.trim(),dg=$("adminDgId").value.trim(),st=$("adminDgStatus");
+ if(!email||!dg){st.textContent="이메일과 던전 코드를 넣으세요.";return}
+ const {data,error}=await sb.rpc("admin_set_dungeon_unlock",{p_email:email,p_dungeon:dg,p_open:open});
+ if(error){const m=error.message||"",k=Object.keys(ADMIN_DG_ERR).find(x=>m.includes(x));st.textContent="실패: "+(k?ADMIN_DG_ERR[k]:m);log("admin_set_dungeon_unlock 실패: "+m,"bad");return}
+ const u=(data?.unlocks||[]).map(x=>`${x.dungeon_id}(${x.via})`).join(", ")||"없음";
+ st.textContent=`${email} ${data.dungeon_id} ${open?"열기":"닫기"}${data.changed?"":"(이미 그 상태)"} · 열린 던전: ${u}`;log("admin_set_dungeon_unlock: "+data.dungeon_id+" "+(open?"open":"close"),"ok");
 }
 let innJobs=[],selectedJob=null,charLimit=null,innAt=0;
 // 영입 직업 목록과 인원 한도는 Inn을 열 때만 받는다(load()마다 받지 않는다). Inn이 열려 있는 동안 load()는 다시 그리기와 Goods만 다시 받는다
@@ -8083,11 +8128,37 @@ function renderBag(){
  }
  if(!groups.length){box.innerHTML='<div class="empty">'+T("보유한 아이템이 없습니다.")+'</div>';return;}
  // 아이콘(19-skill-icons의 ITEM_ICONS)이 있는 아이템은 줄 앞에 32px 도트를 붙인다
- const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
+ // 던전 지도(map_, get_dungeon_maps에 있는 def)는 줄 아래에 Use 버튼. 쓸 수 없으면 까닭을 적고 버튼을 막는다
+ if(!stage&&itemsData.some(i=>!i.equipped_character&&/^map_/.test(i.def_id))&&mapGen!==writeGen)loadDungeonMaps();
+ const mapRow=i=>{const m=mapInfo[i.def_id];if(!m)return "";return `<div class="item-use"><button type="button" class="mini-btn"${m.usable?"":" disabled"} onclick="useDungeonMap('${esc(i.def_id)}',this)">${T("Use")}</button>${m.usable?"":`<span class="item-why">${MAP_WHY[m.why]||""}</span>`}</div>`};
+ const card=({item:i,count})=>{const ic=itemIconImg(i.def_id),top=itemTop(`<div class="item-head"><b class="item-name">${esc(itemName(i))}${unkTag(i)}</b>${count>1?`<b class="item-count">x${count}</b>`:""}${itemTagsHtml(i.item_defs)}</div>`,i)+mapRow(i);return ic?`<div class="item-card has-ic">${ic}<div class="item-body">${top}</div></div>`:`<div class="item-card">${top}</div>`};
  const known=new Set(ITEM_GROUPS.flatMap(g=>g[1]));
  const sections=itemSections(groups,g=>g.item.item_defs);
  const rest=groups.filter(g=>!known.has(g.item.item_defs?.slot));if(rest.length)sections.push([T("Etc"),rest]);
  box.innerHTML=sections.filter(([,l])=>l.length).map(([t,l])=>`<div class="av-head"><span>${t}</span></div>${l.map(card).join("")}`).join("");
+}
+// 던전 지도(티어2부터, 사용자 H 2026-11-26): 가방에서 쓰면 그 던전이 영구로 열린다. 열림 여부는 서버(get_dungeon_maps)가 정한다
+// 값 바꾸기 요청(04 writeGen)이 끝날 때마다 다시 받는다(지도를 얻거나 쓰거나 티어1을 깬 뒤). 지도가 가방에 있을 때만
+let mapInfo={},mapGen=-1,mapBusy=false;
+const MAP_WHY={NO_DUNGEON:T("아직 이 지도가 가리키는 곳으로 갈 수 없습니다."),TOO_EARLY:T("아직 이 지도를 읽을 수 없습니다."),OPEN:T("이미 길이 열린 던전입니다.")};
+const MAP_ERR={NOT_A_MAP:T("지도가 아닙니다."),NO_MAP:T("이 지도를 갖고 있지 않습니다."),MAP_NO_DUNGEON:MAP_WHY.NO_DUNGEON,MAP_TOO_EARLY:MAP_WHY.TOO_EARLY,DUNGEON_ALREADY_OPEN:MAP_WHY.OPEN};
+async function loadDungeonMaps(){
+ if(mapBusy)return;mapBusy=true;mapGen=writeGen;
+ try{const {data,error}=await sb.rpc("get_dungeon_maps");if(error){log("get_dungeon_maps 실패: "+error.message,"bad");return}
+  mapInfo={};(data||[]).forEach(m=>{mapInfo[m.def]=m});if(currentView==="bag")renderBag()}
+ finally{mapBusy=false}
+}
+// 지도 한 장이 사라지므로 확인 창을 먼저 띄운다(화면 룰 자원을 쓰는 동작)
+function useDungeonMap(def,btn){
+ if(mapBusy)return;const it=itemsData.find(i=>i.def_id===def),nm=it?itemName(it):def,dg=TS(mapInfo[def]?.dungeon)||"";
+ openConfirm(T("지도 쓰기"),`<p>${T("<b>{nm}</b>{nm:을/를} 씁니다.",{nm:esc(nm)})}</p><p>${dg?T("열리는 던전: <b>{dg}</b>. 지도는 사라집니다.",{dg:esc(dg)}):T("길이 열리고 지도는 사라집니다.")}</p>`,[[T("취소"),null,false],[T("Use"),()=>doUseDungeonMap(def,btn),true]]);
+}
+async function doUseDungeonMap(def,btn){
+ if(mapBusy)return;mapBusy=true;if(btn)btn.disabled=true;
+ try{const {data,error}=await sb.rpc("use_dungeon_map",{p_def:def});
+  if(error){const m=error.message||"",k=Object.keys(MAP_ERR).sort((a,b)=>b.length-a.length).find(x=>m.includes(x));log("use_dungeon_map 실패: "+m,"bad");openNotice(k?MAP_ERR[k]:T("지도를 쓰지 못했습니다."));return}
+  log("use_dungeon_map: "+(data?.dungeon_id||""),"ok");openNotice(TS(data?.msg)||T("길이 열렸습니다: {name}",{name:TS(data?.dungeon)||""}));
+ }finally{mapBusy=false;await loadItems()}
 }
 
 const CONDITION_GROUPS=[
@@ -8593,7 +8664,8 @@ function renderDungeons(){
  box.innerHTML=dungeons.map(d=>{
   const open=d.unlocked&&openDungeons.has(d.id);
   const tag=d.cleared?`<span class="dg-tag clear">${T("clear")}</span>`:!d.unlocked?`<span class="dg-tag">${T("locked")}</span>`:"";
-  const meta=d.unlocked?T("SUPPLY {n}",{n:d.supply_cost??10}):(d.locked_by==="TUTORIAL"?T("과제를 마치면 열립니다"):T("앞 던전을 클리어하면 열립니다"));
+  // 티어2부터는 지도로 연다(get_dungeons locked_by MAP, map_hint DROP=지도가 떨어짐·CRAFT=Arcane Archive처럼 만들어야 함. 재료는 밝히지 않는다)
+  const meta=d.unlocked?T("SUPPLY {n}",{n:d.supply_cost??10}):(d.locked_by==="TUTORIAL"?T("과제를 마치면 열립니다"):d.locked_by==="MAP"?(d.map_hint==="CRAFT"?T("흩어진 지식을 모아야 길이 열립니다"):T("지도가 있어야 길을 찾을 수 있습니다")):T("앞 던전을 클리어하면 열립니다"));
   return `<div class="dg-card${open?" open":""}${d.unlocked?"":" locked"}" data-dg="${esc(d.id)}">
    <button type="button" class="dg-head"${d.unlocked?` onclick="toggleDungeon('${esc(d.id)}')" aria-expanded="${open}"`:` disabled`}><span><span class="dg-name">${esc(TS(d.name))}</span>${tag}<br><span class="dg-meta">${meta}</span></span>${d.unlocked?CHEV:""}</button>
    ${d.unlocked?`<div class="dg-body"><div class="dg-note">${esc(TS(d.note)||"")}</div>${monstersHtml(d.monsters,d.name)}${autoLineHtml(d)}
@@ -9849,13 +9921,15 @@ function renderCraft(){
   return `<div class="cr-card"><div class="item-cat" style="margin-bottom:4px">${CRAFT_KIND[x.kind]||""}</div>${itemDetailHtml(it)}<div class="cr-src" id="crs-${id}">${craftSrcText(x,n)}</div><div class="cr-mats" id="crm-${id}">${craftMatsHtml(x,n)}</div><div class="cr-act"><span class="rush-box"><input id="crn-${id}" class="rush-n" type="number" inputmode="numeric" min="0" max="${craftCap(x)}" step="1" value="${n}" aria-label="${T("제작 개수")}" oninput="craftInput('${id}',this)" onchange="craftInput('${id}',this,true)"${off}><button type="button" class="mini-btn rush-max" onclick="craftMaxN('${id}')"${off}>${T("최대")}</button></span><button class="pri fm-btn" id="crg-${id}" onclick="confirmCraft('${id}')"${off||(n<1?" disabled":"")}><span>${T("제작")}</span></button>${x.ready?"":`<span class="pattern-help" style="margin:0">${T("재료가 모자랍니다.")}</span>`}</div></div>`}).join("");
 }
 let crafting=false;
+// 장비가 아닌 결과(던전 지도 등 재료 칸, 한 번에 1장)는 랜덤 옵션이 없다
+function craftGear(x){const sl=craftDefs[x.result]?.slot;return !sl||!["MATERIAL","CONSUMABLE"].includes(sl)}
 function confirmCraft(id){
  const x=craftData.find(y=>y.id===id);if(!x)return;const nm=TS(craftDefs[x.result]?.name)||x.result,n=craftCount(x);if(n<1)return;
  const gone=[];
  if(x.kind==="REMAKE")gone.push(`${T("일반 장비 {nm} {n}",{nm:esc(nm),n})}`);
  if(x.kind==="RECIPE")gone.push(`${esc(craftDefs[x.recipe]?.name||T("레시피"))} ${n}`);
  (x.materials||[]).forEach(m=>gone.push(`${esc(TS(m.name)||m.def)} ${m.qty*n}`));
- openConfirm(T("제작"),`<p>${T("<b>{nm}</b> {n}개를 만듭니다.",{nm:esc(nm),n})}</p><p>${T("사라지는 것: {v}",{v:gone.join(" · ")})}</p><p class="help-note">${T("랜덤 옵션이 안 붙을 수도 있습니다.")}</p>`,[[T("취소"),null,false],[T("제작"),async()=>{
+ openConfirm(T("제작"),`<p>${T("<b>{nm}</b> {n}개를 만듭니다.",{nm:esc(nm),n})}</p><p>${T("사라지는 것: {v}",{v:gone.join(" · ")})}</p>${craftGear(x)?`<p class="help-note">${T("랜덤 옵션이 안 붙을 수도 있습니다.")}</p>`:""}`,[[T("취소"),null,false],[T("제작"),async()=>{
   if(crafting)return;crafting=true;const r=await rpc("craft_items",{p_recipe:id,p_count:n});crafting=false;if(r)craftN[id]=0;
   await loadItems();await loadCraft();if(r)showCraftResult(r)},true]]);
 }
